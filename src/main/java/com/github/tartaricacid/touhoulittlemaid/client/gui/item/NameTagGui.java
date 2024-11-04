@@ -60,7 +60,7 @@ public class NameTagGui extends Screen {
         for (Renderable renderable : this.renderables) {
             renderable.render(graphics, mouseX, mouseY, partialTicks);
         }
-        if (alwaysShow) {
+        if (!alwaysShow) {
             graphics.blitSprite(CANCEL_SPRITE, middleX + 82, middleY - 26, 18, 18);
         } else {
             graphics.blitSprite(CONFIRM_SPRITE, middleX + 82, middleY - 26, 18, 18);
