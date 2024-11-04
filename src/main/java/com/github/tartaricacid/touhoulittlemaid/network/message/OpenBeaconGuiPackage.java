@@ -13,7 +13,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record OpenBeaconGuiPackage(BlockPos pos) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<OpenBeaconGuiPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("open_beacon_gui"));

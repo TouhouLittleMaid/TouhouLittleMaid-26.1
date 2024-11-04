@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Type;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.isValidResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
 
 public final class ChatText {
 

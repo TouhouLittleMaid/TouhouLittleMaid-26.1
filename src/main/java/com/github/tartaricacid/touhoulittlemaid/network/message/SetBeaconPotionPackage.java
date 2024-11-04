@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SetBeaconPotionPackage(BlockPos pos, int potionIndex) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SetBeaconPotionPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("set_beacon_potion"));

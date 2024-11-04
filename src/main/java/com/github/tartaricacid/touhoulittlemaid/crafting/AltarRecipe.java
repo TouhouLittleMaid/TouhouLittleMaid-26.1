@@ -81,25 +81,28 @@ public class AltarRecipe extends ShapelessRecipe {
         if (list != null) {
             itemFilm = list.stream().filter(stack -> stack.getItem() instanceof ItemFilm).findFirst().orElse(ItemStack.EMPTY);
         }
-        EntityMaid maid = InitEntities.MAID.get().create(world);
+        EntityMaid maid = new EntityMaid(world);
         CustomData compoundData = itemFilm.get(InitDataComponent.MAID_INFO);
-        if (compoundData != null && maid != null) {
+        if (compoundData != null) {
             CompoundTag maidCompound = compoundData.copyTag();
             maid.readAdditionalSaveData(maidCompound);
-            maid.spawnExplosionParticle();
-            maid.setPos(pos.getX(), pos.getY(), pos.getZ());
-            world.addFreshEntity(maid);
+        } else {
+            maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), MobSpawnType.SPAWN_EGG, null);
         }
+        maid.setPos(pos.getX(), pos.getY(), pos.getZ());
+        world.addFreshEntity(maid);
     }
 
     private void spawnBoxMaid(ServerLevel world, BlockPos pos) {
         EntityBox box = new EntityBox(world);
-        world.addFreshEntity(box);
-        EntityMaid maid = new EntityMaid(world);
-        maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
-        world.addFreshEntity(maid);
-        maid.startRiding(box);
         box.setPos(pos.getX(), pos.getY(), pos.getZ());
+
+        EntityMaid maid = new EntityMaid(world);
+        maid.setPos(pos.getX(), pos.getY(), pos.getZ());
+        maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), MobSpawnType.SPAWN_EGG, null);
+        maid.startRiding(box, true);
+
+        world.tryAddFreshEntityWithPassengers(box);
     }
 
     private void spawnItem(ServerLevel world, BlockPos pos) {

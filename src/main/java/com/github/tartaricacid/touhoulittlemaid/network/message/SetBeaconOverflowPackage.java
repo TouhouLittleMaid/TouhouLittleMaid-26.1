@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SetBeaconOverflowPackage(BlockPos pos, boolean overflowDelete) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SetBeaconOverflowPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("set_beacon_overflow"));

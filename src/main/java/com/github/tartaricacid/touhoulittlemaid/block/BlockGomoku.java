@@ -1,5 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
+import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
+import com.github.tartaricacid.touhoulittlemaid.api.block.IBoardGameBlock;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Point;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Statue;
 import com.github.tartaricacid.touhoulittlemaid.block.properties.GomokuPart;
@@ -10,7 +12,8 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
-import com.github.tartaricacid.touhoulittlemaid.network.message.ChessDataClientPackage;
+import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
+import com.github.tartaricacid.touhoulittlemaid.network.message.GomokuClientPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityJoy;
@@ -50,7 +53,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 
-public class BlockGomoku extends BlockJoy {
+public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     public static final EnumProperty<GomokuPart> PART = EnumProperty.create("part", GomokuPart.class);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final VoxelShape LEFT_UP = Block.box(8, 0, 8, 16, 2, 16);
@@ -68,7 +71,7 @@ public class BlockGomoku extends BlockJoy {
     public static final VoxelShape RIGHT_DOWN_WITH_BOX = Shapes.or(RIGHT_DOWN, Block.box(0, 0, 9, 5, 4, 14));
 
     public BlockGomoku() {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(SoundType.WOOD).strength(2.0F, 3.0F).noOcclusion());
+        super(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(SoundType.WOOD).strength(2.0F, 3.0F).forceSolidOn().noOcclusion());
         this.registerDefaultState(this.stateDefinition.any().setValue(PART, GomokuPart.CENTER).setValue(FACING, Direction.NORTH));
     }
 
@@ -236,6 +239,13 @@ public class BlockGomoku extends BlockJoy {
                 level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 gomoku.reset();
                 gomoku.refresh();
+
+                // 重置女仆棋类动画
+                Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
+                if (sitEntity != null && sitEntity.isAlive() && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
+                    maid.getGameRecordManager().resetStatue();
+                }
+
                 return ItemInteractionResult.SUCCESS;
             }
             Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
@@ -263,8 +273,9 @@ public class BlockGomoku extends BlockJoy {
                 // 但是和其他人的女仆对弈不加好感哦
                 if (statue == Statue.WIN && maid.isOwnedBy(player)) {
                     maid.getFavorabilityManager().apply(Type.GOMOKU_WIN);
+                    maid.getGameRecordManager().markStatue(true);
                     int rankBefore = MaidGomokuAI.getRank(maid);
-                    MaidGomokuAI.addMaidCount(maid);
+                    maid.getGameRecordManager().increaseGomokuWinCount();
                     int rankAfter = MaidGomokuAI.getRank(maid);
                     // 女仆升段啦
                     if (rankBefore < rankAfter) {
@@ -272,12 +283,15 @@ public class BlockGomoku extends BlockJoy {
                             PacketDistributor.sendToPlayer(serverPlayer, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.RANK_UP));
                         }
                     }
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.WIN_GOMOKU);
+                    }
                 }
                 gomoku.setInProgress(statue == Statue.IN_PROGRESS);
                 level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.random.nextFloat() * 0.4F);
                 if (gomoku.isInProgress() && player instanceof ServerPlayer serverPlayer) {
                     gomoku.setPlayerTurn(false);
-                    PacketDistributor.sendToPlayer(serverPlayer, new ChessDataClientPackage(centerPos, chessData, playerPoint, MaidGomokuAI.getMaidCount(maid)));
+                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.getGameRecordManager().getGomokuWinCount()));
                 }
                 gomoku.refresh();
                 return ItemInteractionResult.SUCCESS;

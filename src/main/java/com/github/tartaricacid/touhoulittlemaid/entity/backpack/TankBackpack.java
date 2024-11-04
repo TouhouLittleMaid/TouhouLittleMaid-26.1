@@ -105,6 +105,11 @@ public class TankBackpack extends IMaidBackpack {
             public AbstractMaidContainer createMenu(int index, Inventory playerInventory, Player player) {
                 return new TankBackpackContainer(index, playerInventory, entityId);
             }
+
+            @Override
+            public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                return false;
+            }
         };
     }
 

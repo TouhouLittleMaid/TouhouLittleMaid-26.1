@@ -16,6 +16,7 @@ public class ConditionManager {
     public static Map<ResourceLocation, ConditionArmor> ARMOR = Maps.newHashMap();
     public static Map<ResourceLocation, ConditionalVehicle> VEHICLE = Maps.newHashMap();
     public static Map<ResourceLocation, ConditionalPassenger> PASSENGER = Maps.newHashMap();
+    public static Map<ResourceLocation, ConditionalChair> CHAIR = Maps.newHashMap();
 
     public static void addTest(ResourceLocation id, String name) {
         SWING.computeIfAbsent(id, k -> new ConditionalSwing(InteractionHand.MAIN_HAND)).addTest(name);
@@ -27,15 +28,20 @@ public class ConditionManager {
         ARMOR.computeIfAbsent(id, k -> new ConditionArmor()).addTest(name);
         VEHICLE.computeIfAbsent(id, k -> new ConditionalVehicle()).addTest(name);
         PASSENGER.computeIfAbsent(id, k -> new ConditionalPassenger()).addTest(name);
+        CHAIR.computeIfAbsent(id, k -> new ConditionalChair()).addTest(name);
     }
 
     public static void clear() {
         SWING.clear();
+        SWING_OFFHAND.clear();
         USE_MAINHAND.clear();
         USE_OFFHAND.clear();
         HOLD_MAINHAND.clear();
         HOLD_OFFHAND.clear();
         ARMOR.clear();
+        VEHICLE.clear();
+        PASSENGER.clear();
+        CHAIR.clear();
     }
 
     public static ConditionalSwing getSwingMainhand(ResourceLocation id) {
@@ -72,5 +78,9 @@ public class ConditionManager {
 
     public static ConditionalPassenger getPassenger(ResourceLocation id) {
         return PASSENGER.get(id);
+    }
+
+    public static ConditionalChair getChair(ResourceLocation id) {
+        return CHAIR.get(id);
     }
 }

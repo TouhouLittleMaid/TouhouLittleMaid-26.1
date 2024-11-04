@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record ToggleTabPackage(int entityId, int tabId) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<ToggleTabPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("toggle_tab"));

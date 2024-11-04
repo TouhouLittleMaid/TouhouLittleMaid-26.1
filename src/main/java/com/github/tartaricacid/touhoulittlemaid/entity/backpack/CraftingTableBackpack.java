@@ -51,6 +51,11 @@ public class CraftingTableBackpack extends IMaidBackpack {
             public AbstractMaidContainer createMenu(int index, Inventory playerInventory, Player player) {
                 return new CraftingTableBackpackContainer(index, playerInventory, entityId);
             }
+
+            @Override
+            public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                return false;
+            }
         };
     }
 

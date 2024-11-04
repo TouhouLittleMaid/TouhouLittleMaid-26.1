@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SaveSwitcherDataPackage(BlockPos pos,
                                       List<TileEntityModelSwitcher.ModeInfo> modeInfos) implements CustomPacketPayload {

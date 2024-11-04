@@ -1,7 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
+import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.ChairConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
+import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -13,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record ChairModelPackage(int id, ResourceLocation modelId, float mountedHeight, boolean tameableCanRide,
                                 boolean noGravity) implements CustomPacketPayload {
@@ -54,6 +56,7 @@ public record ChairModelPackage(int id, ResourceLocation modelId, float mountedH
                         if (!message.tameableCanRide && !chair.getPassengers().isEmpty()) {
                             chair.ejectPassengers();
                         }
+                        InitTrigger.MAID_EVENT.get().trigger(sender, TriggerType.CHANGE_CHAIR_MODEL);
                     } else {
                         if (sender.isAlive()) {
                             sender.sendSystemMessage(Component.translatable("message.touhou_little_maid.change_model.disabled"));

@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record FoxScrollPackage(Map<String, List<FoxScrollData>> data) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<FoxScrollPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("fox_scroll"));

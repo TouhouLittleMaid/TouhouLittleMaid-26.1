@@ -60,6 +60,11 @@ public class EmptyBackpack extends IMaidBackpack {
             public AbstractMaidContainer createMenu(int index, Inventory playerInventory, Player player) {
                 return new EmptyBackpackContainer(index, playerInventory, entityId);
             }
+
+            @Override
+            public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                return false;
+            }
         };
     }
 

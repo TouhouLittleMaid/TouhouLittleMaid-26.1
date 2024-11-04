@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntFunction;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SpawnParticlePackage(int entityId, Type particleType, int delayTicks) implements CustomPacketPayload {
     public SpawnParticlePackage(int entityId, Type particleType) {

@@ -6,14 +6,13 @@ import com.github.tartaricacid.touhoulittlemaid.client.event.ShowOptifineScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.BroomTipsOverlay;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.MaidTipsOverlay;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.ShowPowerOverlay;
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.InGameMaidConfig;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.CROSSHAIR;
 import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.HOTBAR;
 
@@ -22,8 +21,6 @@ public class ClientSetupEvent {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(AnimationRegister::registerAnimationState);
-        event.enqueueWork(AnimationRegister::registerVariables);
-        event.enqueueWork(InGameMaidConfig::read);
         event.enqueueWork(MaidTipsOverlay::init);
         event.enqueueWork(ShowOptifineScreen::checkOptifineIsLoaded);
     }

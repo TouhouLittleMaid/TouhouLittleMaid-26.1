@@ -1,21 +1,26 @@
 package com.github.tartaricacid.touhoulittlemaid.api.task;
 
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
+import com.github.tartaricacid.touhoulittlemaid.entity.data.inner.AttackListData;
+import com.github.tartaricacid.touhoulittlemaid.entity.item.AbstractEntityFromItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.DefaultMonsterType;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemMonsterList;
+import com.github.tartaricacid.touhoulittlemaid.init.InitTaskData;
+import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
+import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.AttackTaskConfigContainer;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
-import java.util.Map;
 import java.util.Optional;
 
 public interface IAttackTask extends IMaidTask {
@@ -41,8 +46,8 @@ public interface IAttackTask extends IMaidTask {
         // 获取实体 ID
         ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
 
-        // 模组自身强制指定的
-        if (target instanceof Player) {
+        // 排除一些盔甲架，还有本模组的实体，以及玩家
+        if (target instanceof ArmorStand || target instanceof AbstractEntityFromItem || target instanceof Player) {
             return false;
         }
         // 有主的宠物也不攻击
@@ -55,19 +60,37 @@ public interface IAttackTask extends IMaidTask {
             return false;
         }
 
-        // 获取女仆副手是否有妖怪名单
-        ItemStack offhandItem = maid.getOffhandItem();
-        if (offhandItem.is(InitItems.MONSTER_LIST.get())) {
-            Map<ResourceLocation, MonsterType> monsterList = ItemMonsterList.getMonsterList(offhandItem);
-            if (monsterList.containsKey(id)) {
-                MonsterType monsterType = monsterList.get(id);
-                return DefaultMonsterType.canAttack(maid, target, monsterType);
-            }
+        MonsterType monsterType;
+        AttackListData attackListData = maid.getData(InitTaskData.ATTACK_LIST);
+        if (attackListData != null && attackListData.attackGroups().containsKey(id)) {
+            // 获取女仆 Task Data 里设置的
+            monsterType = attackListData.attackGroups().get(id);
+        } else {
+            // 那如果没有呢？走默认配置
+            monsterType = DefaultMonsterType.getMonsterType(target);
         }
-
-        // 那如果没有呢？走默认配置
-        MonsterType monsterType = DefaultMonsterType.getMonsterType(target.getType());
         return DefaultMonsterType.canAttack(maid, target, monsterType);
+    }
+
+    @Override
+    default MenuProvider getTaskConfigGuiProvider(EntityMaid maid) {
+        final int entityId = maid.getId();
+        return new MenuProvider() {
+            @Override
+            public Component getDisplayName() {
+                return Component.literal("Maid Attack Config Container");
+            }
+
+            @Override
+            public AbstractMaidContainer createMenu(int index, Inventory playerInventory, Player player) {
+                return new AttackTaskConfigContainer(index, playerInventory, entityId);
+            }
+
+            @Override
+            public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                return false;
+            }
+        };
     }
 
     default boolean hasExtraAttack(EntityMaid maid, Entity target) {
@@ -75,6 +98,11 @@ public interface IAttackTask extends IMaidTask {
     }
 
     default boolean doExtraAttack(EntityMaid maid, Entity target) {
+        return false;
+    }
+
+    @Override
+    default boolean enablePanic(EntityMaid maid) {
         return false;
     }
 }

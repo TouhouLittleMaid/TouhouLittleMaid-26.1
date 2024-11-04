@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Mob;
 
 import java.util.List;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.isValidResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
 
 public class ConditionalPassenger {
     private static final String EMPTY = "";

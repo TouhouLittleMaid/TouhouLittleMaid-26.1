@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record WirelessIOGuiPackage(boolean isMaidToChest, boolean isBlacklist) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<WirelessIOGuiPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("wireless_io_gui"));

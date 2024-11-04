@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record RequestEffectPackage(int id) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<RequestEffectPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("request_effect"));

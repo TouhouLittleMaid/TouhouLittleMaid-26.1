@@ -12,7 +12,7 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SendNameTagPackage(int id, String name, boolean alwaysShow) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SendNameTagPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("send_name_tag"));

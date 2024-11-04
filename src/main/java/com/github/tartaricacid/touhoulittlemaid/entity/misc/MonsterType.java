@@ -31,6 +31,14 @@ public enum MonsterType implements StringRepresentable {
         return MonsterType.values()[Math.min(index, length - 1)];
     }
 
+    public MonsterType getPrevious() {
+        int index = this.ordinal() - 1;
+        if (index < 0) {
+            index = values().length - 1;
+        }
+        return values()[index % values().length];
+    }
+
     public MonsterType getNext() {
         int ordinal = this.ordinal();
         int length = MonsterType.values().length;

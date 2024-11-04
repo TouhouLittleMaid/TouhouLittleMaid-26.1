@@ -12,7 +12,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record OpenSwitcherGuiPackage(BlockPos pos) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<OpenSwitcherGuiPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("open_switcher_gui"));

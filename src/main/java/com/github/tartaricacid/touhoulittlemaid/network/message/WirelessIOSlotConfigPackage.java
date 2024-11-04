@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record WirelessIOSlotConfigPackage(List<Boolean> configData) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<WirelessIOSlotConfigPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("wireless_slot_config"));

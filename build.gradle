@@ -168,7 +168,7 @@ dependencies {
     // EMI
     compileOnly "maven.modrinth:emi:${emi_version}"
     implementation "maven.modrinth:jade:${jade_version}"
-    implementation "maven.modrinth:the-one-probe:${top_version}"
+    compileOnly "maven.modrinth:the-one-probe:${top_version}"
     implementation "maven.modrinth:cloth-config:${cloth_config_version}"
     implementation "maven.modrinth:iron-chests:${iron_chests_version}"
     implementation "maven.modrinth:carry-on:${carry_on_version}"
@@ -178,6 +178,10 @@ dependencies {
     runtimeOnly "maven.modrinth:libipn:neoforge-1.21-6.0.2"
     implementation "maven.modrinth:inventory-profiles-next:neoforge-1.21-2.0.4"
     implementation "curse.maven:aquaculture-60028:5713551"
+
+    implementation "maven.modrinth:sodium:mc1.21-0.6.0-beta.2-neoforge"
+    implementation "maven.modrinth:iris:1.8.0-beta.5+1.21-neoforge"
+    compileOnly "maven.modrinth:embeddium:1.0.11+mc1.21.1-neoforge"
 }
 
 // 用于 neoforge.mods 里替换那一堆 ${xxxx}

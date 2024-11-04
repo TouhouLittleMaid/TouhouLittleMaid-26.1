@@ -11,7 +11,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SyncMaidAreaPackage(int id, SchedulePos schedulePos) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SyncMaidAreaPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("sync_maid_area"));

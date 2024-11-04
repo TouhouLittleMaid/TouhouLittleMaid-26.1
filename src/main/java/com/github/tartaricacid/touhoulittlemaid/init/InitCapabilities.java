@@ -7,7 +7,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLoactionUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public class InitCapabilities {
     public static final EntityCapability<IItemHandler, @Nullable Direction> HAND_ITEM = EntityCapability.createSided(getResourceLocation("hand_item"), IItemHandler.class);

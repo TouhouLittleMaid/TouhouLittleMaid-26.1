@@ -69,6 +69,11 @@ public class FurnaceBackpack extends IMaidBackpack {
             public AbstractMaidContainer createMenu(int index, Inventory playerInventory, Player player) {
                 return new FurnaceBackpackContainer(index, playerInventory, entityId);
             }
+
+            @Override
+            public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                return false;
+            }
         };
     }
 
