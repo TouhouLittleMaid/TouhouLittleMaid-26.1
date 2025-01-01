@@ -19,9 +19,7 @@ public class RateLimiter {
             return false;
         }
 
-        do {
-            this.aggregate -= this.interval;
-        } while (this.aggregate >= this.interval);
+        this.aggregate = this.aggregate % this.interval;
         return true;
     }
 }
