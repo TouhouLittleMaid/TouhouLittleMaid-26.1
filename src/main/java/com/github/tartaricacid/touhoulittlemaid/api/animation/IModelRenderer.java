@@ -1,6 +1,15 @@
 package com.github.tartaricacid.touhoulittlemaid.api.animation;
 
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockPart;
+
 public interface IModelRenderer {
+    /**
+     * Get ModelRenderer's BedrockPart
+     *
+     * @return BedrockPart
+     */
+    BedrockPart getModelRenderer();
+
     /**
      * Get ModelRenderer's x rotate angle
      *

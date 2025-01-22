@@ -33,7 +33,7 @@ public class CustomJsAnimationManger {
     @Nullable
     public static List<Object> getCustomAnimation(Path rootPath, IModelInfo item) {
         List<Object> animations = Lists.newArrayList();
-        if (item.getAnimation() != null && item.getAnimation().size() > 0) {
+        if (item.getAnimation() != null && !item.getAnimation().isEmpty()) {
             for (ResourceLocation res : item.getAnimation()) {
                 Object animation = CustomJsAnimationManger.getCustomAnimation(rootPath, res);
                 if (animation != null) {
@@ -48,7 +48,7 @@ public class CustomJsAnimationManger {
     @Nullable
     public static List<Object> getCustomAnimation(ZipFile zipFile, IModelInfo item) {
         List<Object> animations = Lists.newArrayList();
-        if (item.getAnimation() != null && item.getAnimation().size() > 0) {
+        if (item.getAnimation() != null && !item.getAnimation().isEmpty()) {
             for (ResourceLocation res : item.getAnimation()) {
                 Object animation = CustomJsAnimationManger.getCustomAnimation(zipFile, res);
                 if (animation != null) {

@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimationManger;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationManager;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
@@ -40,12 +41,11 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> {
     private static final int FPS = 60;
 
     private final IMaid maid;
-    private MaidModelInfo maidInfo;
     private final Vector2f headRot = new Vector2f();
-
+    private final MaidState<T> state;
+    private MaidModelInfo maidInfo;
     private float currentTick = -1;
     private boolean modelDirty = false;
-    private final MaidState<T> state;
 
     public GeckoMaidEntity(T mob, IMaid maid) {
         super(mob, FPS);
@@ -83,24 +83,32 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> {
 
     @Override
     @SuppressWarnings("all")
-    public boolean setCustomAnimations(AnimationContext context, @NotNull AnimationEvent animationEvent) {
-        List extraData = animationEvent.getExtraData();
+    public boolean setCustomAnimations(AnimationContext context, @NotNull AnimationEvent event) {
+        List extraData = event.getExtraData();
         MolangParser parser = GeckoLibCache.getInstance().parser;
         if (!Minecraft.getInstance().isPaused() && extraData.size() == 1 && extraData.get(0) instanceof EntityModelData data) {
-            //AnimationRegister.setParserValue(animationEvent, parser, data, this.maid);
-            var update = super.setCustomAnimations(context, animationEvent);
+            var update = super.setCustomAnimations(context, event);
             AnimatedGeoModel currentModel = this.getCurrentModel();
-            if (currentModel != null && currentModel.head() != null) {
-                IBone head = currentModel.head();
-                if (update) {
-                    this.headRot.set(head.getRotationX(), head.getRotationY());
-                }
-                head.setRotationX(this.headRot.x + (float) Math.toRadians(data.headPitch));
-                head.setRotationY(this.headRot.y + (float) Math.toRadians(data.netHeadYaw));
+            if (currentModel != null) {
+                this.updateHead(data, currentModel, update);
+                HardcodedAnimationManger.playGeckoMaidAnimation(maid, currentModel, event.getLimbSwing(), event.getLimbSwingAmount(),
+                        maid.asEntity().tickCount + event.getPartialTick(), data.netHeadYaw, data.headPitch);
             }
             return update;
         } else {
-            return super.setCustomAnimations(context, animationEvent);
+            return super.setCustomAnimations(context, event);
+        }
+    }
+
+    @SuppressWarnings("all")
+    private void updateHead(EntityModelData data, AnimatedGeoModel currentModel, boolean update) {
+        if (currentModel.head() != null) {
+            IBone head = currentModel.head();
+            if (update) {
+                this.headRot.set(head.getRotationX(), head.getRotationY());
+            }
+            head.setRotationX(this.headRot.x + (float) Math.toRadians(data.headPitch));
+            head.setRotationY(this.headRot.y + (float) Math.toRadians(data.netHeadYaw));
         }
     }
 

@@ -15,17 +15,9 @@ import java.util.List;
 import java.util.Set;
 
 public class MaidNearestLivingEntitySensor extends Sensor<EntityMaid> {
-    private static final int VERTICAL_SEARCH_RANGE = 4;
-
     @Override
     protected void doTick(ServerLevel world, EntityMaid maid) {
-        float radius = maid.getRestrictRadius();
-        AABB aabb;
-        if (maid.hasRestriction()) {
-            aabb = new AABB(maid.getRestrictCenter()).inflate(radius, VERTICAL_SEARCH_RANGE, radius);
-        } else {
-            aabb = maid.getBoundingBox().inflate(radius, VERTICAL_SEARCH_RANGE, radius);
-        }
+        AABB aabb = maid.searchDimension();
         List<LivingEntity> list = world.getEntitiesOfClass(LivingEntity.class, aabb, (entity) -> entity != maid && entity.isAlive());
         list.sort(Comparator.comparingDouble(maid::distanceToSqr));
         Brain<EntityMaid> brain = maid.getBrain();

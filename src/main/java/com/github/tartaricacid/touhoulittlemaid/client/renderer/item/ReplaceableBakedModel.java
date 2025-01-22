@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -28,7 +27,11 @@ public class ReplaceableBakedModel implements BakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState pState, @Nullable Direction pDirection, RandomSource random) {
-        return Collections.emptyList();
+        if (isReplace.get()) {
+            return this.replacedBakedModel.getQuads(pState, pDirection, random);
+        } else {
+            return this.rawBakedModel.getQuads(pState, pDirection, random);
+        }
     }
 
     @Override

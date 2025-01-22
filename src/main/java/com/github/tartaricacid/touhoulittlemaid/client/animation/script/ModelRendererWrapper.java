@@ -10,6 +10,7 @@ public class ModelRendererWrapper implements IModelRenderer {
         this.modelRenderer = modelRenderer;
     }
 
+    @Override
     public BedrockPart getModelRenderer() {
         return modelRenderer;
     }

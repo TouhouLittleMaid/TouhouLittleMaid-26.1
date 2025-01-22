@@ -26,7 +26,6 @@ import java.util.Optional;
 
 public class TaskIdle implements IMaidTask {
     public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "idle");
-    private static final float LOW_TEMPERATURE = 0.15F;
 
     @Override
     public ResourceLocation getUid() {

@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.item.BowItem;
@@ -34,8 +33,7 @@ public class MaidShootTargetTask extends Behavior<EntityMaid> {
         if (memory.isPresent()) {
             LivingEntity target = memory.get();
             return owner.isHolding(item -> item.getItem() instanceof ProjectileWeaponItem)
-                   && BehaviorUtils.canSee(owner, target)
-                   && BehaviorUtils.isWithinAttackRange(owner, target, 0);
+                   && owner.canSee(target);
         }
         return false;
     }
@@ -55,7 +53,7 @@ public class MaidShootTargetTask extends Behavior<EntityMaid> {
         owner.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent((target) -> {
             // 强行看见并朝向
             owner.getLookControl().setLookAt(target.getX(), target.getY(), target.getZ());
-            boolean canSee = BehaviorUtils.canSee(owner, target);
+            boolean canSee = owner.canSee(target);
             boolean seeTimeMoreThanZero = this.seeTime > 0;
 
             // 如果两者不一致，重置看见时间

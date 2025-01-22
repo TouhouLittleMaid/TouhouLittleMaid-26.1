@@ -1,10 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
+import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.datagen.EnchantmentKeys;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAttackStrafingTask;
+import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidRangedWalkToTarget;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidShootTargetTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.DanmakuShoot;
@@ -17,19 +18,19 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
-import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromAttackTargetIfTargetOutOfReach;
 import net.minecraft.world.entity.ai.behavior.StartAttacking;
 import net.minecraft.world.entity.ai.behavior.StopAttackingIfTargetInvalid;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -40,7 +41,6 @@ import static com.github.tartaricacid.touhoulittlemaid.datagen.EnchantmentKeys.g
 
 public class TaskDanmakuAttack implements IRangedAttackTask {
     public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "danmaku_attack");
-    private static final int MAX_STOP_ATTACK_DISTANCE = 16;
 
     @Override
     public ResourceLocation getUid() {
@@ -60,9 +60,9 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(this::hasGohei, IAttackTask::findFirstValidAttackTarget);
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(this::hasGohei, IRangedAttackTask::findFirstValidAttackTarget);
         BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((target) -> !hasGohei(maid) || farAway(target, maid));
-        BehaviorControl<Mob> moveToTargetTask = SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(0.6f);
+        BehaviorControl<EntityMaid> moveToTargetTask = MaidRangedWalkToTarget.create(0.6f);
         BehaviorControl<EntityMaid> maidAttackStrafingTask = new MaidAttackStrafingTask();
         BehaviorControl<EntityMaid> shootTargetTask = new MaidShootTargetTask(2);
 
@@ -77,7 +77,7 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createRideBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(this::hasGohei, IAttackTask::findFirstValidAttackTarget);
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(this::hasGohei, IRangedAttackTask::findFirstValidAttackTarget);
         BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((target) -> !hasGohei(maid) || farAway(target, maid));
         BehaviorControl<EntityMaid> shootTargetTask = new MaidShootTargetTask(2);
 
@@ -89,11 +89,34 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
     }
 
     @Override
+    public boolean canSee(EntityMaid maid, LivingEntity target) {
+        return IRangedAttackTask.targetConditionsTest(maid, target, MaidConfig.DANMAKU_RANGE);
+    }
+
+    @Override
+    public AABB searchDimension(EntityMaid maid) {
+        if (hasGohei(maid)) {
+            float searchRange = this.searchRadius(maid);
+            if (maid.hasRestriction()) {
+                return new AABB(maid.getRestrictCenter()).inflate(searchRange);
+            } else {
+                return maid.getBoundingBox().inflate(searchRange);
+            }
+        }
+        return IRangedAttackTask.super.searchDimension(maid);
+    }
+
+    @Override
+    public float searchRadius(EntityMaid maid) {
+        return MaidConfig.DANMAKU_RANGE.get();
+    }
+
+    @Override
     public void performRangedAttack(EntityMaid shooter, LivingEntity target, float distanceFactor) {
         shooter.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).ifPresent(livingEntities -> {
             ItemStack mainHandItem = shooter.getMainHandItem();
             if (ItemHakureiGohei.isGohei(mainHandItem)) {
-                long entityCount = livingEntities.stream().filter(shooter::canAttack).count();
+                long entityCount = livingEntities.stream().filter(test -> enemyEntityTest(shooter, target, test)).count();
                 Level level = shooter.level();
                 // 分为三档
                 // 1 自机狙
@@ -114,13 +137,18 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
                 float speed = (0.3f * (distanceFactor + 1)) * (speedyLevel + 1);
                 boolean hurtEnderman = endersEnderLevel > 0;
 
+                // 依据距离调整弹幕速度和不准确度
+                float distance = shooter.distanceTo(target);
+                speed = speed + Mth.clamp(distance / 40f - 0.4f, 0, 2.4f);
+                float inaccuracy = 1 - Mth.clamp(distance / 100f, 0, 0.8f);
+
                 if (entityCount <= 1) {
                     if (multiShotLevel > 0) {
                         DanmakuShoot.create().setWorld(level).setThrower(shooter)
                                 .setTarget(target).setRandomColor().setRandomType()
                                 .setDamage(attackValue * (distanceFactor + 1.2f)).setGravity(0)
                                 .setVelocity(speed).setHurtEnderman(hurtEnderman)
-                                .setInaccuracy(1.0f).setFanNum(3).setYawTotal(Math.PI / 12)
+                                .setInaccuracy(inaccuracy).setFanNum(3).setYawTotal(Math.PI / 12)
                                 .setImpedingLevel(impedingLevel)
                                 .fanShapedShot();
                     } else {
@@ -128,7 +156,7 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
                                 .setTarget(target).setRandomColor().setRandomType()
                                 .setDamage(attackValue * (distanceFactor + 1)).setGravity(0)
                                 .setVelocity(speed).setHurtEnderman(hurtEnderman)
-                                .setInaccuracy(0.2f).setImpedingLevel(impedingLevel)
+                                .setInaccuracy(inaccuracy / 5).setImpedingLevel(impedingLevel)
                                 .aimedShot();
                     }
                 } else if (entityCount <= 5) {
@@ -136,7 +164,7 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
                             .setTarget(target).setRandomColor().setRandomType()
                             .setDamage(attackValue * (distanceFactor + 1.2f)).setGravity(0)
                             .setVelocity(speed).setHurtEnderman(hurtEnderman)
-                            .setInaccuracy(0.2f).setFanNum(8).setYawTotal(Math.PI / 3)
+                            .setInaccuracy(inaccuracy / 5).setFanNum(8).setYawTotal(Math.PI / 3)
                             .setImpedingLevel(impedingLevel)
                             .fanShapedShot();
                 } else {
@@ -144,13 +172,19 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
                             .setTarget(target).setRandomColor().setRandomType()
                             .setDamage(attackValue * (distanceFactor + 1.5f)).setGravity(0)
                             .setVelocity(speed).setHurtEnderman(hurtEnderman)
-                            .setInaccuracy(0.2f).setFanNum(32).setYawTotal(2 * Math.PI / 3)
+                            .setInaccuracy(inaccuracy / 5).setFanNum(32).setYawTotal(2 * Math.PI / 3)
                             .setImpedingLevel(impedingLevel)
                             .fanShapedShot();
                 }
                 mainHandItem.hurtAndBreak(1, shooter, EquipmentSlot.MAINHAND);
             }
         });
+    }
+
+    private boolean enemyEntityTest(EntityMaid shooter, LivingEntity target, LivingEntity test) {
+        boolean canAttack = shooter.canAttack(test);
+        boolean sameType = target.getType().equals(test.getType());
+        return canAttack && sameType && shooter.canSee(test);
     }
 
     @Override
@@ -163,6 +197,6 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
     }
 
     private boolean farAway(LivingEntity target, EntityMaid maid) {
-        return maid.distanceTo(target) > MAX_STOP_ATTACK_DISTANCE;
+        return maid.distanceTo(target) > this.searchRadius(maid);
     }
 }

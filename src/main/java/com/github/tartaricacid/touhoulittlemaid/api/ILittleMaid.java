@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.api;
 
 import com.github.tartaricacid.touhoulittlemaid.block.multiblock.MultiBlockManager;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimationManger;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.MaidTipsOverlay;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.GeckoEntityMaidRenderer;
@@ -102,5 +103,12 @@ public interface ILittleMaid {
      */
     @OnlyIn(Dist.CLIENT)
     default void addAdditionGeckoMaidLayer(GeckoEntityMaidRenderer<? extends Mob> renderer, EntityRendererProvider.Context context) {
+    }
+
+    /**
+     * 添加硬编码的动画
+     */
+    @OnlyIn(Dist.CLIENT)
+    default void addHardcodeAnimation(HardcodedAnimationManger manger) {
     }
 }

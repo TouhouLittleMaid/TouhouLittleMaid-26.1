@@ -32,7 +32,8 @@ public class DrownProtectBauble implements IMaidBauble {
                 ItemStack stack = maid.getMaidBauble().getStackInSlot(slot);
                 maid.hurtAndBreak(stack, 1);
                 maid.getMaidBauble().setStackInSlot(slot, stack);
-                maid.setAirSupply(200);
+                // 增加了游泳功能，故此饰品可以增加到最大空气值
+                maid.setAirSupply(maid.getMaxAirSupply());
                 NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.BUBBLE));
                 if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                     InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_PROTECT_BAUBLE);

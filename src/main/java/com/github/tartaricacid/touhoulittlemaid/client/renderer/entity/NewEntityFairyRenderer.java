@@ -9,6 +9,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Locale;
+
 public class NewEntityFairyRenderer extends MobRenderer<EntityFairy, NewEntityFairyModel> {
     private static final ResourceLocation TEXTURE_0 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/new_maid_fairy/maid_fairy_0.png");
     private static final ResourceLocation TEXTURE_1 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/new_maid_fairy/maid_fairy_1.png");
@@ -28,6 +30,7 @@ public class NewEntityFairyRenderer extends MobRenderer<EntityFairy, NewEntityFa
     private static final ResourceLocation TEXTURE_15 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/new_maid_fairy/maid_fairy_15.png");
     private static final ResourceLocation TEXTURE_16 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/new_maid_fairy/maid_fairy_16.png");
     private static final ResourceLocation TEXTURE_17 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/new_maid_fairy/maid_fairy_17.png");
+    private static final ResourceLocation TEXTURE_RICK = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/new_maid_fairy/maid_fairy_rick.png");
 
     public NewEntityFairyRenderer(EntityRendererProvider.Context context) {
         super(context, new NewEntityFairyModel(context.bakeLayer(NewEntityFairyModel.LAYER)), 0.5f);
@@ -43,6 +46,11 @@ public class NewEntityFairyRenderer extends MobRenderer<EntityFairy, NewEntityFa
 
     @Override
     public ResourceLocation getTextureLocation(EntityFairy entity) {
+        String name = entity.getName().getString().toLowerCase(Locale.ENGLISH);
+        // Rick-rolling 彩蛋
+        if (EntityFairy.RICK.equals(name)) {
+            return TEXTURE_RICK;
+        }
         return switch (entity.getFairyTypeOrdinal()) {
             case 1 -> TEXTURE_1;
             case 2 -> TEXTURE_2;

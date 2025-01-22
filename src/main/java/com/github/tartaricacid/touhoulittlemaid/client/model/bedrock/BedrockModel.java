@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.model.bedrock;
 
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.CustomJsAnimationManger;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimationManger;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityChairWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityMaidWrapper;
@@ -258,6 +259,8 @@ public class BedrockModel<T extends LivingEntity> extends AbstractModel<T> {
                 IMaid maid = IMaid.convert(mob);
                 if (maid != null) {
                     setupMaidAnim(maid, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
+                    // 硬编码动画
+                    HardcodedAnimationManger.playMaidAnimation(maid, modelMap, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
                 }
                 return;
             }

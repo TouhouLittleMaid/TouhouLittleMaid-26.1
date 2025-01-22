@@ -5,6 +5,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -20,6 +21,7 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil
 public class TagItem extends ItemTagsProvider {
     public static final TagKey<Item> GOHEI_ENCHANTABLE = TagKey.create(Registries.ITEM, getResourceLocation("gohei_enchantable"));
     public static final TagKey<Item> MAID_PLANTABLE_SEEDS = TagKey.create(Registries.ITEM, getResourceLocation("maid_plantable_seeds"));
+    public static final TagKey<Item> MAID_TAMED_ITEM = TagKey.create(Registries.ITEM, getResourceLocation("maid_tamed_item"));
 
     public TagItem(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, CompletableFuture<TagLookup<Block>> pBlockTags, String modId, @Nullable ExistingFileHelper existingFileHelper) {
         super(pOutput, pLookupProvider, pBlockTags, modId, existingFileHelper);
@@ -32,5 +34,18 @@ public class TagItem extends ItemTagsProvider {
 
         this.tag(MAID_PLANTABLE_SEEDS).addTag(ItemTags.VILLAGER_PLANTABLE_SEEDS);
         this.tag(MAID_PLANTABLE_SEEDS).add(Items.NETHER_WART);
+
+        this.tag(MAID_TAMED_ITEM)
+                .add(Items.CAKE)
+                .addOptionalTag(ResourceLocation.parse("forge:cakes"))
+                .addOptionalTag(ResourceLocation.parse("c:cakes"))
+                .addOptionalTag(ResourceLocation.parse("jmc:cakes"))
+                .addOptional(ResourceLocation.parse("kawaiidishes:cheese_cake"))
+                .addOptional(ResourceLocation.parse("kawaiidishes:honey_cheese_cake"))
+                .addOptional(ResourceLocation.parse("kawaiidishes:chocolate_cheese_cake"))
+                .addOptional(ResourceLocation.parse("kawaiidishes:piece_of_cake"))
+                .addOptional(ResourceLocation.parse("kawaiidishes:piece_of_cheesecake"))
+                .addOptional(ResourceLocation.parse("kawaiidishes:piece_of_chocolate_cheesecake"))
+                .addOptional(ResourceLocation.parse("kawaiidishes:piece_of_honey_cheesecake"));
     }
 }

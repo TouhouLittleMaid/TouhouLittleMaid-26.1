@@ -2,21 +2,62 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.navigation;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.PathfindingContext;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 
 /**
- * 该方法仅修改了栅栏门的寻路判断
+ * 该方法仅修改了栅栏门和梯子的寻路判断
  */
 public class MaidNodeEvaluator extends WalkNodeEvaluator {
     @Override
     public PathType getPathType(PathfindingContext pContext, int pX, int pY, int pZ) {
         return getMaidBlockPathTypeStatic(pContext, new BlockPos.MutableBlockPos(pX, pY, pZ));
+    }
+
+    @Override
+    public int getNeighbors(Node[] outputArray, Node node) {
+        int nodeId = super.getNeighbors(outputArray, node);
+        return this.createClimbNode(nodeId, outputArray, node);
+    }
+
+    // 将可爬行物加入寻路节点里头
+    // 一般这些物体都是相连的，所以向上向下搜寻下
+    protected int createClimbNode(int nodeId, Node[] nodes, Node origin) {
+        // 只有在开启攀爬能力，才将梯子加入寻路节点里
+        if (this.mob instanceof EntityMaid maid && maid.getConfigManager().isActiveClimbing()) {
+            // 向上搜寻
+            BlockPos.MutableBlockPos upPos = new BlockPos.MutableBlockPos(origin.x, origin.y + 1, origin.z);
+            if (isMaidCanClimbBlock(upPos, maid)) {
+                Node node = this.getNode(upPos);
+                if (!node.closed) {
+                    node.costMalus = 0;
+                    node.type = PathType.WALKABLE;
+                    if (nodeId + 1 < nodes.length) {
+                        nodes[nodeId++] = node;
+                    }
+                }
+            }
+            // 向下搜寻
+            BlockPos.MutableBlockPos downPos = new BlockPos.MutableBlockPos(origin.x, origin.y - 1, origin.z);
+            if (isMaidCanClimbBlock(downPos, maid)) {
+                Node node = this.getNode(downPos);
+                if (!node.closed) {
+                    node.costMalus = 0;
+                    node.type = PathType.WALKABLE;
+                    if (nodeId + 1 < nodes.length) {
+                        nodes[nodeId++] = node;
+                    }
+                }
+            }
+        }
+        return nodeId;
     }
 
     private PathType getMaidBlockPathTypeStatic(PathfindingContext context, BlockPos.MutableBlockPos pos) {
@@ -47,6 +88,9 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
         PathType pathType;
         if (blockState.getBlock() instanceof FenceGateBlock) {
             pathType = blockState.getValue(FenceGateBlock.OPEN) ? PathType.DOOR_OPEN : PathType.DOOR_WOOD_CLOSED;
+        } else if (this.mob instanceof EntityMaid maid && this.canClimb(blockState, pos, maid)) {
+            // 将楼梯视为可行走方块，便于后续将楼梯加入路径节点
+            pathType = PathType.WALKABLE;
         } else {
             pathType = context.getPathTypeFromState(pX, pY, pZ);
         }
@@ -64,5 +108,22 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
             return maid.getConfigManager().isOpenFenceGate();
         }
         return true;
+    }
+
+    private boolean canClimb(BlockState blockState, BlockPos blockPos, EntityMaid maid) {
+        if (isMaidCanClimbBlock(blockState, blockPos, maid)) {
+            return maid.getConfigManager().isActiveClimbing();
+        }
+        return false;
+    }
+
+    public static boolean isMaidCanClimbBlock(BlockPos blockPos, EntityMaid maid) {
+        Level level = maid.level;
+        BlockState blockState = level.getBlockState(blockPos);
+        return isMaidCanClimbBlock(blockState, blockPos, maid);
+    }
+
+    public static boolean isMaidCanClimbBlock(BlockState blockState, BlockPos blockPos, EntityMaid maid) {
+        return blockState.isLadder(maid.level, blockPos, maid);
     }
 }

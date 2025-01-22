@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.RenderMaidEvent;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimationManger;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.*;
@@ -103,11 +104,16 @@ public class EntityMaidRenderer extends MobRenderer<Mob, BedrockModel<Mob>> {
     @Override
     protected void setupRotations(Mob mob, PoseStack poseStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks, float pScale) {
         super.setupRotations(mob, poseStack, pAgeInTicks, pRotationYaw, pPartialTicks, pScale);
+
+        // 抱起女仆时的旋转
         if (mob.getVehicle() instanceof Player && !this.mainInfo.isGeckoModel()) {
             poseStack.translate(-0.375, 0.8325, 0.375);
             poseStack.mulPose(Axis.ZN.rotationDegrees(65));
             poseStack.mulPose(Axis.YN.rotationDegrees(-80));
         }
+
+        // 其他时候的旋转
+        HardcodedAnimationManger.setupRotations(mob, poseStack, pAgeInTicks, pRotationYaw, pPartialTicks, this.mainInfo.isGeckoModel());
     }
 
     @Override

@@ -1,9 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
+import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAttackStrafingTask;
+import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidRangedWalkToTarget;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidShootTargetTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
@@ -15,18 +16,21 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.behavior.*;
+import net.minecraft.world.entity.ai.behavior.BehaviorControl;
+import net.minecraft.world.entity.ai.behavior.StartAttacking;
+import net.minecraft.world.entity.ai.behavior.StopAttackingIfTargetInvalid;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 import javax.annotation.Nullable;
@@ -37,7 +41,6 @@ import static com.github.tartaricacid.touhoulittlemaid.datagen.EnchantmentKeys.g
 
 public class TaskBowAttack implements IRangedAttackTask {
     public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "ranged_attack");
-    private static final int MAX_STOP_ATTACK_DISTANCE = 16;
 
     @Override
     public ResourceLocation getUid() {
@@ -57,9 +60,9 @@ public class TaskBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(e -> hasBow(e) && hasArrow(e), IAttackTask::findFirstValidAttackTarget);
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(e -> hasBow(e) && hasArrow(e), IRangedAttackTask::findFirstValidAttackTarget);
         BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((target) -> !hasBow(maid) || !hasArrow(maid) || farAway(target, maid));
-        BehaviorControl<Mob> moveToTargetTask = SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(0.6f);
+        BehaviorControl<EntityMaid> moveToTargetTask = MaidRangedWalkToTarget.create(0.6f);
         BehaviorControl<EntityMaid> maidAttackStrafingTask = new MaidAttackStrafingTask();
         BehaviorControl<EntityMaid> shootTargetTask = new MaidShootTargetTask(2);
 
@@ -74,7 +77,7 @@ public class TaskBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createRideBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(e -> hasBow(e) && hasArrow(e), IAttackTask::findFirstValidAttackTarget);
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(e -> hasBow(e) && hasArrow(e), IRangedAttackTask::findFirstValidAttackTarget);
         BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((target) -> !hasBow(maid) || !hasArrow(maid) || farAway(target, maid));
         BehaviorControl<EntityMaid> shootTargetTask = new MaidShootTargetTask(2);
 
@@ -93,15 +96,43 @@ public class TaskBowAttack implements IRangedAttackTask {
             ItemStack mainHandItem = shooter.getMainHandItem();
             if (mainHandItem.getItem() instanceof BowItem) {
                 double x = target.getX() - shooter.getX();
-                double y = target.getBoundingBox().minY + target.getBbHeight() / 3.0F - entityArrow.position().y;
+                double y = target.getEyeY() - shooter.getEyeY();
                 double z = target.getZ() - shooter.getZ();
-                double pitch = Math.sqrt(x * x + z * z) * 0.15D;
-                entityArrow.shoot(x, y + pitch, z, 1.6F, 1);
+                // 依据距离调整箭速和不准确度
+                float distance = shooter.distanceTo(target);
+                float velocity = Mth.clamp(distance / 10f, 1.6f, 3.2f);
+                float inaccuracy = 1 - Mth.clamp(distance / 100f, 0, 0.9f);
+                // 射出的箭忽略重力，从而能让女仆百发百中
+                entityArrow.setNoGravity(true);
+                entityArrow.shoot(x, y, z, velocity, inaccuracy);
                 mainHandItem.hurtAndBreak(1, shooter, EquipmentSlot.MAINHAND);
                 shooter.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (shooter.getRandom().nextFloat() * 0.4F + 0.8F));
                 shooter.level.addFreshEntity(entityArrow);
             }
         }
+    }
+
+    @Override
+    public boolean canSee(EntityMaid maid, LivingEntity target) {
+        return IRangedAttackTask.targetConditionsTest(maid, target, MaidConfig.BOW_RANGE);
+    }
+
+    @Override
+    public AABB searchDimension(EntityMaid maid) {
+        if (hasBow(maid)) {
+            float searchRange = this.searchRadius(maid);
+            if (maid.hasRestriction()) {
+                return new AABB(maid.getRestrictCenter()).inflate(searchRange);
+            } else {
+                return maid.getBoundingBox().inflate(searchRange);
+            }
+        }
+        return IRangedAttackTask.super.searchDimension(maid);
+    }
+
+    @Override
+    public float searchRadius(EntityMaid maid) {
+        return MaidConfig.BOW_RANGE.get();
     }
 
     @Override
@@ -163,6 +194,6 @@ public class TaskBowAttack implements IRangedAttackTask {
     }
 
     private boolean farAway(LivingEntity target, EntityMaid maid) {
-        return maid.distanceTo(target) > MAX_STOP_ATTACK_DISTANCE;
+        return maid.distanceTo(target) > this.searchRadius(maid);
     }
 }

@@ -1,9 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
+import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAttackStrafingTask;
+import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidCrossbowAttack;
+import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidRangedWalkToTarget;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
@@ -13,12 +15,14 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.behavior.*;
+import net.minecraft.world.entity.ai.behavior.BehaviorControl;
+import net.minecraft.world.entity.ai.behavior.StartAttacking;
+import net.minecraft.world.entity.ai.behavior.StopAttackingIfTargetInvalid;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +31,6 @@ import java.util.function.Predicate;
 
 public class TaskCrossBowAttack implements IRangedAttackTask {
     public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "crossbow_attack");
-    private static final int MAX_STOP_ATTACK_DISTANCE = 16;
 
     @Override
     public ResourceLocation getUid() {
@@ -47,11 +50,11 @@ public class TaskCrossBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(entityMaid -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid), IAttackTask::findFirstValidAttackTarget);
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(entityMaid -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid), IRangedAttackTask::findFirstValidAttackTarget);
         BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((target) -> !hasCrossBow(maid) || !hasAmmunition(maid) || farAway(target, maid));
-        BehaviorControl<Mob> moveToTargetTask = SetWalkTargetFromAttackTargetIfTargetOutOfReach.create(0.6f);
+        BehaviorControl<EntityMaid> moveToTargetTask = MaidRangedWalkToTarget.create(0.6f);
         BehaviorControl<EntityMaid> maidAttackStrafingTask = new MaidAttackStrafingTask();
-        BehaviorControl<EntityMaid> shootTargetTask = new CrossbowAttack<>();
+        BehaviorControl<EntityMaid> shootTargetTask = new MaidCrossbowAttack();
 
         return Lists.newArrayList(
                 Pair.of(5, supplementedTask),
@@ -64,15 +67,38 @@ public class TaskCrossBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createRideBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(entityMaid -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid), IAttackTask::findFirstValidAttackTarget);
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(entityMaid -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid), IRangedAttackTask::findFirstValidAttackTarget);
         BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((target) -> !hasCrossBow(maid) || !hasAmmunition(maid) || farAway(target, maid));
-        BehaviorControl<EntityMaid> shootTargetTask = new CrossbowAttack<>();
+        BehaviorControl<EntityMaid> shootTargetTask = new MaidCrossbowAttack();
 
         return Lists.newArrayList(
                 Pair.of(5, supplementedTask),
                 Pair.of(5, findTargetTask),
                 Pair.of(5, shootTargetTask)
         );
+    }
+
+    @Override
+    public boolean canSee(EntityMaid maid, LivingEntity target) {
+        return IRangedAttackTask.targetConditionsTest(maid, target, MaidConfig.CROSS_BOW_RANGE);
+    }
+
+    @Override
+    public AABB searchDimension(EntityMaid maid) {
+        if (hasCrossBow(maid)) {
+            float searchRange = this.searchRadius(maid);
+            if (maid.hasRestriction()) {
+                return new AABB(maid.getRestrictCenter()).inflate(searchRange);
+            } else {
+                return maid.getBoundingBox().inflate(searchRange);
+            }
+        }
+        return IRangedAttackTask.super.searchDimension(maid);
+    }
+
+    @Override
+    public float searchRadius(EntityMaid maid) {
+        return MaidConfig.CROSS_BOW_RANGE.get();
     }
 
     @Override
@@ -108,6 +134,6 @@ public class TaskCrossBowAttack implements IRangedAttackTask {
     }
 
     private boolean farAway(LivingEntity target, EntityMaid maid) {
-        return maid.distanceTo(target) > MAX_STOP_ATTACK_DISTANCE;
+        return maid.distanceTo(target) > this.searchRadius(maid);
     }
 }

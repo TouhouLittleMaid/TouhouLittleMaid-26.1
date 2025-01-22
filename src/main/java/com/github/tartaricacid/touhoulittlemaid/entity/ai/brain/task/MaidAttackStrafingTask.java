@@ -30,7 +30,6 @@ public class MaidAttackStrafingTask extends Behavior<EntityMaid> {
         return owner.getMainHandItem().getItem() instanceof ProjectileWeaponItem &&
                owner.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET)
                        .filter(Entity::isAlive)
-                       .filter(e -> owner.isWithinRestriction(e.blockPosition()))
                        .isPresent();
     }
 
@@ -45,7 +44,7 @@ public class MaidAttackStrafingTask extends Behavior<EntityMaid> {
             double distance = owner.distanceTo(target);
 
             // 如果在最大攻击距离之内，而且看见的时长足够长
-            if (distance < maxAttackDistance) {
+            if (distance < owner.searchRadius()) {
                 ++this.strafingTime;
             } else {
                 this.strafingTime = -1;

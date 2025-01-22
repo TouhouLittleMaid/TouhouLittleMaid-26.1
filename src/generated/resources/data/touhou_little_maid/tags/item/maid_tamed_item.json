@@ -1,0 +1,45 @@
+{
+  "values": [
+    "minecraft:cake",
+    {
+      "id": "#forge:cakes",
+      "required": false
+    },
+    {
+      "id": "#c:cakes",
+      "required": false
+    },
+    {
+      "id": "#jmc:cakes",
+      "required": false
+    },
+    {
+      "id": "kawaiidishes:cheese_cake",
+      "required": false
+    },
+    {
+      "id": "kawaiidishes:honey_cheese_cake",
+      "required": false
+    },
+    {
+      "id": "kawaiidishes:chocolate_cheese_cake",
+      "required": false
+    },
+    {
+      "id": "kawaiidishes:piece_of_cake",
+      "required": false
+    },
+    {
+      "id": "kawaiidishes:piece_of_cheesecake",
+      "required": false
+    },
+    {
+      "id": "kawaiidishes:piece_of_chocolate_cheesecake",
+      "required": false
+    },
+    {
+      "id": "kawaiidishes:piece_of_honey_cheesecake",
+      "required": false
+    }
+  ]
+}

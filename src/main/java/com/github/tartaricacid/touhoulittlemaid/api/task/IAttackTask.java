@@ -72,6 +72,29 @@ public interface IAttackTask extends IMaidTask {
         return DefaultMonsterType.canAttack(maid, target, monsterType);
     }
 
+    /**
+     * 是否拥有额外攻击方式，用于一些额外增伤的设计
+     * 比如女仆副手持有灭火器，会额外对下界生物造成二次伤害
+     *
+     * @param maid   女仆
+     * @param target 攻击目标
+     * @return 是否有额外攻击方式
+     */
+    default boolean hasExtraAttack(EntityMaid maid, Entity target) {
+        return false;
+    }
+
+    /**
+     * 执行额外伤害
+     *
+     * @param maid   女仆
+     * @param target 攻击目标
+     * @return 是否成功造成伤害
+     */
+    default boolean doExtraAttack(EntityMaid maid, Entity target) {
+        return false;
+    }
+
     @Override
     default MenuProvider getTaskConfigGuiProvider(EntityMaid maid) {
         final int entityId = maid.getId();
@@ -91,14 +114,6 @@ public interface IAttackTask extends IMaidTask {
                 return false;
             }
         };
-    }
-
-    default boolean hasExtraAttack(EntityMaid maid, Entity target) {
-        return false;
-    }
-
-    default boolean doExtraAttack(EntityMaid maid, Entity target) {
-        return false;
     }
 
     @Override

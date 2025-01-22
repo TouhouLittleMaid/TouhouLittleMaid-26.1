@@ -14,6 +14,7 @@ import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -21,6 +22,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public interface IMaidTask {
+    /**
+     * 垂直搜索范围
+     */
+    int VERTICAL_SEARCH_RANGE = 4;
+
     /**
      * 模式 ID，用于后续模式的判断，也用于本地化的 key
      *
@@ -181,5 +187,33 @@ public interface IMaidTask {
      */
     default MenuProvider getTaskInfoGuiProvider(EntityMaid maid) {
         return maid.getMaidBackpackType().getGuiProvider(maid.getId());
+    }
+
+    /**
+     * 实体搜索范围
+     * <p>
+     * 给一些远程攻击的武器提供另一些搜索范围，实现超远视距打击
+     *
+     * @param maid 女仆
+     * @return 实体搜索范围
+     */
+    default AABB searchDimension(EntityMaid maid) {
+        float radius = this.searchRadius(maid);
+        if (maid.hasRestriction()) {
+            return new AABB(maid.getRestrictCenter()).inflate(radius, VERTICAL_SEARCH_RANGE, radius);
+        } else {
+            return maid.getBoundingBox().inflate(radius, VERTICAL_SEARCH_RANGE, radius);
+        }
+    }
+
+    /**
+     * 实体搜索范围的水平范围值
+     *
+     * @param maid 女仆
+     * @return 实体搜索范围水平范围值
+     */
+    default float searchRadius(EntityMaid maid) {
+        // 默认依据女仆的工作范围划定搜索范围
+        return maid.getRestrictRadius();
     }
 }
