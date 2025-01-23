@@ -66,14 +66,6 @@ public class TileEntityCChess extends TileEntityJoy implements IBoardGameEntityB
         moveNumberLimit = data.getBoolean(MOVE_NUMBER_LIMIT);
     }
 
-    @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        super.onDataPacket(net, pkt, lookupProvider);
-        if (this.level != null) {
-            this.level.markAndNotifyBlock(this.getBlockPos(), level.getChunkAt(this.getBlockPos()), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL, 512);
-        }
-    }
-
     public void reset() {
         this.chessCounter = 0;
         this.selectChessPoint = 0;
