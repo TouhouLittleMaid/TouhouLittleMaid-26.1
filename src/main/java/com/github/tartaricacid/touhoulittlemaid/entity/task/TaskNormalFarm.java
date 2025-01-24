@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IFarmTask;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.mixin.CropBlockAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.HoeItem;
@@ -54,10 +55,17 @@ public class TaskNormalFarm implements IFarmTask {
             Block cropBlock = cropState.getBlock();
             maid.level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, cropPos, Block.getId(cropState));
 
-            if (cropBlock instanceof CropBlock crop) {
+            if (cropBlock instanceof CropBlockAccessor crop) {
                 BlockEntity blockEntity = cropState.hasBlockEntity() ? maid.level.getBlockEntity(cropPos) : null;
                 maid.dropResourcesToMaidInv(cropState, maid.level, cropPos, blockEntity, maid, maid.getMainHandItem());
-                maid.level.setBlock(cropPos, crop.defaultBlockState(), Block.UPDATE_ALL);
+                // 直接设置 Age 为 0
+                if (cropState.hasProperty(crop.tlmAgeProperty())) {
+                    try {
+                        cropState = cropState.trySetValue(crop.tlmAgeProperty(), 0);
+                    } catch (IllegalArgumentException ignore) {
+                    }
+                }
+                maid.level.setBlock(cropPos, cropState, Block.UPDATE_ALL);
                 maid.level.gameEvent(maid, GameEvent.BLOCK_CHANGE, cropPos);
                 return;
             }
