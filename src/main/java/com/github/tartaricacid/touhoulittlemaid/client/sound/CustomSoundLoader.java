@@ -163,8 +163,9 @@ public class CustomSoundLoader {
                     ByteBuffer bytebuffer = audioStream.readAll();
                     sounds.add(new SoundData(bytebuffer, audioStream.getFormat()));
                     LOGGER.debug(MARKER, "sound: {}", file.getName());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception ioe) {
+                    LOGGER.error(MARKER, "Error in load sound: {}", fileName);
+                    LOGGER.catching(ioe);
                 }
             }
         }
@@ -285,8 +286,9 @@ public class CustomSoundLoader {
                 ByteBuffer bytebuffer = audioStream.readAll();
                 sounds.add(new SoundData(bytebuffer, audioStream.getFormat()));
                 LOGGER.debug(MARKER, "sound: {}", fileName);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+            } catch (Exception ioe) {
+                LOGGER.error(MARKER, "Error in load sound: {}", fileName);
+                LOGGER.catching(ioe);
             }
         }
     }
