@@ -187,6 +187,9 @@ dependencies {
     // 单元测试
     testImplementation 'junit:junit:4.13.2'
 
+    // 拆分出来的基岩版模型加载库
+    implementation jarJar("libs:simplebedrockmodel:1.21.1-release-1.0.0")
+
     // JEI
     implementation "maven.modrinth:jei:${jei_version}"
     // REI
