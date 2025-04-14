@@ -1,5 +1,16 @@
+player2:
+  # 一个本地 app，下载地址 https://player2.game/
+  type: chat
+  # 目前仅支持这一种 api 类型
+  api_type: openai
+  url: http://127.0.0.1:4315/v1
+  api_key: empty
+  models:
+    - default
+
 openai:
   type: chat
+  api_type: openai
   url: https://api.openai.com/v1
   api_key:
   models:
@@ -13,6 +24,7 @@ openai:
 
 aliyun:
   type: chat
+  api_type: openai
   url: https://dashscope.aliyuncs.com/compatible-mode/v1
   api_key:
   models:
@@ -21,9 +33,20 @@ aliyun:
     - qwen-turbo
     - qwen-long
 
-fish-audio-cn:
+system:
+  # 系统 TTS，虽然质量很差很差，但是好在响应速度快，而且系统自带，无需配置
   type: tts
-  url: https://api.fish-audio.cn/v1
+  # 可以是 fish-audio 或者 system（调用系统 tts，只能自己听见了）
+  api_type: system
+  url: no_url
+  api_key: empty_key
+  models:
+    - default
+
+fish-audio:
+  type: tts
+  api_type: fish-audio
+  url: https://api.fish.audio/v1
   api_key:
   models:
     - b2b2d0fa88ee44d789da28ebbd97421e # Neuro-sama （英文）
@@ -36,9 +59,10 @@ fish-audio-cn:
     - ac7df666cedb48fda3820bf404691c88 # 朝比奈真冬（日文）
     - 0b808d6e6c4a47999e50ffbbc47172c3 # 姊崎宁宁（日文）
 
-fish-audio:
+fish-audio-cn:
   type: tts
-  url: https://api.fish.audio/v1
+  api_type: fish-audio
+  url: https://api.fish-audio.cn/v1
   api_key:
   models:
     - b2b2d0fa88ee44d789da28ebbd97421e # Neuro-sama （英文）

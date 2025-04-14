@@ -62,6 +62,7 @@ public class NetworkHandler {
         registrar.playToClient(OpenMaidAIDataScreenPackage.TYPE, OpenMaidAIDataScreenPackage.STREAM_CODEC, OpenMaidAIDataScreenPackage::handle);
         // 仅安装 YSM 后才会发送此包
         registrar.playToClient(SyncYsmMaidDataPackage.TYPE, SyncYsmMaidDataPackage.STREAM_CODEC, SyncYsmMaidDataPackage::handle);
+        registrar.playToClient(TTSSystemAudioToClientPackage.TYPE, TTSSystemAudioToClientPackage.STREAM_CODEC, TTSSystemAudioToClientPackage::handle);
     }
 
     public static void sendToNearby(Entity entity, CustomPacketPayload toSend) {
