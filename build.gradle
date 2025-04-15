@@ -8,9 +8,6 @@ plugins {
 
     // NeoForged 开发插件
     id 'net.neoforged.moddev' version '2.0.78'
-
-    // shadow 插件
-    id 'com.gradleup.shadow' version '8.3.6'
 }
 
 // ALL 为下载 gradle 源码，方便查看调试
@@ -161,7 +158,7 @@ sourceSets.main {
 configurations {
     runtimeClasspath.extendsFrom localRuntime
 
-    // 自定义一个 minecraftLibrary，方便引入需要 Shadow 的库
+    // 自定义一个 minecraftLibrary，方便引入需要 jarJar 的库
     mcLib
     implementation {
         extendsFrom mcLib
@@ -171,6 +168,8 @@ configurations {
     }
 }
 
+jarJar.setEnabled(true)
+
 dependencies {
     // MP3 音频解码库，暂时不需要
     // mcLib "com.googlecode.soundlibs:mp3spi:1.9.5.4"
@@ -178,17 +177,22 @@ dependencies {
     // mcLib "com.googlecode.soundlibs:tritonus-share:0.3.7.4"
 
     // Opus 音频解码库
-    mcLib "org.gagravarr:vorbis-java-core:0.8"
-    mcLib "io.github.jaredmdobson:concentus:1.0.2"
+    mcLib jarJar("org.gagravarr:vorbis-java-core:0.8")
+    mcLib jarJar("io.github.jaredmdobson:concentus:1.0.2")
 
     // YAML 库
-    mcLib "org.yaml:snakeyaml:2.4"
+    mcLib jarJar("org.yaml:snakeyaml:2.4")
 
     // 单元测试
     testImplementation 'junit:junit:4.13.2'
 
     // 拆分出来的基岩版模型加载库
-    implementation jarJar("libs:simplebedrockmodel:1.21.1-release-1.0.0")
+    implementation jarJar("libs:simplebedrockmodel-1.21.1-release:1.0.0") {
+        version {
+            strictly '[1.0.0,)'
+            prefer '1.0.0'
+        }
+    }
 
     // JEI
     implementation "maven.modrinth:jei:${jei_version}"
@@ -212,36 +216,6 @@ dependencies {
     implementation "maven.modrinth:sodium:mc1.21-0.6.0-beta.2-neoforge"
     implementation "maven.modrinth:iris:1.8.0-beta.5+1.21-neoforge"
     compileOnly "maven.modrinth:embeddium:1.0.11+mc1.21.1-neoforge"
-}
-
-shadowJar {
-    configurations = [project.configurations.mcLib]
-
-    // MP3 音频库 居然会把 junit 打包进去……
-    dependencies {
-        exclude(dependency('junit:junit'))
-    }
-
-    // 包重定向
-    // relocate 'javazoom.jl', 'com.github.tartaricacid.touhoulittlemaid.libs.jl'
-    // relocate 'javazoom.spi', 'com.github.tartaricacid.touhoulittlemaid.libs.spi'
-    // relocate 'org.tritonus', 'com.github.tartaricacid.touhoulittlemaid.libs.tritonus'
-    relocate 'io.github.jaredmdobson.concentus', 'com.github.tartaricacid.touhoulittlemaid.libs.concentus'
-    relocate 'org.gagravarr', 'com.github.tartaricacid.touhoulittlemaid.libs.gagravarr'
-    relocate 'org.yaml.snakeyaml', 'com.github.tartaricacid.touhoulittlemaid.libs.snakeyaml'
-
-    // 排除不需要的依赖项和资源
-    exclude 'META-INF/maven/**/*'
-    exclude 'META-INF/versions/**/*'
-    // 这个版权许可都已经手动添加进 licenses 里了
-    exclude 'META-INF/LICENSE'
-
-    mergeServiceFiles()
-    minimize()
-}
-
-assemble {
-    dependsOn shadowJar
 }
 
 tasks.compileJava {
@@ -273,7 +247,6 @@ tasks.withType(ProcessResources).configureEach {
 
 // 生成 manifest 内容，用于填充版本信息等内容
 jar {
-    enabled = false // 禁用默认的 jar 任务
     manifest {
         attributes([
                 "Implementation-Title"  : project.name,
