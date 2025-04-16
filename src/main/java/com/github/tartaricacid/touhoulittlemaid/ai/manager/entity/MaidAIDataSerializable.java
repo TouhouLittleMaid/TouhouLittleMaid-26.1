@@ -9,7 +9,7 @@ public class MaidAIDataSerializable {
     public static final StreamCodec<ByteBuf, MaidAIDataSerializable> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public void encode(ByteBuf buffer, MaidAIDataSerializable message) {
-            ByteBufCodecs.STRING_UTF8.encode(buffer, message.chatModel);
+            ByteBufCodecs.STRING_UTF8.encode(buffer, message.chatSiteName);
             ByteBufCodecs.STRING_UTF8.encode(buffer, message.chatModel);
             ByteBufCodecs.DOUBLE.encode(buffer, message.chatTemperature);
             ByteBufCodecs.STRING_UTF8.encode(buffer, message.ttsSiteName);

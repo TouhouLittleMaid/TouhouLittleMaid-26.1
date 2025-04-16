@@ -1,10 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.manager.setting;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Site {
@@ -15,19 +17,22 @@ public class Site {
     private static final String URL = "url";
     private static final String API_KEY = "api_key";
     private static final String MODELS = "models";
+    private static final String EXTRA_ARGS = "extra_args";
 
     private String type;
     private String apiType;
     private String url;
     private String apiKey;
     private List<String> models;
+    private Map<String, String> extraArgs;
 
-    public Site(String type, String apiType, String url, String apiKey, List<String> models) {
+    public Site(String type, String apiType, String url, String apiKey, List<String> models, Map<String, String> extraArgs) {
         this.type = type;
         this.apiType = apiType;
         this.url = url;
         this.apiKey = apiKey;
         this.models = models;
+        this.extraArgs = extraArgs;
     }
 
     @SuppressWarnings("unchecked")
@@ -37,6 +42,7 @@ public class Site {
         this.url = Objects.requireNonNullElse((String) map.get(URL), StringUtils.EMPTY);
         this.apiKey = Objects.requireNonNullElse((String) map.get(API_KEY), StringUtils.EMPTY);
         this.models = Objects.requireNonNullElse((List<String>) map.get(MODELS), Lists.newArrayList());
+        this.extraArgs = Objects.requireNonNullElse((Map<String, String>) map.get(EXTRA_ARGS), Maps.newHashMap());
     }
 
     public String getType() {
@@ -81,5 +87,9 @@ public class Site {
 
     public boolean isTts() {
         return TTS.equals(type);
+    }
+
+    public Map<String, String> getExtraArgs() {
+        return extraArgs;
     }
 }
