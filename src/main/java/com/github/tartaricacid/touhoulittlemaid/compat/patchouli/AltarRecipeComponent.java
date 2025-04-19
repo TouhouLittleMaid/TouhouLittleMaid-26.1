@@ -1,12 +1,15 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.patchouli;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
 import com.github.tartaricacid.touhoulittlemaid.init.InitRecipes;
 import com.google.common.collect.Lists;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
@@ -26,7 +29,7 @@ public class AltarRecipeComponent implements IComponentProcessor {
     private static final String OUTPUT_ENTITY = "output_entity";
     private static final String OUTPUT_DESC = "output_desc";
 
-    private AltarRecipe recipe;
+    private @Nullable AltarRecipe recipe;
 
     @SuppressWarnings("all")
     @Override
@@ -39,7 +42,9 @@ public class AltarRecipeComponent implements IComponentProcessor {
                 return;
             }
         }
-        throw new IllegalStateException("Altar recipe not found: " + recipeId);
+        this.recipe = new AltarRecipe("altar_recipe", CraftingBookCategory.MISC, NonNullList.of(Ingredient.EMPTY),
+                0, ItemStack.EMPTY, ResourceLocation.withDefaultNamespace("item"), "");
+        TouhouLittleMaid.LOGGER.error("Altar recipe not found: {}", recipeId);
     }
 
     @Nullable
