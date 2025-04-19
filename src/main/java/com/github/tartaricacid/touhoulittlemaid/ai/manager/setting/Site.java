@@ -24,9 +24,9 @@ public class Site {
     private String url;
     private String apiKey;
     private List<String> models;
-    private Map<String, String> extraArgs;
+    private Map<String, Object> extraArgs;
 
-    public Site(String type, String apiType, String url, String apiKey, List<String> models, Map<String, String> extraArgs) {
+    public Site(String type, String apiType, String url, String apiKey, List<String> models, Map<String, Object> extraArgs) {
         this.type = type;
         this.apiType = apiType;
         this.url = url;
@@ -42,7 +42,7 @@ public class Site {
         this.url = Objects.requireNonNullElse((String) map.get(URL), StringUtils.EMPTY);
         this.apiKey = Objects.requireNonNullElse((String) map.get(API_KEY), StringUtils.EMPTY);
         this.models = Objects.requireNonNullElse((List<String>) map.get(MODELS), Lists.newArrayList());
-        this.extraArgs = Objects.requireNonNullElse((Map<String, String>) map.get(EXTRA_ARGS), Maps.newHashMap());
+        this.extraArgs = Objects.requireNonNullElse((Map<String, Object>) map.get(EXTRA_ARGS), Maps.newHashMap());
     }
 
     public String getType() {
@@ -89,7 +89,7 @@ public class Site {
         return TTS.equals(type);
     }
 
-    public Map<String, String> getExtraArgs() {
+    public Map<String, Object> getExtraArgs() {
         return extraArgs;
     }
 }

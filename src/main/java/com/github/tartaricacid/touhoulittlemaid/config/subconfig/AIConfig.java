@@ -11,6 +11,8 @@ public class AIConfig {
     public static ModConfigSpec.BooleanValue TTS_ENABLED;
     public static ModConfigSpec.ConfigValue<String> TTS_LANGUAGE;
     public static ModConfigSpec.ConfigValue<String> TTS_PROXY_ADDRESS;
+    public static ModConfigSpec.ConfigValue<String> STT_URL;
+    public static ModConfigSpec.ConfigValue<String> STT_PROXY_ADDRESS;
     public static ModConfigSpec.IntValue MAID_MAX_HISTORY_CHAT_SIZE;
 
     public static void init(ModConfigSpec.Builder builder) {
@@ -36,6 +38,12 @@ public class AIConfig {
 
         builder.comment("TTS Proxy Address, such as 127.0.0.1:1080, empty is no proxy, SOCKS proxies are not supported");
         TTS_PROXY_ADDRESS = builder.define("TTSProxyAddress", "");
+
+        builder.comment("STT Url address, currently only the player2 app is supported");
+        STT_URL = builder.define("STTUrl", "http://127.0.0.1:4315/v1/stt");
+
+        builder.comment("STT Proxy Address, such as 127.0.0.1:1080, empty is no proxy, SOCKS proxies are not supported");
+        STT_PROXY_ADDRESS = builder.define("STTProxyAddress", "");
 
         builder.comment("The maximum historical conversation length cached by the maid").translation(translateKey("maid_max_history_chat_size"));
         MAID_MAX_HISTORY_CHAT_SIZE = builder.defineInRange("MaidMaxHistoryChatSize", 16, 1, 128);

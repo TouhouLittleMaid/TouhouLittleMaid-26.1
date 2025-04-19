@@ -15,9 +15,9 @@ public class BoneAnimationQueue {
     @Nullable
     public BoneAnimation animation;
 
-    public AnimationPointQueue rotationQueue = new AnimationPointQueue();
-    public AnimationPointQueue positionQueue = new AnimationPointQueue();
-    public AnimationPointQueue scaleQueue = new AnimationPointQueue();
+    public AnimationPoint rotation = null;
+    public AnimationPoint position = null;
+    public AnimationPoint scale = null;
 
     public BoneAnimationQueue(BoneTopLevelSnapshot snapshot) {
         topLevelSnapshot = snapshot;
@@ -28,26 +28,13 @@ public class BoneAnimationQueue {
         return controllerSnapshot;
     }
 
-    public AnimationPointQueue rotationQueue() {
-        return rotationQueue;
-    }
-
-    public AnimationPointQueue positionQueue() {
-        return positionQueue;
-    }
-
-    public AnimationPointQueue scaleQueue() {
-        return scaleQueue;
-    }
-
     public void updateSnapshot() {
         controllerSnapshot.copyFrom(topLevelSnapshot);
     }
 
-    // 链表重开比 clear() 快
     public void resetQueues() {
-        rotationQueue = new AnimationPointQueue();
-        positionQueue = new AnimationPointQueue();
-        scaleQueue = new AnimationPointQueue();
+        rotation = null;
+        position = null;
+        scale = null;
     }
 }

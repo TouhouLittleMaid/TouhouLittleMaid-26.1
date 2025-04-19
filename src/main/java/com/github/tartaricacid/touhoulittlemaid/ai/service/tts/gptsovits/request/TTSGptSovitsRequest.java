@@ -2,9 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.ai.service.tts.gptsovits.reques
 
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.Site;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSRequest;
+import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class TTSGptSovitsRequest implements TTSRequest {
     @SerializedName("text")
@@ -21,6 +24,9 @@ public class TTSGptSovitsRequest implements TTSRequest {
 
     @SerializedName("prompt_text")
     private String promptText;
+
+    @SerializedName("aux_ref_audio_paths")
+    private List<String> auxRefAudioPaths = Lists.newArrayList();
 
     @SerializedName("text_split_method")
     private String textSplitMethod;
@@ -39,18 +45,21 @@ public class TTSGptSovitsRequest implements TTSRequest {
     }
 
     public TTSGptSovitsRequest setSiteExtraArgs(Site site) {
-        Map<String, String> extraArgs = site.getExtraArgs();
+        Map<String, Object> extraArgs = site.getExtraArgs();
         if (extraArgs.containsKey("ref_audio_path")) {
-            this.refAudioPath = extraArgs.get("ref_audio_path");
+            this.refAudioPath = (String) extraArgs.get("ref_audio_path");
         }
         if (extraArgs.containsKey("prompt_lang")) {
-            this.promptLang = extraArgs.get("prompt_lang");
+            this.promptLang = (String) extraArgs.get("prompt_lang");
         }
         if (extraArgs.containsKey("prompt_text")) {
-            this.promptText = extraArgs.get("prompt_text");
+            this.promptText = (String) extraArgs.get("prompt_text");
         }
         if (extraArgs.containsKey("text_split_method")) {
-            this.textSplitMethod = extraArgs.get("text_split_method");
+            this.textSplitMethod = (String) extraArgs.get("text_split_method");
+        }
+        if (extraArgs.containsKey("aux_ref_audio_paths")) {
+            this.auxRefAudioPaths = Objects.requireNonNullElse((List<String>) site.getExtraArgs().get("aux_ref_audio_paths"), Lists.newArrayList());
         }
         return this;
     }

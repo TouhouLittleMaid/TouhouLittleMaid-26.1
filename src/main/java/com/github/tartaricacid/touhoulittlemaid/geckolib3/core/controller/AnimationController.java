@@ -40,6 +40,7 @@ public class AnimationController<T extends AnimatableEntity<?>> {
      * 动画控制器名称
      */
     private final String name;
+    private final boolean isParallelController;
     private final Object2ReferenceOpenHashMap<String, BoneAnimationQueue> boneAnimationQueues = new Object2ReferenceOpenHashMap<>();
     private final ReferenceArrayList<BoneAnimationQueue> activeBoneAnimationQueues = new ReferenceArrayList<>();
     private InstructionKeyFrameExecutor instructionKeyFrameExecutor;
@@ -94,6 +95,7 @@ public class AnimationController<T extends AnimatableEntity<?>> {
                                IAnimationPredicate<T> animationPredicate) {
         this.animatable = animatable;
         this.name = name;
+        this.isParallelController = name.startsWith("parallel_");
         this.transitionLengthTicks = transitionLengthTicks;
         this.animationPredicate = animationPredicate;
         this.tickOffset = 0.0d;
@@ -113,6 +115,7 @@ public class AnimationController<T extends AnimatableEntity<?>> {
                                IAnimationPredicate<T> animationPredicate) {
         this.animatable = animatable;
         this.name = name;
+        this.isParallelController = name.startsWith("parallel_");
         this.transitionLengthTicks = transitionLengthTicks;
         this.easingType = easingtype;
         this.animationPredicate = animationPredicate;
@@ -162,6 +165,10 @@ public class AnimationController<T extends AnimatableEntity<?>> {
      */
     public String getName() {
         return this.name;
+    }
+
+    public boolean isParallelController() {
+        return this.isParallelController;
     }
 
     /**
@@ -293,7 +300,7 @@ public class AnimationController<T extends AnimatableEntity<?>> {
                                         boneSnapshot.rotationValueY - initialSnapshot.rotationValueY,
                                         boneSnapshot.rotationValueZ - initialSnapshot.rotationValueZ),
                                 context);
-                        boneAnimationQueue.rotationQueue().add(point);
+                        boneAnimationQueue.rotation = point;
                     }
 
                     List<BoneKeyFrame> positionKeyFrames = boneAnimation.positionKeyFrames;
@@ -303,7 +310,7 @@ public class AnimationController<T extends AnimatableEntity<?>> {
                                         boneSnapshot.positionOffsetY,
                                         boneSnapshot.positionOffsetZ),
                                 context);
-                        boneAnimationQueue.positionQueue().add(point);
+                        boneAnimationQueue.position = point;
                     }
 
                     List<BoneKeyFrame> scaleKeyFrames = boneAnimation.scaleKeyFrames;
@@ -313,7 +320,7 @@ public class AnimationController<T extends AnimatableEntity<?>> {
                                         boneSnapshot.scaleValueY,
                                         boneSnapshot.scaleValueZ),
                                 context);
-                        boneAnimationQueue.scaleQueue().add(point);
+                        boneAnimationQueue.scale = point;
                     }
                 }
             }
@@ -366,17 +373,17 @@ public class AnimationController<T extends AnimatableEntity<?>> {
 
             List<BoneKeyFrame> rotationKeyFrames = boneAnimation.rotationKeyFrames;
             if (!rotationKeyFrames.isEmpty()) {
-                boneAnimationQueue.rotationQueue().add(getKeyFramePointAtTick(rotationKeyFrames, tick, context));
+                boneAnimationQueue.rotation = updateKeyFramePoint(boneAnimationQueue.rotation, rotationKeyFrames, tick, context);
             }
 
             List<BoneKeyFrame> positionKeyFrames = boneAnimation.positionKeyFrames;
             if (!positionKeyFrames.isEmpty()) {
-                boneAnimationQueue.positionQueue().add(getKeyFramePointAtTick(positionKeyFrames, tick, context));
+                boneAnimationQueue.position = updateKeyFramePoint(boneAnimationQueue.position, positionKeyFrames, tick, context);
             }
 
             List<BoneKeyFrame> scaleKeyFrames = boneAnimation.scaleKeyFrames;
             if (!scaleKeyFrames.isEmpty()) {
-                boneAnimationQueue.scaleQueue().add(getKeyFramePointAtTick(scaleKeyFrames, tick, context));
+                boneAnimationQueue.scale = updateKeyFramePoint(boneAnimationQueue.scale, scaleKeyFrames, tick, context);
             }
         }
 
@@ -447,23 +454,48 @@ public class AnimationController<T extends AnimatableEntity<?>> {
     }
 
     /**
-     * 返回当前关键帧播放进度
+     * 返回当前关键帧
+     * 通过 Upper Bound 查找以加速
      **/
-    private AnimationPoint getKeyFramePointAtTick(List<BoneKeyFrame> frames, double tick, AnimationControllerContext context) {
-        for (int i = 0; i < frames.size(); i++) {
-            if (frames.get(i).getStartTick() > tick) {
-                BoneKeyFrame frame = frames.get(i - 1);
-                return new KeyFramePoint(tick - frame.getStartTick(), frame, context);
+    private BoneKeyFrame getKeyFrameAtTick(List<BoneKeyFrame> frames, double tick) {
+        int low = 0;
+        int high = frames.size();
+
+        while (low < high) {
+            int mid = (low + high) >>> 1;
+            if (frames.get(mid).getStartTick() > tick) {
+                high = mid;
+            } else {
+                low = mid + 1;
             }
         }
-        BoneKeyFrame frame = frames.get(frames.size() - 1);
+
+        return low == 0 ? frames.get(0) : frames.get(low - 1);
+    }
+
+    /**
+     * 返回当前关键帧播放进度
+     **/
+    private AnimationPoint getKeyFramePointAtTick(BoneKeyFrame frame, double tick, AnimationControllerContext context) {
         return new KeyFramePoint(tick - frame.getStartTick(), frame, context);
+    }
+
+    private AnimationPoint updateKeyFramePoint(AnimationPoint animationPoint, List<BoneKeyFrame> frames, double tick, AnimationControllerContext context) {
+        if (animationPoint instanceof KeyFramePoint keyPoint) {
+            if (tick < keyPoint.keyframe.getStartTick() + keyPoint.keyframe.getTotalTick()) {
+                keyPoint.updateTick(tick - keyPoint.keyframe.getStartTick());
+                return keyPoint;
+            }
+        }
+        BoneKeyFrame frame = getKeyFrameAtTick(frames, tick);
+        return getKeyFramePointAtTick(frame, tick, context);
     }
 
     /**
      * 返回过渡进度
      **/
-    private TransitionPoint getTransitionPointAtTick(List<BoneKeyFrame> frames, double tick, Vector3f offsetPoint, AnimationControllerContext context) {
+    private TransitionPoint getTransitionPointAtTick(List<BoneKeyFrame> frames, double tick, Vector3f
+            offsetPoint, AnimationControllerContext context) {
         BoneKeyFrame dstFrame = frames.get(0);
         return new TransitionPoint(tick, this.transitionLengthTicks, offsetPoint, dstFrame, context);
     }

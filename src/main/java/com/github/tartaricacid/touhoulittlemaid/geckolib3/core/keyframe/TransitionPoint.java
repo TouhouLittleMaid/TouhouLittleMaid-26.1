@@ -9,6 +9,7 @@ import org.joml.Vector3f;
 public class TransitionPoint extends AnimationPoint {
     private final Vector3f offsetPoint;
     private final BoneKeyFrame dstKeyframe;
+    private Vector3f target;
 
     public TransitionPoint(double currentTick, double totalTick, Vector3f offsetPoint, BoneKeyFrame dstKeyframe, AnimationControllerContext context) {
         super(currentTick, totalTick, context);
@@ -17,8 +18,11 @@ public class TransitionPoint extends AnimationPoint {
     }
 
     @Override
-    public Vector3f getLerpPoint(ExpressionEvaluator<AnimationContext<?>> evaluator) {
+    public void getLerpPoint(ExpressionEvaluator<AnimationContext<?>> evaluator, Vector3f dest) {
         setupControllerContext(evaluator);
-        return dstKeyframe.getTransitionPoint(evaluator, offsetPoint, getPercentCompleted());
+        if (target == null) {
+            target = dstKeyframe.eval(evaluator);
+        }
+        offsetPoint.lerp(target, (float) getPercentCompleted(), dest);
     }
 }

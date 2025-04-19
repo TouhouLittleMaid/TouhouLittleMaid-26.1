@@ -69,27 +69,15 @@ gpt-sovits:
     prompt_lang: zh
     # 切句方式，一般不要变
     text_split_method: cut1
+    # 额外参考音频，应该能解决输出空白的问题
+    # 选填项目
+    aux_ref_audio_paths: [
+    ]
 
 fish-audio:
   type: tts
   api_type: fish-audio
   url: https://api.fish.audio/v1
-  api_key:
-  models:
-    - b2b2d0fa88ee44d789da28ebbd97421e # Neuro-sama （英文）
-    - 4858e0be678c4449bf3a7646186edd42 # 纳西妲（英文）
-    - 1aacaeb1b840436391b835fd5513f4c4 # 芙宁娜（中文）
-    - ec4875ed4e154ed09d1b501a2214579a # 雷电将军（中文）
-    - bcbb6d60721c44a489bc33dd59ce7cfc # 流萤（中文）
-    - bca87f0aa93f4e85aee1e132ca6bd254 # 日奈（日文）
-    - b85f3ec7e48b4abfaa723d95c1cdaff5 # 草薙宁宁（日文）
-    - ac7df666cedb48fda3820bf404691c88 # 朝比奈真冬（日文）
-    - 0b808d6e6c4a47999e50ffbbc47172c3 # 姊崎宁宁（日文）
-
-fish-audio-cn:
-  type: tts
-  api_type: fish-audio
-  url: https://api.fish-audio.cn/v1
   api_key:
   models:
     - b2b2d0fa88ee44d789da28ebbd97421e # Neuro-sama （英文）
