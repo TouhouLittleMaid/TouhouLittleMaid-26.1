@@ -19,6 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -205,6 +206,7 @@ public class BlockAltar extends Block implements EntityBlock {
             }
             this.getAltar(worldIn, storagePos).ifPresent(altar -> worldIn.setBlock(storagePos, altar.getStorageState(), Block.UPDATE_ALL));
         }
+        worldIn.playSound(null, currentPos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.5f, 1);
     }
 
     private void takeOutItem(Level world, TileEntityAltar altar, Player player) {
@@ -212,6 +214,7 @@ public class BlockAltar extends Block implements EntityBlock {
             if (!altar.handler.getStackInSlot(0).isEmpty()) {
                 ItemStack extractItem = altar.handler.extractItem(0, 1, false);
                 ItemHandlerHelper.giveItemToPlayer(player, extractItem);
+                world.playSound(null, altar.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, 1, 1);
                 altarCraft(world, altar, player);
             }
         }
@@ -223,6 +226,7 @@ public class BlockAltar extends Block implements EntityBlock {
             if (!playerIn.isCreative()) {
                 playerIn.getMainHandItem().shrink(1);
             }
+            world.playSound(null, altar.getBlockPos(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.PLAYERS, 1, 1);
             altarCraft(world, altar, playerIn);
         }
     }

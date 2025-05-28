@@ -27,14 +27,11 @@ public class DataGenerator {
         generator.addProvider(event.includeServer(), new AdvancementDataGen(pack, registries, existingFileHelper));
 
         // Loot Tables
-        generator.addProvider(event.includeServer(), new LootTableProvider(pack,
-                Set.of(
-                        LootTableGenerator.ADDITIONAL_LOOT_TABLE,
-                        LootTableGenerator.GIVE_SMART_SLAB
-                ),
+        generator.addProvider(event.includeServer(), new LootTableProvider(pack, Set.of(),
                 List.of(
                         new LootTableProvider.SubProviderEntry(LootTableGenerator.ChestLootTables::new, LootContextParamSets.CHEST),
                         new LootTableProvider.SubProviderEntry(LootTableGenerator.AdvancementLootTables::new, LootContextParamSets.ADVANCEMENT_REWARD),
+                        new LootTableProvider.SubProviderEntry(LootTableGenerator.EntityLootTables::new, LootContextParamSets.ENTITY),
                         new LootTableProvider.SubProviderEntry(LootTableGenerator.BlockLootTables::new, LootContextParamSets.BLOCK)
                 ),
                 new RegistryDataGenerator(event.getGenerator().getPackOutput(), event.getLookupProvider()).getRegistryProvider()));
@@ -58,5 +55,7 @@ public class DataGenerator {
         // Registry Based Stuff
         DatapackBuiltinEntriesProvider datapackProvider = new RegistryDataGenerator(pack, event.getLookupProvider());
         generator.addProvider(event.includeServer(), datapackProvider);
+
+        generator.addProvider(event.includeClient(), new ItemModelGenerator(pack, existingFileHelper));
     }
 }
