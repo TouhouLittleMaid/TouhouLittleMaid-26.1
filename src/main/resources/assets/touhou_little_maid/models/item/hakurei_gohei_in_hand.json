@@ -1,6 +1,5 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "hakurei_gohei",
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "touhou_little_maid:item/hakurei_gohei_in_hand",

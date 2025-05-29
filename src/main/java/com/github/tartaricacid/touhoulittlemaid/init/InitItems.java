@@ -89,5 +89,4 @@ public final class InitItems {
     public static DeferredItem<Item> ALL_NETHERITE_EQUIPMENT = ITEMS.register("all_netherite_equipment", ItemAdvancementIcon::new);
     public static DeferredItem<Item> KILL_WITHER = ITEMS.register("kill_wither", ItemAdvancementIcon::new);
     public static DeferredItem<Item> KILL_DRAGON = ITEMS.register("kill_dragon", ItemAdvancementIcon::new);
-    public static DeferredItem<Item> TACZ_GUN_ICON = ITEMS.register("tacz_gun_icon", ItemAdvancementIcon::new);
 }
