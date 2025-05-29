@@ -122,8 +122,8 @@ public class GlobalAIIntegration {
 
         builder.add(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled"), AIConfig.FUNCTION_CALL_ENABLED.get())
                 .setDefaultValue(false).setTooltip(
-                        Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled.tooltip.1"),
-                        Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled.tooltip.2")
+                        Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled.1.tooltip"),
+                        Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled.2.tooltip")
                 ).setSaveConsumer(s -> {
                     AIConfig.FUNCTION_CALL_ENABLED.set(s);
                     AIConfig.FUNCTION_CALL_ENABLED.save();

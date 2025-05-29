@@ -26,16 +26,26 @@ public class TextChatBubbleRenderer implements IChatBubbleRenderer {
 
     public TextChatBubbleRenderer(Component text, ResourceLocation bg, IChatBubbleRenderer.Position position) {
         this.font = Minecraft.getInstance().font;
-        int fontWidth = font.width(text);
         if (position == Position.CENTER) {
             this.split = font.split(text, MAX_CENTER_WIDTH);
-            this.width = Math.min(fontWidth, MAX_CENTER_WIDTH);
+            this.width = getMaxWidth(split);
         } else {
             this.split = font.split(text, MAX_WIDTH);
-            this.width = Math.min(fontWidth, MAX_WIDTH);
+            this.width = getMaxWidth(split);
         }
         this.height = split.size() * font.lineHeight;
         this.bg = bg;
+    }
+
+    private int getMaxWidth(List<FormattedCharSequence> split) {
+        int width = 0;
+        for (FormattedCharSequence sequence : split) {
+            int lineWidth = font.width(sequence);
+            if (lineWidth > width) {
+                width = lineWidth;
+            }
+        }
+        return width;
     }
 
     @Override
