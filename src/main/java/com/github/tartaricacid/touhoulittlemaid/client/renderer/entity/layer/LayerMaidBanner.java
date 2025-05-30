@@ -73,19 +73,23 @@ public class LayerMaidBanner extends RenderLayer<Mob, BedrockModel<Mob>> {
         }
     }
 
-
     private void renderPatterns(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
                                 BedrockPart banner, BannerPatternLayers patterns, DyeColor dyeColor) {
         banner.render(poseStack, ModelBakery.BANNER_BASE.buffer(bufferSource, RenderType::entitySolid, false),
                 packedLight, OverlayTexture.NO_OVERLAY);
+        renderPatternLayer(poseStack, bufferSource, packedLight, banner, Sheets.BANNER_BASE, dyeColor);
         for (int i = 0; i < 16 && i < patterns.layers().size(); ++i) {
             BannerPatternLayers.Layer layer = patterns.layers().get(i);
             Material material = Sheets.getBannerMaterial(layer.pattern());
-            int packedColor = dyeColor.getTextureDiffuseColor();
-            float red = FastColor.ABGR32.red(packedColor) / 255f;
-            float green = FastColor.ABGR32.green(packedColor) / 255f;
-            float blue = FastColor.ABGR32.blue(packedColor) / 255f;
-            banner.render(poseStack, material.buffer(bufferSource, RenderType::entityNoOutline), packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
+            renderPatternLayer(poseStack, bufferSource, packedLight, banner, material, layer.color());
         }
+    }
+
+    private void renderPatternLayer(PoseStack poseStack, MultiBufferSource buffer, int packedLight, BedrockPart banner, Material material, DyeColor color) {
+        int packedColor = color.getTextureDiffuseColor();
+        float red = FastColor.ARGB32.red(packedColor) / 255f;
+        float green = FastColor.ARGB32.green(packedColor) / 255f;
+        float blue = FastColor.ARGB32.blue(packedColor) / 255f;
+        banner.render(poseStack, material.buffer(buffer, RenderType::entityNoOutline), packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
     }
 }
