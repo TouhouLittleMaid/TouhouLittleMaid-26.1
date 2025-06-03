@@ -37,12 +37,12 @@ public class WaitingChatBubbleRenderer implements IChatBubbleRenderer {
 
     @Override
     public void render(EntityMaidRenderer renderer, EntityGraphics graphics) {
-        graphics.pose().pushPose();
+        graphics.getPoseStack().pushPose();
         float time = (Util.getMillis() % 3600);
-        graphics.pose().translate(8, 8, 0);
-        graphics.pose().mulPose(Axis.ZP.rotationDegrees(time));
+        graphics.getPoseStack().translate(8, 8, 0);
+        graphics.getPoseStack().mulPose(Axis.ZP.rotationDegrees(time));
         graphics.blit(this.icon, -8, -8, 0, 0, 16, 16, 16, 16);
-        graphics.pose().popPose();
+        graphics.getPoseStack().popPose();
         graphics.drawString(font, this.text, 18, (16 - font.lineHeight) / 2 + 1, 0x000000, false);
     }
 

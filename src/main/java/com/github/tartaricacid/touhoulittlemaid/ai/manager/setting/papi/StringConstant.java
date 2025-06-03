@@ -55,19 +55,19 @@ public class StringConstant {
 
     public static final String OUTPUT_FORMAT_REQUIREMENTS_DIFFERENT_LANGUAGES = """
             ## Output Format Requirements
-            - Replies can add some action descriptions (wrapped in **) and kaomoji as appropriate
+            - Replies should not contain narrative words describing actions or expressions.
             - The output should be two lines of text:
                 - The first line in ${chat_language}, if the previous prompt word is not in ${chat_language}, please also translate it into ${chat_language} and output it in this line
-                - The second line is the translation of the first line into ${tts_language}, but need to remove the behavior description and kaomoji
+                - The second line is the translation of the first line into ${tts_language}
                 - The two lines are split by ---
             """;
 
     public static final String OUTPUT_FORMAT_REQUIREMENTS_SAME_LANGUAGES = """
             ## Output Format Requirements
-            - Replies can add some action descriptions (wrapped in **) and kaomoji as appropriate
+            - Replies should not contain narrative words describing actions or expressions.
             - The output should be two lines of text:
                 - The first line in ${chat_language}, if the previous prompt word is not in ${chat_language}, please also translate it into ${chat_language} and output it in this line
-                - The second line is a copy of the first line, but need to remove the behavior description and kaomoji
+                - The second line is a copy of the first line
                 - The two lines are split by ---
             """;
 

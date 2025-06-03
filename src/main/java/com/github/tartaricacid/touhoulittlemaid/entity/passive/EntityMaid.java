@@ -1528,6 +1528,12 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     @Override
     protected Component getTypeName() {
+        // 优先事件系统
+        MaidTypeNameEvent typeNameEvent = new MaidTypeNameEvent(this);
+        NeoForge.EVENT_BUS.post(typeNameEvent);
+        if (typeNameEvent.getTypeName() != null) {
+            return typeNameEvent.getTypeName();
+        }
         // 优先使用 YSM 模型名称
         if (YsmCompat.isInstalled() && this.isYsmModel()) {
             Component name = this.getYsmModelName();

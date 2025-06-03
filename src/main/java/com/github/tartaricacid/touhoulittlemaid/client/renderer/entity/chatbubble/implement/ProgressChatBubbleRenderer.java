@@ -66,7 +66,7 @@ public class ProgressChatBubbleRenderer implements IChatBubbleRenderer {
         graphics.fill(0, y, this.width, y + barHeight, this.barBackgroundColor);
         if (this.progress > 0) {
             int barWidth = (int) ((this.width - 2 * margin) * this.progress);
-            graphics.pose().translate(0, 0, -0.01);
+            graphics.getPoseStack().translate(0, 0, -0.01);
             graphics.fill(margin, y + margin, barWidth, y + barHeight - margin, this.barForegroundColor);
         }
     }

@@ -22,7 +22,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntityRenderer
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -136,7 +135,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, BedrockModel<Mob>> {
                 poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
                 poseStack.mulPose(Axis.YP.rotationDegrees(180));
                 poseStack.scale(-0.025F, -0.025F, 0.025F);
-                EntityGraphics graphics = new EntityGraphics(Minecraft.getInstance(), poseStack, maidEntity, packedLightIn, partialTicks);
+                EntityGraphics graphics = new EntityGraphics(bufferIn, poseStack, maidEntity, packedLightIn, partialTicks);
                 this.chatBubbleRenderer2.render(graphics);
                 poseStack.popPose();
             }

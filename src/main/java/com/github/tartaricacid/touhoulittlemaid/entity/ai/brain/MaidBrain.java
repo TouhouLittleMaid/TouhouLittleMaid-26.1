@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain;
 
+import com.github.tartaricacid.touhoulittlemaid.api.entity.ai.IExtraMaidBrain;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.ride.MaidRideBegTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.*;
@@ -100,8 +101,10 @@ public final class MaidBrain {
         Pair<Integer, BehaviorControl<? super EntityMaid>> pickupItem = Pair.of(10, new MaidPickupEntitiesTask(EntityMaid::isPickup, 0.6f));
         Pair<Integer, BehaviorControl<? super EntityMaid>> clearSleep = Pair.of(99, new MaidClearSleepTask());
 
-        brain.addActivity(Activity.CORE, ImmutableList.of(swimJump, climb, breathAir, breathAirStop, look, maidPanic, maidAwait, interactWithDoor,
-                walkToTarget, followOwner, followOwnerVehicle, healSelf, pickupItem, clearSleep));
+        List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(swimJump, climb, breathAir, breathAirStop,
+                look, maidPanic, maidAwait, interactWithDoor, walkToTarget, followOwner, followOwnerVehicle, healSelf, pickupItem, clearSleep);
+        ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra -> behaviors.addAll(extra.getCoreBehaviors()));
+        brain.addActivity(Activity.CORE, ImmutableList.copyOf(behaviors));
     }
 
     private static void registerIdleGoals(Brain<EntityMaid> brain) {
@@ -111,7 +114,9 @@ public final class MaidBrain {
         Pair<Integer, BehaviorControl<? super EntityMaid>> supplemented = Pair.of(20, getLookAndRandomWalk(maid -> !maid.getSwimManager().isGoingToBreath()));
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
 
-        brain.addActivity(Activity.IDLE, ImmutableList.of(beg, homeMeal, joy, supplemented, updateActivity));
+        List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(beg, homeMeal, joy, supplemented, updateActivity);
+        ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra -> behaviors.addAll(extra.getIdleBehaviors()));
+        brain.addActivity(Activity.IDLE, ImmutableList.copyOf(behaviors));
     }
 
     private static void registerWorkGoals(Brain<EntityMaid> brain, EntityMaid maid) {
@@ -126,6 +131,10 @@ public final class MaidBrain {
         pairMaidList.add(Pair.of(6, new MaidBegTask()));
         pairMaidList.add(Pair.of(7, new MaidWorkMealTask()));
         pairMaidList.add(Pair.of(20, getLookAndRandomWalk(e -> e.getTask().enableLookAndRandomWalk(e) && !e.getSwimManager().isGoingToBreath())));
+
+        for (IExtraMaidBrain extra : ExtraMaidBrainManager.EXTRA_MAID_BRAINS) {
+            pairMaidList.addAll(extra.getWorkBehaviors());
+        }
         brain.addActivity(Activity.WORK, ImmutableList.copyOf(pairMaidList));
     }
 
@@ -134,14 +143,18 @@ public final class MaidBrain {
         Pair<Integer, BehaviorControl<? super EntityMaid>> supplemented = Pair.of(20, getLookAndRandomWalk(maid -> true));
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
 
-        brain.addActivity(Activity.REST, ImmutableList.of(bed, supplemented, updateActivity));
+        List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(bed, supplemented, updateActivity);
+        ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra -> behaviors.addAll(extra.getRestBehaviors()));
+        brain.addActivity(Activity.REST, ImmutableList.copyOf(behaviors));
     }
 
     private static void registerPanicGoals(Brain<EntityMaid> brain) {
         Pair<Integer, BehaviorControl<? super EntityMaid>> clearHurt = Pair.of(5, new MaidClearHurtTask());
         Pair<Integer, BehaviorControl<? super EntityMaid>> runAway = Pair.of(5, MaidRunAwayTask.entity(MemoryModuleType.NEAREST_HOSTILE, 0.7f, false));
 
-        brain.addActivity(Activity.PANIC, ImmutableList.of(clearHurt, runAway));
+        List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(clearHurt, runAway);
+        ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra -> behaviors.addAll(extra.getPanicBehaviors()));
+        brain.addActivity(Activity.PANIC, ImmutableList.copyOf(behaviors));
     }
 
     private static void registerRideIdleGoals(Brain<EntityMaid> brain) {
@@ -150,7 +163,9 @@ public final class MaidBrain {
         Pair<Integer, BehaviorControl<? super EntityMaid>> look = Pair.of(6, getLook(maid -> true));
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
 
-        brain.addActivity(InitEntities.RIDE_IDLE.get(), ImmutableList.of(beg, homeMeal, look, updateActivity));
+        List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(beg, homeMeal, look, updateActivity);
+        ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra -> behaviors.addAll(extra.getRideIdleBehaviors()));
+        brain.addActivity(InitEntities.RIDE_IDLE.get(), ImmutableList.copyOf(behaviors));
     }
 
     private static void registerRideWorkGoals(Brain<EntityMaid> brain, EntityMaid maid) {
@@ -165,12 +180,18 @@ public final class MaidBrain {
         pairMaidList.add(Pair.of(6, new MaidRideBegTask()));
         pairMaidList.add(Pair.of(7, new MaidWorkMealTask()));
         pairMaidList.add(Pair.of(20, getLook(e -> e.getTask().enableLookAndRandomWalk(e))));
+
+        for (IExtraMaidBrain extra : ExtraMaidBrainManager.EXTRA_MAID_BRAINS) {
+            pairMaidList.addAll(extra.getRideWorkBehaviors());
+        }
         brain.addActivity(InitEntities.RIDE_WORK.get(), ImmutableList.copyOf(pairMaidList));
     }
 
     private static void registerRideRestGoals(Brain<EntityMaid> brain) {
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
-        brain.addActivity(InitEntities.RIDE_REST.get(), ImmutableList.of(updateActivity));
+        List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(updateActivity);
+        ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra -> behaviors.addAll(extra.getRideRestBehaviors()));
+        brain.addActivity(InitEntities.RIDE_REST.get(), ImmutableList.copyOf(behaviors));
     }
 
     private static MaidRunOne getLookAndRandomWalk(Predicate<EntityMaid> enableCondition) {

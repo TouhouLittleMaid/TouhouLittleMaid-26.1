@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMai
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleDataCollection;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import net.minecraft.resources.ResourceLocation;
@@ -73,31 +72,31 @@ public class ChatBubbleRenderer {
         int bgWidth = width + 2 * offset;
         int bgHeight = height + 2 * offset;
 
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, -y, 0);
+        graphics.getPoseStack().pushPose();
+        graphics.getPoseStack().translate(0, -y, 0);
         RenderSystem.enableDepthTest();
 
         if (position == IChatBubbleRenderer.Position.LEFT) {
-            GuiTools.blitNineSliced(graphics, texture, -marginX - bgWidth, -bgHeight, bgWidth, bgHeight, 8, 8, 48, 24, 0, 0);
-            graphics.pose().translate(0, 0, -0.01);
+            graphics.blitNineSliced(texture, -marginX - bgWidth, -bgHeight, bgWidth, bgHeight, 8, 8, 48, 24, 0, 0);
+            graphics.getPoseStack().translate(0, 0, -0.01);
             graphics.blit(texture, -marginX - 8, -8, 32, 24, 16, 16);
-            graphics.pose().translate(-marginX - bgWidth + offset, -bgHeight + offset, -0.01);
+            graphics.getPoseStack().translate(-marginX - bgWidth + offset, -bgHeight + offset, -0.01);
             chatBubble.render(renderer, graphics);
         } else if (position == IChatBubbleRenderer.Position.RIGHT) {
-            GuiTools.blitNineSliced(graphics, texture, marginX, -bgHeight, bgWidth, bgHeight, 8, 8, 48, 24, 0, 0);
-            graphics.pose().translate(0, 0, -0.01);
+            graphics.blitNineSliced(texture, marginX, -bgHeight, bgWidth, bgHeight, 8, 8, 48, 24, 0, 0);
+            graphics.getPoseStack().translate(0, 0, -0.01);
             graphics.blit(texture, marginX - 8, -8, 0, 24, 16, 16);
-            graphics.pose().translate(offset + marginX, -bgHeight + offset, -0.01);
+            graphics.getPoseStack().translate(offset + marginX, -bgHeight + offset, -0.01);
             chatBubble.render(renderer, graphics);
         } else if (position == IChatBubbleRenderer.Position.CENTER) {
-            GuiTools.blitNineSliced(graphics, texture, -bgWidth / 2, -bgHeight, bgWidth, bgHeight, 8, 8, 48, 24, 0, 0);
-            graphics.pose().translate(0, 0, -0.01);
+            graphics.blitNineSliced(texture, -bgWidth / 2, -bgHeight, bgWidth, bgHeight, 8, 8, 48, 24, 0, 0);
+            graphics.getPoseStack().translate(0, 0, -0.01);
             graphics.blit(texture, -8, -8, 16, 24, 16, 16);
-            graphics.pose().translate(-bgWidth / 2d + offset, -bgHeight + offset, -0.01);
+            graphics.getPoseStack().translate(-bgWidth / 2d + offset, -bgHeight + offset, -0.01);
             chatBubble.render(renderer, graphics);
         }
 
-        graphics.pose().popPose();
+        graphics.getPoseStack().popPose();
     }
 
     private boolean isOdd(int number) {

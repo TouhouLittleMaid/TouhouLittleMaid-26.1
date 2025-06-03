@@ -1,4 +1,4 @@
-package com.github.tartaricacid.touhoulittlemaid.mclib.utils;
+package com.github.tartaricacid.touhoulittlemaid.geckolib3.util;
 
 
 public class Interpolations {

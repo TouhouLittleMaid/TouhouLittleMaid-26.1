@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.builtin.math;
 
-import com.github.tartaricacid.touhoulittlemaid.mclib.utils.Interpolations;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.Interpolations;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
 
