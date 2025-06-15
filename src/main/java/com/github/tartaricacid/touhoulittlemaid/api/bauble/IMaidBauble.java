@@ -23,6 +23,7 @@ public interface IMaidBauble {
      *
      * @return chat bubble id
      */
+    @Deprecated
     default String getChatBubbleId() {
         return StringUtils.EMPTY;
     }

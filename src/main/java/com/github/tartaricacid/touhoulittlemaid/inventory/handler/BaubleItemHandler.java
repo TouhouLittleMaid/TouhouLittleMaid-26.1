@@ -9,7 +9,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.stream.IntStream;
 
 public class BaubleItemHandler extends ItemStackHandler {
@@ -136,11 +136,11 @@ public class BaubleItemHandler extends ItemStackHandler {
         IntStream.range(0, getSlots()).forEach(this::onContentsChanged);
     }
 
-    public boolean fireEvent(BiFunction<IMaidBauble, ItemStack, Boolean> function) {
+    public boolean fireEvent(BiPredicate<IMaidBauble, ItemStack> function) {
         for (int i = 0; i < getSlots(); i++) {
             ItemStack stack = getStackInSlot(i);
             IMaidBauble bauble = getBaubleInSlot(i);
-            if (!stack.isEmpty() && bauble != null && function.apply(bauble, stack)) {
+            if (!stack.isEmpty() && bauble != null && function.test(bauble, stack)) {
                 return true;
             }
         }

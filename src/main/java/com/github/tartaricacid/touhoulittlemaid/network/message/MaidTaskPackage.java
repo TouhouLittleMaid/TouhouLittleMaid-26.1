@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
+import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTaskEnableEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.TabIndex;
@@ -14,6 +15,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -40,6 +42,9 @@ public record MaidTaskPackage(int id, ResourceLocation uid) implements CustomPac
                 Entity entity = sender.level.getEntity(message.id);
                 if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
                     IMaidTask task = TaskManager.findTask(message.uid).orElse(TaskManager.getIdleTask());
+                    if (task != TaskManager.getIdleTask() && NeoForge.EVENT_BUS.post(new MaidTaskEnableEvent(task, maid)).isCanceled()) {
+                        return;
+                    }
                     if (!task.isEnable(maid)) {
                         return;
                     }

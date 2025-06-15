@@ -25,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public interface IAttackTask extends IMaidTask {
-    static String MAID_NO_ATTACK_TAG = "MaidNoAttack";
+    String MAID_NO_ATTACK_TAG = "MaidNoAttack";
 
     /**
      * 寻找合适的第一个攻击目标

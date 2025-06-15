@@ -9,9 +9,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -83,6 +85,10 @@ public final class ItemsUtil {
         return findStackSlot(handler, filter) >= 0;
     }
 
+    public static boolean isStackIn(EntityMaid maid, Predicate<ItemStack> filter) {
+        return findStackSlot(maid.getAvailableInv(false), filter) >= 0;
+    }
+
     /**
      * 获取符合 filter 添加的 ItemStack
      *
@@ -95,6 +101,10 @@ public final class ItemsUtil {
         } else {
             return ItemStack.EMPTY;
         }
+    }
+
+    public static ItemStack getStack(EntityMaid maid, Predicate<ItemStack> filter) {
+        return getStack(maid.getAvailableInv(false), filter);
     }
 
     /**
@@ -130,5 +140,14 @@ public final class ItemsUtil {
         ResourceLocation resourceLocation = ResourceLocation.parse(itemId);
         Item value = BuiltInRegistries.ITEM.get(resourceLocation);
         return new ItemStack(value);
+    }
+
+    public static void giveItemToMaid(EntityMaid maid, ItemStack itemStack) {
+        IItemHandler inv = maid.getAvailableInv(false);
+        ItemStack stack = ItemHandlerHelper.insertItemStacked(inv, itemStack, false);
+        if (!stack.isEmpty()) {
+            ItemEntity itemEntity = new ItemEntity(maid.level(), maid.getX(), maid.getY() + 0.5, maid.getZ(), stack);
+            maid.level.addFreshEntity(itemEntity);
+        }
     }
 }

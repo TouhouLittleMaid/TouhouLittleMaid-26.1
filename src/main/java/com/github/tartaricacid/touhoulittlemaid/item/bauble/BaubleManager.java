@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.item.bauble;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
+import com.github.tartaricacid.touhoulittlemaid.compat.kubejs.ModKubeJSCompat;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -40,6 +41,7 @@ public final class BaubleManager {
         for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
             littleMaid.bindMaidBauble(manager);
         }
+        ModKubeJSCompat.maidBaubleInit(manager);
         BAUBLES = ImmutableMap.copyOf(BAUBLES);
     }
 

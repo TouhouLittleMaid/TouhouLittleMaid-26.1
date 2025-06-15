@@ -56,19 +56,29 @@ public class StringConstant {
     public static final String OUTPUT_FORMAT_REQUIREMENTS_DIFFERENT_LANGUAGES = """
             ## Output Format Requirements
             - Replies should not contain narrative words describing actions or expressions.
-            - The output should be two lines of text:
-                - The first line in ${chat_language}, if the previous prompt word is not in ${chat_language}, please also translate it into ${chat_language} and output it in this line
-                - The second line is the translation of the first line into ${tts_language}
-                - The two lines are split by ---
+            - The output should be two parts of text:
+                - The first part in ${chat_language}, if the previous prompt word is not in ${chat_language}, please also translate it into ${chat_language} and output it in this part
+                - The second part is the translation of the first part into ${tts_language}
+                - The two parts are split by ---
+            
+            ## Output Example:
+            part1 in ${chat_language} language
+            ---
+            part2 in ${tts_language} language
             """;
 
     public static final String OUTPUT_FORMAT_REQUIREMENTS_SAME_LANGUAGES = """
             ## Output Format Requirements
             - Replies should not contain narrative words describing actions or expressions.
-            - The output should be two lines of text:
-                - The first line in ${chat_language}, if the previous prompt word is not in ${chat_language}, please also translate it into ${chat_language} and output it in this line
-                - The second line is a copy of the first line
-                - The two lines are split by ---
+            - The output should be two parts of text:
+                - The first part in ${chat_language}, if the previous prompt word is not in ${chat_language}, please also translate it into ${chat_language} and output it in this part
+                - The second part is a copy of the first part
+                - The two parts are split by ---
+            
+            ## Output Example:
+            part1 in ${chat_language} language
+            ---
+            part2 in ${chat_language} language
             """;
 
     public static final String AUTO_GEN_SETTING = """

@@ -43,14 +43,14 @@ public class ClientSetupEvent {
     }
 
     @SubscribeEvent
-    public static void RegisterGuiLayers(RegisterGuiLayersEvent event) {
+    public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(CROSSHAIR, getResourceLocation("tlm_maid_tips"), new MaidTipsOverlay());
         event.registerAbove(CROSSHAIR, getResourceLocation("tlm_broom_tips"), new BroomTipsOverlay());
         event.registerAbove(HOTBAR, getResourceLocation("tlm_show_power"), new ShowPowerOverlay());
     }
 
     @SubscribeEvent
-    public static void onClientSetup(RegisterKeyMappingsEvent event) {
+    public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(STTChatKey.STT_CHAT_KEY);
     }
 

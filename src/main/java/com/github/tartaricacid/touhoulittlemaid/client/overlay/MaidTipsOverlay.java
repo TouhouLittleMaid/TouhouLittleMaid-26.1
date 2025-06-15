@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.overlay;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.compat.kubejs.ModKubeJSCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -37,6 +38,12 @@ public class MaidTipsOverlay implements LayeredDraw.Layer {
     private static Map<Item, ModConfigSpec.BooleanValue> TIPS_CONFIG = Maps.newHashMap();
     private static Map<CheckCondition, MutableComponent> SPECIAL_TIPS = Maps.newHashMap();
 
+    public MaidTipsOverlay() {
+        TIPS = Maps.newHashMap();
+        TIPS_CONFIG = Maps.newHashMap();
+        SPECIAL_TIPS = Maps.newHashMap();
+    }
+
     public static void init() {
         MaidTipsOverlay overlay = new MaidTipsOverlay();
 
@@ -56,6 +63,7 @@ public class MaidTipsOverlay implements LayeredDraw.Layer {
         for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
             littleMaid.addMaidTips(overlay);
         }
+        ModKubeJSCompat.maidTipsOverlayInit(overlay);
 
         TIPS = ImmutableMap.copyOf(TIPS);
         TIPS_CONFIG = ImmutableMap.copyOf(TIPS_CONFIG);

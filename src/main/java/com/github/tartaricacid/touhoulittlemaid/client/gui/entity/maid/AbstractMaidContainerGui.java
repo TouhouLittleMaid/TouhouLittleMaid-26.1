@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
+import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTaskEnableEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidContainerGuiEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
@@ -325,34 +326,42 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     private void drawPerTaskButton(List<IMaidTask> tasks, int count, int index) {
         final IMaidTask maidTask = tasks.get(index);
-        boolean enable = maidTask.isEnable(maid);
-        TaskButton button = new TaskButton(maidTask, enable, leftPos - 89, topPos + 23 + 19 * count,
+
+        boolean[] enable = {true};
+        List<Pair<String, Predicate<EntityMaid>>> enableConditionDesc = Lists.newArrayList();
+        if (maidTask != TaskManager.getIdleTask()) {
+            if (NeoForge.EVENT_BUS.post(new MaidTaskEnableEvent(maidTask, maid, enableConditionDesc)).isCanceled()) {
+                // 如果事件系统管控了启用条件
+                enable[0] = false;
+            } else if (!maidTask.isEnable(maid)) {
+                // 如果 task 里的条件也不启用
+                enableConditionDesc.addAll(maidTask.getEnableConditionDesc(maid));
+                enable[0] = false;
+            }
+        }
+
+        TaskButton button = new TaskButton(maidTask, enable[0], leftPos - 89, topPos + 23 + 19 * count,
                 83, 19, 93, 28, 20, TASK, 256, 256,
-                (b) -> {
-                    if (enable) {
-                        taskButtonPressed(maidTask, true);
-                    }
-                },
-                getTaskTooltips(maidTask), Component.empty());
+                b -> taskButtonPressed(maidTask, enable[0]),
+                getTaskTooltips(maidTask, enable[0], enableConditionDesc), Component.empty());
         this.addRenderableWidget(button);
         button.visible = TASK_LIST_OPEN;
     }
 
     // 用于开放切换任务时对当前 GUI 的操作
     protected void taskButtonPressed(IMaidTask maidTask, boolean enable) {
-        if (maid != null) {
+        if (enable && maid != null) {
             maid.setTask(maidTask);
             PacketDistributor.sendToServer(new MaidTaskPackage(maid.getId(), maidTask.getUid()));
         }
     }
 
-    private List<Component> getTaskTooltips(IMaidTask maidTask) {
+    private List<Component> getTaskTooltips(IMaidTask maidTask, boolean enable, List<Pair<String, Predicate<EntityMaid>>> enableConditionDesc) {
         List<Component> desc = ParseI18n.keysToTrans(maidTask.getDescription(maid), ChatFormatting.GRAY);
         if (!desc.isEmpty()) {
             desc.addFirst(Component.translatable("task.touhou_little_maid.desc.title").withStyle(ChatFormatting.GOLD));
         }
-        if (!maidTask.isEnable(maid)) {
-            List<Pair<String, Predicate<EntityMaid>>> enableConditionDesc = maidTask.getEnableConditionDesc(maid);
+        if (!enable) {
             // 强制显示启用条件提示
             desc.add(Component.literal(" "));
             desc.add(Component.translatable("task.touhou_little_maid.desc.enable_condition").withStyle(ChatFormatting.GOLD));

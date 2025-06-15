@@ -73,7 +73,8 @@ public class AltarRecipe extends ShapelessRecipe {
             return;
         }
 
-        type.spawn(world, pos, MobSpawnType.STRUCTURE);
+        // 生成类型为 EVENT 也许更合适
+        type.spawn(world, pos, MobSpawnType.EVENT);
     }
 
     private void rebornMaid(ServerLevel world, BlockPos pos, @Nullable List<ItemStack> list) {

@@ -338,11 +338,15 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     public static AttributeSupplier.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
+                // 目前仅用于寻路，女仆最大可寻路 64 格
                 .add(Attributes.FOLLOW_RANGE, 64)
                 .add(Attributes.ATTACK_KNOCKBACK)
                 .add(Attributes.ATTACK_DAMAGE)
                 .add(Attributes.SWEEPING_DAMAGE_RATIO)
-                .add(Attributes.LUCK);
+                // 目前仅用于寻路，女仆最大可寻路 64 格
+                .add(Attributes.LUCK)
+                // 用于女仆近战的范围判断
+                .add(Attributes.ENTITY_INTERACTION_RANGE, 2);
     }
 
     public static boolean canInsertItem(ItemStack stack) {
@@ -641,6 +645,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
                         InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.TAMED_MAID_FROM_STRUCTURE);
                     }
                 }
+                // 触发事件
+                NeoForge.EVENT_BUS.post(new MaidTamedEvent(this, player, isNtr));
                 return InteractionResult.SUCCESS;
             }
         } else {
@@ -851,7 +857,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     @Override
     public boolean isWithinMeleeAttackRange(LivingEntity target) {
-        int attackDistance = this.favorabilityManager.getAttackDistanceByPoint(this.getFavorability());
+        int attackPlusDistance = this.favorabilityManager.getAttackDistancePlusByPoint(this.getFavorability());
+        double attackDistance = this.getAttributeValue(Attributes.ENTITY_INTERACTION_RANGE) + attackPlusDistance;
         return this.distanceTo(target) < attackDistance;
     }
 

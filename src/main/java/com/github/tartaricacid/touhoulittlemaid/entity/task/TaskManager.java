@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.task;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
+import com.github.tartaricacid.touhoulittlemaid.compat.kubejs.ModKubeJSCompat;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -19,7 +20,9 @@ public final class TaskManager {
     private static IMaidTask IDLE_TASK;
 
     private TaskManager() {
-        IDLE_TASK = new TaskIdle();
+        if (IDLE_TASK == null) {
+            IDLE_TASK = new TaskIdle();
+        }
         TASK_MAP = Maps.newHashMap();
         TASK_INDEX = Lists.newArrayList();
     }
@@ -51,6 +54,7 @@ public final class TaskManager {
         for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
             littleMaid.addMaidTask(manager);
         }
+        ModKubeJSCompat.maidTaskInit(manager);
         TASK_MAP = ImmutableMap.copyOf(TASK_MAP);
         TASK_INDEX = ImmutableList.copyOf(TASK_INDEX);
     }
