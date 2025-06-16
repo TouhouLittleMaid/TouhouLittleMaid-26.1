@@ -56,17 +56,31 @@ public final class GetJarResources {
             return;
         }
         URI uri = url.toURI();
-        try (Stream<Path> stream = Files.walk(Paths.get(uri), Integer.MAX_VALUE)) {
+        Path sourceFolderPath = Paths.get(uri);
+        try (Stream<Path> stream = Files.walk(sourceFolderPath, Integer.MAX_VALUE)) {
             stream.forEach(source -> {
-                Path target = targetPath.resolve(uri.relativize(source.toUri()).toString());
+                // 尝试对 kilt 的兼容修改，感谢 B 站用户：shiroha233
+                // 使用相对路径计算，避免URI转换产生的非法字符
+                Path relativePath = sourceFolderPath.relativize(source);
+                // 将 JAR 文件系统的相对路径转换为字符串，然后让目标文件系统重新解析
+                // 这样避免了不同文件系统 Provider 之间的冲突
+                String relativePathString = relativePath.toString().replace('\\', '/');
+                Path target = targetPath.resolve(relativePathString);
                 try {
                     if (Files.isDirectory(source)) {
                         Files.createDirectories(target);
                     } else {
+                        // 确保目标目录存在
+                        Path parentDir = target.getParent();
+                        if (parentDir != null && !Files.isDirectory(parentDir)) {
+                            Files.createDirectories(parentDir);
+                        }
                         Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
                     }
                 } catch (IOException e) {
-                    TouhouLittleMaid.LOGGER.error(e.getMessage());
+                    TouhouLittleMaid.LOGGER.error("Failed to copy file from {} to target: {}", source, e.getMessage());
+                } catch (Exception e) {
+                    TouhouLittleMaid.LOGGER.error("Unexpected error during file copy: {}", e.getMessage());
                 }
             });
         }
