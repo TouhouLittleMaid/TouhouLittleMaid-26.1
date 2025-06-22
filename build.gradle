@@ -7,7 +7,7 @@ plugins {
     id 'idea'
 
     // NeoForged 开发插件
-    id 'net.neoforged.moddev' version '2.0.78'
+    id 'net.neoforged.moddev' version '2.0.95'
 }
 
 // ALL 为下载 gradle 源码，方便查看调试
@@ -29,6 +29,9 @@ repositories {
     maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
     }
     maven {
         url "https://maven.shedaniel.me/"
@@ -156,12 +159,10 @@ neoForge {
     }
 
     mods {
-        // define mod <-> source bindings
-        // these are used to tell the game which sources are for which mod
-        // mostly optional in a single mod project
-        // but multi mod projects should define one per mod
+        // 定义 mod <-> 源码的绑定关系，用于告知游戏每个 mod 对应哪些源码
+        // 单 mod 项目通常可省略，多 mod 项目应为每个 mod 单独定义
         "${mod_id}" {
-            sourceSet(sourceSets.main)
+            sourceSet sourceSets.main
         }
     }
 }
@@ -212,18 +213,18 @@ dependencies {
     }
 
     // JEI
-    implementation "maven.modrinth:jei:${jei_version}"
+    implementation "maven.modrinth:jei:19.7.0.92-neoforge"
     // REI
-    compileOnly "maven.modrinth:architectury-api:${architectury_api_version}"
-    compileOnly "maven.modrinth:rei:${rei_version}"
+    compileOnly "maven.modrinth:architectury-api:13.0.6+neoforge"
+    compileOnly "maven.modrinth:rei:16.0.744+neoforge"
     // EMI
-    compileOnly "maven.modrinth:emi:${emi_version}"
-    implementation "maven.modrinth:jade:${jade_version}"
-    compileOnly "maven.modrinth:the-one-probe:${top_version}"
-    implementation "maven.modrinth:cloth-config:${cloth_config_version}"
-    implementation "maven.modrinth:iron-chests:${iron_chests_version}"
-    implementation "maven.modrinth:carry-on:${carry_on_version}"
-    implementation "maven.modrinth:patchouli:${patchouli_version}"
+    compileOnly "maven.modrinth:emi:1.1.10+1.21+neoforge"
+    implementation "maven.modrinth:jade:15.0.5+neoforge"
+    compileOnly "maven.modrinth:the-one-probe:1.21_neo-12.0.3"
+    implementation "maven.modrinth:cloth-config:15.0.128+neoforge"
+    implementation "maven.modrinth:iron-chests:1.21-neoforge-16.0.7"
+    implementation "maven.modrinth:carry-on:2.2.1-neoforge"
+    implementation "maven.modrinth:patchouli:1.21-87-neoforge"
     // IPN
     runtimeOnly "maven.modrinth:kotlin-for-forge:5.4.0"
     runtimeOnly "maven.modrinth:libipn:neoforge-1.21-6.0.2"
@@ -240,9 +241,9 @@ dependencies {
     compileOnly "maven.modrinth:iris:1.8.0-beta.5+1.21-neoforge"
     implementation "maven.modrinth:embeddium:1.0.11+mc1.21.1-neoforge"
 
-    runtimeOnly "curse.maven:placebo-283644:6446766"
-    runtimeOnly "curse.maven:hostile-neural-networks-552574:6430289"
-    runtimeOnly "maven.modrinth:camerapture:1.10.1+mc1.21.1-neoforge"
+    // runtimeOnly "curse.maven:placebo-283644:6446766"
+    // runtimeOnly "curse.maven:hostile-neural-networks-552574:6430289"
+    // runtimeOnly "maven.modrinth:camerapture:1.10.1+mc1.21.1-neoforge"
 }
 
 tasks.compileJava {
