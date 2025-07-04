@@ -16,7 +16,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -67,15 +66,6 @@ public class BedrockModel<T extends LivingEntity> extends AbstractBedrockEntityM
             }
         }
     }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        for (BedrockPart model : shouldRender) {
-            model.render(poseStack, buffer, packedLight, packedOverlay);
-        }
-    }
-
 
     @SuppressWarnings("unchecked")
     private void setupMaidAnim(IMaid entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, Invocable invocable) {
