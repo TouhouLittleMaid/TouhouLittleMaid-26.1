@@ -1697,14 +1697,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return false;
     }
 
-    /**
-     * 女仆不能被栓绳拴住
-     */
-    @Override
-    public boolean canHaveALeashAttachedToIt() {
-        return false;
-    }
-
     public boolean canPathReach(BlockPos pos) {
         Path path = this.getNavigation().createPath(pos, 0);
         return path != null && path.canReach();

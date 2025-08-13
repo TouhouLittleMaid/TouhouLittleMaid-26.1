@@ -3,7 +3,9 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBed;
+import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -12,9 +14,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.phys.AABB;
 
 import java.util.function.Function;
 
@@ -56,5 +60,11 @@ public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntity
     @Override
     public boolean shouldRenderOffScreen(TileEntityMaidBed pBlockEntity) {
         return true;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(TileEntityMaidBed blockEntity) {
+        BlockPos pos = blockEntity.getBlockPos();
+        return RenderHelper.getAABB(pos.offset(-2, 0, -2), pos.offset(2, 1, 2));
     }
 }
