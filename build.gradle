@@ -18,9 +18,17 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.ALL
 }
 
+// 需要 Java 21 版本
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
 // 模组相关信息
 version = mod_version
 group = mod_group_id
+
+// 打包成 jar 时的名称
+base {
+    archivesName = 'touhoulittlemaid'
+}
 
 // 需要的前置库
 repositories {
@@ -105,14 +113,6 @@ repositories {
     }
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
 }
-
-// 打包成 jar 时的名称
-base {
-    archivesName = 'touhoulittlemaid-' + minecraft_version + '-release'
-}
-
-// 需要 Java 21 版本
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 neoForge {
     // NeoForge 版本信息

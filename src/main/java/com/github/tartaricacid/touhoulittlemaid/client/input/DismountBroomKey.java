@@ -42,6 +42,7 @@ public class DismountBroomKey {
         }
     }
 
+    @SuppressWarnings("removal")
     private static boolean keyIsMatch(InputEvent.Key event) {
         return DISMOUNT_KEY.matches(event.getKey(), event.getScanCode())
                 && DISMOUNT_KEY.getKeyModifier().equals(KeyModifier.getActiveModifier());

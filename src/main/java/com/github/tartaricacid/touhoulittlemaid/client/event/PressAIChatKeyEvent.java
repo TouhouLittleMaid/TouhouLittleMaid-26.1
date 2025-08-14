@@ -32,6 +32,7 @@ public class PressAIChatKeyEvent {
         }
     }
 
+    @SuppressWarnings("removal")
     private static boolean keyIsMatch(InputEvent.Key event) {
         KeyMapping keyChat = Minecraft.getInstance().options.keyChat;
         return event.getAction() == GLFW.GLFW_PRESS
