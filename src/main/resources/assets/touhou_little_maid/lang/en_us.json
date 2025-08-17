@@ -495,7 +495,6 @@
   "pack.touhou_little_maid.legacy_resources_pack.title": "TLM Legacy Pack",
   "pack.touhou_little_maid.legacy_resources_pack.desc": "Touhou Little Maid Legacy Resource Pack",
   "chat_bubble.touhou_little_maid.inner.feed_animal.max_number": "So many animals...\nI can't feed them all!",
-  "chat_bubble.touhou_little_maid.inner.farm.too_many_item_entities": "So many item entities...\nI can only suspend planting and harvesting!",
   "chat_bubble.touhou_little_maid.inner.home_meal.two_hand_is_full": "My hands were full of items...\nI couldn't eat!",
   "chat_bubble.touhou_little_maid.inner.home_meal.meal_is_empty": "Hurry up, Hurry up.\nI don't have anything to eat!",
   "chat_bubble.touhou_little_maid.inner.fishing.no_sit": "I have to sit on a chair or boat to fish!",
