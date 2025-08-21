@@ -286,6 +286,12 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     public int roamingVarsUpdateFlag = 0;
     public Object2FloatOpenHashMap<String> roamingVars = new Object2FloatOpenHashMap<>();
 
+    /**
+     * 用于方便特殊动画播放的变量，目前仅支持捡雪球
+     */
+    public int animationId = 0;
+    public long animationRecordTime = -1L;
+
     private List<SendEffectPackage.EffectData> effects = Lists.newArrayList();
     private IMaidTask task = TaskManager.getIdleTask();
     private IMaidBackpack backpack = BackpackManager.getEmptyBackpack();
@@ -612,8 +618,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             InteractMaidEvent event = new InteractMaidEvent(playerIn, this, stack);
             // 利用短路原理，逐个触发对应的交互事件
             if (NeoForge.EVENT_BUS.post(event).isCanceled()
-                    || stack.interactLivingEntity(playerIn, this, hand).consumesAction()
-                    || openMaidGui(playerIn)) {
+                || stack.interactLivingEntity(playerIn, this, hand).consumesAction()
+                || openMaidGui(playerIn)) {
                 return InteractionResult.SUCCESS;
             }
         } else {
@@ -802,7 +808,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stackInSlot = handler.getStackInSlot(i);
             if (!stackInSlot.isEmpty() && getEnchantmentLevel(access, Enchantments.MENDING, stackInSlot) > 0
-                    && stackInSlot.isDamaged() && !stackInSlot.is(TagItem.MAID_MENDING_BLOCKLIST_ITEM)) {
+                && stackInSlot.isDamaged() && !stackInSlot.is(TagItem.MAID_MENDING_BLOCKLIST_ITEM)) {
                 stacks.add(stackInSlot);
             }
         }
@@ -1442,6 +1448,14 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             // 胶片
             ItemStack filmItem = ItemFilm.maidToFilm(this);
             tombstone.insertItem(filmItem);
+
+            // 事件触发，既可以阻断墓碑生成，也可以修改墓碑内容
+            MaidTombstoneEvent tombstoneEvent = new MaidTombstoneEvent(this, tombstone);
+            if (NeoForge.EVENT_BUS.post(tombstoneEvent).isCanceled()) {
+                // 如果事件被取消了，那么就不生成墓碑了
+                return;
+            }
+
             // 全局记录
             MaidWorldData maidWorldData = MaidWorldData.get(level);
             if (maidWorldData != null) {
