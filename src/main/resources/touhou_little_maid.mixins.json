@@ -12,6 +12,7 @@
     "FishingHookPredicateMixin",
     "MixinCrossbowItem",
     "NavigationMixin",
+    "ParrotMixin",
     "PersistentEntitySectionManagerMixin",
     "PlayerMixin",
     "StructureTemplateMixin",
