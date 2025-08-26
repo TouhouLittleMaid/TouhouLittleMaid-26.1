@@ -48,6 +48,10 @@ public final class MaidConfig {
     public static ModConfigSpec.ConfigValue<List<String>> MAID_HEAL_MEALS_BLOCK_LIST_REGEX;
     public static ModConfigSpec.ConfigValue<List<List<String>>> MAID_EATEN_RETURN_CONTAINER_LIST;
 
+    public static ModConfigSpec.IntValue MAID_GUN_LONG_DISTANCE;
+    public static ModConfigSpec.IntValue MAID_GUN_MEDIUM_DISTANCE;
+    public static ModConfigSpec.IntValue MAID_GUN_NEAR_DISTANCE;
+
     public static void init(ModConfigSpec.Builder builder) {
         builder.translation(TRANSLATE_KEY).push("maid");
 
@@ -159,6 +163,15 @@ public final class MaidConfig {
         builder.comment("These entries configure the container returned after a maid has eaten", "Eg: [\"minecraft:beetroot_soup\", \"minecraft:bowl\"]")
                 .translation(translateKey("maid_eaten_return_container_list"));
         MAID_EATEN_RETURN_CONTAINER_LIST = builder.define("MaidEatenReturnContainerList", Lists.newArrayList());
+
+        builder.comment("Recognition distance of a maid under the gun task, Suitable for sniper rifles");
+        MAID_GUN_LONG_DISTANCE = builder.defineInRange("MaidGunLongDistance", 64, 0, 512);
+
+        builder.comment("Recognition distance of a maid under the gun task, Suitable for most types");
+        MAID_GUN_MEDIUM_DISTANCE = builder.defineInRange("MaidGunMediumDistance", 48, 0, 512);
+
+        builder.comment("Recognition distance of a maid under the gun task, Suitable for pistols and shotguns");
+        MAID_GUN_NEAR_DISTANCE = builder.defineInRange("MaidGunNearDistance", 32, 0, 512);
 
         builder.pop();
     }

@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition.*;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
+import com.github.tartaricacid.touhoulittlemaid.compat.tacz.TacCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public final class AnimationManager {
     private static AnimationManager MANAGER;
@@ -93,7 +95,8 @@ public final class AnimationManager {
                 if (state.getPredicate().test(maid, event)) {
                     String animationName = state.getAnimationName();
                     ILoopType loopType = state.getLoopType();
-                    return playAnimation(event, animationName, loopType);
+                    PlayState gunMainAnimation = TacCompat.playGunMainAnimation(maid, event, animationName, loopType);
+                    return Objects.requireNonNullElseGet(gunMainAnimation, () -> playAnimation(event, animationName, loopType));
                 }
             }
         }
@@ -137,6 +140,10 @@ public final class AnimationManager {
         }
         if (!maid.asEntity().swinging && !maid.asEntity().isUsingItem()) {
             ItemStack mainHandItem = maid.asEntity().getItemInHand(InteractionHand.MAIN_HAND);
+            PlayState gunHoldAnimation = TacCompat.playGunHoldAnimation(mainHandItem, event);
+            if (gunHoldAnimation != null) {
+                return gunHoldAnimation;
+            }
             if (mainHandItem.is(Items.CROSSBOW) && CrossbowItem.isCharged(mainHandItem)) {
                 return playAnimation(event, "hold_mainhand:charged_crossbow", ILoopType.EDefaultLoopTypes.LOOP);
             }

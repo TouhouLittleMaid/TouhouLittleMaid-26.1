@@ -13,6 +13,7 @@ public class ConditionManager {
     public static Map<ResourceLocation, ConditionalUse> USE_OFFHAND = Maps.newHashMap();
     public static Map<ResourceLocation, ConditionalHold> HOLD_MAINHAND = Maps.newHashMap();
     public static Map<ResourceLocation, ConditionalHold> HOLD_OFFHAND = Maps.newHashMap();
+    public static Map<ResourceLocation, ConditionTAC> TAC = Maps.newHashMap();
     public static Map<ResourceLocation, ConditionArmor> ARMOR = Maps.newHashMap();
     public static Map<ResourceLocation, ConditionalVehicle> VEHICLE = Maps.newHashMap();
     public static Map<ResourceLocation, ConditionalPassenger> PASSENGER = Maps.newHashMap();
@@ -25,6 +26,7 @@ public class ConditionManager {
         USE_OFFHAND.computeIfAbsent(id, k -> new ConditionalUse(InteractionHand.OFF_HAND)).addTest(name);
         HOLD_MAINHAND.computeIfAbsent(id, k -> new ConditionalHold(InteractionHand.MAIN_HAND)).addTest(name);
         HOLD_OFFHAND.computeIfAbsent(id, k -> new ConditionalHold(InteractionHand.OFF_HAND)).addTest(name);
+        TAC.computeIfAbsent(id, k -> new ConditionTAC()).addTest(name);
         ARMOR.computeIfAbsent(id, k -> new ConditionArmor()).addTest(name);
         VEHICLE.computeIfAbsent(id, k -> new ConditionalVehicle()).addTest(name);
         PASSENGER.computeIfAbsent(id, k -> new ConditionalPassenger()).addTest(name);
@@ -38,6 +40,7 @@ public class ConditionManager {
         USE_OFFHAND.clear();
         HOLD_MAINHAND.clear();
         HOLD_OFFHAND.clear();
+        TAC.clear();
         ARMOR.clear();
         VEHICLE.clear();
         PASSENGER.clear();
@@ -70,6 +73,10 @@ public class ConditionManager {
 
     public static ConditionArmor getArmor(ResourceLocation id) {
         return ARMOR.get(id);
+    }
+
+    public static ConditionTAC getTAC(ResourceLocation id) {
+        return TAC.get(id);
     }
 
     public static ConditionalVehicle getVehicle(ResourceLocation id) {
