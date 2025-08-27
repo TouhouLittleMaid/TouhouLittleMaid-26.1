@@ -210,6 +210,8 @@ dependencies {
     // 单元测试
     testImplementation 'junit:junit:4.13.2'
 
+    compileOnly "libs:patpat:1.2.1+1.21.1"
+
     // JEI
     implementation "maven.modrinth:jei:19.21.0.247-neoforge"
 
