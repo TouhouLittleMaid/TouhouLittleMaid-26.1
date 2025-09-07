@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.compat.carryon.RenderFixer;
-import com.github.tartaricacid.touhoulittlemaid.compat.tacz.TacCompat;
+import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -56,7 +56,7 @@ public class LayerMaidBackItem extends RenderLayer<Mob, BedrockModel<Mob>> {
             return;
         }
 
-        // TAC 兼容
-        TacCompat.renderBackGun(matrixStack, bufferIn, packedLightIn, stack, maid);
+        // 枪械额外渲染兼容
+        GunClientUtil.renderBackGun(matrixStack, bufferIn, packedLightIn, stack, maid);
     }
 }

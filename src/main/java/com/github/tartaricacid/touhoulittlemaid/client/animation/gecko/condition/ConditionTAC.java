@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition;
 
-import com.github.tartaricacid.touhoulittlemaid.compat.tacz.TacCompat;
+import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunCommonUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +34,7 @@ public class ConditionTAC {
         if (itemInHand.isEmpty()) {
             return EMPTY;
         }
-        ResourceLocation gunId = TacCompat.getGunId(itemInHand);
+        ResourceLocation gunId = GunCommonUtil.getGunId(itemInHand);
         if (gunId == null) {
             return EMPTY;
         }

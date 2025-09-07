@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.compat.carryon.RenderFixer;
-import com.github.tartaricacid.touhoulittlemaid.compat.tacz.TacCompat;
+import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.ItemInHandRenderer;
@@ -50,7 +50,7 @@ public class LayerMaidHeldItem extends RenderLayer<Mob, BedrockModel<Mob>> {
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 poseStack.translate((isLeft ? -1 : 1) / 16.0, 0.125, -0.525);
             }
-            TacCompat.addItemTranslate(poseStack, itemStack, isLeft);
+            GunClientUtil.addItemTranslate(poseStack, itemStack, isLeft);
             this.itemInHandRenderer.renderItem(maid, itemStack, transformTypeIn, isLeft, poseStack, typeBuffer, combinedLightIn);
             poseStack.popPose();
         }

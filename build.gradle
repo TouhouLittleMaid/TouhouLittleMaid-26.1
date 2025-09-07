@@ -113,6 +113,14 @@ repositories {
             includeGroup "dev.engine-room.flywheel"
         }
     }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
 }
 
@@ -258,6 +266,11 @@ dependencies {
         exclude group: 'mezz.jei'
         exclude group: 'maven.modrinth'
     }
+
+    // 卓越前线
+    runtimeOnly "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5"
+    runtimeOnly "top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1"
+    implementation "libs:superbwarfare-1.21.1:0.8.7.1"
 
     // 目前无法在开发环境使用，会崩
     compileOnly "maven.modrinth:immersive-melodies:0.6.2+1.21.1-neoforge"
