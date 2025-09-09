@@ -19,6 +19,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.YsmMaidClientTickEvent;
+import com.github.tartaricacid.touhoulittlemaid.config.ServerConfig;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
@@ -60,6 +61,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.SyncYsmMaidDataP
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
+import com.github.tartaricacid.touhoulittlemaid.world.backups.MaidBackupsManager;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Dynamic;
@@ -75,8 +77,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -511,6 +512,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
                 return false;
             });
         }
+
         if (YsmCompat.isInstalled() && this.isYsmModel()) {
             if (level.isClientSide) {
                 // 触发 ysm 模型的客户端事件
@@ -521,6 +523,16 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
                 this.rouletteAnimDirty = false;
                 SyncYsmMaidDataPackage message = new SyncYsmMaidDataPackage(this.getId(), this.rouletteAnim, this.rouletteAnimPlaying, this.roamingVars);
                 PacketDistributor.sendToPlayersTrackingEntity(this, message);
+            }
+        }
+
+        // 女仆备份机制
+        if (ServerConfig.MAID_BACKUP_ENABLE.get()) {
+            int saveIntervalTick = ServerConfig.MAID_BACKUP_INTERVAL_SECONDS.get() * 20;
+            // 通过哈希计算出一个随机值，这样做可以避免所有实体都在同一 tick 进行保存
+            int checkTick = Math.abs(this.getUUID().hashCode()) % saveIntervalTick;
+            if (this.level.getGameTime() % saveIntervalTick == checkTick && this.level instanceof ServerLevel serverLevel) {
+                MaidBackupsManager.save(serverLevel.getServer(), this);
             }
         }
     }
@@ -1029,6 +1041,27 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             this.removeAllEffects();
             // 最后父类方法
             super.die(cause);
+            // 额外发送女仆所处坐标
+            this.sendMaidPos();
+        }
+    }
+
+    private void sendMaidPos() {
+        if (this.dead && !this.level.isClientSide
+            && this.level.getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES)
+            && this.getOwner() instanceof ServerPlayer serverPlayer) {
+            // 支持旅行地图格式
+            // [name:"name", x:-136, y:36, z:48, dim:minecraft:the_nether]
+            BlockPos blockPos = this.blockPosition();
+            String name = ResourceLocation.parse(this.getModelId()).getPath();
+            String msg = """
+                    [name:"%s", x:%d, y:%d, z:%d, dim:%s]""".formatted(
+                    name,
+                    blockPos.getX(), blockPos.getY(), blockPos.getZ(),
+                    this.level.dimension().location().toString()
+            );
+            OutgoingChatMessage message = OutgoingChatMessage.create(PlayerChatMessage.system(msg));
+            serverPlayer.sendChatMessage(message, false, ChatType.bind(ChatType.CHAT, serverPlayer));
         }
     }
 
