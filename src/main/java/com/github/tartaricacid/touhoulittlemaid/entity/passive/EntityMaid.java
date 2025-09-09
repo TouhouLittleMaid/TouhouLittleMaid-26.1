@@ -888,11 +888,27 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     @Override
     public boolean doHurtTarget(Entity target) {
+        MaidHurtTarget.Pre event = new MaidHurtTarget.Pre(this, target);
+        if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
+            return true;
+        }
+
         boolean result = super.doHurtTarget(target);
         if (result) {
-            doSweepHurt(target);
+            // 尝试使用横扫之刃
+            this.doSweepHurt(target);
+            // 调用 hurtEnemy 来实现耐久消耗和部分其他功能
+            ItemStack mainHandItem = this.getMainHandItem();
+            Item item = mainHandItem.getItem();
+            if (target instanceof LivingEntity livingEntity && item.hurtEnemy(mainHandItem, livingEntity, this)) {
+                item.postHurtEnemy(mainHandItem, livingEntity, this);
+            }
         }
-        this.getMainHandItem().hurtAndBreak(1, this, EquipmentSlot.MAINHAND);
+
+        MaidHurtTarget.Post postEvent = new MaidHurtTarget.Post(this, target, result);
+        NeoForge.EVENT_BUS.post(postEvent);
+
+        // 部分 task 有额外伤害
         if (this.getTask() instanceof IAttackTask attackTask && attackTask.hasExtraAttack(this, target)) {
             boolean extraResult = attackTask.doExtraAttack(this, target);
             return result && extraResult;
