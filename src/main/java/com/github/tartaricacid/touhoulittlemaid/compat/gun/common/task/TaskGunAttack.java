@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 
 public class TaskGunAttack implements IRangedAttackTask {
     public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "gun_attack");
-    public static final ItemStack ICON = InitItems.TACZ_GUN_ICON.get().getDefaultInstance();
+    private static ItemStack ICON;
 
     @Override
     public ResourceLocation getUid() {
@@ -39,6 +39,9 @@ public class TaskGunAttack implements IRangedAttackTask {
 
     @Override
     public ItemStack getIcon() {
+        if (ICON == null) {
+            ICON = InitItems.TACZ_GUN_ICON.get().getDefaultInstance();
+        }
         return ICON;
     }
 
