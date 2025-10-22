@@ -60,16 +60,21 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private static final ResourceLocation SIDE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_side.png");
     private static final ResourceLocation BUTTON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_button.png");
     private static final ResourceLocation TASK = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_task.png");
+
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("00");
+
     private static final int TASK_COUNT_PER_PAGE = 12;
     private static int TASK_PAGE = 0;
     private static boolean TASK_LIST_OPEN = false;
+
     protected final EntityMaid maid;
     protected final IMaidTask task;
+
     /**
      * 事件系统添加的额外按钮
      */
     private final Map<String, AbstractWidget> eventAddButtons = Maps.newHashMap();
+
     private TouhouStateSwitchButton home;
     private TouhouStateSwitchButton pick;
     private TouhouStateSwitchButton ride;
@@ -83,6 +88,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private TouhouImageButton taskSwitch;
     private MaidDownloadButton modelDownload;
     private ScheduleButton<T> scheduleButton;
+
     private int counterTime = 0;
 
     public AbstractMaidContainerGui(T screenContainer, Inventory inv, Component titleIn) {
@@ -231,6 +237,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     @Override
     protected void renderTooltip(GuiGraphics graphics, int x, int y) {
+        graphics.pose().pushPose();
         super.renderTooltip(graphics, x, y);
         renderTransTooltip(home, graphics, x, y, "gui.touhou_little_maid.button.home");
         renderTransTooltip(pick, graphics, x, y, "gui.touhou_little_maid.button.pickup");
@@ -250,6 +257,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         renderScheduleInfo(graphics, x, y);
         renderTaskButtonInfo(graphics, x, y);
         modelDownload.renderExtraTips(graphics);
+        graphics.pose().popPose();
     }
 
     // 渲染额外的 Tooltip
@@ -311,7 +319,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         }
     }
 
-    private  void taskPageDown() {
+    private void taskPageDown() {
         List<IMaidTask> tasks = TaskManager.getTaskIndex();
         if (TASK_PAGE * TASK_COUNT_PER_PAGE + TASK_COUNT_PER_PAGE < tasks.size()) {
             TASK_PAGE++;

@@ -13,7 +13,6 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
@@ -117,13 +116,7 @@ public final class ItemsUtil {
      */
     public static int getBaubleSlotInMaid(EntityMaid maid, IMaidBauble bauble) {
         BaubleItemHandler handler = maid.getMaidBauble();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            IMaidBauble baubleIn = handler.getBaubleInSlot(i);
-            if (baubleIn == bauble) {
-                return i;
-            }
-        }
-        return -1;
+        return handler.getBaubleSlot(bauble);
     }
 
     /**
@@ -158,10 +151,9 @@ public final class ItemsUtil {
      * 判断玩家主背包（包括快捷栏）能否插入物品
      *
      * @param player 要检查的玩家
-     *
      * @return 如果背包已满返回true，否则返回false
      */
-    public static boolean canItemInsert(Player player,ItemStack testStack) {
+    public static boolean canItemInsert(Player player, ItemStack testStack) {
         // 获取玩家主背包的物品处理器（与giveItemToPlayer使用相同的包装器）
         IItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());
 
