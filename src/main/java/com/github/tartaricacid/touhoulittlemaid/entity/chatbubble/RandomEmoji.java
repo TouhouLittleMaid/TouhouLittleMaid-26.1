@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble;
 
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidDamageEvent;
+import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.datapack.KaomojiData;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement.EmojiChatBubbleData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -11,14 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 
 @EventBusSubscriber
 public final class RandomEmoji {
-    /**
-     * 检测间隔，60 秒
-     */
-    private static final int CHECK_RATE = 60 * 20;
-
     static void tick(EntityMaid maid) {
-        long offset = maid.getUUID().getLeastSignificantBits() % CHECK_RATE;
-        if ((maid.tickCount + offset) % CHECK_RATE != 0) {
+        if (!MaidConfig.ENABLE_EMOJI.get()) {
+            return;
+        }
+        int checkRate = MaidConfig.EMOJI_CHECK_RATE.get();
+        long offset = maid.getUUID().getLeastSignificantBits() % checkRate;
+        if ((maid.tickCount + offset) % checkRate != 0) {
             return;
         }
         ChatBubbleManager bubbleManager = maid.getChatBubbleManager();
@@ -26,8 +26,12 @@ public final class RandomEmoji {
         if (!empty) {
             return;
         }
-        // 有 1/2 概率显示图片表情，1/2 概率显示文字表情
-        if (maid.getRandom().nextBoolean()) {
+        // 依据权重随机选择表情包类型
+        int imageWeight = MaidConfig.IMAGE_EMOJI_WEIGHT.get();
+        int kaomojiWeight = MaidConfig.KAOMOJI_EMOJI_WEIGHT.get();
+        int totalWeight = imageWeight + kaomojiWeight;
+        int randomWeight = maid.getRandom().nextInt(totalWeight);
+        if (randomWeight < imageWeight) {
             bubbleManager.addChatBubble(EmojiChatBubbleData.create());
         } else {
             KaomojiData.showRoutineKaomoji(maid, bubbleManager);
@@ -36,6 +40,9 @@ public final class RandomEmoji {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void addHurtChatText(MaidDamageEvent event) {
+        if (!MaidConfig.ENABLE_EMOJI.get()) {
+            return;
+        }
         EntityMaid maid = event.getMaid();
         ChatBubbleManager bubbleManager = maid.getChatBubbleManager();
         boolean empty = bubbleManager.getChatBubbleDataCollection().isEmpty();
