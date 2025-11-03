@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IBoardGameBlock;
+import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.GomokuCodec;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Point;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Statue;
 import com.github.tartaricacid.touhoulittlemaid.block.properties.GomokuPart;
@@ -13,6 +14,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
+import com.github.tartaricacid.touhoulittlemaid.item.ItemBoardState;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemHakureiGohei;
 import com.github.tartaricacid.touhoulittlemaid.network.message.GomokuClientPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
@@ -23,6 +25,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -31,7 +35,9 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
@@ -51,6 +57,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 
@@ -235,11 +242,30 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 return ItemInteractionResult.FAIL;
             }
 
-            // 如果是创造模式拿着御币点击，那么铺满棋盘，只剩三个位置
-            if (player.getAbilities().instabuild && itemStack.getItem() instanceof ItemHakureiGohei) {
-                gomoku.clickWithDebug();
-                gomoku.refresh();
-                level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+            Vec3 location = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
+            Direction facing = state.getValue(FACING);
+
+            // 如果是创造模式，有特殊用法
+            if (player.getAbilities().instabuild) {
+                ItemInteractionResult success = this.onCreativePlayerClick(level, pos, player, gomoku, centerPos, location, part, facing);
+                if (success != null) {
+                    return success;
+                }
+            }
+
+            // 如果是残局道具，那么直接设置残局
+            ItemStack heldItem = player.getMainHandItem();
+            if (heldItem.is(InitItems.GOMOKU_BOARD_STATE.get())) {
+                String[] boardState = ItemBoardState.getState(heldItem);
+                if (boardState == null) {
+                    return ItemInteractionResult.FAIL;
+                }
+                String data = boardState[0];
+                if (StringUtils.isEmpty(data)) {
+                    return ItemInteractionResult.FAIL;
+                }
+                gomoku.setStateData(GomokuCodec.decode(data));
+                level.playSound(null, pos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 return ItemInteractionResult.SUCCESS;
             }
 
@@ -248,8 +274,6 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
             }
 
-            Vec3 location = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
-            Direction facing = state.getValue(FACING);
             if (isClickChessBox(location.x, location.z, part, facing)) {
                 level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
                 gomoku.reset();
@@ -313,6 +337,46 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
             }
         }
         return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+    }
+
+    @Nullable
+    private ItemInteractionResult onCreativePlayerClick(Level level, BlockPos pos, Player player, TileEntityGomoku gomoku,
+                                                        BlockPos centerPos, Vec3 location, GomokuPart part, Direction facing) {
+        Item item = player.getMainHandItem().getItem();
+
+        // 拿着御币点击，那么铺满棋盘，只剩三个位置，用来调试满棋盘
+        if (item instanceof ItemHakureiGohei) {
+            gomoku.clickWithDebug();
+            gomoku.refresh();
+            level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        // 如果是木棍，那么就是预设棋局模式
+        if (item == Items.STICK) {
+            // 如果玩家点击的是棋盒，导出
+            if (isClickChessBox(location.x, location.z, part, facing)) {
+                String result = GomokuCodec.encode(gomoku.getStateData());
+                MutableComponent component = ComponentUtils.copyOnClickText(result);
+                player.sendSystemMessage(component);
+                return ItemInteractionResult.SUCCESS;
+            }
+
+            // 否则就是预设棋局
+            int[] clickPos = getChessPos(location.x, location.z, part);
+            if (clickPos == null) {
+                return ItemInteractionResult.FAIL;
+            }
+            int type = gomoku.isPlayerTurn() ? Point.BLACK : Point.WHITE;
+            Point playerPoint = new Point(clickPos[0], clickPos[1], type);
+            gomoku.setChessData(playerPoint.x, playerPoint.y, playerPoint.type);
+            level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.random.nextFloat() * 0.4F);
+            gomoku.setPlayerTurn(!gomoku.isPlayerTurn());
+            gomoku.refresh();
+            return ItemInteractionResult.SUCCESS;
+        }
+
+        return null;
     }
 
     @Override
