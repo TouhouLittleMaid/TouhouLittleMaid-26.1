@@ -1,6 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack;
 
+import com.github.tartaricacid.touhoulittlemaid.api.backpack.ITriggerSlotChange;
 import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
+import com.github.tartaricacid.touhoulittlemaid.api.event.MaidBaubleChangeEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.MaidMainContainer;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
@@ -11,8 +13,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.items.SlotItemHandler;
+
+import javax.annotation.Nullable;
 
 public class BaubleContainer extends MaidMainContainer {
     public static final MenuType<BaubleContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data)
@@ -63,7 +68,7 @@ public class BaubleContainer extends MaidMainContainer {
         }
     }
 
-    public static class BaubleSlot extends SlotItemHandler {
+    public static class BaubleSlot extends SlotItemHandler implements ITriggerSlotChange {
         private final EntityMaid maid;
 
         public BaubleSlot(EntityMaid maid, int index, int xPosition, int yPosition) {
@@ -72,14 +77,20 @@ public class BaubleContainer extends MaidMainContainer {
         }
 
         @Override
-        public void onTake(Player player, ItemStack stack) {
-            super.onTake(player, stack);
+        public void onShiftTakeoff(@Nullable Player player, ItemStack stack) {
             if (!maid.level.isClientSide && !stack.isEmpty()) {
                 IMaidBauble bauble = BaubleManager.getBauble(stack);
                 if (bauble != null) {
                     bauble.onTakeOff(maid, stack);
+                    NeoForge.EVENT_BUS.post(new MaidBaubleChangeEvent.TakeOff(maid, stack));
                 }
             }
+        }
+
+        @Override
+        public void onTake(Player player, ItemStack stack) {
+            super.onTake(player, stack);
+            this.onShiftTakeoff(player, stack);
         }
 
         @Override
@@ -89,6 +100,7 @@ public class BaubleContainer extends MaidMainContainer {
                 IMaidBauble bauble = BaubleManager.getBauble(stack);
                 if (bauble != null) {
                     bauble.onPutOn(maid, stack);
+                    NeoForge.EVENT_BUS.post(new MaidBaubleChangeEvent.PutOn(maid, stack));
                 }
             }
         }
