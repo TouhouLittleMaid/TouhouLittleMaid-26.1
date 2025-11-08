@@ -135,13 +135,26 @@ public class BedrockModel<T extends LivingEntity> extends AbstractBedrockEntityM
         return modelMap.containsKey("armLeft");
     }
 
+    public BedrockPart getLeftArm() {
+        return modelMap.get("armLeft");
+    }
+
     public boolean hasRightArm() {
         return modelMap.containsKey("armRight");
+    }
+
+    public BedrockPart getRightArm() {
+        return modelMap.get("armRight");
     }
 
     public boolean hasArmPositioningModel(HumanoidArm side) {
         BedrockPart arm = (side == HumanoidArm.LEFT ? modelMap.get("armLeftPositioningBone") : modelMap.get("armRightPositioningBone"));
         return arm != null;
+    }
+
+    @Nullable
+    public BedrockPart getArmPositioningModel(HumanoidArm side) {
+        return (side == HumanoidArm.LEFT ? modelMap.get("armLeftPositioningBone") : modelMap.get("armRightPositioningBone"));
     }
 
     public void translateToPositioningHand(HumanoidArm sideIn, PoseStack poseStack) {
