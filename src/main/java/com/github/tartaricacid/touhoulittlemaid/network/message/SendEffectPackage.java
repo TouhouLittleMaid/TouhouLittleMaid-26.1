@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
@@ -49,19 +50,12 @@ public record SendEffectPackage(int id, Collection<MobEffectInstance> effects) i
         }
         Entity entity = mc.level.getEntity(message.id);
         if (entity instanceof EntityMaid maid && maid.isAlive()) {
-            maid.setEffects(message.effects.stream().map(EffectData::new).toList());
+            maid.setEffects(List.copyOf(message.effects));
         }
     }
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
-    }
-
-    public record EffectData(String descriptionId, int amplifier, int duration, int category) {
-        public EffectData(MobEffectInstance effect) {
-            this(effect.getDescriptionId(), effect.getAmplifier(), effect.getDuration(),
-                    effect.getEffect().value().getCategory().ordinal());
-        }
     }
 }
