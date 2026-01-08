@@ -171,8 +171,10 @@ neoForge {
             // JetBrains Runtime 是一个修改过的 JDK，支持热重载
             // +IgnoreUnrecognizedVMOptions 用于忽略未知指令
             // 否则没有安装 JetBrains Runtime 的用户运行时会报错
-            jvmArguments = ['-XX:+IgnoreUnrecognizedVMOptions',
-                            '-XX:+AllowEnhancedClassRedefinition']
+            jvmArguments = [
+                    '-XX:+IgnoreUnrecognizedVMOptions',
+                    '-XX:+AllowEnhancedClassRedefinition'
+            ]
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             // 参考：https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             logLevel = org.slf4j.event.Level.DEBUG
@@ -358,6 +360,7 @@ jar {
 
 // 必须，编码需要显式指定为 UTF
 tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-Xlint:-removal']
     options.encoding = 'UTF-8'
 }
 

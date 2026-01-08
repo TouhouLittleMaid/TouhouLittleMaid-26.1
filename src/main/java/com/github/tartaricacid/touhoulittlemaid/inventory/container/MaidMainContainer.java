@@ -8,13 +8,13 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitCapabilities;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -86,7 +86,8 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
                         @Override
                         public boolean mayPickup(Player playerIn) {
                             ItemStack itemstack = this.getItem();
-                            boolean curseEnchant = !itemstack.isEmpty() && !playerIn.isCreative() && EnchantmentHelper.hasTag(itemstack, EnchantmentTags.CURSE);
+                            boolean curseEnchant = !itemstack.isEmpty() && !playerIn.isCreative()
+                                                   && EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE);
                             return !curseEnchant && super.mayPickup(playerIn);
                         }
 
