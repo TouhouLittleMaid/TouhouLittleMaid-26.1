@@ -23,15 +23,4 @@ public class CompatAnimation implements ICustomAnimation<Mob> {
         BedrockPart armRight = getPartOrNull(models, "armRight");
         EntityModelAnimator.setAngles(new MaidArmsAndHeadAccessor(maid, head, hat, armLeft, armRight));
     }
-
-    @Override
-    public void setGeckoRotationAngles(Mob maid, AnimatedGeoModel model,
-                                       float limbSwing, float limbSwingAmount,
-                                       float ageInTicks, float netHeadYaw, float headPitch) {
-        AnimatedGeoBone head = model.head();
-        AnimatedGeoBone hat = model.hat();
-        AnimatedGeoBone leftArm = model.leftArm();
-        AnimatedGeoBone rightArm = model.rightArm();
-        EntityModelAnimator.setAngles(new GeckoMaidArmsAndHeadAccessor(maid, head, hat, leftArm, rightArm));
-    }
 }

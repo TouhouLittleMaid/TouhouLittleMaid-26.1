@@ -277,8 +277,10 @@ dependencies {
     runtimeOnly "maven.modrinth:xaeros-world-map:1.39.12_NeoForge_1.21"
     runtimeOnly "maven.modrinth:journeymap:1.21.1-6.0.0-beta.52+neoforge"
 
+    // 沉浸式奏乐
+    implementation "maven.modrinth:immersive-melodies:0.6.2+1.21.1-neoforge"
+
     // 目前无法在开发环境使用，会崩
-    compileOnly "maven.modrinth:immersive-melodies:0.6.2+1.21.1-neoforge"
     compileOnly "maven.modrinth:simple-hats:1.21.1-0.4.0-neoforge"
     compileOnly "maven.modrinth:owo-lib:0.12.15.5-beta.1+1.21"
     compileOnly "maven.modrinth:accessories:1.1.0-beta.48+1.21.1"
