@@ -69,6 +69,7 @@ public class NetworkHandler {
         registrar.playToClient(OpenPlayerInventoryPackage.TYPE, OpenPlayerInventoryPackage.STREAM_CODEC, OpenPlayerInventoryPackage::handle);
         registrar.playToServer(DismountPackage.TYPE, DismountPackage.STREAM_CODEC, DismountPackage::handle);
         registrar.playToClient(MaidAnimationPackage.TYPE, MaidAnimationPackage.STREAM_CODEC, MaidAnimationPackage::handle);
+        registrar.playToClient(SyncBaublePackage.TYPE, SyncBaublePackage.STREAM_CODEC, SyncBaublePackage::handle);
     }
 
     public static void sendToNearby(Entity entity, CustomPacketPayload toSend) {
