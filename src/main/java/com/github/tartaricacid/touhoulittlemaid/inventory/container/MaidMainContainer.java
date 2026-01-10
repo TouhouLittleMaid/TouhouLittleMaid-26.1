@@ -30,10 +30,10 @@ import static net.minecraft.world.inventory.InventoryMenu.*;
 
 public abstract class MaidMainContainer extends AbstractMaidContainer {
     protected static final int PLAYER_INVENTORY_SIZE = 36;
-    private static final ResourceLocation EMPTY_MAINHAND_SLOT = ResourceLocation.parse("item/empty_slot_sword");
-    private static final ResourceLocation EMPTY_BACK_SHOW_SLOT = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/empty_back_show_slot");
-    private static final ResourceLocation[] TEXTURE_EMPTY_SLOTS = new ResourceLocation[]{EMPTY_ARMOR_SLOT_BOOTS, EMPTY_ARMOR_SLOT_LEGGINGS, EMPTY_ARMOR_SLOT_CHESTPLATE, EMPTY_ARMOR_SLOT_HELMET};
-    private static final EquipmentSlot[] SLOT_IDS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+    protected static final ResourceLocation EMPTY_MAINHAND_SLOT = ResourceLocation.parse("item/empty_slot_sword");
+    protected static final ResourceLocation EMPTY_BACK_SHOW_SLOT = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/empty_back_show_slot");
+    protected static final ResourceLocation[] TEXTURE_EMPTY_SLOTS = new ResourceLocation[]{EMPTY_ARMOR_SLOT_BOOTS, EMPTY_ARMOR_SLOT_LEGGINGS, EMPTY_ARMOR_SLOT_CHESTPLATE, EMPTY_ARMOR_SLOT_HELMET};
+    protected static final EquipmentSlot[] SLOT_IDS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     public MaidMainContainer(MenuType<?> type, int id, Inventory inventory, int entityId) {
         super(type, id, inventory, entityId);
