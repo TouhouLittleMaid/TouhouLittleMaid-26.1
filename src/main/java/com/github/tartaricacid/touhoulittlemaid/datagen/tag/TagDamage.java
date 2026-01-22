@@ -11,14 +11,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-public class DamageTypeGenerator extends DamageTypeTagsProvider {
-    public DamageTypeGenerator(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
+public class TagDamage extends DamageTypeTagsProvider {
+    public TagDamage(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
         super(pOutput, pLookupProvider, TouhouLittleMaid.MOD_ID, existingFileHelper);
     }
 
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         this.tag(DamageTypeTags.IS_PROJECTILE).add(InitDamage.DANMAKU);
-        this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(InitDamage.DANMAKU_ENDER_KILLER);
+        this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS)
+                .add(InitDamage.DANMAKU_ENDER_KILLER);
     }
 }

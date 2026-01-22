@@ -68,6 +68,15 @@ public class MenuIntegration {
                     MaidConfig.MAID_TEMPTATION_ITEM.save();
                 }).build());
 
+        maid.addEntry(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.maid.enable_maid_curios"),
+                        MaidConfig.ENABLE_MAID_CURIOS.get())
+                .setDefaultValue(MaidConfig.ENABLE_MAID_CURIOS.getDefault())
+                .setTooltip(Component.translatable("config.touhou_little_maid.maid.enable_maid_curios.tooltip"))
+                .setSaveConsumer(s -> {
+                    MaidConfig.ENABLE_MAID_CURIOS.set(s);
+                    MaidConfig.ENABLE_MAID_CURIOS.save();
+                }).build());
+
         maid.addEntry(entryBuilder.startIntSlider(Component.translatable("config.touhou_little_maid.maid.maid_work_range"), MaidConfig.MAID_WORK_RANGE.get(), 3, 64)
                 .setDefaultValue(12).setTooltip(Component.translatable("config.touhou_little_maid.maid.maid_work_range.tooltip"))
                 .setSaveConsumer(i -> {

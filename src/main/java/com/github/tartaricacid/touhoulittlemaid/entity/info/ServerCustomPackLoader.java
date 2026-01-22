@@ -61,7 +61,7 @@ public final class ServerCustomPackLoader {
             try {
                 Files.createDirectories(packFolder.toPath());
             } catch (IOException e) {
-                e.printStackTrace();
+                TouhouLittleMaid.LOGGER.error("Failed to create custom pack folder: {}", CUSTOM_PACK_DIR_NAME);
                 return;
             }
         }

@@ -23,7 +23,6 @@ import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
@@ -34,7 +33,7 @@ import java.util.function.Predicate;
 public class ItemHakureiGohei extends ProjectileWeaponItem {
     public ItemHakureiGohei() {
         super((new Properties())
-                .durability(300)
+                .durability(1200)
                 .setNoRepair()
                 .attributes(ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
@@ -73,31 +72,47 @@ public class ItemHakureiGohei extends ProjectileWeaponItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (context.getHand() == InteractionHand.MAIN_HAND) {
+        if (context.getHand() == InteractionHand.MAIN_HAND && context.getLevel() instanceof ServerLevel serverLevel) {
             List<IMultiBlock> multiBlockList = MultiBlockManager.getMultiBlockList();
             BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
-            Level world = context.getLevel();
             BlockPos pos = context.getClickedPos();
-            Direction direction = context.getClickedFace();
 
-            for (IMultiBlock multiBlock : multiBlockList) {
-                if (multiBlock.isCoreBlock(blockState) && multiBlock.directionIsSuitable(direction)) {
-                    if (world instanceof ServerLevel serverLevel) {
-                        BlockPos posStart = pos.offset(multiBlock.getCenterPos(direction));
-                        StructureTemplate template = multiBlock.getTemplate(serverLevel, direction);
-                        if (multiBlock.isMatch(world, posStart, direction, template)) {
-                            multiBlock.build(world, posStart, direction, template);
-                            serverLevel.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.5f, 1);
-                            if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
-                                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.BUILD_ALTAR);
-                            }
-                        }
+            // 检查水平四个方向
+            for (Direction direction : Direction.Plane.HORIZONTAL) {
+                // 有可能玩家点击的是右侧，故需要判断两个位置
+                BlockPos leftPos = pos.relative(direction.getClockWise());
+                BlockState leftBlockState = context.getLevel().getBlockState(leftPos);
+
+                for (IMultiBlock multiBlock : multiBlockList) {
+                    if (multiBlock.isCoreBlock(blockState)
+                        && multiBlock.directionIsSuitable(direction)
+                        && this.checkAndBuild(context, multiBlock, serverLevel, pos, direction)) {
+                        return InteractionResult.SUCCESS;
                     }
-                    return InteractionResult.SUCCESS;
+
+                    if (multiBlock.isCoreBlock(leftBlockState)
+                        && multiBlock.directionIsSuitable(direction)
+                        && this.checkAndBuild(context, multiBlock, serverLevel, leftPos, direction)) {
+                        return InteractionResult.SUCCESS;
+                    }
                 }
             }
         }
         return super.useOn(context);
+    }
+
+    private boolean checkAndBuild(UseOnContext context, IMultiBlock multiBlock, ServerLevel world, BlockPos pos, Direction direction) {
+        BlockPos posStart = pos.offset(multiBlock.getCenterPos(direction));
+        StructureTemplate template = multiBlock.getTemplate(world, direction);
+        if (multiBlock.isMatch(world, posStart, direction, template)) {
+            multiBlock.build(world, posStart, direction, template);
+            world.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.5f, 1);
+            if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
+                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.BUILD_ALTAR);
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

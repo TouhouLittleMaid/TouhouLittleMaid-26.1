@@ -333,6 +333,13 @@ public class RecipeGenerator extends RecipeProvider {
                 .langKey("jei.touhou_little_maid.altar_craft.spawn_lightning_bolt.result")
                 .save(recipeOutput, "spawn_lightning_bolt");
 
+        AltarRecipeBuilder.shapeless(RecipeCategory.MISC, InitItems.SNACK_CABINET)
+                .power(0.1F)
+                .requires(3, ItemTags.PLANKS)
+                .requires(2, Tags.Items.GLASS_PANES)
+                .requires(Items.BARREL)
+                .save(recipeOutput);
+
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, InitItems.HAKUREI_GOHEI)
                 .pattern("  D")
                 .pattern(" SP")

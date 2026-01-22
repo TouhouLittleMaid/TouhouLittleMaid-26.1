@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.navigation;
 
+import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -90,7 +91,13 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
         if (this.mob instanceof EntityMaid maid && maid.isWithinRestriction() && !maid.isWithinRestriction(pos)) {
             return PathType.BLOCKED;
         }
+
         BlockState blockState = context.getBlockState(pos);
+        // 先检查方块是否在黑名单中
+        if (blockState.is(TagBlock.MAID_AVOID_BLOCK)) {
+            return PathType.DAMAGE_OTHER;
+        }
+
         PathType pathType;
         if (blockState.getBlock() instanceof FenceGateBlock) {
             pathType = blockState.getValue(FenceGateBlock.OPEN) ? PathType.DOOR_OPEN : PathType.DOOR_WOOD_CLOSED;

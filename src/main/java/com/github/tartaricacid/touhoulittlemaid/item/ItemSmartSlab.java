@@ -2,10 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.util.PlaceHelper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +31,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.MAID_NUM;
 
@@ -38,6 +41,21 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
     public ItemSmartSlab(Type type) {
         super((new Properties()).stacksTo(1).rarity(Rarity.RARE));
         this.type = type;
+    }
+
+    public static UUID getInitMaidOwner(ItemStack stack) {
+        if (stack.has(InitDataComponent.INIT_MAID_OWNER_TAG)) {
+            return stack.getOrDefault(InitDataComponent.INIT_MAID_OWNER_TAG, Util.NIL_UUID);
+        }
+        return Util.NIL_UUID;
+    }
+
+    public static boolean setInitMaidOwner(ItemStack stack, UUID ownerUid) {
+        if (stack.getItem() instanceof ItemSmartSlab smartSlab && smartSlab.type == Type.INIT) {
+            stack.set(InitDataComponent.INIT_MAID_OWNER_TAG, ownerUid);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -60,6 +78,16 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
                 return super.useOn(context);
             }
             if (this.type == Type.INIT) {
+                // 检查是否有初始主人锁定
+                UUID initOwnerUid = getInitMaidOwner(context.getItemInHand());
+                // 有锁定则进行 UUID 判断
+                if (!initOwnerUid.equals(Util.NIL_UUID) && !player.getUUID().equals(initOwnerUid)) {
+                    MutableComponent tip = Component.translatable("tooltips.touhou_little_maid.smart_slab.not_your_maid").withStyle(ChatFormatting.DARK_RED);
+                    if (!worldIn.isClientSide) {
+                        player.sendSystemMessage(tip);
+                    }
+                    return InteractionResult.FAIL;
+                }
                 return spawnNewMaid(context, player, worldIn, maid);
             }
             if (this.type == Type.HAS_MAID) {

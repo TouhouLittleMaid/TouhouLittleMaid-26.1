@@ -5,22 +5,40 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.common.data.internal.NeoForgeEntityTypeTagsProvider;
 
 import java.util.concurrent.CompletableFuture;
 
-public class EntityTypeGenerator extends NeoForgeEntityTypeTagsProvider {
-    public static TagKey<EntityType<?>> MAID_FAIRY_ATTACK_GOAL = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid_fairy_attack_goal"));
-    public static TagKey<EntityType<?>> MAID_VEHICLE_ROTATE_BLOCKLIST = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid_vehicle_rotate_blocklist"));
-    public static TagKey<EntityType<?>> CARRYON_ENTITY_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("carryon", "entity_blacklist"));
+public class TagEntity extends EntityTypeTagsProvider {
+    /**
+     * 女仆妖精的攻击目标，默认仅攻击铁傀儡和玩家
+     */
+    public static TagKey<EntityType<?>> MAID_FAIRY_ATTACK_GOAL = createTagKey("maid_fairy_attack_goal");
 
-    public EntityTypeGenerator(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, existingFileHelper);
+    /**
+     * 女仆在骑乘时，为了朝向一致，会强制同步女仆朝向和当前骑乘实体朝向；
+     * <p>
+     * 但是部分模组（如机械动力）这么做反而会导致女仆异常旋转，故添加此标签
+     */
+    public static TagKey<EntityType<?>> MAID_VEHICLE_ROTATE_BLOCKLIST = createTagKey("maid_vehicle_rotate_blocklist");
+
+    public static TagKey<EntityType<?>> CARRYON_ENTITY_BLACKLIST = createTagKey(ResourceLocation.parse("carryon:entity_blacklist"));
+
+    public TagEntity(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
+        super(output, lookupProvider, TouhouLittleMaid.MOD_ID, existingFileHelper);
+    }
+
+    private static TagKey<EntityType<?>> createTagKey(String name) {
+        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name));
+    }
+
+    private static TagKey<EntityType<?>> createTagKey(ResourceLocation id) {
+        return TagKey.create(Registries.ENTITY_TYPE, id);
     }
 
     @Override

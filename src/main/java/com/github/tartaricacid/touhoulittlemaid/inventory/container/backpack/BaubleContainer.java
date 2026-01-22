@@ -43,6 +43,11 @@ public class BaubleContainer extends MaidMainContainer {
                 int entityId = maid.getId();
                 return new BaubleContainer(index, inventory, entityId);
             }
+
+            @Override
+            public boolean shouldTriggerClientSideContainerClosingOnOpen() {
+                return false;
+            }
         };
     }
 

@@ -168,4 +168,16 @@ public class InitDataComponent {
                     .persistent(ItemBoardState.BoardStateInfo.CODEC)
                     .networkSynchronized(ItemBoardState.BoardStateInfo.STREAM_CODEC)
                     .build());
+
+    /**
+     * 有初始主人锁定标记时，会进行 UUID 判断，避免其他玩家释放他人的初始女仆。
+     * <p>
+     * 默认为 Util.NIL_UUID。
+     */
+    private static final String INIT_MAID_OWNER = "init_maid_owner";
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<UUID>> INIT_MAID_OWNER_TAG =
+            DATA_COMPONENTS.register(INIT_MAID_OWNER, () -> DataComponentType.<UUID>builder()
+                    .persistent(UUIDUtil.CODEC)
+                    .networkSynchronized(UUIDUtil.STREAM_CODEC)
+                    .build());
 }

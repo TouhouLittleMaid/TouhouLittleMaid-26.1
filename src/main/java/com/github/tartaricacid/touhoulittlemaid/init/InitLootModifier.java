@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.init;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.loot.LootTableTypeCondition;
 import com.github.tartaricacid.touhoulittlemaid.loot.RandomBoardStateFunction;
+import com.github.tartaricacid.touhoulittlemaid.loot.SetInitMaidOwnerFunction;
 import com.github.tartaricacid.touhoulittlemaid.loot.SetTankCountFunction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
@@ -27,4 +28,7 @@ public class InitLootModifier {
 
     public static final Supplier<LootItemFunctionType<? extends LootItemConditionalFunction>> BOARD_STATE_RANDOMLY =
             LOOT_FUNCTION_TYPES.register("board_state_randomly", () -> new LootItemFunctionType<>(RandomBoardStateFunction.CODEC));
+
+    public static final Supplier<LootItemFunctionType<? extends LootItemConditionalFunction>> SET_INIT_MAID_OWNER_FUNCTION =
+            LOOT_FUNCTION_TYPES.register("set_init_maid_owner", () -> new LootItemFunctionType<>(SetInitMaidOwnerFunction.CODEC));
 }

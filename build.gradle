@@ -243,6 +243,9 @@ dependencies {
     compileOnly "dev.latvian.mods:kubejs-neoforge:2101.7.2-build.336"
     // runtimeOnly "com.github.rtyley:animated-gif-lib-for-java:animated-gif-lib-1.7"
 
+    // Curios
+    implementation "top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1"
+
     compileOnly "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
     compileOnly "maven.modrinth:iris:1.8.8+1.21.1-neoforge"
     implementation "maven.modrinth:embeddium:1.0.15+mc1.21.1-neoforge"
@@ -262,7 +265,7 @@ dependencies {
     implementation "maven.modrinth:sophisticated-core:1.21.1-1.3.50.1004"
     implementation "maven.modrinth:sophisticated-backpacks:1.21.1-3.24.15.1250"
 
-    implementation "maven.modrinth:kaleidoscope-cookery:1.0.1-neoforge+mc1.21.1"
+    implementation "maven.modrinth:kaleidoscope-cookery:1.2.0-neoforge+mc1.21.1"
 
     implementation("com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.6-hotfix-r5") {
         exclude group: 'mezz.jei'
@@ -271,7 +274,6 @@ dependencies {
 
     // 卓越前线
     runtimeOnly "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5"
-    runtimeOnly "top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1"
     implementation "libs:superbwarfare-1.21.1:0.8.7.1"
 
     // 地图相关模组兼容
@@ -281,6 +283,13 @@ dependencies {
 
     // 沉浸式奏乐
     implementation "maven.modrinth:immersive-melodies:0.6.2+1.21.1-neoforge"
+
+    // 农夫乐事
+    implementation "maven.modrinth:farmers-delight:1.21.1-1.2.9-neoforge"
+    // 更多蛋糕
+    implementation "maven.modrinth:common-network:1.0.21-1.21.1-neoforge"
+    implementation "maven.modrinth:forge-config-api-port:v21.1.6-1.21.1-NeoForge"
+    implementation "maven.modrinth:just-more-cakes:1.19.2-neoforge,1.21.1"
 
     // 目前无法在开发环境使用，会崩
     compileOnly "maven.modrinth:simple-hats:1.21.1-0.4.0-neoforge"

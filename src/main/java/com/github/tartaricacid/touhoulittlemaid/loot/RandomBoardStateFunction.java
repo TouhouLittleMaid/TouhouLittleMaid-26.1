@@ -42,7 +42,6 @@ public class RandomBoardStateFunction extends LootItemConditionalFunction {
         return new RandomBoardStateFunction.Builder();
     }
 
-
     private boolean checkTags(BoardStateRecord record) {
         for (String tag : tags) {
             if (record.tags().contains(tag)) {

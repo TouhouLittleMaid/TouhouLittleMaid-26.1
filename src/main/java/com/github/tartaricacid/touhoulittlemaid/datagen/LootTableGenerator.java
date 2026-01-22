@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.loot.RandomBoardStateFunction;
+import com.github.tartaricacid.touhoulittlemaid.loot.SetInitMaidOwnerFunction;
 import com.github.tartaricacid.touhoulittlemaid.loot.SetTankCountFunction;
 import com.google.common.collect.Sets;
 import net.minecraft.core.HolderLookup;
@@ -75,7 +76,9 @@ public class LootTableGenerator {
             consumer.accept(GIVE_SMART_SLAB, LootTable.lootTable()
                     .withPool(LootPool.lootPool()
                             .setRolls(ConstantValue.exactly(1))
-                            .add(LootItem.lootTableItem(InitItems.SMART_SLAB_INIT))));
+                            .add(LootItem.lootTableItem(InitItems.SMART_SLAB_INIT)
+                                    .apply(SetInitMaidOwnerFunction.create())
+                            )));
 
             consumer.accept(ADVANCEMENT_POWER_POINT, LootTable.lootTable().withPool(LootPool.lootPool()
                     .setRolls(ConstantValue.exactly(5))

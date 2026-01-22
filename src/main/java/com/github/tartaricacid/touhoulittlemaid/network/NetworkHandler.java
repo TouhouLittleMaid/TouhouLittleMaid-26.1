@@ -70,6 +70,7 @@ public class NetworkHandler {
         registrar.playToServer(DismountPackage.TYPE, DismountPackage.STREAM_CODEC, DismountPackage::handle);
         registrar.playToClient(MaidAnimationPackage.TYPE, MaidAnimationPackage.STREAM_CODEC, MaidAnimationPackage::handle);
         registrar.playToClient(SyncBaublePackage.TYPE, SyncBaublePackage.STREAM_CODEC, SyncBaublePackage::handle);
+        registrar.playToClient(CuriosS2CUpdatePacket.TYPE, CuriosS2CUpdatePacket.STREAM_CODEC, CuriosS2CUpdatePacket::handle);
     }
 
     public static void sendToNearby(Entity entity, CustomPacketPayload toSend) {

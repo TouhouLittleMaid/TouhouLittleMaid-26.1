@@ -30,6 +30,7 @@ public final class InitBlocks {
     public static DeferredBlock<Block> COMPUTER = BLOCKS.register("computer", BlockComputer::new);
     public static DeferredBlock<Block> SHRINE = BLOCKS.register("shrine", BlockShrine::new);
     public static DeferredBlock<Block> SCARECROW = BLOCKS.register("scarecrow", BlockScarecrow::new);
+    public static DeferredBlock<Block> SNACK_CABINET = BLOCKS.register("snack_cabinet", BlockSnackCabinet::new);
 
     public static Supplier<BlockEntityType<TileEntityAltar>> ALTAR_TE = TILE_ENTITIES.register("altar", () -> TileEntityAltar.TYPE);
     public static Supplier<BlockEntityType<TileEntityStatue>> STATUE_TE = TILE_ENTITIES.register("statue", () -> TileEntityStatue.TYPE);
@@ -45,4 +46,5 @@ public final class InitBlocks {
     public static Supplier<BlockEntityType<TileEntityShrine>> SHRINE_TE = TILE_ENTITIES.register("shrine", () -> TileEntityShrine.TYPE);
     public static Supplier<BlockEntityType<TileEntityPicnicMat>> PICNIC_MAT_TE = TILE_ENTITIES.register("picnic_mat", () -> TileEntityPicnicMat.TYPE);
     public static Supplier<BlockEntityType<TileEntityMaidBed>> MAID_BED_TE = TILE_ENTITIES.register("maid_bed", () -> TileEntityMaidBed.TYPE);
+    public static Supplier<BlockEntityType<TileEntitySnackCabinet>> SNACK_CABINET_TE = TILE_ENTITIES.register("snack_cabinet", () -> TileEntitySnackCabinet.TYPE);
 }

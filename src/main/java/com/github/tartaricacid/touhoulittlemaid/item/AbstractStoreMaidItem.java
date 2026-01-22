@@ -7,8 +7,10 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemMaidTooltip;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.YsmMaidInfo;
 import com.mojang.serialization.Codec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionResult;
@@ -91,6 +93,10 @@ public abstract class AbstractStoreMaidItem extends Item {
             CompoundTag maidCompound = compoundData.copyTag();
             UUID ownerUid = maidCompound.getUUID(MAID_OWNER);
             if (!player.getUUID().equals(ownerUid)) {
+                MutableComponent tip = Component.translatable("tooltips.touhou_little_maid.smart_slab.not_your_maid").withStyle(ChatFormatting.DARK_RED);
+                if (!worldIn.isClientSide) {
+                    player.sendSystemMessage(tip);
+                }
                 return InteractionResult.FAIL;
             }
 

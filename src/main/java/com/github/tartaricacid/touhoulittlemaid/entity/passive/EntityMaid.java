@@ -17,13 +17,15 @@ import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.YsmMaidClientTickEvent;
 import com.github.tartaricacid.touhoulittlemaid.config.ServerConfig;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
-import com.github.tartaricacid.touhoulittlemaid.datagen.tag.EntityTypeGenerator;
+import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
+import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagEntity;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidBrain;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidSchedule;
@@ -42,10 +44,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskIdle;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
-import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
-import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
+import com.github.tartaricacid.touhoulittlemaid.init.*;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.BaubleContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.config.MaidAIChatConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.config.MaidConfigContainer;
@@ -73,6 +72,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -103,6 +103,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -154,8 +155,8 @@ import net.neoforged.neoforge.items.wrapper.EntityHandsInvWrapper;
 import net.neoforged.neoforge.items.wrapper.RangedWrapper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
-import org.joml.Vector3f;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -346,12 +347,20 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.navigationManager = new MaidNavigationManager(this);
 
         this.cooldowns = new ItemCooldowns();
+
+        // 启用实体持久化，也许能解决难以复现的女仆实体丢失问题
+        this.setPersistenceRequired();
     }
 
     public EntityMaid(Level worldIn) {
         this(TYPE, worldIn);
     }
 
+    /**
+     * 如果其他模组想要给女仆添加额外属性
+     * <p>
+     * 可通过 forge 的 EntityAttributeModificationEvent 添加
+     */
     public static AttributeSupplier.Builder createAttributes() {
         return LivingEntity.createLivingAttributes()
                 // 目前仅用于寻路，女仆最大可寻路 64 格
@@ -361,8 +370,19 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
                 .add(Attributes.SWEEPING_DAMAGE_RATIO)
                 // 目前仅用于寻路，女仆最大可寻路 64 格
                 .add(Attributes.LUCK)
+                // 女仆攻击速度，这个数字表示每秒可施展的攻击次数，会受武器本身的攻击速度影响
+                .add(Attributes.ATTACK_SPEED)
                 // 用于女仆近战的范围判断
-                .add(Attributes.ENTITY_INTERACTION_RANGE, 2);
+                .add(Attributes.ENTITY_INTERACTION_RANGE, 2)
+                // 部分本模组新增属性
+                .add(InitAttribute.MAID_USE_ITEM_SPEED)
+                .add(InitAttribute.MAID_CROSSBOW_ATTACK_SPEED)
+                .add(InitAttribute.MAID_GUN_ATTACK_SPEED)
+                .add(InitAttribute.MAID_SHOOT_COOLDOWN)
+                .add(InitAttribute.MAID_TRIDENT_COOLDOWN)
+                .add(InitAttribute.MAID_PICKUP_RANGE)
+                .add(InitAttribute.MAID_PASSIVE_USE_SHIELD_TICK)
+                .add(InitAttribute.MAID_HUNGER);
     }
 
     public static boolean canInsertItem(ItemStack stack) {
@@ -564,7 +584,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     public void rideTick() {
         super.rideTick();
         Entity vehicle = this.getVehicle();
-        if (vehicle != null && !vehicle.getType().is(EntityTypeGenerator.MAID_VEHICLE_ROTATE_BLOCKLIST)) {
+        if (vehicle != null && !vehicle.getType().is(TagEntity.MAID_VEHICLE_ROTATE_BLOCKLIST)) {
             this.setYHeadRot(vehicle.getYRot());
             this.setYBodyRot(vehicle.getYRot());
         }
@@ -618,7 +638,13 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             this.level.getProfiler().push("maidCooldowns");
             this.cooldowns.tick();
             if (this.passiveUseShieldTick > 0) {
-                this.passiveUseShieldTick--;
+                // 如果没有拿着盾牌，直接取消计时，避免疯狂挥手
+                ItemStack offHandItem = this.getItemInHand(InteractionHand.OFF_HAND);
+                if (offHandItem.canPerformAction(ItemAbilities.SHIELD_BLOCK)) {
+                    this.passiveUseShieldTick--;
+                } else {
+                    this.passiveUseShieldTick = 1;
+                }
                 // 最后 1 tick 取消盾牌
                 if (this.passiveUseShieldTick == 1 && this.isUsingItem() && this.getUsedItemHand() == InteractionHand.OFF_HAND) {
                     this.stopUsingItem();
@@ -691,8 +717,15 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         super.pushEntities();
         // 只有拾物模式开启，驯服状态下才可以捡起物品
         if (this.isPickup() && this.isTame()) {
-            List<Entity> entityList = this.level.getEntities(this,
-                    this.getBoundingBox().inflate(0.5, 0, 0.5), this::canPickup);
+            AABB pickupBox;
+            AttributeInstance attribute = this.getAttribute(InitAttribute.MAID_PICKUP_RANGE);
+            if (attribute != null) {
+                pickupBox = this.getBoundingBox().inflate(attribute.getValue());
+            } else {
+                pickupBox = this.getBoundingBox().inflate(0.5);
+            }
+
+            List<Entity> entityList = this.level.getEntities(this, pickupBox, this::canPickup);
             if (!entityList.isEmpty() && this.isAlive()) {
                 for (Entity entityPickup : entityList) {
                     // 如果是物品
@@ -963,7 +996,12 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             if (!isUsingShield) {
                 this.startUsingItem(InteractionHand.OFF_HAND);
                 // 使用五秒的盾牌
-                this.passiveUseShieldTick = 100;
+                AttributeInstance attribute = this.getAttribute(InitAttribute.MAID_PASSIVE_USE_SHIELD_TICK);
+                if (attribute != null) {
+                    this.passiveUseShieldTick = (int) attribute.getValue();
+                } else {
+                    this.passiveUseShieldTick = 100;
+                }
             }
         }
         return super.hurt(source, amount);
@@ -1205,6 +1243,18 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             return attackTask.canAttack(this, target);
         }
         return super.canAttack(target);
+    }
+
+    /**
+     * 女仆在危险情况（比如附近有苦力怕）下是否应该停止骑乘或待命状态
+     */
+    public boolean shouldLeaveMountOrSitForDanger() {
+        // 如果女仆和玩家骑乘同一个扫帚
+        Entity vehicle = this.getVehicle();
+        if (vehicle != null && vehicle.getControllingPassenger() instanceof Player) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -1500,6 +1550,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             case TabIndex.MAID_CONFIG -> MaidConfigContainer.create(getId());
             case TabIndex.MAID_AI_CHAT_CONFIG -> MaidAIChatConfigContainer.create(this);
             case TabIndex.BAUBLE -> BaubleContainer.create(this);
+            case TabIndex.CURIOS -> CuriosCompat.create(this);
             default -> this.getMaidBackpackType().getGuiProvider(getId());
         };
     }
@@ -1808,12 +1859,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     }
 
     /**
-     * @deprecated 给 BehaviorUtils.isWithinAttackRange() 用的 <br>
-     * 但是目前为了实现超远视距打击，已经不用原版提供的这个了 <br>
-     * 故这里返回 true 还是 false 都不影响了
+     * 给 MaidMeleeAttack 使用，用于判断当前任务是否能够近战
+     * <p>
+     * 如果返回 true，则表示当前是远程攻击，不是近战攻击
      */
     @Override
-    @Deprecated
     public boolean canFireProjectileWeapon(ProjectileWeaponItem shootableItem) {
         return getTask() instanceof IRangedAttackTask;
     }
@@ -1905,6 +1955,30 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             }
         }
         return null;
+    }
+
+    @Override
+    protected void updateUsingItem(ItemStack usingItem) {
+        // 处理问题 https://github.com/TartaricAcid/TouhouLittleMaid/issues/1003
+        // 检测女仆是否处于异常的进食状态：正在使用物品但手中物品不是可正常使用状态下的物品
+        if (this.isUsingItem()) {
+            ItemStack currentItem = this.getUseItem();
+            // 如果正在使用物品但该物品无法继续使用（例如食物已被移除），则强制停止使用
+            if (currentItem.isEmpty() || currentItem.getUseDuration(this) <= 0) {
+                this.stopUsingItem();
+                return;
+            }
+        }
+
+        if (!usingItem.isEmpty()) {
+            AttributeInstance attribute = this.getAttribute(InitAttribute.MAID_USE_ITEM_SPEED);
+            if (attribute != null) {
+                // MAID_USE_ITEM_SPEED 默认是 1
+                // 故这里减去属性值再加 1，保证属性值为 1 时行为和原版一致
+                this.useItemRemaining = this.useItemRemaining - (int) attribute.getValue() + 1;
+            }
+        }
+        super.updateUsingItem(usingItem);
     }
 
     @Override
@@ -2698,6 +2772,13 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     }
 
     private boolean canTeleportTo(BlockPos pos) {
+        // 先检查下方方块是否在黑名单中
+        BlockState blockState = this.level().getBlockState(pos.below());
+        if (blockState.is(TagBlock.MAID_AVOID_BLOCK)) {
+            return false;
+        }
+
+        // 再检查路径节点类型和碰撞箱
         PathType pathNodeType = WalkNodeEvaluator.getPathTypeStatic(this, pos);
         if (pathNodeType == PathType.WALKABLE || pathNodeType == PathType.WATER) {
             BlockPos blockPos = pos.subtract(this.blockPosition());
@@ -2720,5 +2801,26 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     public void setAiming(boolean aiming) {
         this.entityData.set(DATA_IS_AIMING, aiming);
+    }
+
+    public void spawnItemParticles(ItemStack stack, int amount) {
+        for (int i = 0; i < amount; ++i) {
+            Vec3 speed = new Vec3((this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
+            speed = speed.xRot(-this.getXRot() * Mth.DEG_TO_RAD);
+            speed = speed.yRot(-this.getYRot() * Mth.DEG_TO_RAD);
+
+            double yOffset = -this.random.nextFloat() * 0.6 - 0.3;
+            Vec3 pos = new Vec3((this.random.nextFloat() - 0.5) * 0.3, yOffset, 0.6);
+            pos = pos.xRot(-this.getXRot() * Mth.DEG_TO_RAD);
+            pos = pos.yRot(-this.getYRot() * Mth.DEG_TO_RAD);
+            pos = pos.add(this.getX(), this.getEyeY(), this.getZ());
+
+            ItemParticleOption option = new ItemParticleOption(ParticleTypes.ITEM, stack);
+            if (this.level instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(option, pos.x, pos.y, pos.z, 1, speed.x, speed.y + 0.05, speed.z, 0.0);
+            } else {
+                this.level.addParticle(option, pos.x, pos.y, pos.z, speed.x, speed.y + 0.05, speed.z);
+            }
+        }
     }
 }

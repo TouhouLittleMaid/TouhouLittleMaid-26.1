@@ -2,9 +2,11 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang;
 
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.functions.*;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.variable.LadderFacingVariable;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.variable.MoveInputVariable;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.predicate.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.binding.ContextBinding;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.builtin.query.EmptyFunction;
+import com.github.tartaricacid.touhoulittlemaid.init.InitAttribute;
 import com.github.tartaricacid.touhoulittlemaid.util.EquipmentUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -13,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -40,6 +43,9 @@ public class YSMBinding extends ContextBinding {
         var("weather", ctx -> getWeather(ctx.level()));
         var("dimension_name", ctx -> ctx.level().dimension().location().toString());
         var("fps", ctx -> Minecraft.getInstance().getFps());
+
+        entityVar("input_vertical", MoveInputVariable::getVertical);
+        entityVar("input_horizontal", MoveInputVariable::getHorizontal);
 
         entityVar("is_passenger", ctx -> ctx.entity().isPassenger());
         entityVar("is_sleep", ctx -> ctx.entity().getPose() == Pose.SLEEPING);
@@ -96,13 +102,21 @@ public class YSMBinding extends ContextBinding {
         entityVar("biome_category", ctx -> 0);
 
         livingEntityVar("rendering_in_inventory", ctx -> false);
-        maidEntityVar("food_level", ctx -> 20);
+        livingEntityVar("food_level", ctx -> YSMBinding.getFoodLevel(ctx.entity()));
 
         var("first_person_mod_hide", ctx -> false);
         var("has_left_shoulder_parrot", ctx -> false);
         var("has_right_shoulder_parrot", ctx -> false);
         var("left_shoulder_parrot_variant", ctx -> 0);
         var("right_shoulder_parrot_variant", ctx -> 0);
+    }
+
+    private static int getFoodLevel(LivingEntity entity) {
+        AttributeInstance attribute = entity.getAttribute(InitAttribute.MAID_HUNGER);
+        if (attribute != null) {
+            return (int) attribute.getValue();
+        }
+        return 20;
     }
 
     private static boolean getEyeCloseState(AnimationEvent<?> animationEvent, LivingEntity player) {

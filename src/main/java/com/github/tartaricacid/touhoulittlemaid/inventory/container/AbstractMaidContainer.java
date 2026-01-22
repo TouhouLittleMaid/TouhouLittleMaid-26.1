@@ -21,7 +21,7 @@ public abstract class AbstractMaidContainer extends AbstractContainerMenu {
         }
     }
 
-    private void addPlayerInv(Inventory playerInventory) {
+    protected void addPlayerInv(Inventory playerInventory) {
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 88 + col * 18, 174 + row * 18));
@@ -49,6 +49,12 @@ public abstract class AbstractMaidContainer extends AbstractContainerMenu {
         if (this.maid == null) {
             return false;
         }
-        return maid.isOwnedBy(playerIn) && !maid.isSleeping() && maid.isAlive() && maid.distanceTo(playerIn) < 5.0F;
+        if (!maid.isOwnedBy(playerIn)) {
+            return false;
+        }
+        if (!maid.isAlive() || maid.isSleeping()) {
+            return false;
+        }
+        return playerIn.canInteractWithEntity(this.maid, 4.0);
     }
 }

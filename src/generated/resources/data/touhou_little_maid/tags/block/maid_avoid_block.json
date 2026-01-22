@@ -1,0 +1,81 @@
+{
+  "values": [
+    "#touhou_little_maid:maid_snack_stand_block",
+    {
+      "id": "create:mechanical_saw",
+      "required": false
+    },
+    {
+      "id": "create:crushing_wheel",
+      "required": false
+    },
+    {
+      "id": "create:crushing_wheel_controller",
+      "required": false
+    },
+    {
+      "id": "the_bumblezone:heavy_air",
+      "required": false
+    },
+    {
+      "id": "the_bumblezone:windy_air",
+      "required": false
+    },
+    {
+      "id": "farmersdelight:stove",
+      "required": false
+    },
+    {
+      "id": "twilightforest:hedge",
+      "required": false
+    },
+    {
+      "id": "twilightforest:fiery_block",
+      "required": false
+    },
+    {
+      "id": "twilightforest:knightmetal_block",
+      "required": false
+    },
+    {
+      "id": "alexscaves:primal_magma",
+      "required": false
+    },
+    {
+      "id": "alexscaves:primal_magma",
+      "required": false
+    },
+    {
+      "id": "mekanismgenerators:fusion_reactor_frame",
+      "required": false
+    },
+    {
+      "id": "mekanism:sps_casing",
+      "required": false
+    },
+    {
+      "id": "createaddition:barbed_wire",
+      "required": false
+    },
+    {
+      "id": "immersiveengineering:razor_wire",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:brazier",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:brazier_soul",
+      "required": false
+    },
+    {
+      "id": "mob_grinding_utils:spikes",
+      "required": false
+    },
+    {
+      "id": "mob_grinding_utils:saw",
+      "required": false
+    }
+  ]
+}

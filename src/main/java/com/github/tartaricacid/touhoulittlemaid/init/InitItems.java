@@ -75,6 +75,7 @@ public final class InitItems {
     public static DeferredItem<Item> GOMOKU_BOARD_STATE = ITEMS.register("gomoku_board_state", ItemBoardState::new);
     public static DeferredItem<Item> CCHESS_BOARD_STATE = ITEMS.register("cchess_board_state", ItemBoardState::new);
     public static DeferredItem<Item> WCHESS_BOARD_STATE = ITEMS.register("wchess_board_state", ItemBoardState::new);
+    public static DeferredItem<Item> SNACK_CABINET = ITEMS.register("snack_cabinet", () -> new BlockItem(InitBlocks.SNACK_CABINET.get(), new Item.Properties()));
     @SuppressWarnings("deprecation")
     public static DeferredItem<Item> MONSTER_LIST = ITEMS.register("monster_list", ItemMonsterList::new);
 

@@ -19,6 +19,8 @@ public final class MaidConfig {
     public static ModConfigSpec.ConfigValue<String> MAID_TAMED_ITEM;
     public static ModConfigSpec.ConfigValue<String> MAID_TEMPTATION_ITEM;
 
+    public static ModConfigSpec.BooleanValue ENABLE_MAID_CURIOS;
+
     public static ModConfigSpec.IntValue MAID_WORK_RANGE;
     public static ModConfigSpec.IntValue MAID_IDLE_RANGE;
     public static ModConfigSpec.IntValue MAID_SLEEP_RANGE;
@@ -76,6 +78,9 @@ public final class MaidConfig {
         builder.comment("The item that can temptation maid", "Use the registered name of the item directly or write tag name with # as prefix")
                 .translation(translateKey("maid_temptation_item"));
         MAID_TEMPTATION_ITEM = builder.define("MaidTemptationItem", "minecraft:cake", MaidConfig::checkItemAndTag);
+
+        builder.comment("When installed Curios mod, whether to enable maid curios slot support");
+        ENABLE_MAID_CURIOS = builder.define("EnableMaidCurios", true);
 
         builder.comment("The max range of maid work mode")
                 .translation(translateKey("maid_work_range"));

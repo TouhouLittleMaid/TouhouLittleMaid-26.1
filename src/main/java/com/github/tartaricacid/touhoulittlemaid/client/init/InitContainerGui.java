@@ -7,10 +7,13 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task.Atta
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task.DefaultMaidTaskConfigGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.item.PicnicBasketContainerScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.item.WirelessIOContainerGui;
+import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
 import com.github.tartaricacid.touhoulittlemaid.init.InitContainer;
+import com.github.tartaricacid.touhoulittlemaid.init.registry.CompatRegistry;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.BaubleContainer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
@@ -35,5 +38,10 @@ public final class InitContainerGui {
 
         event.register(InitContainer.DEFAULT_MAIK_TASK_CONFIG.get(), DefaultMaidTaskConfigGui::new);
         event.register(InitContainer.ATTACK_TASK_CONFIG.get(), AttackTaskConfigGui::new);
+
+        // Curios 兼容
+        if (ModList.get().isLoaded(CompatRegistry.CURIOS)) {
+            CuriosCompat.registerScreen(event);
+        }
     }
 }

@@ -1,0 +1,9 @@
+{
+  "values": [
+    "touhou_little_maid:snack_cabinet",
+    {
+      "id": "#kaleidoscope_cookery:table",
+      "required": false
+    }
+  ]
+}
