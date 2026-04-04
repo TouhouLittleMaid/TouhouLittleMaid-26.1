@@ -19,11 +19,7 @@ public record CuriosS2CUpdatePacket(int page) implements CustomPacketPayload {
     );
 
     public static void handle(CuriosS2CUpdatePacket message, IPayloadContext context) {
-        if (context.flow().isServerbound()) {
-            Player sender = context.player();
-            if (!(sender instanceof ServerPlayer serverPlayer)) {
-                return;
-            }
+        if (context.flow().isClientbound()) {
             context.enqueueWork(() -> CuriosCompat.clientUpdatePage(message.page()));
         }
     }
