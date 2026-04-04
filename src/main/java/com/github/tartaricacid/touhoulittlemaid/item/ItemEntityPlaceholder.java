@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitRecipes;
+import com.google.common.base.Suppliers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -30,13 +31,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class ItemEntityPlaceholder extends Item {
     public static final IClientItemExtensions ITEM_EXTENSIONS = FMLEnvironment.dist == Dist.CLIENT ? new IClientItemExtensions() {
-        @Override
-        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+        private static final Supplier<TileEntityEntityPlaceholderRenderer> MEMOIZE = Suppliers.memoize(() -> {
             Minecraft minecraft = Minecraft.getInstance();
             return new TileEntityEntityPlaceholderRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+        });
+
+        @Override
+        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+            return MEMOIZE.get();
         }
     } : null;
 

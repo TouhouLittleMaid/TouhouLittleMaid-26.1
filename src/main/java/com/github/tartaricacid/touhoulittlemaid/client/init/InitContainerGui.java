@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.init;
 
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.backpack.*;
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.config.MaidAIChatConfigContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.config.MaidConfigContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task.AttackTaskConfigGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task.DefaultMaidTaskConfigGui;
@@ -10,7 +9,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.item.WirelessIOContai
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
 import com.github.tartaricacid.touhoulittlemaid.init.InitContainer;
 import com.github.tartaricacid.touhoulittlemaid.init.registry.CompatRegistry;
-import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.BaubleContainer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
@@ -30,9 +28,8 @@ public final class InitContainerGui {
         event.register(InitContainer.MAID_FURNACE_CONTAINER.get(), FurnaceBackpackContainerScreen::new);
         event.register(InitContainer.MAID_TANK_CONTAINER.get(), TankBackpackContainerScreen::new);
 
-        event.register(BaubleContainer.TYPE, BaubleContainerScreen::new);
+        event.register(InitContainer.MAID_BAUBLE_CONTAINER.get(), BaubleContainerScreen::new);
         event.register(InitContainer.MAID_CONFIG_CONTAINER.get(), MaidConfigContainerGui::new);
-        event.register(InitContainer.MAID_AI_CHAT_CONFIG_CONTAINER.get(), MaidAIChatConfigContainerGui::new);
         event.register(InitContainer.WIRELESS_IO_CONTAINER.get(), WirelessIOContainerGui::new);
         event.register(InitContainer.PICNIC_BASKET_CONTAINER.get(), PicnicBasketContainerScreen::new);
 

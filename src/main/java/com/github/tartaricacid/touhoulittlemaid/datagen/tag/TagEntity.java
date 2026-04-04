@@ -29,6 +29,14 @@ public class TagEntity extends EntityTypeTagsProvider {
 
     public static TagKey<EntityType<?>> CARRYON_ENTITY_BLACKLIST = createTagKey(ResourceLocation.parse("carryon:entity_blacklist"));
 
+    /**
+     * 冰与火的石化效果免疫标签
+     */
+    public static final TagKey<EntityType<?>> IMMUNE_TO_GORGON_STONE = createTagKey(
+            ResourceLocation.parse("iceandfire:immune_to_gorgon_stone")
+    );
+
+
     public TagEntity(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, TouhouLittleMaid.MOD_ID, existingFileHelper);
     }
@@ -47,7 +55,6 @@ public class TagEntity extends EntityTypeTagsProvider {
         tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(InitEntities.FAIRY.get());
         tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(InitEntities.FAIRY.get());
         tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(InitEntities.FAIRY.get());
-        tag(TagKey.create(Registries.ENTITY_TYPE, id("iceandfire:immune_to_gorgon_stone"))).add(InitEntities.MAID.get());
 
         tag(MAID_FAIRY_ATTACK_GOAL).add(EntityType.IRON_GOLEM)
                 .addOptional(id("guardvillagers:guard"))
@@ -57,12 +64,17 @@ public class TagEntity extends EntityTypeTagsProvider {
                 .addOptional(id("alexscaves:gingerbread_man"))
                 .addOptional(id("alexsmobs:bunfungus"));
 
-        tag(MAID_VEHICLE_ROTATE_BLOCKLIST).addOptional(id("create:carriage_contraption"));
+        tag(MAID_VEHICLE_ROTATE_BLOCKLIST)
+                .addOptional(id("create:carriage_contraption"))
+                .addOptional(id("create:seat"));
 
         tag(CARRYON_ENTITY_BLACKLIST).add(
                 InitEntities.TOMBSTONE.get(),
                 InitEntities.SIT.get(),
                 InitEntities.BROOM.get());
+
+        // 让女仆免疫冰与火的石化效果，避免石化带来的各种问题
+        tag(IMMUNE_TO_GORGON_STONE).add(InitEntities.MAID.get());
     }
 
     private ResourceLocation id(String name) {

@@ -61,4 +61,9 @@ public class TaskMilk implements IMaidTask {
         }
         return FunctionCallSwitchResult.MISSING_REQUIRED_ITEM;
     }
+
+    @Override
+    public String getMaidActionSummary() {
+        return "Milk nearby cows using a bucket.";
+    }
 }

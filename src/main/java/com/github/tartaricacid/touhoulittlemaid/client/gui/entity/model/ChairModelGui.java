@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail.ChairModelDetailsGui;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
@@ -123,7 +124,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
                 }
             });
         } catch (ExecutionException | ClassCastException e) {
-            e.printStackTrace();
+            TouhouLittleMaid.LOGGER.error("Failed to render chair model preview", e);
             return;
         }
 

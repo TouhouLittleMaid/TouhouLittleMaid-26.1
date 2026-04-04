@@ -22,6 +22,19 @@ public class ChatMessage {
     @Nullable
     private String toolCallId = null;
 
+    private ChatMessage(String role, String content) {
+        this.role = role;
+        this.content = content;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
     public static ChatMessage systemChat(String content) {
         return new ChatMessage(Role.SYSTEM.getId(), content);
     }
@@ -34,6 +47,10 @@ public class ChatMessage {
         return new ChatMessage(Role.ASSISTANT.getId(), content);
     }
 
+    public static ChatMessage developerChat(String content) {
+        return new ChatMessage(Role.DEVELOPER.getId(), content);
+    }
+
     public static ChatMessage assistantChat(String content, List<ToolCall> toolCalls) {
         ChatMessage chatMessage = new ChatMessage(Role.ASSISTANT.getId(), content);
         chatMessage.toolCalls = toolCalls;
@@ -44,10 +61,5 @@ public class ChatMessage {
         ChatMessage chatMessage = new ChatMessage(Role.TOOL.getId(), content);
         chatMessage.toolCallId = toolCallId;
         return chatMessage;
-    }
-
-    private ChatMessage(String role, String content) {
-        this.role = role;
-        this.content = content;
     }
 }

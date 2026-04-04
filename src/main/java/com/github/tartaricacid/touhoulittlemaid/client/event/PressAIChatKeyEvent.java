@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.client.event;
 
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.AIChatScreen;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.network.message.ai.OpenMaidAIChatPacket;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -14,6 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -28,7 +29,8 @@ public class PressAIChatKeyEvent {
                 return;
             }
             Minecraft.getInstance().options.keyChat.consumeClick();
-            Minecraft.getInstance().setScreen(new AIChatScreen(maid));
+            // 先通过服务端鉴权，然后发送同步信息后再打开客户端界面
+            PacketDistributor.sendToServer(new OpenMaidAIChatPacket(maid));
         }
     }
 
@@ -36,8 +38,8 @@ public class PressAIChatKeyEvent {
     private static boolean keyIsMatch(InputEvent.Key event) {
         KeyMapping keyChat = Minecraft.getInstance().options.keyChat;
         return event.getAction() == GLFW.GLFW_PRESS
-                && keyChat.matches(event.getKey(), event.getScanCode())
-                && keyChat.getKeyModifier().equals(KeyModifier.getActiveModifier());
+               && keyChat.matches(event.getKey(), event.getScanCode())
+               && keyChat.getKeyModifier().equals(KeyModifier.getActiveModifier());
     }
 
     @Nullable

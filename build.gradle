@@ -214,6 +214,9 @@ dependencies {
     mcLib "org.gagravarr:vorbis-java-core:0.8"
     mcLib "io.github.jaredmdobson:concentus:1.0.2"
 
+    // MP3 音频解码库
+    mcLib "com.googlecode.soundlibs:mp3spi:1.9.5.4"
+
     // YAML 库
     mcLib "org.yaml:snakeyaml:2.4"
 
@@ -292,7 +295,7 @@ dependencies {
     implementation "maven.modrinth:just-more-cakes:1.19.2-neoforge,1.21.1"
 
     // 目前无法在开发环境使用，会崩
-    compileOnly "maven.modrinth:simple-hats:1.21.1-0.4.0-neoforge"
+    compileOnly "maven.modrinth:simple-hats:1.21.1-Neo-0.4.0"
     compileOnly "maven.modrinth:owo-lib:0.12.15.5-beta.1+1.21"
     compileOnly "maven.modrinth:accessories:1.1.0-beta.48+1.21.1"
 
@@ -313,6 +316,9 @@ shadowJar {
     // 包重定向
     relocate 'io.github.jaredmdobson.concentus', 'com.github.tartaricacid.touhoulittlemaid.libs.concentus'
     relocate 'org.gagravarr', 'com.github.tartaricacid.touhoulittlemaid.libs.gagravarr'
+    relocate 'javazoom.jl', 'com.github.tartaricacid.touhoulittlemaid.libs.javazoom.jl'
+    relocate 'javazoom.spi', 'com.github.tartaricacid.touhoulittlemaid.libs.javazoom.spi'
+    relocate 'org.tritonus', 'com.github.tartaricacid.touhoulittlemaid.libs.org.tritonus'
     relocate 'org.yaml.snakeyaml', 'com.github.tartaricacid.touhoulittlemaid.libs.snakeyaml'
 
     // 排除不需要的依赖项和资源

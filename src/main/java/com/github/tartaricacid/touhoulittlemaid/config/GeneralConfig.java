@@ -4,6 +4,8 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.*;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 public final class GeneralConfig {
+    public static ModConfigSpec CONFIG;
+
     public static ModConfigSpec getConfigSpec() {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
         MaidConfig.init(builder);
@@ -12,6 +14,7 @@ public final class GeneralConfig {
         VanillaConfig.init(builder);
         RenderConfig.init(builder);
         AIConfig.init(builder);
-        return builder.build();
+        CONFIG = builder.build();
+        return CONFIG;
     }
 }

@@ -18,10 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -99,11 +96,13 @@ public class BlockShrine extends BaseEntityBlock {
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-        if (blockEntity instanceof TileEntityShrine shrine) {
-            ItemStack storageItem = shrine.extractStorageItem();
-            if (!storageItem.isEmpty()) {
-                Block.popResource(worldIn, pos.offset(0, 1, 0), storageItem);
+        if (!state.is(newState.getBlock()) && !isMoving) {
+            BlockEntity blockEntity = worldIn.getBlockEntity(pos);
+            if (blockEntity instanceof TileEntityShrine shrine) {
+                ItemStack storageItem = shrine.extractStorageItem();
+                if (!storageItem.isEmpty()) {
+                    Block.popResource(worldIn, pos.offset(0, 1, 0), storageItem);
+                }
             }
         }
         super.onRemove(state, worldIn, pos, newState, isMoving);
@@ -133,5 +132,15 @@ public class BlockShrine extends BaseEntityBlock {
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
+    }
+
+    @Override
+    public BlockState rotate(BlockState pState, Rotation pRot) {
+        return pState.setValue(FACING, pRot.rotate(pState.getValue(FACING)));
+    }
+
+    @Override
+    public BlockState mirror(BlockState pState, Mirror pMirror) {
+        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
     }
 }

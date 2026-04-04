@@ -80,7 +80,7 @@ public final class InitItems {
     public static DeferredItem<Item> MONSTER_LIST = ITEMS.register("monster_list", ItemMonsterList::new);
 
     public static DeferredItem<Item> MAID_SPAWN_EGG = ITEMS.register("maid_spawn_egg", () -> new DeferredSpawnEggItem(() -> EntityMaid.TYPE, 0xffffff, 0xffffff, new Item.Properties()));
-    public static DeferredItem<Item> FAIRY_SPAWN_EGG = ITEMS.register("fairy_spawn_egg", () -> new DeferredSpawnEggItem(() -> EntityFairy.TYPE, 0xffffff, 0xffffff, new Item.Properties()));
+    public static DeferredItem<Item> FAIRY_SPAWN_EGG = ITEMS.register("fairy_spawn_egg", ItemFairySpawnEgg::new);
 
     public static final ResourceLocation MEMORIZABLE_GENSOKYO_LOCATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "memorizable_gensokyo");
 

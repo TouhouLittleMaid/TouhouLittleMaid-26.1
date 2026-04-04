@@ -54,4 +54,9 @@ public class TaskShears implements IMaidTask {
         }
         return FunctionCallSwitchResult.MISSING_REQUIRED_ITEM;
     }
+
+    @Override
+    public String getMaidActionSummary() {
+        return "Shear wool and other drops from nearby animals using shears.";
+    }
 }

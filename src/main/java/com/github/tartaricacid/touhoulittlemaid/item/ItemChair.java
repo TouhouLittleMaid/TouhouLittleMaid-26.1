@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
+import com.google.common.base.Suppliers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,9 +19,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -40,16 +39,21 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.*;
 
 public class ItemChair extends Item {
     private static final String DEFAULT_MODEL_ID = "touhou_little_maid:cushion";
     public static final IClientItemExtensions ITEM_EXTENSIONS = FMLEnvironment.dist == Dist.CLIENT ? new IClientItemExtensions() {
-        @Override
-        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+        private static final Supplier<TileEntityItemStackChairRenderer> MEMOIZE = Suppliers.memoize(() -> {
             Minecraft minecraft = Minecraft.getInstance();
             return new TileEntityItemStackChairRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
+        });
+
+        @Override
+        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+            return MEMOIZE.get();
         }
     } : null;
 

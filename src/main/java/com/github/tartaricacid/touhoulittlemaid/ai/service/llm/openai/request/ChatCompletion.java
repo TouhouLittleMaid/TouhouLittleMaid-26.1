@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.request;
 
+import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.Role;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.ToolCall;
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
@@ -19,11 +20,11 @@ public class ChatCompletion {
     @SerializedName("response_format")
     private ResponseFormat responseFormat = ResponseFormat.text();
 
-    @SerializedName("max_tokens")
-    private int maxTokens = 4096;
-
-    @SerializedName("temperature")
-    private double temperature = 0.5;
+    /**
+     * 部分国内模型会添加此此段，故需要兼容
+     */
+    @SerializedName("thinking")
+    private Thinking thinking = null;
 
     public static ChatCompletion create() {
         return new ChatCompletion();
@@ -59,6 +60,11 @@ public class ChatCompletion {
         return this;
     }
 
+    public ChatCompletion developerChat(String message) {
+        this.messages.add(ChatMessage.developerChat(message));
+        return this;
+    }
+
     public ChatCompletion addTool(Tool tool) {
         if (this.tools == null) {
             this.tools = Lists.newArrayList();
@@ -67,14 +73,37 @@ public class ChatCompletion {
         return this;
     }
 
-    public ChatCompletion maxTokens(int maxTokens) {
-        this.maxTokens = maxTokens;
+    public ChatCompletion disableThinking() {
+        this.thinking = Thinking.disabled();
         return this;
     }
 
-    public ChatCompletion temperature(double temperature) {
-        // 温度的范围是 [0,2)
-        this.temperature = Math.min(temperature, 1.99);
+    /**
+     * 部分站点（比如 MiniMax）不支持多个 system 消息，需要将多个 system 消息合并成一个消息发送
+     */
+    public ChatCompletion mergeSystemMessages() {
+        boolean continuous = true;
+        List<ChatMessage> copy = Lists.newArrayList();
+
+        // 获取头部的 system 消息
+        for (ChatMessage msg : this.messages) {
+            if (continuous && msg.getRole().equals(Role.SYSTEM.getId())) {
+                // 如果没有消息，那么加入
+                if (copy.isEmpty()) {
+                    copy.add(msg);
+                } else {
+                    // 如果有消息了，那么合并到第一个消息中
+                    ChatMessage first = copy.get(0);
+                    first = ChatMessage.systemChat(first.getContent() + "\n" + msg.getContent());
+                    copy.set(0, first);
+                }
+            } else {
+                continuous = false;
+                copy.add(msg);
+            }
+        }
+
+        this.messages = copy;
         return this;
     }
 

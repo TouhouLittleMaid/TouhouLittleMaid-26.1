@@ -50,6 +50,7 @@ public final class TouhouLittleMaid {
         InitSounds.SOUNDS.register(eventBus);
         InitRecipes.RECIPE_SERIALIZERS.register(eventBus);
         InitRecipes.RECIPE_TYPES.register(eventBus);
+        InitRecipes.INGREDIENT_TYPES.register(eventBus);
         InitCommand.ARGUMENT_TYPE.register(eventBus);
         InitPoi.POI_TYPES.register(eventBus);
         InitTrigger.TRIGGERS.register(eventBus);

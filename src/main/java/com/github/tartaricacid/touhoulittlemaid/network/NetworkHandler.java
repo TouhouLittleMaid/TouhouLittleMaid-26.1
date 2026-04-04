@@ -1,8 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.network;
 
 import com.github.tartaricacid.touhoulittlemaid.network.message.*;
+import com.github.tartaricacid.touhoulittlemaid.network.message.ai.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -13,7 +15,7 @@ public class NetworkHandler {
     private static final String VERSION = "1.0.0";
 
     public static void registerPacket(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(VERSION).optional();
+        final PayloadRegistrar registrar = event.registrar(VERSION);
 
         registrar.playToServer(MaidModelPackage.TYPE, MaidModelPackage.STREAM_CODEC, MaidModelPackage::handle);
         registrar.playToServer(ChairModelPackage.TYPE, ChairModelPackage.STREAM_CODEC, ChairModelPackage::handle);
@@ -71,6 +73,17 @@ public class NetworkHandler {
         registrar.playToClient(MaidAnimationPackage.TYPE, MaidAnimationPackage.STREAM_CODEC, MaidAnimationPackage::handle);
         registrar.playToClient(SyncBaublePackage.TYPE, SyncBaublePackage.STREAM_CODEC, SyncBaublePackage::handle);
         registrar.playToClient(CuriosS2CUpdatePacket.TYPE, CuriosS2CUpdatePacket.STREAM_CODEC, CuriosS2CUpdatePacket::handle);
+
+        registrar.playToServer(OpenMaidAIChatPacket.TYPE, OpenMaidAIChatPacket.STREAM_CODEC, OpenMaidAIChatPacket::handle);
+        registrar.playToClient(SyncMaidAIDataPacket.TYPE, SyncMaidAIDataPacket.STREAM_CODEC, SyncMaidAIDataPacket::handle);
+        registrar.playToServer(OpenAIConfigPacket.TYPE, OpenAIConfigPacket.STREAM_CODEC, OpenAIConfigPacket::handle);
+        registrar.playToClient(SyncAISitesPacket.TYPE, SyncAISitesPacket.STREAM_CODEC, SyncAISitesPacket::handle);
+        registrar.playToServer(SaveLLMSitePacket.TYPE, SaveLLMSitePacket.STREAM_CODEC, SaveLLMSitePacket::handle);
+        registrar.playToServer(SaveTTSSitePacket.TYPE, SaveTTSSitePacket.STREAM_CODEC, SaveTTSSitePacket::handle);
+    }
+
+    public static void sendToClientPlayer(CustomPacketPayload payload, ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, payload);
     }
 
     public static void sendToNearby(Entity entity, CustomPacketPayload toSend) {

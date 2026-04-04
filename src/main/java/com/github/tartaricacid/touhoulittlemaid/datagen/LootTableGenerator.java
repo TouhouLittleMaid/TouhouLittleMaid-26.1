@@ -268,6 +268,7 @@ public class LootTableGenerator {
             dropSelf(InitBlocks.BOOKSHELF.get());
             dropSelf(InitBlocks.COMPUTER.get());
             dropSelf(InitBlocks.SHRINE.get());
+            dropSelf(InitBlocks.SNACK_CABINET.get());
         }
 
         @Override

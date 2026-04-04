@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.init.registry;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.datapack.resources.BoardStateDataReloadListener;
 import com.github.tartaricacid.touhoulittlemaid.datapack.resources.KaomojiDataReloadListener;
+import com.github.tartaricacid.touhoulittlemaid.datapack.resources.SkillsDataReloadListener;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -13,5 +14,6 @@ public class DatapackRegistry {
     public static void onAddReloadListenerEvent(AddReloadListenerEvent event) {
         event.addListener(new KaomojiDataReloadListener());
         event.addListener(new BoardStateDataReloadListener());
+        event.addListener(new SkillsDataReloadListener());
     }
 }

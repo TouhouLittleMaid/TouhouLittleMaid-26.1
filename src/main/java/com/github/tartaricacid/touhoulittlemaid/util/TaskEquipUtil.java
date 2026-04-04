@@ -19,7 +19,7 @@ public final class TaskEquipUtil {
         if (predicate.test(maid.getMainHandItem())) {
             return true;
         }
-        RangedWrapper backpack = maid.getAvailableBackpackInv();
+        var backpack = maid.getAvailableBackpackInv();
         int slot = ItemsUtil.findStackSlot(backpack, predicate::test);
         if (slot >= 0) {
             int count = backpack.getStackInSlot(slot).getCount();
@@ -43,7 +43,7 @@ public final class TaskEquipUtil {
         if (maid.getMainHandItem().isEmpty()) {
             return false;
         }
-        RangedWrapper backpack = maid.getAvailableBackpackInv();
+        var backpack = maid.getAvailableBackpackInv();
         ItemStack mainHandItem = maid.getMainHandItem();
         for (int i = 0; i < backpack.getSlots(); i++) {
             ItemStack stackInSlot = backpack.getStackInSlot(i);

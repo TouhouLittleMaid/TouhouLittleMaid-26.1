@@ -69,7 +69,7 @@ public class TileEntityItemStackGarageKitRenderer extends BlockEntityWithoutLeve
                     try {
                         renderEntity(stack, poseStack, bufferIn, combinedLightIn, data.copyTag(), world, type);
                     } catch (ExecutionException e) {
-                        e.printStackTrace();
+                        TouhouLittleMaid.LOGGER.error("Failed to render garage kit item entity", e);
                     }
                 }
         );

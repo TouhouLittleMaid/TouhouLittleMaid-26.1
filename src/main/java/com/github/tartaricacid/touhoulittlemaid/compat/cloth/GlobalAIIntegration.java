@@ -112,23 +112,6 @@ public class GlobalAIIntegration {
                     AIConfig.LLM_ENABLED.save();
                 }).build());
 
-        builder.add(entryBuilder.startDoubleField(Component.translatable("config.touhou_little_maid.global_ai.llm_temperature"), AIConfig.LLM_TEMPERATURE.get())
-                .setDefaultValue(AIConfig.LLM_TEMPERATURE.getDefault()).setMin(0.0).setMax(2.0)
-                .setTooltip(Component.translatable("config.touhou_little_maid.global_ai.llm_temperature.tooltip"))
-                .setSaveConsumer(s -> {
-                    AIConfig.LLM_TEMPERATURE.set(s);
-                    AIConfig.LLM_TEMPERATURE.save();
-                }).build());
-
-        builder.add(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled"), AIConfig.FUNCTION_CALL_ENABLED.get())
-                .setDefaultValue(false).setTooltip(
-                        Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled.1.tooltip"),
-                        Component.translatable("config.touhou_little_maid.global_ai.function_call_enabled.2.tooltip")
-                ).setSaveConsumer(s -> {
-                    AIConfig.FUNCTION_CALL_ENABLED.set(s);
-                    AIConfig.FUNCTION_CALL_ENABLED.save();
-                }).build());
-
         builder.add(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.global_ai.auto_gen_setting_enabled"), AIConfig.AUTO_GEN_SETTING_ENABLED.get())
                 .setDefaultValue(true).setTooltip(Component.translatable("config.touhou_little_maid.global_ai.auto_gen_setting_enabled.tooltip"))
                 .setSaveConsumer(s -> {
@@ -144,16 +127,8 @@ public class GlobalAIIntegration {
                     AIConfig.LLM_PROXY_ADDRESS.save();
                 }).build());
 
-        builder.add(entryBuilder.startIntField(Component.translatable("config.touhou_little_maid.global_ai.llm_max_token"), AIConfig.LLM_MAX_TOKEN.get())
-                .setDefaultValue(4096)
-                .setTooltip(Component.translatable("config.touhou_little_maid.global_ai.llm_max_token.tooltip"))
-                .setSaveConsumer(s -> {
-                    AIConfig.LLM_MAX_TOKEN.set(s);
-                    AIConfig.LLM_MAX_TOKEN.save();
-                }).build());
-
         builder.add(entryBuilder.startIntSlider(Component.translatable("config.touhou_little_maid.global_ai.maid_max_history_llm_size"),
-                        AIConfig.MAID_MAX_HISTORY_LLM_SIZE.get(), 1, 128).setDefaultValue(16)
+                        AIConfig.MAID_MAX_HISTORY_LLM_SIZE.get(), 1, 128).setDefaultValue(24)
                 .setTooltip(Component.translatable("config.touhou_little_maid.global_ai.maid_max_history_llm_size.tooltip"))
                 .setSaveConsumer(s -> {
                     AIConfig.MAID_MAX_HISTORY_LLM_SIZE.set(s);

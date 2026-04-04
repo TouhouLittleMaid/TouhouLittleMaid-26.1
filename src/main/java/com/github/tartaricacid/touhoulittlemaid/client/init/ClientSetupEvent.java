@@ -13,7 +13,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.overlay.ShowPowerOverlay;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.LegacyPackRepositorySource;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.listener.EmojiReloadListener;
 import com.github.tartaricacid.touhoulittlemaid.compat.embeddium.EmbeddiumCompat;
-import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.ImmersiveMelodiesCompat;
+import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.client.ImmersiveMelodiesCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.oculus.OculusCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.patpat.PatPatCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ponder.PonderCompat;

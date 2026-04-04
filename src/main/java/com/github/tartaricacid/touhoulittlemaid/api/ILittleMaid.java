@@ -1,5 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.api;
 
+import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.GameContextRegister;
+import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ToolRegister;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.SerializerRegister;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.function.FunctionCallRegister;
 import com.github.tartaricacid.touhoulittlemaid.block.multiblock.MultiBlockManager;
@@ -114,8 +116,42 @@ public interface ILittleMaid {
     }
 
     /**
-     * 注册一个自己的 function call
+     * 注册女仆 AI 可用的 Tool。
+     * <p>
+     * Tool 会全部塞入对话的工具部分，用于执行具体且原子的游戏内操作。
+     *
+     * @param register 注册器
      */
+    @ApiStatus.AvailableSince("1.5.1")
+    default void registerAITool(ToolRegister register) {
+    }
+
+    /**
+     * 注册女仆 AI 可用的额外上下文项。
+     * <p>
+     * 这些上下文项会被 maid_context skill 按分类按需读取，再通过 tool 返回给大模型。
+     * 如有需要，建议扩展模组按语义将上下文注册到合适的分类中，而不是一次性暴露所有上下文。
+     * <p>
+     * 推荐先注册分类，再将上下文项挂到该分类下，例如：
+     * <pre>{@code
+     * register.registerCategory("equipment", "Held items and backpack inventory");
+     * register.registerContext("equipment", new MyEquipmentContext());
+     * }</pre>
+     * 注册上下文项时必须指定一个已经存在的分类，否则会抛出异常。
+     * 没有上下文项的分类不会出现在 maid_context skill 提供给模型的可选分类列表中。
+     *
+     * @param register 注册器
+     */
+    @ApiStatus.AvailableSince("1.5.1")
+    default void registerAIMaidContext(GameContextRegister register) {
+    }
+
+    /**
+     * 注册一个自己的 function call
+     *
+     * @deprecated 自 1.5.1 起，更换为 skill 机制，此方法已经无效
+     */
+    @Deprecated(since = "1.5.1", forRemoval = true)
     default void registerAIFunctionCall(FunctionCallRegister register) {
     }
 

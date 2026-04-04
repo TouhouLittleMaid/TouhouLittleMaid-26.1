@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.ErrorCode;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.ResponseCallback;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.ServiceType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.network.message.TTSAudioToClientPackage;
+import com.github.tartaricacid.touhoulittlemaid.network.message.ai.TTSAudioToClientPackage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
@@ -57,5 +57,9 @@ public class TTSCallback implements ResponseCallback<byte[]> {
             PacketDistributor.sendToPlayer(player, new TTSAudioToClientPackage(maid.getId(), data));
             maid.getChatBubbleManager().addLLMChatText(chatText, waitingChatBubbleId);
         });
+    }
+
+    public EntityMaid getMaid() {
+        return maid;
     }
 }
