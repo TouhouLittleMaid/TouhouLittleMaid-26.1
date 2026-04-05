@@ -28,10 +28,9 @@ MOD_IDS: list[str] = [
     "jade", "the-one-probe",  # 信息提示
     "citadel", "domestication-innovation",  # 驯化革新及前置
     "slashblade-resharped",  # 拔刀剑
-    "iron-chests",  # 铁箱子
     "immersive-melodies",  # 沉浸式奏乐
     "kotlin-for-forge", "libipn", "inventory-profiles-next",  # IPN 及前置
-    "timeless-and-classics-zero",  # TaCZ 永恒枪械工坊
+    "tacz-1.21.1",  # TaCZ 永恒枪械工坊
     "superb-warfare",  # 卓越前线
     "curios",  # Curios
     "aquaculture",  # 水产养殖
@@ -40,7 +39,7 @@ MOD_IDS: list[str] = [
     "kaleidoscope-cookery",  # 森罗厨房
     "geckolib",  # GeckoLib
     "farmers-delight",  # 农夫乐事
-    "common-network", "just-more-cakes",  # 更多蛋糕
+    "forge-config-api-port", "common-network", "just-more-cakes",  # 更多蛋糕
     # =========
     # 附属联动模组
     # =========
