@@ -124,6 +124,6 @@ public class TaskNormalFarm implements IFarmTask {
 
     @Override
     public String getMaidActionSummary() {
-        return "Plant and harvest crops on nearby farmland.";
+        return "Plant and harvest crops";
     }
 }

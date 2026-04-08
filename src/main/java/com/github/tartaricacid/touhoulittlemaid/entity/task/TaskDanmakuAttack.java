@@ -207,6 +207,6 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
 
     @Override
     public String getMaidActionSummary() {
-        return "Use a Hakurei gohei to fire danmaku at nearby hostile mobs.";
+        return "Use gohei to fire danmaku attack entities";
     }
 }
