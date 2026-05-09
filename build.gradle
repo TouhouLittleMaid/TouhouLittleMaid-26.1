@@ -121,6 +121,14 @@ repositories {
             includeGroup("com.eliotlash.mclib")
         }
     }
+    maven {
+        url = "https://maven.ryanhcode.dev/releases"
+        name = "RyanHCode Maven"
+        content {
+            includeGroup "dev.ryanhcode.sable"
+            includeGroup "dev.ryanhcode.sable-companion"
+        }
+    }
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
 }
 
@@ -251,7 +259,7 @@ dependencies {
 
     compileOnly "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
     compileOnly "maven.modrinth:iris:1.8.8+1.21.1-neoforge"
-    implementation "maven.modrinth:embeddium:1.0.15+mc1.21.1-neoforge"
+    compileOnly "maven.modrinth:embeddium:1.0.15+mc1.21.1-neoforge"
 
     implementation "maven.modrinth:jade:15.10.2+neoforge"
     compileOnly "maven.modrinth:the-one-probe:1.21_neo-12.0.6"
@@ -261,9 +269,6 @@ dependencies {
     implementation "maven.modrinth:iron-chests:1.21-neoforge-16.0.7"
     implementation "maven.modrinth:carry-on:2.2.2-neoforge"
     implementation "maven.modrinth:inventory-tweaks-refoxed:1.21.1-1.2.0"
-
-    implementation "net.createmod.ponder:Ponder-NeoForge-1.21.1:1.0.56"
-    runtimeOnly "maven.modrinth:create:1.21.1-6.0.6"
 
     implementation "maven.modrinth:sophisticated-core:1.21.1-1.3.50.1004"
     implementation "maven.modrinth:sophisticated-backpacks:1.21.1-3.24.15.1250"
@@ -282,9 +287,9 @@ dependencies {
     implementation "libs:superbwarfare-1.21.1:0.8.7.1"
 
     // 地图相关模组兼容
-    runtimeOnly "maven.modrinth:xaeros-minimap:25.2.10_NeoForge_1.21"
-    runtimeOnly "maven.modrinth:xaeros-world-map:1.39.12_NeoForge_1.21"
-    runtimeOnly "maven.modrinth:journeymap:1.21.1-6.0.0-beta.52+neoforge"
+    // runtimeOnly "maven.modrinth:xaeros-minimap:25.2.10_NeoForge_1.21"
+    // runtimeOnly "maven.modrinth:xaeros-world-map:1.40.2_NeoForge_1.21"
+    // runtimeOnly "maven.modrinth:journeymap:1.21.1-6.0.0-beta.52+neoforge"
 
     // 沉浸式奏乐
     implementation "maven.modrinth:immersive-melodies:0.6.2+1.21.1-neoforge"
@@ -295,6 +300,15 @@ dependencies {
     implementation "maven.modrinth:common-network:1.0.21-1.21.1-neoforge"
     implementation "maven.modrinth:forge-config-api-port:v21.1.6-1.21.1-NeoForge"
     implementation "maven.modrinth:just-more-cakes:1.19.2-neoforge,1.21.1"
+
+    // 思索
+    compileOnly "net.createmod.ponder:Ponder-NeoForge-1.21.1:1.0.56"
+
+    // 机械动力航空学
+    implementation "maven.modrinth:create-aeronautics:1.2.1+mc1.21.1-neoforge"
+    implementation "maven.modrinth:create:6.0.10+mc1.21.1-neoforge"
+    implementation "maven.modrinth:sable:1.2.2+mc1.21.1-neoforge"
+    implementation "dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:1.6.0"
 
     // 目前无法在开发环境使用，会崩
     compileOnly "maven.modrinth:simple-hats:1.21.1-Neo-0.4.0"
