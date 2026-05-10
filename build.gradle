@@ -9,8 +9,8 @@ plugins {
     // NeoForged 开发插件
     id 'net.neoforged.moddev' version '2.0.141'
 
-    // shadow 插件
-    id 'com.gradleup.shadow' version '8.3.6'
+    // Shadow 插件，用于打包依赖到 jar 包里
+    id 'com.gradleup.shadow' version '9.4.1'
 }
 
 // ALL 为下载 gradle 源码，方便查看调试
@@ -18,7 +18,7 @@ tasks.named('wrapper', Wrapper).configure {
     distributionType = Wrapper.DistributionType.ALL
 }
 
-// 需要 Java 21 版本
+// 需要 Java 25 版本
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 // 模组相关信息
