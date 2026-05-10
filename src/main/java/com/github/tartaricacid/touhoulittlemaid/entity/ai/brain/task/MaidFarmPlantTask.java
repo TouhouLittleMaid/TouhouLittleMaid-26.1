@@ -67,7 +67,7 @@ public class MaidFarmPlantTask extends Behavior<EntityMaid> {
                 }
             }
 
-            CombinedResourceHandler<@NotNull ItemResource> availableInv = maid.getAvailableInv(true);
+            CombinedResourceHandler<ItemResource> availableInv = maid.getAvailableInv(true);
             List<Integer> slots = ItemsUtil.getFilterStackSlots(availableInv, task::isSeed);
             if (!slots.isEmpty()) {
                 for (int slot : slots) {

@@ -70,7 +70,7 @@ public class MaidHealSelfTask extends MaidCheckRateTask {
         var backpackInv = maid.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
-        int stackSlot = ItemsUtil.findStackSlot(backpackInv, DefaultMaidHealSelfMeal::isHealMeal, null);
+        int stackSlot = ItemsUtil.findStackSlot(backpackInv, DefaultMaidHealSelfMeal::isHealMeal);
         if (stackSlot != -1)
             try (Transaction transaction = Transaction.openRoot()) {
                 ItemResource resource = backpackInv.getResource(stackSlot);

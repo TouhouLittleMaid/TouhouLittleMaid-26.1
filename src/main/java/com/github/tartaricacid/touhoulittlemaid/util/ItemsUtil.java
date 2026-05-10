@@ -30,9 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public final class ItemsUtil {
     private ItemsUtil() {
@@ -70,7 +68,7 @@ public final class ItemsUtil {
     /**
      * 旧版ItemStackHandler#extractItem的新实现
      */
-    public static ItemStack extractItem(ResourceHandler<@NotNull ItemResource> itemHandler, int index, int amount, boolean simulate, @Nullable TransactionContext parent) {
+    public static ItemStack extractItem(ResourceHandler<ItemResource> itemHandler, int index, int amount, boolean simulate, @Nullable TransactionContext parent) {
         try (Transaction tx = Transaction.open(parent)) {
             ItemResource resource = itemHandler.getResource(index);
             int extracted = itemHandler.extract(index, resource, amount, tx);
@@ -84,7 +82,7 @@ public final class ItemsUtil {
     /**
      * 掉落指定起始、结束槽位的物品
      */
-    public static void dropEntityItems(Entity entity, ResourceHandler<@NotNull ItemResource> itemHandler, int startIndex, int endIndex, @Nullable TransactionContext parent) {
+    public static void dropEntityItems(Entity entity, ResourceHandler<ItemResource> itemHandler, int startIndex, int endIndex, @Nullable TransactionContext parent) {
         for (int i = startIndex; i < endIndex; i++) {
             ItemStack stackInSlot = ItemUtil.getStack(itemHandler, i);
             ItemStack extractItem = extractItem(itemHandler, i, stackInSlot.getCount(), false, parent);
@@ -97,14 +95,14 @@ public final class ItemsUtil {
     /**
      * 掉落指定起始的物品
      */
-    public static void dropEntityItems(Entity entity, ResourceHandler<@NotNull ItemResource> itemHandler, int startIndex, @Nullable TransactionContext parent) {
+    public static void dropEntityItems(Entity entity, ResourceHandler<ItemResource> itemHandler, int startIndex, @Nullable TransactionContext parent) {
         dropEntityItems(entity, itemHandler, startIndex, itemHandler.size(), parent);
     }
 
     /**
      * 掉落全部物品
      */
-    public static void dropEntityItems(Entity entity, ResourceHandler<@NotNull ItemResource> itemHandler, @Nullable TransactionContext parent) {
+    public static void dropEntityItems(Entity entity, ResourceHandler<ItemResource> itemHandler, @Nullable TransactionContext parent) {
         dropEntityItems(entity, itemHandler, 0, itemHandler.size(), parent);
     }
 
@@ -113,8 +111,8 @@ public final class ItemsUtil {
      *
      * @return 如果没找到，返回 -1
      */
-    public static int findStackSlot(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
-        return findStackSlot(handler, filter, -1, parent);
+    public static int findStackSlot(ResourceHandler<ItemResource> handler, Predicate<ItemStack> filter) {
+        return findStackSlot(handler, filter, -1);
     }
 
     /**
@@ -123,7 +121,7 @@ public final class ItemsUtil {
      *
      * @return 如果没找到，返回 -1
      */
-    public static int findStackSlot(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, int maxCount, @Nullable TransactionContext parent) {
+    public static int findStackSlot(ResourceHandler<ItemResource> handler, Predicate<ItemStack> filter, int maxCount) {
         // 先正常在普通物品栏中查找
         for (int i = 0; i < handler.size(); i++) {
             ItemStack stack = ItemUtil.getStack(handler, i);
@@ -160,7 +158,7 @@ public final class ItemsUtil {
     /**
      * 获取符合条件的 slot 列表
      */
-    public static List<Integer> getFilterStackSlots(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter) {
+    public static List<Integer> getFilterStackSlots(ResourceHandler<ItemResource> handler, Predicate<ItemStack> filter) {
         IntList slots = new IntArrayList();
         for (int i = 0; i < handler.size(); i++) {
             ItemStack stack = ItemUtil.getStack(handler, i);
@@ -174,12 +172,12 @@ public final class ItemsUtil {
     /**
      * 符合 filter 条件的物品是否在 handler 中
      */
-    public static boolean isStackIn(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
-        return findStackSlot(handler, filter, parent) >= 0;
+    public static boolean isStackIn(ResourceHandler<ItemResource> handler, Predicate<ItemStack> filter) {
+        return findStackSlot(handler, filter) >= 0;
     }
 
-    public static boolean isStackIn(EntityMaid maid, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
-        return findStackSlot(maid.getAvailableInv(false), filter, parent) >= 0;
+    public static boolean isStackIn(EntityMaid maid, Predicate<ItemStack> filter) {
+        return findStackSlot(maid.getAvailableInv(false), filter) >= 0;
     }
 
     /**
@@ -187,8 +185,8 @@ public final class ItemsUtil {
      *
      * @return 如果该物品不存在，返回 ItemStack.EMPTY
      */
-    public static ItemStack getStack(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
-        int slotIndex = findStackSlot(handler, filter, parent);
+    public static ItemStack getStack(ResourceHandler<ItemResource> handler, Predicate<ItemStack> filter) {
+        int slotIndex = findStackSlot(handler, filter);
         if (slotIndex >= 0) {
             return ItemUtil.getStack(handler, slotIndex);
         } else {
@@ -196,8 +194,8 @@ public final class ItemsUtil {
         }
     }
 
-    public static ItemStack getStack(EntityMaid maid, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
-        return getStack(maid.getAvailableInv(false), filter, parent);
+    public static ItemStack getStack(EntityMaid maid, Predicate<ItemStack> filter) {
+        return getStack(maid.getAvailableInv(false), filter);
     }
 
     /**

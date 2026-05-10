@@ -20,7 +20,7 @@ public final class TaskEquipUtil {
             return true;
         }
         var backpack = maid.getAvailableBackpackInv();
-        int slot = ItemsUtil.findStackSlot(backpack, predicate::test, null);
+        int slot = ItemsUtil.findStackSlot(backpack, predicate::test);
         if (slot >= 0) {
             int count = ItemUtil.getStack(backpack, slot).getCount();
             ItemStack output = ItemsUtil.extractItem(backpack, slot, count, false, null);

@@ -39,6 +39,6 @@ public class MaidTorchMoveTask extends MaidMoveToBlockTask {
 
     private ItemStack getTorchItem(EntityMaid entityMaid) {
         CombinedResourceHandler<ItemResource> itemHandler = entityMaid.getAvailableInv(false);
-        return ItemsUtil.getStack(itemHandler, stack -> stack.getItem() == Items.TORCH, null);
+        return ItemsUtil.getStack(itemHandler, stack -> stack.getItem() == Items.TORCH);
     }
 }

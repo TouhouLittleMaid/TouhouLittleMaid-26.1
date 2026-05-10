@@ -43,7 +43,10 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskIdle;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
-import com.github.tartaricacid.touhoulittlemaid.init.*;
+import com.github.tartaricacid.touhoulittlemaid.init.InitAttribute;
+import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.BaubleContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.config.MaidConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
@@ -1176,7 +1179,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             return ItemStack.EMPTY;
         }
         var handler = this.getAvailableInv(true);
-        int slot = ItemsUtil.findStackSlot(handler, weaponItem.getAllSupportedProjectiles(), null);
+        int slot = ItemsUtil.findStackSlot(handler, weaponItem.getAllSupportedProjectiles());
         if (slot < 0) {
             // 不存在时，返回空
             return ItemStack.EMPTY;
@@ -2219,7 +2222,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     public Activity getScheduleDetail() {
         //TODO 检查是否正确
-        return level.environmentAttributes().getValue(this.getSchedule().getEnvironmentAttribute(),blockPosition());
+        return level.environmentAttributes().getValue(this.getSchedule().getEnvironmentAttribute(), blockPosition());
     }
 
 

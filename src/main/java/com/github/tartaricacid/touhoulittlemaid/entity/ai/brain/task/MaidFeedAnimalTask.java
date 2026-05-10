@@ -50,7 +50,7 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
                     .filter(e -> e instanceof Animal)
                     .filter(e -> ((Animal) e).getAge() == 0)
                     .filter(e -> ((Animal) e).canFallInLove())
-                    .filter(e -> ItemsUtil.isStackIn(availableInv, ((Animal) e)::isFood, null))
+                    .filter(e -> ItemsUtil.isStackIn(availableInv, ((Animal) e)::isFood))
                     .filter(maid::canPathReach)
                     .findFirst()
                     .ifPresent(e -> {
@@ -59,8 +59,8 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
                     });
 
             if (feedEntity != null && feedEntity.closerThan(maid, 2)) {
-                int slot = ItemsUtil.findStackSlot(availableInv, feedEntity::isFood, null);
-                if(slot != -1) {
+                int slot = ItemsUtil.findStackSlot(availableInv, feedEntity::isFood);
+                if (slot != -1) {
                     ItemStack food = ItemsUtil.extractItem(availableInv, slot, 1, false, null);
                     if (!food.isEmpty()) {
                         maid.swing(InteractionHand.MAIN_HAND);

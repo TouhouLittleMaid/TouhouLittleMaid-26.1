@@ -83,8 +83,8 @@ public class MaidCollectHoneyTask extends MaidCheckRateTask {
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
     }
 
-    private void collectHoneyBottle(ServerLevel level, EntityMaid maid, CombinedResourceHandler<@NotNull ItemResource> maidAvailableInv, BlockState hiveBlockState, BlockPos hivePos) {
-        int slot = ItemsUtil.findStackSlot(maidAvailableInv, stack -> stack.is(Items.HONEY_BOTTLE), null);
+    private void collectHoneyBottle(ServerLevel level, EntityMaid maid, CombinedResourceHandler<ItemResource> maidAvailableInv, BlockState hiveBlockState, BlockPos hivePos) {
+        int slot = ItemsUtil.findStackSlot(maidAvailableInv, stack -> stack.is(Items.HONEY_BOTTLE));
         if (slot == -1)
             return;
         try (Transaction transaction = Transaction.openRoot()) {

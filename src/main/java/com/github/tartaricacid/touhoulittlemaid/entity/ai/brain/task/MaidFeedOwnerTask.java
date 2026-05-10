@@ -19,7 +19,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import org.jetbrains.annotations.NotNull;
 
 public class MaidFeedOwnerTask extends MaidCheckRateTask {
     private static final int MAX_DELAY_TIME = 20;
@@ -59,10 +58,10 @@ public class MaidFeedOwnerTask extends MaidCheckRateTask {
             IntList lowFoods = new IntArrayList();
             IntList highFoods = new IntArrayList();
 
-            CombinedResourceHandler<@NotNull ItemResource> inv = maid.getAvailableInv(true);
+            CombinedResourceHandler<ItemResource> inv = maid.getAvailableInv(true);
 
             // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
-            ItemsUtil.findStackSlot(inv, stack -> task.isFood(stack, player), null);
+            ItemsUtil.findStackSlot(inv, stack -> task.isFood(stack, player));
 
 
             for (int i = 0; i < inv.size(); ++i) {

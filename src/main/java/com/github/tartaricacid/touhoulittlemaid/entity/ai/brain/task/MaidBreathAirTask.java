@@ -132,7 +132,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
         try (Transaction transaction = Transaction.openRoot()) {
-            int stackSlot = ItemsUtil.findStackSlot(backpackInv, stack -> this.isBreatheFood(maid, ItemResource.of(stack)), transaction);
+            int stackSlot = ItemsUtil.findStackSlot(backpackInv, stack -> this.isBreatheFood(maid, ItemResource.of(stack)));
             if (stackSlot >= 0) {
                 ItemStack canExtract = ItemsUtil.extractItem(backpackInv, stackSlot, 99, true, transaction);
                 if (!canExtract.isEmpty()) {
