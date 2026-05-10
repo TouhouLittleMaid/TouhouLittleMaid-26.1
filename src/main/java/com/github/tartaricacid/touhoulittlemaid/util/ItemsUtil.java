@@ -10,16 +10,24 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.StacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -29,14 +37,58 @@ public final class ItemsUtil {
     }
 
     /**
+     * 直接设置对应槽位的物品堆
+     */
+    public static void setStackInSlot(ResourceHandler<@NotNull ItemResource> itemHandler, int slot, ItemStack stack) {
+        if (itemHandler instanceof StacksResourceHandler<?, @NotNull ItemResource> stacksResourceHandler) {
+            stacksResourceHandler.set(slot, ItemResource.of(stack), stack.getCount());
+        } else {
+            extractItem(itemHandler, slot, itemHandler.getAmountAsInt(slot), false, null);
+            ItemUtil.insertItemReturnRemaining(itemHandler, slot, stack, false, null);
+        }
+    }
+
+    /**
+     * 旧版ItemHandlerHelper#insertItemStacked的新实现
+     */
+    public static ItemStack insertItemStacked(ResourceHandler<@NotNull ItemResource> itemHandler, ItemStack stack, boolean simulate, @Nullable TransactionContext parent) {
+        if (stack.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+
+        try (Transaction tx = Transaction.open(parent)) {
+            int inserted = ResourceHandlerUtil.insertStacking(itemHandler, ItemResource.of(stack), stack.getCount(), tx);
+            if (!simulate) {
+                tx.commit();
+            }
+            int leftover = stack.getCount() - inserted;
+            return leftover == 0 ? ItemStack.EMPTY : stack.copyWithCount(leftover);
+        }
+    }
+
+    /**
+     * 旧版ItemStackHandler#extractItem的新实现
+     */
+    public static ItemStack extractItem(ResourceHandler<@NotNull ItemResource> itemHandler, int index, int amount, boolean simulate, @Nullable TransactionContext parent) {
+        try (Transaction tx = Transaction.open(parent)) {
+            ItemResource resource = itemHandler.getResource(index);
+            int extracted = itemHandler.extract(index, resource, amount, tx);
+            if (!simulate) {
+                tx.commit();
+            }
+            return extracted == 0 ? ItemStack.EMPTY : resource.toStack(extracted);
+        }
+    }
+
+    /**
      * 掉落指定起始、结束槽位的物品
      */
-    public static void dropEntityItems(Entity entity, IItemHandler itemHandler, int startIndex, int endIndex) {
+    public static void dropEntityItems(Entity entity, ResourceHandler<@NotNull ItemResource> itemHandler, int startIndex, int endIndex, @Nullable TransactionContext parent) {
         for (int i = startIndex; i < endIndex; i++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(i);
-            ItemStack extractItem = itemHandler.extractItem(i, stackInSlot.getCount(), false);
-            if (!extractItem.isEmpty()) {
-                entity.spawnAtLocation(extractItem);
+            ItemStack stackInSlot = ItemUtil.getStack(itemHandler, i);
+            ItemStack extractItem = extractItem(itemHandler, i, stackInSlot.getCount(), false, parent);
+            if (!extractItem.isEmpty() && entity.level() instanceof ServerLevel serverLevel) {
+                entity.spawnAtLocation(serverLevel, extractItem);
             }
         }
     }
@@ -44,15 +96,15 @@ public final class ItemsUtil {
     /**
      * 掉落指定起始的物品
      */
-    public static void dropEntityItems(Entity entity, IItemHandler itemHandler, int startIndex) {
-        dropEntityItems(entity, itemHandler, startIndex, itemHandler.getSlots());
+    public static void dropEntityItems(Entity entity, ResourceHandler<@NotNull ItemResource> itemHandler, int startIndex, @Nullable TransactionContext parent) {
+        dropEntityItems(entity, itemHandler, startIndex, itemHandler.size(), parent);
     }
 
     /**
      * 掉落全部物品
      */
-    public static void dropEntityItems(Entity entity, IItemHandler itemHandler) {
-        dropEntityItems(entity, itemHandler, 0, itemHandler.getSlots());
+    public static void dropEntityItems(Entity entity, ResourceHandler<@NotNull ItemResource> itemHandler, @Nullable TransactionContext parent) {
+        dropEntityItems(entity, itemHandler, 0, itemHandler.size(), parent);
     }
 
     /**
@@ -60,8 +112,8 @@ public final class ItemsUtil {
      *
      * @return 如果没找到，返回 -1
      */
-    public static int findStackSlot(IItemHandler handler, Predicate<ItemStack> filter) {
-        return findStackSlot(handler, filter, -1);
+    public static int findStackSlot(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
+        return findStackSlot(handler, filter, -1, parent);
     }
 
     /**
@@ -70,10 +122,10 @@ public final class ItemsUtil {
      *
      * @return 如果没找到，返回 -1
      */
-    public static int findStackSlot(IItemHandler handler, Predicate<ItemStack> filter, int maxCount) {
+    public static int findStackSlot(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, int maxCount, @Nullable TransactionContext parent) {
         // 先正常在普通物品栏中查找
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = ItemUtil.getStack(handler, i);
             if (filter.test(stack)) {
                 return i;
             }
@@ -94,8 +146,8 @@ public final class ItemsUtil {
         }
 
         // 再次查找物品栏，找到该物品
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = ItemUtil.getStack(handler, i);
             if (filter.test(stack)) {
                 return i;
             }
@@ -107,10 +159,10 @@ public final class ItemsUtil {
     /**
      * 获取符合条件的 slot 列表
      */
-    public static List<Integer> getFilterStackSlots(IItemHandler handler, Predicate<ItemStack> filter) {
+    public static List<Integer> getFilterStackSlots(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter) {
         IntList slots = new IntArrayList();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = ItemUtil.getStack(handler, i);
             if (filter.test(stack)) {
                 slots.add(i);
             }
@@ -121,12 +173,12 @@ public final class ItemsUtil {
     /**
      * 符合 filter 条件的物品是否在 handler 中
      */
-    public static boolean isStackIn(IItemHandler handler, Predicate<ItemStack> filter) {
-        return findStackSlot(handler, filter) >= 0;
+    public static boolean isStackIn(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
+        return findStackSlot(handler, filter, parent) >= 0;
     }
 
-    public static boolean isStackIn(EntityMaid maid, Predicate<ItemStack> filter) {
-        return findStackSlot(maid.getAvailableInv(false), filter) >= 0;
+    public static boolean isStackIn(EntityMaid maid, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
+        return findStackSlot(maid.getAvailableInv(false), filter, parent) >= 0;
     }
 
     /**
@@ -134,17 +186,17 @@ public final class ItemsUtil {
      *
      * @return 如果该物品不存在，返回 ItemStack.EMPTY
      */
-    public static ItemStack getStack(IItemHandler handler, Predicate<ItemStack> filter) {
-        int slotIndex = findStackSlot(handler, filter);
+    public static ItemStack getStack(ResourceHandler<@NotNull ItemResource> handler, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
+        int slotIndex = findStackSlot(handler, filter, parent);
         if (slotIndex >= 0) {
-            return handler.getStackInSlot(slotIndex);
+            return ItemUtil.getStack(handler, slotIndex);
         } else {
             return ItemStack.EMPTY;
         }
     }
 
-    public static ItemStack getStack(EntityMaid maid, Predicate<ItemStack> filter) {
-        return getStack(maid.getAvailableInv(false), filter);
+    public static ItemStack getStack(EntityMaid maid, Predicate<ItemStack> filter, @Nullable TransactionContext parent) {
+        return getStack(maid.getAvailableInv(false), filter, parent);
     }
 
     /**
@@ -195,13 +247,13 @@ public final class ItemsUtil {
      */
     public static ItemStack getItemStack(String itemId) {
         Identifier resourceLocation = Identifier.parse(itemId);
-        Item value = BuiltInRegistries.ITEM.get(resourceLocation);
+        Item value = BuiltInRegistries.ITEM.getValue(resourceLocation);
         return new ItemStack(value);
     }
 
     public static void giveItemToMaid(EntityMaid maid, ItemStack itemStack) {
-        IItemHandler inv = maid.getAvailableInv(false);
-        ItemStack stack = ItemHandlerHelper.insertItemStacked(inv, itemStack, false);
+        var inv = maid.getAvailableInv(false);
+        ItemStack stack = ItemsUtil.insertItemStacked(inv, itemStack, false, null);
         if (!stack.isEmpty()) {
             ItemEntity itemEntity = new ItemEntity(maid.level(), maid.getX(), maid.getY() + 0.5, maid.getZ(), stack);
             maid.level.addFreshEntity(itemEntity);
@@ -216,12 +268,12 @@ public final class ItemsUtil {
      */
     public static boolean canItemInsert(Player player, ItemStack testStack) {
         // 获取玩家主背包的物品处理器（与giveItemToPlayer使用相同的包装器）
-        IItemHandler inventory = new PlayerMainInvWrapper(player.getInventory());
+        var inventory = PlayerInventoryWrapper.of(player).getMainSlots();
 
         // 遍历所有背包槽位
-        for (int i = 0; i < inventory.getSlots(); i++) {
+        for (int i = 0; i < inventory.size(); i++) {
             // 模拟插入物品（第三个参数为true表示仅测试，不实际修改物品栏）
-            ItemStack remainder = inventory.insertItem(i, testStack, true);
+            ItemStack remainder = ItemUtil.insertItemReturnRemaining(inventory, i, testStack, true, null);
 
             // 如果插入后没有剩余，说明该槽位可以容纳物品
             if (remainder.isEmpty()) {

@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.util;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.wrapper.RangedWrapper;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 
 import java.util.function.Predicate;
 
@@ -20,13 +20,13 @@ public final class TaskEquipUtil {
             return true;
         }
         var backpack = maid.getAvailableBackpackInv();
-        int slot = ItemsUtil.findStackSlot(backpack, predicate::test);
+        int slot = ItemsUtil.findStackSlot(backpack, predicate::test, null);
         if (slot >= 0) {
-            int count = backpack.getStackInSlot(slot).getCount();
-            ItemStack output = backpack.extractItem(slot, count, false);
+            int count = ItemUtil.getStack(backpack, slot).getCount();
+            ItemStack output = ItemsUtil.extractItem(backpack, slot, count, false, null);
             if (!maid.getMainHandItem().isEmpty()) {
                 ItemStack mainhand = maid.getMainHandItem();
-                backpack.setStackInSlot(slot, mainhand);
+                ItemsUtil.setStackInSlot(backpack, slot, mainhand);
             }
             maid.setItemInHand(InteractionHand.MAIN_HAND, output);
             return true;
@@ -45,10 +45,10 @@ public final class TaskEquipUtil {
         }
         var backpack = maid.getAvailableBackpackInv();
         ItemStack mainHandItem = maid.getMainHandItem();
-        for (int i = 0; i < backpack.getSlots(); i++) {
-            ItemStack stackInSlot = backpack.getStackInSlot(i);
+        for (int i = 0; i < backpack.size(); i++) {
+            ItemStack stackInSlot = ItemUtil.getStack(backpack, i);
             if (stackInSlot.isEmpty()) {
-                backpack.setStackInSlot(i, mainHandItem);
+                ItemsUtil.setStackInSlot(backpack, i, mainHandItem);
                 maid.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                 return true;
             }

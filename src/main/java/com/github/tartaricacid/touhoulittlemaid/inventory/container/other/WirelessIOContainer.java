@@ -14,12 +14,13 @@ import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class WirelessIOContainer extends AbstractContainerMenu {
     public static final MenuType<WirelessIOContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new WirelessIOContainer(windowId, inv, ItemStack.STREAM_CODEC.decode(data)));
     private final ItemStack wirelessIO;
-    private final ItemStackHandler filterListInv;
+    private final ItemStacksResourceHandler filterListInv;
 
     public WirelessIOContainer(int id, Inventory inventory, ItemStack wirelessIO) {
         super(TYPE, id);

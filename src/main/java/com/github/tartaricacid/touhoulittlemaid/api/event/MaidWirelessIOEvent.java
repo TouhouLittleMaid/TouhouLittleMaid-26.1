@@ -3,7 +3,9 @@ package com.github.tartaricacid.touhoulittlemaid.api.event;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -17,15 +19,15 @@ public abstract class MaidWirelessIOEvent extends Event implements ICancellableE
     /**
      * 女仆的物品栏
      */
-    private final IItemHandler maidInv;
+    private final ResourceHandler<@NotNull ItemResource> maidInv;
     /**
      * 箱子的物品栏
      */
-    private final IItemHandler chestInv;
+    private final ResourceHandler<@NotNull ItemResource> chestInv;
     /**
      * 隙间过滤器的标记的物品
      */
-    private final IItemHandler filterInv;
+    private final ResourceHandler<@NotNull ItemResource> filterInv;
     /**
      * 是否是黑名单模式
      */
@@ -35,7 +37,7 @@ public abstract class MaidWirelessIOEvent extends Event implements ICancellableE
      */
     private final List<Boolean> slotConfig;
 
-    public MaidWirelessIOEvent(EntityMaid maid, IItemHandler maidInv, IItemHandler chestInv, IItemHandler filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
+    public MaidWirelessIOEvent(EntityMaid maid, ResourceHandler<@NotNull ItemResource> maidInv, ResourceHandler<@NotNull ItemResource> chestInv, ResourceHandler<@NotNull ItemResource> filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
         this.maid = maid;
         this.maidInv = maidInv;
         this.chestInv = chestInv;
@@ -48,15 +50,15 @@ public abstract class MaidWirelessIOEvent extends Event implements ICancellableE
         return maid;
     }
 
-    public IItemHandler getMaidInv() {
+    public ResourceHandler<@NotNull ItemResource> getMaidInv() {
         return maidInv;
     }
 
-    public IItemHandler getChestInv() {
+    public ResourceHandler<@NotNull ItemResource> getChestInv() {
         return chestInv;
     }
 
-    public IItemHandler getFilterInv() {
+    public ResourceHandler<@NotNull ItemResource> getFilterInv() {
         return filterInv;
     }
 
@@ -69,13 +71,13 @@ public abstract class MaidWirelessIOEvent extends Event implements ICancellableE
     }
 
     public static class MaidToChest extends MaidWirelessIOEvent {
-        public MaidToChest(EntityMaid maid, IItemHandler maidInv, IItemHandler chestInv, IItemHandler filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
+        public MaidToChest(EntityMaid maid, ResourceHandler<@NotNull ItemResource> maidInv, ResourceHandler<@NotNull ItemResource> chestInv, ResourceHandler<@NotNull ItemResource> filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
             super(maid, maidInv, chestInv, filterInv, isBlacklist, slotConfig);
         }
     }
 
     public static class ChestToMaid extends MaidWirelessIOEvent {
-        public ChestToMaid(EntityMaid maid, IItemHandler maidInv, IItemHandler chestInv, IItemHandler filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
+        public ChestToMaid(EntityMaid maid, ResourceHandler<@NotNull ItemResource> maidInv, ResourceHandler<@NotNull ItemResource> chestInv, ResourceHandler<@NotNull ItemResource> filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
             super(maid, maidInv, chestInv, filterInv, isBlacklist, slotConfig);
         }
     }
