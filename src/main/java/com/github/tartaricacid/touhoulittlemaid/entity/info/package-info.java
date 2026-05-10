@@ -2,5 +2,5 @@
 @MethodsReturnNonnullByDefault
 package com.github.tartaricacid.touhoulittlemaid.entity.info;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
+import com.mojang.logging.annotations.MethodsReturnNonnullByDefault;
 import org.jspecify.annotations.NullMarked;
