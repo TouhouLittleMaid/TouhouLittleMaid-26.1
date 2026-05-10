@@ -46,8 +46,8 @@ public class MaidBreathAirStopTask extends Behavior<EntityMaid> {
 
     private boolean hasDrownBauble(EntityMaid maid) {
         BaubleItemHandler maidBauble = maid.getMaidBauble();
-        for (int i = 0; i < maidBauble.getSlots(); i++) {
-            if (maidBauble.getStackInSlot(i).is(InitItems.DROWN_PROTECT_BAUBLE.get())) {
+        for (int i = 0; i < maidBauble.size(); i++) {
+            if (maidBauble.getResource(i).is(InitItems.DROWN_PROTECT_BAUBLE.get())) {
                 return true;
             }
         }

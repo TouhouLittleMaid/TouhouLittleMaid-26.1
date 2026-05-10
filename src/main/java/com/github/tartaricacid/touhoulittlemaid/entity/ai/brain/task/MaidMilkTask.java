@@ -12,11 +12,11 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
-import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class MaidMilkTask extends MaidCheckRateTask {
     private static final int MAX_DELAY_TIME = 40;
@@ -33,9 +33,9 @@ public class MaidMilkTask extends MaidCheckRateTask {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid owner) {
         if (super.checkExtraStartConditions(worldIn, owner)) {
-            CombinedInvWrapper availableInv = owner.getAvailableInv(true);
-            return ItemsUtil.isStackIn(availableInv, stack -> stack.getItem() == Items.BUCKET) &&
-                   ItemsUtil.isStackIn(availableInv, stack -> stack == ItemStack.EMPTY);
+            CombinedResourceHandler<ItemResource> availableInv = owner.getAvailableInv(true);
+            return ItemsUtil.isStackIn(availableInv, stack -> stack.getItem() == Items.BUCKET, null) &&
+                    ItemsUtil.isStackIn(availableInv, stack -> stack == ItemStack.EMPTY, null);
         }
         return false;
     }
@@ -56,11 +56,11 @@ public class MaidMilkTask extends MaidCheckRateTask {
                 });
 
         if (milkTarget != null && milkTarget.closerThan(maid, 2)) {
-            CombinedInvWrapper availableInv = maid.getAvailableInv(false);
-            ItemStack bucket = ItemsUtil.getStack(availableInv, stack -> stack.getItem() == Items.BUCKET);
+            CombinedResourceHandler<ItemResource> availableInv = maid.getAvailableInv(false);
+            ItemStack bucket = ItemsUtil.getStack(availableInv, stack -> stack.getItem() == Items.BUCKET, null);
             if (bucket != ItemStack.EMPTY) {
                 bucket.shrink(1);
-                ItemHandlerHelper.insertItemStacked(availableInv, new ItemStack(Items.MILK_BUCKET), false);
+                ItemsUtil.insertItemStacked(availableInv, new ItemStack(Items.MILK_BUCKET), false, null);
             }
             maid.swing(InteractionHand.MAIN_HAND);
             maid.playSound(SoundEvents.COW_MILK, 1.0F, 1.0F);

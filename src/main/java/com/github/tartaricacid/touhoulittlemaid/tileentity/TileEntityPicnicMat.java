@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -16,21 +17,26 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class TileEntityPicnicMat extends BlockEntity {
-    public static final BlockEntityType<TileEntityPicnicMat> TYPE = BlockEntityType.Builder.of(TileEntityPicnicMat::new, InitBlocks.PICNIC_MAT.get()).build(null);
+    public static final BlockEntityType<TileEntityPicnicMat> TYPE = new BlockEntityType<>(TileEntityPicnicMat::new, InitBlocks.PICNIC_MAT.get());
     private static final String CENTER_POS_NAME = "CenterPos";
     private static final String STORAGE_ITEM = "StorageItem";
     private static final String SIT_IDS = "SitIds";
-    private final ItemStackHandler handler = new ItemStackHandler(9) {
+    private final ItemStacksResourceHandler handler = new ItemStacksResourceHandler(9) {
         @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return stack.getFoodProperties(null) != null;
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            if (!resource.toStack().has(DataComponents.FOOD))
+                return 0;
+            return super.insert(index, resource, amount, transaction);
         }
     };
     private final UUID[] sitIds = new UUID[]{Util.NIL_UUID, Util.NIL_UUID, Util.NIL_UUID, Util.NIL_UUID};
@@ -62,14 +68,14 @@ public class TileEntityPicnicMat extends BlockEntity {
     }
 
     public ItemStack getStorageItem(int slotId) {
-        return handler.getStackInSlot(slotId);
+        return handler.getResource(slotId).toStack(handler.getAmountAsInt(slotId));
     }
 
     public boolean isEmpty(int slotId) {
-        return handler.getStackInSlot(slotId).isEmpty();
+        return handler.getResource(slotId).isEmpty();
     }
 
-    public void setHandler(ItemStackHandler stackHandler) {
+    public void setHandler(ItemStacksResourceHandler stackHandler) {
         for (int i = 0; i < stackHandler.getSlots(); i++) {
             ItemStack stack = stackHandler.getStackInSlot(i);
             if (i >= this.handler.getSlots()) {
@@ -80,12 +86,12 @@ public class TileEntityPicnicMat extends BlockEntity {
         this.refresh();
     }
 
-    public ItemStackHandler getHandler() {
+    public ItemStacksResourceHandler getHandler() {
         return handler;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+    protected void saveAdditional(ValueOutput output) {
         getPersistentData().put(CENTER_POS_NAME, NbtUtils.writeBlockPos(centerPos));
         getPersistentData().put(STORAGE_ITEM, handler.serializeNBT(pRegistries));
         ListTag listTag = new ListTag();
@@ -97,7 +103,7 @@ public class TileEntityPicnicMat extends BlockEntity {
     }
 
     @Override
-    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
+    public void loadAdditional(ValueInput input) {
         super.loadAdditional(pTag, pRegistries);
         NbtUtils.readBlockPos(getPersistentData(), CENTER_POS_NAME).ifPresent(pos -> centerPos = pos);
         this.handler.deserializeNBT(pRegistries, getPersistentData().getCompound(STORAGE_ITEM));

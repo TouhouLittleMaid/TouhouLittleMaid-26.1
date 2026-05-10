@@ -11,7 +11,7 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SnowballItem;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -100,7 +100,8 @@ public class MaidSnowballTargetTask extends Behavior<EntityMaid> {
 
     private void performRangedAttack(EntityMaid shooter, LivingEntity target) {
         // 发射的是无 shooter 雪球，避免打中其他生物惹来攻击
-        Snowball snowball = new Snowball(shooter.level(), shooter.getX(), shooter.getY(), shooter.getZ());
+        //TODO:这个传入物品是什么鬼？？？看上去就是用来渲染材质的
+        Snowball snowball = new Snowball(shooter.level(), shooter.getX(), shooter.getY(), shooter.getZ(), Items.SNOWBALL.getDefaultInstance());
         double x = target.getX() - shooter.getX();
         double y = target.getBoundingBox().minY + target.getBbHeight() / 3.0F - snowball.position().y;
         double z = target.getZ() - shooter.getZ();

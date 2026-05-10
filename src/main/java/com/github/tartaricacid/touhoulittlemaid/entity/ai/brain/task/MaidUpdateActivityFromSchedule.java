@@ -21,11 +21,12 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
     @Override
     protected void start(ServerLevel level, EntityMaid maid, long gameTime) {
         Brain<EntityMaid> brain = maid.getBrain();
-        long dayTime = level.getDayTime();
+        long dayTime = level.getGameTime();
 
         // 让女仆在切换日程表时能够改变自己的活动范围
         if (gameTime - brain.lastScheduleUpdate > 20L) {
-            Activity activity = brain.getSchedule().getActivityAt((int) (dayTime % 24000L));
+            //TODO 之前为什么不是这么做？这个对吗？
+            Activity activity = maid.getScheduleDetail();
             if (this.cacheActivity == null) {
                 this.cacheActivity = activity;
             }
@@ -56,11 +57,12 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
     }
 
     private static void updateActivityFromSchedule(ServerLevel level, EntityMaid maid, Brain<EntityMaid> brain, long gameTime) {
-        long dayTime = level.getDayTime();
+        long dayTime = level.getGameTime();
         if (maid.isMaidInSittingPose() || maid.isPassenger()) {
             if (gameTime - brain.lastScheduleUpdate > 20L) {
                 brain.lastScheduleUpdate = gameTime;
-                Activity activity = brain.getSchedule().getActivityAt((int) (dayTime % 24000L));
+                //TODO 检查
+                Activity activity = maid.getScheduleDetail();
                 Activity riderActivity;
                 if (activity.equals(Activity.WORK)) {
                     riderActivity = InitEntities.RIDE_WORK.get();
@@ -88,7 +90,7 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
                 }
             }
         } else {
-            brain.updateActivityFromSchedule(dayTime, level.getGameTime());
+            brain.updateActivityFromSchedule(level.environmentAttributes(), level.getGameTime(), maid.position());
         }
     }
 }

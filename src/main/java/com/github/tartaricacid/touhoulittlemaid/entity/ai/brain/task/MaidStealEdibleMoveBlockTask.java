@@ -14,6 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -61,9 +64,9 @@ public class MaidStealEdibleMoveBlockTask extends MaidMoveToBlockTask {
 
         if (memory.isPresent() && memory.get() == MaidEdibleBlockAction.TRY_STEAL) {
             // 检查背包内有可放置食物么，有就切放置状态
-            CombinedInvWrapper inv = maid.getAvailableInv(true);
-            for (int i = 0; i < inv.getSlots(); i++) {
-                ItemStack stack = inv.getStackInSlot(i);
+            CombinedResourceHandler<@NotNull ItemResource> inv = maid.getAvailableInv(true);
+            for (int i = 0; i < inv.size(); i++) {
+                ItemStack stack = inv.getResource(i).toStack();
                 if (stack.isEmpty()) {
                     continue;
                 }

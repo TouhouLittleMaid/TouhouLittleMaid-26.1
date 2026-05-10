@@ -17,15 +17,16 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -72,7 +73,7 @@ public class MaidCollectHoneyTask extends MaidCheckRateTask {
             if (hiveBlockState.getValue(BeehiveBlock.HONEY_LEVEL) < 5) {
                 return;
             }
-            CombinedInvWrapper maidAvailableInv = maid.getAvailableInv(true);
+            CombinedResourceHandler<@NotNull ItemResource> maidAvailableInv = maid.getAvailableInv(true);
             if (!this.collectHoneyComb(level, maid, maidAvailableInv, hiveBlockState, hivePos)) {
                 this.collectHoneyBottle(level, maid, maidAvailableInv, hiveBlockState, hivePos);
             }
@@ -82,38 +83,42 @@ public class MaidCollectHoneyTask extends MaidCheckRateTask {
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
     }
 
-    private void collectHoneyBottle(ServerLevel level, EntityMaid maid, CombinedInvWrapper maidAvailableInv, BlockState hiveBlockState, BlockPos hivePos) {
-        ItemStack bottle = ItemsUtil.getStack(maidAvailableInv, stack -> stack.is(Items.GLASS_BOTTLE));
-        if (!bottle.isEmpty()) {
-            ItemStack honeyBottle = new ItemStack(Items.HONEY_BOTTLE);
-            ItemStack result = ItemHandlerHelper.insertItemStacked(maidAvailableInv, honeyBottle, true);
-            // 背包满了就不收集了
-            if (!result.isEmpty()) {
-                return;
+    private void collectHoneyBottle(ServerLevel level, EntityMaid maid, CombinedResourceHandler<@NotNull ItemResource> maidAvailableInv, BlockState hiveBlockState, BlockPos hivePos) {
+        int slot = ItemsUtil.findStackSlot(maidAvailableInv, stack -> stack.is(Items.HONEY_BOTTLE), null);
+        if (slot == -1)
+            return;
+        try (Transaction transaction = Transaction.openRoot()) {
+            int bottle = maidAvailableInv.extract(slot, ItemResource.of(Items.HONEY_BOTTLE), 1, transaction);
+            if (bottle != 0) {
+                int result = maidAvailableInv.insert(ItemResource.of(Items.HONEY_BOTTLE), 1, transaction);
+                // 背包满了就不收集了
+                if (result != 0) {
+                    return;
+                }
+                level.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+                resetHoneyLevel(level, hiveBlockState, hivePos);
+                maid.swing(InteractionHand.MAIN_HAND);
+                transaction.commit();
             }
-            bottle.shrink(1);
-            level.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
-            ItemHandlerHelper.insertItemStacked(maidAvailableInv, honeyBottle, false);
-            resetHoneyLevel(level, hiveBlockState, hivePos);
-            maid.swing(InteractionHand.MAIN_HAND);
         }
     }
 
-    private boolean collectHoneyComb(ServerLevel level, EntityMaid maid, CombinedInvWrapper maidAvailableInv, BlockState hiveBlockState, BlockPos hivePos) {
+    private boolean collectHoneyComb(ServerLevel level, EntityMaid maid, CombinedResourceHandler<@NotNull ItemResource> maidAvailableInv, BlockState hiveBlockState, BlockPos hivePos) {
         boolean hasShears = maid.getMainHandItem().canPerformAction(ItemAbilities.SHEARS_HARVEST);
         if (hasShears) {
-            ItemStack honeyComb = new ItemStack(Items.HONEYCOMB, 3);
-            ItemStack result = ItemHandlerHelper.insertItemStacked(maidAvailableInv, honeyComb, true);
-            // 背包满了就不收集了
-            if (!result.isEmpty()) {
-                return false;
+            try (Transaction transaction = Transaction.openRoot()) {
+                int result = maidAvailableInv.extract(ItemResource.of(Items.HONEYCOMB), 3, transaction);
+                // 背包满了就不收集了
+                if (result != 0) {
+                    return false;
+                }
+                level.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
+                resetHoneyLevel(level, hiveBlockState, hivePos);
+                maid.swing(InteractionHand.MAIN_HAND);
+                maid.getMainHandItem().hurtAndBreak(1, maid, EquipmentSlot.MAINHAND);
+                transaction.commit();
+                return true;
             }
-            level.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.BEEHIVE_SHEAR, SoundSource.BLOCKS, 1.0F, 1.0F);
-            ItemHandlerHelper.insertItemStacked(maidAvailableInv, honeyComb, false);
-            resetHoneyLevel(level, hiveBlockState, hivePos);
-            maid.swing(InteractionHand.MAIN_HAND);
-            maid.getMainHandItem().hurtAndBreak(1, maid, EquipmentSlot.MAINHAND);
-            return true;
         }
         return false;
     }

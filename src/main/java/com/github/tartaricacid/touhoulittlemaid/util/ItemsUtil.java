@@ -30,12 +30,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class ItemsUtil {
     private ItemsUtil() {
     }
-
     /**
      * 直接设置对应槽位的物品堆
      */

@@ -73,9 +73,9 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
             return switch (getMaidBlockPathTypeRaw(context, x, y - 1, z)) {
                 case OPEN, WATER, LAVA, WALKABLE -> PathType.OPEN;
                 case FIRE -> PathType.FIRE;
-                case DAMAGE_OTHER -> PathType.DAMAGE_OTHER;
+                case DAMAGING -> PathType.DAMAGING;
                 case STICKY_HONEY -> PathType.STICKY_HONEY;
-                case POWDER_SNOW -> PathType.DAMAGING;
+                case POWDER_SNOW -> PathType.DAMAGE_CAUTIOUS;
                 case DAMAGE_CAUTIOUS -> PathType.DAMAGE_CAUTIOUS;
                 case TRAPDOOR -> PathType.TRAPDOOR;
                 default -> checkNeighbourBlocks(context, x, y, z, PathType.WALKABLE);
@@ -95,7 +95,7 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
         BlockState blockState = context.getBlockState(pos);
         // 先检查方块是否在黑名单中
         if (blockState.is(TagBlock.MAID_AVOID_BLOCK)) {
-            return PathType.DAMAGE_OTHER;
+            return PathType.DAMAGING;
         }
 
         PathType pathType;

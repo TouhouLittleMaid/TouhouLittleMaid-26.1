@@ -57,7 +57,7 @@ public class MaidShearTask extends MaidCheckRateTask {
             List<ItemStack> drops = ((IShearable) shearableEntity).onSheared(null, mainHandItem,
                     maid.level(), shearableEntity.blockPosition());
             drops.forEach(stack -> {
-                ItemEntity itemEntity = shearableEntity.spawnAtLocation(stack, 1.0F);
+                ItemEntity itemEntity = shearableEntity.spawnAtLocation(worldIn, stack, 1.0F);
                 if (itemEntity != null) {
                     itemEntity.setDeltaMovement(itemEntity.getDeltaMovement().add(
                             (rand.nextFloat() - rand.nextFloat()) * 0.1F,

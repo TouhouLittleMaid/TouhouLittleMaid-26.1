@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.wrapper.RangedWrapper;
 
 import java.util.List;
 
@@ -70,17 +69,18 @@ public class MaidWorkMealTask extends MaidCheckRateTask {
         var backpackInv = maid.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
-        ItemsUtil.findStackSlot(backpackInv, DefaultMaidWorkMeal::isWorkMeal);
+        ItemsUtil.findStackSlot(backpackInv, DefaultMaidWorkMeal::isWorkMeal, null);
 
         swapItemCheck:
-        for (int i = 0; i < backpackInv.getSlots(); i++) {
-            ItemStack stack = backpackInv.getStackInSlot(i);
+        for (int i = 0; i < backpackInv.size(); i++) {
+            int cnt = backpackInv.getAmountAsInt(i);
+            ItemStack stack = backpackInv.getResource(i).toStack(cnt);
             if (stack.isEmpty()) {
                 continue;
             }
             for (IMaidMeal maidMeal : maidMeals) {
                 if (maidMeal.canMaidEat(maid, stack, eanHand)) {
-                    ItemStack foodStack = backpackInv.extractItem(i, backpackInv.getStackInSlot(i).getCount(), false);
+                    ItemStack foodStack = ItemsUtil.extractItem(backpackInv, i, cnt, false, null);
                     ItemStack handStack = itemInHand.copy();
                     maid.setItemInHand(eanHand, foodStack);
                     maid.memoryHandItemStack(handStack);

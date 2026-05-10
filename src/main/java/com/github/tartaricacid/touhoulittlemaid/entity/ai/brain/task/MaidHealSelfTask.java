@@ -11,7 +11,8 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.wrapper.RangedWrapper;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.List;
 
@@ -69,35 +70,24 @@ public class MaidHealSelfTask extends MaidCheckRateTask {
         var backpackInv = maid.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
-        ItemsUtil.findStackSlot(backpackInv, DefaultMaidHealSelfMeal::isHealMeal);
+        int stackSlot = ItemsUtil.findStackSlot(backpackInv, DefaultMaidHealSelfMeal::isHealMeal, null);
+        if (stackSlot != -1)
+            try (Transaction transaction = Transaction.openRoot()) {
+                ItemResource resource = backpackInv.getResource(stackSlot);
+                int foodStack = backpackInv.extract(stackSlot, resource, resource.getMaxStackSize(), transaction);
+                if (foodStack == -1) return;
+                ItemStack handStack = itemInHand.copy();
+                maid.setItemInHand(eanHand, resource.toStack(foodStack));
+                itemInHand = maid.getItemInHand(eanHand);
+                maid.memoryHandItemStack(handStack);
+                transaction.commit();
 
-        swapItemCheck:
-        for (int i = 0; i < backpackInv.getSlots(); i++) {
-            ItemStack stack = backpackInv.getStackInSlot(i);
-            if (stack.isEmpty()) {
-                continue;
-            }
-            for (IMaidMeal maidMeal : maidMeals) {
-                if (maidMeal.canMaidEat(maid, stack, eanHand)) {
-                    ItemStack foodStack = backpackInv.extractItem(i, backpackInv.getStackInSlot(i).getCount(), false);
-                    ItemStack handStack = itemInHand.copy();
-                    maid.setItemInHand(eanHand, foodStack);
-                    itemInHand = maid.getItemInHand(eanHand);
-                    maid.memoryHandItemStack(handStack);
-                    hasFood = true;
-                    break swapItemCheck;
+                for (IMaidMeal maidMeal : maidMeals) {
+                    if (maidMeal.canMaidEat(maid, itemInHand, eanHand)) {
+                        maidMeal.onMaidEat(maid, itemInHand, eanHand);
+                        return;
+                    }
                 }
             }
-        }
-
-        // 开吃
-        if (hasFood) {
-            for (IMaidMeal maidMeal : maidMeals) {
-                if (maidMeal.canMaidEat(maid, itemInHand, eanHand)) {
-                    maidMeal.onMaidEat(maid, itemInHand, eanHand);
-                    return;
-                }
-            }
-        }
     }
 }

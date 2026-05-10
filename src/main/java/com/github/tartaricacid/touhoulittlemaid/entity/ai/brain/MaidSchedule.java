@@ -1,12 +1,15 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain;
 
 
+import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.util.ByIdMap;
+import net.minecraft.world.attribute.EnvironmentAttribute;
+import net.minecraft.world.entity.schedule.Activity;
 
 import java.util.function.IntFunction;
 
@@ -34,4 +37,12 @@ public enum MaidSchedule {
             return value;
         }
     };
+
+    public EnvironmentAttribute<Activity> getEnvironmentAttribute() {
+        return switch (this) {
+            case DAY -> InitEntities.MAID_DAY_SHIFT_SCHEDULES.get();
+            case NIGHT -> InitEntities.MAID_NIGHT_SHIFT_SCHEDULES.get();
+            case ALL -> InitEntities.MAID_ALL_DAY_SCHEDULES.get();
+        };
+    }
 }

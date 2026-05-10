@@ -45,7 +45,7 @@ public class MaidFindSitTask extends MaidCheckRateTask {
 
         if (sitEntity != null && sitEntity.isAlive() && sitEntity.closerThan(maid, 2)) {
             if (sitEntity.getPassengers().isEmpty()) {
-                maid.startRiding(this.sitEntity, true);
+                maid.startRiding(this.sitEntity, true,true);
             }
             this.sitEntity = null;
         }

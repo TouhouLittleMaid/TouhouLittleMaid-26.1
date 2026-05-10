@@ -2218,20 +2218,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     }
 
     public Activity getScheduleDetail() {
-        MaidSchedule schedule = this.getSchedule();
-        int time = (int) (this.level.getDayTime() % 24000L);
-        switch (schedule) {
-            case ALL -> {
-                return Activity.WORK;
-            }
-            case NIGHT -> {
-                return InitEntities.MAID_NIGHT_SHIFT_SCHEDULES.get().getActivityAt(time);
-            }
-            default -> {
-                return InitEntities.MAID_DAY_SHIFT_SCHEDULES.get().getActivityAt(time);
-            }
-        }
+        //TODO 检查是否正确
+        return level.environmentAttributes().getValue(this.getSchedule().getEnvironmentAttribute(),blockPosition());
     }
+
 
     public SchedulePos getSchedulePos() {
         return schedulePos;

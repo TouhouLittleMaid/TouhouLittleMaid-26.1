@@ -36,7 +36,7 @@ public class SetWalkTargetAwayFrom<T> extends Behavior<PathfinderMob> {
     }
 
     private static void moveAwayFrom(PathfinderMob mob, Vec3 vec31, float speed) {
-        int radius = (int) mob.getRestrictRadius();
+        int radius = (int) mob.getHomeRadius();
         for (int i = 0; i < 10; ++i) {
             Vec3 vec3 = LandRandomPos.getPosAway(mob, radius, 7, vec31);
             if (vec3 != null) {
@@ -48,7 +48,7 @@ public class SetWalkTargetAwayFrom<T> extends Behavior<PathfinderMob> {
 
     @Override
     public boolean checkExtraStartConditions(ServerLevel pLevel, PathfinderMob pOwner) {
-        int radius = (int) pOwner.getRestrictRadius();
+        int radius = (int) pOwner.getHomeRadius();
         return !this.alreadyWalkingAwayFromPosWithSameSpeed(pOwner) && pOwner.position().closerThan(this.getPosToAvoid(pOwner), radius);
     }
 

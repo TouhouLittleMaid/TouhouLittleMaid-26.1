@@ -163,7 +163,7 @@ public class BlockPicnicMat extends Block implements EntityBlock {
     }
 
     @Override
-    public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion) {
+    public void onBlockExploded(BlockState state, ServerLevel world, BlockPos pos, Explosion explosion) {
         handlePicnicMatRemove(world, pos, state);
         super.onBlockExploded(state, world, pos, explosion);
     }

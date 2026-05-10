@@ -23,13 +23,18 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.ConsumeEffect;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
-import net.neoforged.neoforge.items.wrapper.RangedWrapper;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -91,8 +96,8 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
 
     private boolean hasDrownBauble(EntityMaid maid) {
         BaubleItemHandler maidBauble = maid.getMaidBauble();
-        for (int i = 0; i < maidBauble.getSlots(); i++) {
-            if (maidBauble.getStackInSlot(i).is(InitItems.DROWN_PROTECT_BAUBLE.get())) {
+        for (int i = 0; i < maidBauble.size(); i++) {
+            if (maidBauble.getResource(i).is(InitItems.DROWN_PROTECT_BAUBLE.get())) {
                 return true;
             }
         }
@@ -106,7 +111,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
             if (itemInHand.isEmpty()) {
                 continue;
             }
-            if (this.isBreatheFood(maid, itemInHand)) {
+            if (this.isBreatheFood(maid, ItemResource.of(itemInHand))) {
                 this.startEatBreatheItem(maid, itemInHand, hand);
                 return true;
             }
@@ -123,39 +128,32 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
         ItemStack itemInHand = maid.getItemInHand(eanHand);
 
         // 尝试在背包中寻找食物放入
-        boolean hasFood = false;
         var backpackInv = maid.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
-        ItemsUtil.findStackSlot(backpackInv, stack -> this.isBreatheFood(maid, stack));
-
-        for (int i = 0; i < backpackInv.getSlots(); i++) {
-            ItemStack stack = backpackInv.getStackInSlot(i);
-            if (stack.isEmpty()) {
-                continue;
-            }
-            if (this.isBreatheFood(maid, stack)) {
-                ItemStack foodStack = backpackInv.extractItem(i, backpackInv.getStackInSlot(i).getCount(), false);
-                ItemStack handStack = itemInHand.copy();
-                maid.setItemInHand(eanHand, foodStack);
-                maid.memoryHandItemStack(handStack);
-                itemInHand = maid.getItemInHand(eanHand);
-                hasFood = true;
-                break;
+        try (Transaction transaction = Transaction.openRoot()) {
+            int stackSlot = ItemsUtil.findStackSlot(backpackInv, stack -> this.isBreatheFood(maid, ItemResource.of(stack)), transaction);
+            if (stackSlot >= 0) {
+                ItemStack canExtract = ItemsUtil.extractItem(backpackInv, stackSlot, 99, true, transaction);
+                if (!canExtract.isEmpty()) {
+                    ItemStack foodStack = ItemsUtil.extractItem(backpackInv, stackSlot, canExtract.getCount(), false, transaction);
+                    ItemStack handStack = itemInHand.copy();
+                    maid.setItemInHand(eanHand, foodStack);
+                    maid.memoryHandItemStack(handStack);
+                    itemInHand = maid.getItemInHand(eanHand);
+                    this.startEatBreatheItem(maid, itemInHand, eanHand);
+                    transaction.commit();
+                    return true;
+                }
             }
         }
-
-        // 开吃
-        if (hasFood) {
-            this.startEatBreatheItem(maid, itemInHand, eanHand);
-        }
-        return hasFood;
+        return false;
     }
 
     private void startEatBreatheItem(EntityMaid maid, ItemStack stack, InteractionHand hand) {
         maid.getSwimManager().setEatBreatheItem(true);
 
-        FoodProperties foodProperties = stack.getFoodProperties(maid);
+        FoodProperties foodProperties = stack.get(DataComponents.FOOD);
         float total = 0;
         if (foodProperties != null) {
             int nutrition = foodProperties.nutrition();
@@ -172,10 +170,10 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
         }
     }
 
-    private boolean isBreatheFood(EntityMaid maid, ItemStack stack) {
+    private boolean isBreatheFood(EntityMaid maid, ItemResource resource) {
         // 寻找药水
-        if (stack.getItem() instanceof PotionItem) {
-            PotionContents mobEffects = stack.get(DataComponents.POTION_CONTENTS);
+        if (resource.getItem() instanceof PotionItem) {
+            PotionContents mobEffects = resource.get(DataComponents.POTION_CONTENTS);
             if (mobEffects == null || !mobEffects.hasEffects()) {
                 return false;
             }
@@ -188,17 +186,21 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
         }
 
         // 或者能提供水下呼吸的食物
-        FoodProperties foodProperties = stack.getFoodProperties(maid);
-        if (foodProperties == null) {
+        if (!resource.toStack().has(DataComponents.CONSUMABLE)) {
             return false;
         }
-        List<FoodProperties.PossibleEffect> effects = foodProperties.effects();
+        Consumable consumable = resource.toStack().get(DataComponents.CONSUMABLE);
+        List<ConsumeEffect> effects = Objects.requireNonNull(consumable).onConsumeEffects();
         if (effects.isEmpty()) {
             return false;
         }
-        for (FoodProperties.PossibleEffect effect : effects) {
-            if (effect.effect().getEffect() == MobEffects.WATER_BREATHING) {
-                return true;
+        for (ConsumeEffect customEffect : effects) {
+            if (customEffect instanceof ApplyStatusEffectsConsumeEffect applyStatusEffectsConsumeEffect) {
+                for (MobEffectInstance effect : applyStatusEffectsConsumeEffect.effects()) {
+                    if (effect.getEffect() == MobEffects.WATER_BREATHING) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

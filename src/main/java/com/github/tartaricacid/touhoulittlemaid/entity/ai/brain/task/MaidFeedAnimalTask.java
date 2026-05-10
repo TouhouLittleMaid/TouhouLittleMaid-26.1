@@ -15,6 +15,9 @@ import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.NotNull;
 
 public class MaidFeedAnimalTask extends MaidCheckRateTask {
     private static final int MAX_DELAY_TIME = 12;
@@ -34,6 +37,7 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
     @Override
     protected void start(ServerLevel worldIn, EntityMaid maid, long gameTimeIn) {
         feedEntity = null;
+        CombinedResourceHandler<@NotNull ItemResource> availableInv = maid.getAvailableInv(false);
         long animalCount = this.getEntities(maid)
                 .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
@@ -46,7 +50,7 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
                     .filter(e -> e instanceof Animal)
                     .filter(e -> ((Animal) e).getAge() == 0)
                     .filter(e -> ((Animal) e).canFallInLove())
-                    .filter(e -> ItemsUtil.isStackIn(maid.getAvailableInv(false), ((Animal) e)::isFood))
+                    .filter(e -> ItemsUtil.isStackIn(availableInv, ((Animal) e)::isFood, null))
                     .filter(maid::canPathReach)
                     .findFirst()
                     .ifPresent(e -> {
@@ -55,13 +59,15 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
                     });
 
             if (feedEntity != null && feedEntity.closerThan(maid, 2)) {
-                ItemStack food = ItemsUtil.getStack(maid.getAvailableInv(false), feedEntity::isFood);
-                if (!food.isEmpty()) {
-                    food.shrink(1);
-                    maid.swing(InteractionHand.MAIN_HAND);
-                    feedEntity.setInLove(null);
-                    if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
-                        InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.MAID_FEED_ANIMAL);
+                int slot = ItemsUtil.findStackSlot(availableInv, feedEntity::isFood, null);
+                if(slot != -1) {
+                    ItemStack food = ItemsUtil.extractItem(availableInv, slot, 1, false, null);
+                    if (!food.isEmpty()) {
+                        maid.swing(InteractionHand.MAIN_HAND);
+                        feedEntity.setInLove(null);
+                        if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
+                            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.MAID_FEED_ANIMAL);
+                        }
                     }
                 }
                 feedEntity = null;

@@ -2,7 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
-import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -13,14 +12,15 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.ai.memory.WalkTarget;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.Optional;
 
@@ -51,15 +51,13 @@ public class MaidTorchPlaceTask extends Behavior<EntityMaid> {
     @Override
     protected void start(ServerLevel world, EntityMaid maid, long gameTimeIn) {
         maid.getBrain().getMemory(InitEntities.TARGET_POS.get()).ifPresent(posWrapper -> {
-            ItemStack torch = getTorchItem(maid);
-            if (!torch.isEmpty()) {
+            if (getAndExtractTorchItem(maid)) {
                 BlockPos pos = posWrapper.currentBlockPosition().above();
                 BlockState torchState = Blocks.TORCH.defaultBlockState();
                 world.setBlock(pos, torchState, Block.UPDATE_ALL_IMMEDIATE);
                 SoundType soundType = torchState.getSoundType(world, pos, maid);
                 world.playSound(null, pos, soundType.getPlaceSound(), SoundSource.BLOCKS,
                         (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
-                torch.shrink(1);
                 maid.swing(InteractionHand.MAIN_HAND);
                 maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
                 maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
@@ -67,8 +65,15 @@ public class MaidTorchPlaceTask extends Behavior<EntityMaid> {
         });
     }
 
-    private ItemStack getTorchItem(EntityMaid entityMaid) {
-        CombinedInvWrapper itemHandler = entityMaid.getAvailableInv(false);
-        return ItemsUtil.getStack(itemHandler, stack -> stack.getItem() == Items.TORCH);
+    private boolean getAndExtractTorchItem(EntityMaid entityMaid) {
+        CombinedResourceHandler<ItemResource> itemHandler = entityMaid.getAvailableInv(false);
+        try(Transaction transaction = Transaction.openRoot()){
+            int extract = itemHandler.extract(ItemResource.of(Items.TORCH), 1, transaction);
+            if(extract != 0){
+                transaction.commit();
+                return true;
+            }
+        }
+        return false;
     }
 }

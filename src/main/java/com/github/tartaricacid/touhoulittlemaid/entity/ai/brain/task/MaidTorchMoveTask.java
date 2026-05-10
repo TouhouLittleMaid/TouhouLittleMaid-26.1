@@ -8,7 +8,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import static net.minecraft.world.level.block.Block.canSupportCenter;
 
@@ -37,7 +38,7 @@ public class MaidTorchMoveTask extends MaidMoveToBlockTask {
     }
 
     private ItemStack getTorchItem(EntityMaid entityMaid) {
-        CombinedInvWrapper itemHandler = entityMaid.getAvailableInv(false);
-        return ItemsUtil.getStack(itemHandler, stack -> stack.getItem() == Items.TORCH);
+        CombinedResourceHandler<ItemResource> itemHandler = entityMaid.getAvailableInv(false);
+        return ItemsUtil.getStack(itemHandler, stack -> stack.getItem() == Items.TORCH, null);
     }
 }

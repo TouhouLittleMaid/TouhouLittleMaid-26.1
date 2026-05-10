@@ -8,6 +8,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.NotNull;
 
 public class MaidFarmMoveTask extends MaidMoveToBlockTask {
     private final NonNullList<ItemStack> seeds = NonNullList.create();
@@ -21,9 +24,9 @@ public class MaidFarmMoveTask extends MaidMoveToBlockTask {
     @Override
     protected void start(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
         seeds.clear();
-        IItemHandler inv = entityIn.getAvailableInv(true);
-        for (int i = 0; i < inv.getSlots(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+        CombinedResourceHandler<@NotNull ItemResource> inv = entityIn.getAvailableInv(true);
+        for (int i = 0; i < inv.size(); i++) {
+            ItemStack stack = inv.getResource(i).toStack();
             if (task.isSeed(stack)) {
                 seeds.add(stack);
             }
