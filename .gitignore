@@ -1,0 +1,34 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+.factorypath
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# vscode
+.vscode
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+runs
+run
+src/generated/resources/.cache
+src/test
+
+# Files from Forge MDK
+forge*changelog.txt
+/src/generated/resources/.cache/
+.sisyphus

@@ -1,0 +1,7 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "touhou_little_maid:item/drown_protect_bauble"
+	}
+}

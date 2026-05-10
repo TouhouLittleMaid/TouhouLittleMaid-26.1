@@ -1,0 +1,71 @@
+package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.geckolayer;
+
+import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
+import com.github.tartaricacid.touhoulittlemaid.compat.carryon.RenderFixer;
+import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
+import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeoLayerRenderer;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntityRenderer;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderUtils;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TieredItem;
+
+public class GeckoLayerMaidBackItem<T extends Mob, R extends IGeoEntityRenderer<T>> extends GeoLayerRenderer<T, R> {
+    public GeckoLayerMaidBackItem(R entityRendererIn) {
+        super(entityRendererIn);
+    }
+
+    @Override
+    public GeoLayerRenderer<T, R> copy(R entityRendererIn) {
+        return new GeckoLayerMaidBackItem<>(entityRendererIn);
+    }
+
+    @Override
+    public void render(PoseStack matrixStack, MultiBufferSource buffer, int packedLight, T entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        IMaid maid = IMaid.convert(entity);
+        if (maid == null) {
+            return;
+        }
+        var model = this.getLocationModel(entity);
+        if (model == null) {
+            return;
+        }
+        ItemStack stack = maid.getBackpackShowItem();
+        if (!this.getGeoEntity(entity).getMaidInfo().isShowBackpack() || entity.isSleeping() || entity.isInvisible() || RenderFixer.isCarryOnRender(stack, buffer)) {
+            return;
+        }
+        if (entity instanceof EntityMaid entityMaid && !entityMaid.getConfigManager().isShowBackItem()) {
+            return;
+        }
+        if (stack.getItem() instanceof TieredItem) {
+            matrixStack.pushPose();
+
+            if (!model.backpackBones().isEmpty()) {
+                RenderUtils.prepMatrixForLocator(matrixStack, model.backpackBones());
+            }
+            matrixStack.translate(0, 1, 0.25);
+
+            matrixStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+            matrixStack.translate(0, 0.5, -0.25);
+            if (entity instanceof EntityMaid entityMaid && entityMaid.getConfigManager().isShowBackpack()) {
+                maid.getMaidBackpackType().offsetBackpackItem(matrixStack);
+            } else {
+                BackpackManager.getEmptyBackpack().offsetBackpackItem(matrixStack);
+            }
+            Minecraft.getInstance().getItemRenderer().renderStatic(entity, stack, ItemDisplayContext.FIXED, false, matrixStack, buffer, entity.level(), packedLight, OverlayTexture.NO_OVERLAY, entity.getId());
+            matrixStack.popPose();
+            return;
+        }
+
+        // 背部枪械渲染
+        GunClientUtil.renderBackGun(stack, model, maid, matrixStack, buffer, packedLight);
+    }
+}

@@ -1,0 +1,410 @@
+// 调用的 gradle 插件
+plugins {
+    id 'java-library'
+
+    // 用于 eclipse 或者 idea 的插件
+    id 'eclipse'
+    id 'idea'
+
+    // NeoForged 开发插件
+    id 'net.neoforged.moddev' version '2.0.141'
+
+    // shadow 插件
+    id 'com.gradleup.shadow' version '8.3.6'
+}
+
+// ALL 为下载 gradle 源码，方便查看调试
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+// 需要 Java 21 版本
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+// 模组相关信息
+version = mod_version
+group = mod_group_id
+
+// 打包成 jar 时的名称
+base {
+    archivesName = 'touhoulittlemaid'
+}
+
+// 需要的前置库
+repositories {
+    // ./libs 目录为库
+    flatDir {
+        dir "libs"
+    }
+    mavenCentral()
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        url "https://maven.shedaniel.me/"
+        content {
+            includeGroup "me.shedaniel"
+            includeGroup "me.shedaniel.cloth"
+            includeGroup "dev.architectury"
+        }
+    }
+    maven {
+        url "https://maven2.bai.lol"
+        content {
+            includeGroup "mcp.mobius.waila"
+            includeGroup "lol.bai"
+        }
+    }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+        content {
+            includeGroup "dev.emi"
+        }
+    }
+    maven {
+        name 'cursemaven'
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven { // for TOP
+        url "https://maven.k-4u.nl/"
+        content {
+            includeGroup "mcjty.theoneprobe"
+        }
+    }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+        content {
+            includeGroup "top.theillusivec4.curios"
+        }
+    }
+    maven {
+        url "https://maven.latvian.dev/releases"
+        content {
+            includeGroup "dev.latvian.mods"
+            includeGroup "dev.latvian.apps"
+        }
+    }
+    maven {
+        url = "https://maven.architectury.dev"
+        content {
+            includeGroup "dev.architectury"
+        }
+    }
+    maven {
+        url 'https://jitpack.io'
+        content {
+            includeGroup "com.github.rtyley"
+            includeGroup "com.github.MUKSC"
+            includeGroup "com.github.FiguraMC.luaj"
+        }
+    }
+    maven {
+        url = "https://maven.createmod.net"
+        content {
+            includeGroup "net.createmod.ponder"
+            includeGroup "dev.engine-room.flywheel"
+        }
+    }
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
+    maven {
+        url = "https://maven.ryanhcode.dev/releases"
+        name = "RyanHCode Maven"
+        content {
+            includeGroup "dev.ryanhcode.sable"
+            includeGroup "dev.ryanhcode.sable-companion"
+        }
+    }
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+}
+
+neoForge {
+    // NeoForge 版本信息
+    version = project.neo_version
+
+    // 运行部分
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run/client')
+            programArguments = [
+                    "--username", "tartaric_acid"
+            ]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            gameDirectory = project.file('run/server')
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        gameTestServer {
+            type = "gameTestServer"
+            gameDirectory = project.file('run/gameTestServer')
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        data {
+            clientData()
+            gameDirectory = project.file('run/data')
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('src/generated/resources/').getAbsolutePath(),
+                    '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        configureEach {
+            // +AllowEnhancedClassRedefinition 为 JetBrains Runtime 所需的参数
+            // JetBrains Runtime 是一个修改过的 JDK，支持热重载
+            // +IgnoreUnrecognizedVMOptions 用于忽略未知指令
+            // 否则没有安装 JetBrains Runtime 的用户运行时会报错
+            jvmArguments = [
+                    '-XX:+IgnoreUnrecognizedVMOptions',
+                    '-XX:+AllowEnhancedClassRedefinition'
+            ]
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            // 参考：https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        // 定义 mod <-> 源码的绑定关系，用于告知游戏每个 mod 对应哪些源码
+        // 单 mod 项目通常可省略，多 mod 项目应为每个 mod 单独定义
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+sourceSets.main {
+    resources {
+        srcDir 'src/generated/resources'
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+
+    // 自定义一个 minecraftLibrary，方便引入需要 jarJar 的库
+    mcLib
+    implementation {
+        extendsFrom mcLib
+    }
+    additionalRuntimeClasspath {
+        extendsFrom mcLib
+    }
+}
+
+dependencies {
+    // Opus 音频解码库
+    mcLib "org.gagravarr:vorbis-java-core:0.8"
+    mcLib "io.github.jaredmdobson:concentus:1.0.2"
+
+    // MP3 音频解码库
+    mcLib "com.googlecode.soundlibs:mp3spi:1.9.5.4"
+
+    // YAML 库
+    mcLib "org.yaml:snakeyaml:2.4"
+
+    // 单元测试
+    testImplementation 'junit:junit:4.13.2'
+
+    compileOnly "libs:patpat:1.2.1+1.21.1"
+
+    // JEI
+    implementation "maven.modrinth:jei:19.21.0.247-neoforge"
+
+    // REI
+    compileOnly "maven.modrinth:architectury-api:13.0.8+neoforge"
+    compileOnly "maven.modrinth:rei:16.0.788+neoforge"
+
+    // EMI
+    compileOnly "maven.modrinth:emi:1.1.22+1.21.1+neoforge"
+
+    // IPN
+    runtimeOnly "maven.modrinth:kotlin-for-forge:5.9.0"
+    runtimeOnly "maven.modrinth:libipn:neoforge-1.21.1-6.5.0"
+    implementation "maven.modrinth:inventory-profiles-next:neoforge-1.21.1-2.1.9"
+    implementation "curse.maven:aquaculture-60028:6357106"
+
+    // KubeJS
+    compileOnly "dev.latvian.mods:rhino:2101.2.7-build.72"
+    compileOnly "dev.latvian.mods:kubejs-neoforge:2101.7.2-build.336"
+    // runtimeOnly "com.github.rtyley:animated-gif-lib-for-java:animated-gif-lib-1.7"
+
+    // Curios
+    implementation "top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1"
+
+    compileOnly "maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge"
+    compileOnly "maven.modrinth:iris:1.8.8+1.21.1-neoforge"
+    compileOnly "maven.modrinth:embeddium:1.0.15+mc1.21.1-neoforge"
+
+    implementation "maven.modrinth:jade:15.10.2+neoforge"
+    compileOnly "maven.modrinth:the-one-probe:1.21_neo-12.0.6"
+    implementation "maven.modrinth:cloth-config:15.0.140+neoforge"
+    implementation "maven.modrinth:patchouli:1.21-88-neoforge"
+
+    implementation "maven.modrinth:iron-chests:1.21-neoforge-16.0.7"
+    implementation "maven.modrinth:carry-on:2.2.2-neoforge"
+    implementation "maven.modrinth:inventory-tweaks-refoxed:1.21.1-1.2.0"
+
+    implementation "maven.modrinth:sophisticated-core:1.21.1-1.3.50.1004"
+    implementation "maven.modrinth:sophisticated-backpacks:1.21.1-3.24.15.1250"
+
+    implementation "maven.modrinth:travelersbackpack:1.21.1-10.1.35"
+
+    implementation "maven.modrinth:kaleidoscope-cookery:1.2.0-neoforge+mc1.21.1"
+
+    implementation("com.github.MUKSC:TACZ-1.21.1:neoforge-1.1.6-hotfix-r5") {
+        exclude group: 'mezz.jei'
+        exclude group: 'maven.modrinth'
+    }
+
+    // 卓越前线
+    runtimeOnly "software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5"
+    implementation "libs:superbwarfare-1.21.1:0.8.7.1"
+
+    // 地图相关模组兼容
+    // runtimeOnly "maven.modrinth:xaeros-minimap:25.2.10_NeoForge_1.21"
+    // runtimeOnly "maven.modrinth:xaeros-world-map:1.40.2_NeoForge_1.21"
+    // runtimeOnly "maven.modrinth:journeymap:1.21.1-6.0.0-beta.52+neoforge"
+
+    // 沉浸式奏乐
+    implementation "maven.modrinth:immersive-melodies:0.6.2+1.21.1-neoforge"
+
+    // 农夫乐事
+    implementation "maven.modrinth:farmers-delight:1.21.1-1.2.9-neoforge"
+    // 更多蛋糕
+    implementation "maven.modrinth:common-network:1.0.21-1.21.1-neoforge"
+    implementation "maven.modrinth:forge-config-api-port:v21.1.6-1.21.1-NeoForge"
+    implementation "maven.modrinth:just-more-cakes:1.19.2-neoforge,1.21.1"
+
+    // 思索
+    compileOnly "net.createmod.ponder:Ponder-NeoForge-1.21.1:1.0.56"
+
+    // 机械动力航空学
+    implementation "maven.modrinth:create-aeronautics:1.2.1+mc1.21.1-neoforge"
+    implementation "maven.modrinth:create:6.0.10+mc1.21.1-neoforge"
+    implementation "maven.modrinth:sable:1.2.2+mc1.21.1-neoforge"
+    implementation "dev.ryanhcode.sable-companion:sable-companion-common-1.21.1:1.6.0"
+
+    // 目前无法在开发环境使用，会崩
+    compileOnly "maven.modrinth:simple-hats:1.21.1-Neo-0.4.0"
+    compileOnly "maven.modrinth:owo-lib:0.12.15.5-beta.1+1.21"
+    compileOnly "maven.modrinth:accessories:1.1.0-beta.48+1.21.1"
+
+    // runtimeOnly "curse.maven:probejs-585406:5820894"
+    // runtimeOnly "curse.maven:placebo-283644:6446766"
+    // runtimeOnly "curse.maven:hostile-neural-networks-552574:6430289"
+    // runtimeOnly "maven.modrinth:camerapture:1.10.1+mc1.21.1-neoforge"
+}
+
+shadowJar {
+    configurations = [project.configurations.mcLib]
+
+    // MP3 音频库 居然会把 junit 打包进去……
+    dependencies {
+        exclude(dependency('junit:junit'))
+    }
+
+    // 包重定向
+    relocate 'io.github.jaredmdobson.concentus', 'com.github.tartaricacid.touhoulittlemaid.libs.concentus'
+    relocate 'org.gagravarr', 'com.github.tartaricacid.touhoulittlemaid.libs.gagravarr'
+    relocate 'javazoom.jl', 'com.github.tartaricacid.touhoulittlemaid.libs.javazoom.jl'
+    relocate 'javazoom.spi', 'com.github.tartaricacid.touhoulittlemaid.libs.javazoom.spi'
+    relocate 'org.tritonus', 'com.github.tartaricacid.touhoulittlemaid.libs.org.tritonus'
+    relocate 'org.yaml.snakeyaml', 'com.github.tartaricacid.touhoulittlemaid.libs.snakeyaml'
+
+    // 排除不需要的依赖项和资源
+    exclude 'META-INF/maven/**/*'
+    exclude 'META-INF/versions/**/*'
+    // 这个版权许可都已经手动添加进 licenses 里了
+    exclude 'META-INF/LICENSE'
+
+    mergeServiceFiles()
+    minimize()
+}
+
+assemble {
+    dependsOn shadowJar
+}
+
+tasks.compileJava {
+    // dsx137: 强制重新编译和生成 refmap.json 文件，避免偶发情况下该文件丢失问题
+    outputs.upToDateWhen { false }
+}
+
+// 用于 neoforge.mods 里替换那一堆 ${xxxx}
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+}
+
+// 生成 manifest 内容，用于填充版本信息等内容
+jar {
+    enabled = false // 禁用默认的 jar 任务
+    manifest {
+        attributes([
+                "Implementation-Title"  : project.name,
+                "Implementation-Version": "${version}"
+        ])
+    }
+}
+
+// 必须，编码需要显式指定为 UTF
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-Xlint:-removal']
+    options.encoding = 'UTF-8'
+}
+
+// 让 idea 主动下载前置库的源码和 Javadoc
+// 新版本 idea 默认不会下载这两个，这虽然加快了构建速度，但是不方便调试
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+java {
+    // 编译源码文件，方便发布 maven
+    withSourcesJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.compilerArgs << '-Xmaxerrs' << '20000'
+    options.compilerArgs << "-Xlint:-removal"
+}

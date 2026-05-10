@@ -1,0 +1,17 @@
+{
+  "sortnum": 11,
+  "name": "patchouli.touhou_little_maid.book.entries.maid.mute_bauble.name",
+  "icon": "touhou_little_maid:mute_bauble",
+  "category": "touhou_little_maid:maid",
+  "pages": [
+    {
+      "type": "spotlight",
+      "item": "touhou_little_maid:mute_bauble",
+      "text": "patchouli.touhou_little_maid.book.entries.maid.mute_bauble.pages.0.text"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/mute_bauble"
+    }
+  ]
+}

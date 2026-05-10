@@ -1,0 +1,157 @@
+package com.github.tartaricacid.touhoulittlemaid.ai.manager.site;
+
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.SettingReader;
+import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.DefaultLLMSite;
+import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMSite;
+import com.github.tartaricacid.touhoulittlemaid.ai.service.stt.STTSite;
+import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
+import com.google.common.collect.Maps;
+import net.neoforged.fml.loading.FMLPaths;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import static com.github.tartaricacid.touhoulittlemaid.ai.service.SerializerRegister.*;
+
+@SuppressWarnings("all")
+public class AvailableSites {
+    private static final String FOLDER_NAME = "sites";
+
+    // 服务端缓存的站点信息，包含秘钥等敏感信息
+    public static final Map<String, LLMSite> LLM_SITES = Maps.newLinkedHashMap();
+    public static final Map<String, TTSSite> TTS_SITES = Maps.newLinkedHashMap();
+    public static final Map<String, STTSite> STT_SITES = Maps.newLinkedHashMap();
+
+    // 部分默认站点需要进行修正，此处为修正列表
+    public static final Map<String, Consumer<LLMSite>> FIXED_LLM_SITES = Maps.newHashMap();
+
+    public static void init() {
+        clearSites();
+        addDefaultSites();
+        readSites();
+        saveSites();
+    }
+
+    private static void clearSites() {
+        LLM_SITES.clear();
+        TTS_SITES.clear();
+        STT_SITES.clear();
+    }
+
+    private static void addDefaultSites() {
+        LLM_SERIALIZER.forEach((key, value) -> AvailableSites.LLM_SITES.put(key, value.defaultSite()));
+        TTS_SERIALIZER.forEach((key, value) -> AvailableSites.TTS_SITES.put(key, value.defaultSite()));
+        STT_SERIALIZER.forEach((key, value) -> AvailableSites.STT_SITES.put(key, value.defaultSite()));
+
+        // 其他额外的默认站点
+        DefaultLLMSite.addDefaultSites();
+    }
+
+    private static void readSites() {
+        Path root = createFolder();
+        Path llmConfig = root.resolve("llm.json");
+        Path ttsConfig = root.resolve("tts.json");
+        Path sttConfig = root.resolve("stt.json");
+
+        if (Files.exists(llmConfig)) {
+            try {
+                Map<String, LLMSite> allLLMSiteMap = LLMSite.readSites(llmConfig);
+                for (String siteId : allLLMSiteMap.keySet()) {
+                    if (FIXED_LLM_SITES.containsKey(siteId)) {
+                        LLMSite llmSite = allLLMSiteMap.get(siteId);
+                        FIXED_LLM_SITES.get(siteId).accept(llmSite);
+                    }
+                }
+                LLM_SITES.putAll(allLLMSiteMap);
+            } catch (Exception e) {
+                TouhouLittleMaid.LOGGER.error("Failed to read LLM sites", e);
+            }
+        }
+
+        if (Files.exists(ttsConfig)) {
+            try {
+                TTS_SITES.putAll(TTSSite.readSites(ttsConfig));
+            } catch (Exception e) {
+                TouhouLittleMaid.LOGGER.error("Failed to read TTS sites", e);
+            }
+        }
+
+        if (Files.exists(sttConfig)) {
+            try {
+                STT_SITES.putAll(STTSite.readSites(sttConfig));
+            } catch (Exception e) {
+                TouhouLittleMaid.LOGGER.error("Failed to read STT sites", e);
+            }
+        }
+    }
+
+    public static void saveSites() {
+        Path root = createFolder();
+        saveLLMSites(root);
+        saveTTSSites(root);
+        saveSTTSites(root);
+        SettingReader.reloadSettings();
+    }
+
+    public static void saveSTTSitesOnly() {
+        Path root = createFolder();
+        saveSTTSites(root);
+    }
+
+    private static void saveLLMSites(Path root) {
+        Path llmConfig = root.resolve("llm.json");
+
+        try {
+            LLMSite.writeSites(llmConfig, LLM_SITES);
+        } catch (Exception e) {
+            TouhouLittleMaid.LOGGER.error("Failed to save LLM sites", e);
+        }
+    }
+
+    private static void saveTTSSites(Path root) {
+        Path ttsConfig = root.resolve("tts.json");
+
+        try {
+            TTSSite.writeSites(ttsConfig, TTS_SITES);
+        } catch (Exception e) {
+            TouhouLittleMaid.LOGGER.error("Failed to save TTS sites", e);
+        }
+    }
+
+    private static void saveSTTSites(Path root) {
+        Path sttConfig = root.resolve("stt.json");
+
+        try {
+            STTSite.writeSites(sttConfig, STT_SITES);
+        } catch (Exception e) {
+            TouhouLittleMaid.LOGGER.error("Failed to save STT sites", e);
+        }
+    }
+
+    public static LLMSite getLLMSite(String siteName) {
+        return LLM_SITES.get(siteName);
+    }
+
+    public static TTSSite getTTSSite(String siteName) {
+        return TTS_SITES.get(siteName);
+    }
+
+    public static STTSite getSTTSite(String siteName) {
+        return STT_SITES.get(siteName);
+    }
+
+    private static Path createFolder() {
+        Path root = FMLPaths.CONFIGDIR.get().resolve(TouhouLittleMaid.MOD_ID).resolve(FOLDER_NAME);
+        if (!root.toFile().isDirectory()) {
+            try {
+                Files.createDirectories(root);
+            } catch (Exception e) {
+                TouhouLittleMaid.LOGGER.error("Failed to create sites folder", e);
+            }
+        }
+        return root;
+    }
+}

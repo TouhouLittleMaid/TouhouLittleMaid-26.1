@@ -1,0 +1,104 @@
+{
+  "processor": "com.github.tartaricacid.touhoulittlemaid.compat.patchouli.AltarRecipeComponent",
+  "components": [
+    {
+      "type": "patchouli:header",
+      "text": "#output_desc",
+      "color": "000000",
+      "x": -1,
+      "y": 5
+    },
+    {
+      "type": "patchouli:separator",
+      "x": -1,
+      "y": 20
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#input1",
+      "framed": true,
+      "x": 13,
+      "y": 90
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#input2",
+      "framed": true,
+      "x": 13,
+      "y": 65
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#input3",
+      "framed": true,
+      "x": 38,
+      "y": 40
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#input4",
+      "framed": true,
+      "x": 63,
+      "y": 40
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#input5",
+      "framed": true,
+      "x": 88,
+      "y": 65
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#input6",
+      "framed": true,
+      "x": 88,
+      "y": 90
+    },
+    {
+      "type": "patchouli:image",
+      "image": "touhou_little_maid:textures/item/power_point.png",
+      "width": 16,
+      "height": 16,
+      "texture_width": 16,
+      "texture_height": 16,
+      "scale": 0.75,
+      "x": 52,
+      "y": 74
+    },
+    {
+      "type": "patchouli:header",
+      "text": "#power_cost",
+      "color": "777777",
+      "x": 57,
+      "y": 89,
+      "scale": 0.75
+    },
+    {
+      "type": "patchouli:image",
+      "image": "patchouli:textures/gui/crafting.png",
+      "width": 9,
+      "height": 9,
+      "texture_width": 128,
+      "texture_height": 256,
+      "u": 65,
+      "v": 27,
+      "x": 35,
+      "y": 124
+    },
+    {
+      "type": "patchouli:item",
+      "item": "#output_item",
+      "framed": true,
+      "x": 50,
+      "y": 120
+    },
+    {
+      "type": "patchouli:entity",
+      "entity": "#output_entity",
+      "render_size": 16,
+      "x": 58,
+      "y": 129
+    }
+  ]
+}

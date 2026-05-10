@@ -1,0 +1,156 @@
+package com.github.tartaricacid.touhoulittlemaid.entity.ai.navigation;
+
+import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathfindingContext;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+/**
+ * 该方法仅修改了栅栏门和梯子的寻路判断
+ */
+public class MaidNodeEvaluator extends WalkNodeEvaluator {
+    @Override
+    public PathType getPathType(PathfindingContext pContext, int pX, int pY, int pZ) {
+        return getMaidBlockPathTypeStatic(pContext, new BlockPos.MutableBlockPos(pX, pY, pZ));
+    }
+
+    @Override
+    public int getNeighbors(Node[] outputArray, Node node) {
+        int nodeId = super.getNeighbors(outputArray, node);
+        return this.createClimbNode(nodeId, outputArray, node);
+    }
+
+    // 将可爬行物加入寻路节点里头
+    // 一般这些物体都是相连的，所以向上向下搜寻下
+    protected int createClimbNode(int nodeId, Node[] nodes, Node origin) {
+        // 只有在开启攀爬能力，才将梯子加入寻路节点里
+        if (this.mob instanceof EntityMaid maid && maid.getConfigManager().isActiveClimbing()) {
+            // 向上搜寻
+            BlockPos.MutableBlockPos upPos = new BlockPos.MutableBlockPos(origin.x, origin.y + 1, origin.z);
+            if (isMaidCanClimbBlock(upPos, maid)) {
+                Node node = this.getNode(upPos);
+                if (!node.closed) {
+                    node.costMalus = 0;
+                    node.type = PathType.WALKABLE;
+                    if (nodeId + 1 < nodes.length) {
+                        nodes[nodeId++] = node;
+                    }
+                }
+            }
+            // 向下搜寻
+            BlockPos.MutableBlockPos downPos = new BlockPos.MutableBlockPos(origin.x, origin.y - 1, origin.z);
+            if (isMaidCanClimbBlock(downPos, maid)) {
+                Node node = this.getNode(downPos);
+                if (!node.closed) {
+                    node.costMalus = 0;
+                    node.type = PathType.WALKABLE;
+                    if (nodeId + 1 < nodes.length) {
+                        nodes[nodeId++] = node;
+                    }
+                }
+            }
+        }
+        return nodeId;
+    }
+
+    private PathType getMaidBlockPathTypeStatic(PathfindingContext context, BlockPos.MutableBlockPos pos) {
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+
+        PathType pathType = getMaidBlockPathTypeRaw(context, x, y, z);
+        if (pathType == PathType.OPEN && y >= context.level().getMinBuildHeight() + 1) {
+            return switch (getMaidBlockPathTypeRaw(context, x, y - 1, z)) {
+                case OPEN, WATER, LAVA, WALKABLE -> PathType.OPEN;
+                case DAMAGE_FIRE -> PathType.DAMAGE_FIRE;
+                case DAMAGE_OTHER -> PathType.DAMAGE_OTHER;
+                case STICKY_HONEY -> PathType.STICKY_HONEY;
+                case POWDER_SNOW -> PathType.DANGER_POWDER_SNOW;
+                case DAMAGE_CAUTIOUS -> PathType.DAMAGE_CAUTIOUS;
+                case TRAPDOOR -> PathType.DANGER_TRAPDOOR;
+                default -> checkNeighbourBlocks(context, x, y, z, PathType.WALKABLE);
+            };
+        } else {
+            return pathType;
+        }
+    }
+
+    private PathType getMaidBlockPathTypeRaw(PathfindingContext context, int pX, int pY, int pZ) {
+        BlockPos pos = new BlockPos(pX, pY, pZ);
+        // 女仆在限定范围内寻路寻到了范围外，失败
+        if (this.mob instanceof EntityMaid maid && maid.isWithinRestriction() && !maid.isWithinRestriction(pos)) {
+            return PathType.BLOCKED;
+        }
+
+        BlockState blockState = context.getBlockState(pos);
+        // 先检查方块是否在黑名单中
+        if (blockState.is(TagBlock.MAID_AVOID_BLOCK)) {
+            return PathType.DAMAGE_OTHER;
+        }
+
+        PathType pathType;
+        if (blockState.getBlock() instanceof FenceGateBlock) {
+            pathType = blockState.getValue(FenceGateBlock.OPEN) ? PathType.DOOR_OPEN : PathType.DOOR_WOOD_CLOSED;
+        } else if (this.mob instanceof EntityMaid maid && this.canClimb(blockState, pos, maid)) {
+            // 将楼梯视为可行走方块，便于后续将楼梯加入路径节点
+            pathType = PathType.WALKABLE;
+        } else {
+            pathType = context.getPathTypeFromState(pX, pY, pZ);
+            // 判断目标方块的碰撞高度。有些半透明方块拥有超过 0.5（台阶）的高度，此时女仆是不能从其中穿过的，需要将其视为不可通行方块
+            if (!heightCheckExclusions(pathType)) {
+                VoxelShape shape = blockState.getCollisionShape(context.level(), pos);
+                double maxY = shape.max(Direction.Axis.Y);
+                if (pathType != PathType.BLOCKED) {
+                    if (maxY > 0.5) {
+                        pathType = PathType.BLOCKED;
+                    }
+                }
+            }
+        }
+        if (pathType == PathType.DOOR_WOOD_CLOSED && this.mob instanceof EntityMaid maid && !this.canOpenDoor(blockState.getBlock(), maid)) {
+            pathType = PathType.DOOR_IRON_CLOSED;
+        }
+        return pathType;
+    }
+
+    private boolean heightCheckExclusions(PathType pathType) {
+        return pathType == PathType.DOOR_OPEN || pathType == PathType.DOOR_WOOD_CLOSED;
+    }
+
+    private boolean canOpenDoor(Block block, EntityMaid maid) {
+        if (block instanceof DoorBlock) {
+            return maid.getConfigManager().isOpenDoor();
+        }
+        if (block instanceof FenceGateBlock) {
+            return maid.getConfigManager().isOpenFenceGate();
+        }
+        return true;
+    }
+
+    private boolean canClimb(BlockState blockState, BlockPos blockPos, EntityMaid maid) {
+        if (isMaidCanClimbBlock(blockState, blockPos, maid)) {
+            return maid.getConfigManager().isActiveClimbing();
+        }
+        return false;
+    }
+
+    public static boolean isMaidCanClimbBlock(BlockPos blockPos, EntityMaid maid) {
+        Level level = maid.level;
+        BlockState blockState = level.getBlockState(blockPos);
+        return isMaidCanClimbBlock(blockState, blockPos, maid);
+    }
+
+    public static boolean isMaidCanClimbBlock(BlockState blockState, BlockPos blockPos, EntityMaid maid) {
+        return blockState.isLadder(maid.level, blockPos, maid);
+    }
+}

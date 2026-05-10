@@ -1,0 +1,86 @@
+package com.github.tartaricacid.touhoulittlemaid.item;
+
+import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
+import com.github.tartaricacid.touhoulittlemaid.world.data.MaidInfo;
+import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.level.Level;
+
+import javax.annotation.Nullable;
+import java.util.List;
+
+public class ItemTrumpet extends Item {
+    private static final int MIN_USE_DURATION = 20;
+
+    public ItemTrumpet() {
+        super((new Properties()).stacksTo(1));
+    }
+
+    @Override
+    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
+        if (entityLiving instanceof Player player && timeLeft >= MIN_USE_DURATION) {
+            if (worldIn instanceof ServerLevel serverLevel) {
+                serverLevel.getEntities(EntityMaid.TYPE, Entity::isAlive).stream()
+                        .filter(maid -> maid.isOwnedBy(player))
+                        .forEach(maid -> teleportToOwner(maid, player));
+                MaidWorldData data = MaidWorldData.get(worldIn);
+                if (data != null) {
+                    List<MaidInfo> infos = data.getPlayerMaidInfos(player);
+                    if (infos != null && !infos.isEmpty()) {
+                        player.sendSystemMessage(Component.translatable("message.touhou_little_maid.trumpet.unloaded_maid", infos.size()).withStyle(ChatFormatting.DARK_RED));
+                    }
+                }
+            }
+            if (player instanceof ServerPlayer serverPlayer) {
+                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_TRUMPET);
+            }
+            player.getCooldowns().addCooldown(this, 200);
+        }
+    }
+
+    private void teleportToOwner(EntityMaid maid, Player player) {
+        maid.setHomeModeEnable(false);
+        // 如果女仆是骑乘某个实体的，先让女仆下来
+        if (maid.isPassenger()) {
+            maid.stopRiding();
+        }
+        maid.teleportTo(player.getX() + player.getRandom().nextInt(3) - 1, player.getY(), player.getZ() + player.getRandom().nextInt(3) - 1);
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity pEntity) {
+        return 100;
+    }
+
+    @Override
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        playerIn.startUsingItem(handIn);
+        return InteractionResultHolder.consume(stack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.add(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.usage").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.note").withStyle(ChatFormatting.DARK_RED));
+    }
+}

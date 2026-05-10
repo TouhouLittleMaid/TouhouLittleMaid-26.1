@@ -1,0 +1,163 @@
+package com.github.tartaricacid.touhoulittlemaid.client.resource;
+
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.api.event.client.DefaultGeckoAnimationEvent;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition.ConditionManager;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.Animation;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.MolangParser;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.Converter;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.FormatVersion;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.RawGeoModel;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.tree.RawGeometryTree;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.GeoBuilder;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoModel;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.json.JsonAnimationUtils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.ChainedJsonException;
+import net.minecraft.util.GsonHelper;
+import net.neoforged.neoforge.common.NeoForge;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.EnumMap;
+import java.util.Map;
+
+import static com.github.tartaricacid.touhoulittlemaid.api.event.client.DefaultGeckoAnimationEvent.AnimationType.*;
+
+public class GeckoModelLoader {
+    public static final ResourceLocation DEFAULT_MAID_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid.animation.json");
+    public static final ResourceLocation DEFAULT_TAC_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/tac.animation.json");
+    public static final ResourceLocation DEFAULT_CHAIR_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/chair.animation.json");
+    public static final ResourceLocation DEFAULT_ISS_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/iss.animation.json");
+    public static final ResourceLocation DEFAULT_IM_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/im.animation.json");
+    public static AnimationFile DEFAULT_MAID_ANIMATION_FILE = new AnimationFile();
+    public static AnimationFile DEFAULT_CHAIR_ANIMATION_FILE = new AnimationFile();
+    public static AnimationFile DEFAULT_TAC_ANIMATION_FILE = new AnimationFile();
+    public static AnimationFile DEFAULT_ISS_ANIMATION_FILE = new AnimationFile();
+    public static AnimationFile DEFAULT_IM_ANIMATION_FILE = new AnimationFile();
+
+    public static void reload() {
+        clearAllCache();
+        loadDefaultAnimation();
+    }
+
+    public static void registerGeo(ResourceLocation id, InputStream inputStream) {
+        Map<ResourceLocation, GeoModel> geoModels = GeckoLibCache.getInstance().getGeoModels();
+        RawGeoModel rawModel = Converter.fromInputStream(inputStream);
+        if (rawModel.getFormatVersion() == FormatVersion.NEW) {
+            RawGeometryTree rawGeometryTree = RawGeometryTree.parseHierarchy(rawModel);
+            GeoModel geoModel = GeoBuilder.getGeoBuilder().constructGeoModel(rawGeometryTree);
+            geoModels.put(id, geoModel);
+        }
+    }
+
+    public static void registerMaidAnimations(ResourceLocation id, AnimationFile animationFile) {
+        DEFAULT_MAID_ANIMATION_FILE.animations().forEach((name, action) -> {
+            if (!animationFile.animations().containsKey(name)) {
+                animationFile.putAnimation(name, action);
+            }
+        });
+        DEFAULT_TAC_ANIMATION_FILE.animations().forEach((name, action) -> {
+            if (!animationFile.animations().containsKey(name)) {
+                animationFile.putAnimation(name, action);
+            }
+        });
+        DEFAULT_ISS_ANIMATION_FILE.animations().forEach((name, action) -> {
+            if (!animationFile.animations().containsKey(name)) {
+                animationFile.putAnimation(name, action);
+            }
+        });
+        DEFAULT_IM_ANIMATION_FILE.animations().forEach((name, action) -> {
+            if (!animationFile.animations().containsKey(name)) {
+                animationFile.putAnimation(name, action);
+            }
+        });
+        animationFile.animations().forEach((name, animation) -> ConditionManager.addTest(id, name));
+        GeckoLibCache.getInstance().getAnimations().put(id, animationFile);
+    }
+
+    public static void registerChairAnimations(ResourceLocation id, AnimationFile animationFile) {
+        DEFAULT_CHAIR_ANIMATION_FILE.animations().forEach((name, action) -> {
+            if (!animationFile.animations().containsKey(name)) {
+                animationFile.putAnimation(name, action);
+            }
+        });
+        animationFile.animations().forEach((name, animation) -> ConditionManager.addTest(id, name));
+        GeckoLibCache.getInstance().getAnimations().put(id, animationFile);
+    }
+
+    public static void mergeAnimationFile(InputStream inputStream, AnimationFile animationFile) {
+        mergeAnimationFile(animationFile, getAnimationFile(inputStream));
+    }
+
+    private static AnimationFile getAnimationFile(InputStream stream) {
+        AnimationFile animationFile = new AnimationFile();
+        MolangParser parser = GeckoLibCache.getInstance().parser;
+        JsonObject jsonObject = GsonHelper.fromJson(CustomPackLoader.GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
+        for (Map.Entry<String, JsonElement> entry : JsonAnimationUtils.getAnimations(jsonObject)) {
+            String animationName = entry.getKey();
+            Animation animation;
+            try {
+                animation = JsonAnimationUtils.deserializeJsonToAnimation(JsonAnimationUtils.getAnimation(jsonObject, animationName), parser);
+                animationFile.putAnimation(animationName, animation);
+            } catch (ChainedJsonException e) {
+                TouhouLittleMaid.LOGGER.error("Failed to load animation {}: {}", animationName, e.getMessage());
+            }
+        }
+        return animationFile;
+    }
+
+    private static AnimationFile mergeAnimationFile(AnimationFile main, AnimationFile other) {
+        other.animations().forEach(main::putAnimation);
+        return main;
+    }
+
+    private static void clearAllCache() {
+        GeckoLibCache.getInstance().getGeoModels().clear();
+        // 不能清除动画文件，会导致崩溃
+        // GeckoLibCache.getInstance().getAnimations().clear();
+    }
+
+    private static void loadDefaultAnimation() {
+        try (InputStream stream = Minecraft.getInstance().getResourceManager().open(DEFAULT_MAID_ANIMATION)) {
+            DEFAULT_MAID_ANIMATION_FILE = getAnimationFile(stream);
+        } catch (IOException e) {
+            TouhouLittleMaid.LOGGER.error("Failed to load default maid animation file:", e);
+        }
+        try (InputStream stream = Minecraft.getInstance().getResourceManager().open(DEFAULT_CHAIR_ANIMATION)) {
+            DEFAULT_CHAIR_ANIMATION_FILE = getAnimationFile(stream);
+        } catch (IOException e) {
+            TouhouLittleMaid.LOGGER.error("Failed to load default chair animation file:", e);
+        }
+        try (InputStream stream = Minecraft.getInstance().getResourceManager().open(DEFAULT_TAC_ANIMATION)) {
+            DEFAULT_TAC_ANIMATION_FILE = getAnimationFile(stream);
+        } catch (IOException e) {
+            TouhouLittleMaid.LOGGER.error("Failed to load default tac animation file:", e);
+        }
+        try (InputStream stream = Minecraft.getInstance().getResourceManager().open(DEFAULT_ISS_ANIMATION)) {
+            DEFAULT_ISS_ANIMATION_FILE = getAnimationFile(stream);
+        } catch (IOException e) {
+            TouhouLittleMaid.LOGGER.error("Failed to load default iss animation file:", e);
+        }
+        try (InputStream stream = Minecraft.getInstance().getResourceManager().open(DEFAULT_IM_ANIMATION)) {
+            DEFAULT_IM_ANIMATION_FILE = getAnimationFile(stream);
+        } catch (IOException e) {
+            TouhouLittleMaid.LOGGER.error("Failed to load default im animation file:", e);
+        }
+
+        EnumMap<DefaultGeckoAnimationEvent.AnimationType, AnimationFile> animationFiles = new EnumMap<>(DefaultGeckoAnimationEvent.AnimationType.class);
+        animationFiles.put(MAID, DEFAULT_MAID_ANIMATION_FILE);
+        animationFiles.put(CHAIR, DEFAULT_CHAIR_ANIMATION_FILE);
+        animationFiles.put(TAC, DEFAULT_TAC_ANIMATION_FILE);
+        animationFiles.put(ISS, DEFAULT_ISS_ANIMATION_FILE);
+        animationFiles.put(IM, DEFAULT_IM_ANIMATION_FILE);
+        NeoForge.EVENT_BUS.post(new DefaultGeckoAnimationEvent(animationFiles));
+    }
+}

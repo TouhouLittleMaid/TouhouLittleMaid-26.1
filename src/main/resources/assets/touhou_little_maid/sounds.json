@@ -1,0 +1,311 @@
+{
+  "maid.mode.idle": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.idle",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.attack": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.attack",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.range_attack": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.range_attack",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.danmaku_attack": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.danmaku_attack",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.farm": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.farm",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.feed": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.feed",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.shears": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.shears",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.milk": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.milk",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.torch": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.torch",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.feed_animal": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.feed_animal",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.extinguishing": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.extinguishing",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.snow": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.snow",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.break": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.break",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.furnace": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.furnace",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.mode.brewing": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.mode.brewing",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.find_target": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.find_target",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.hurt": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.hurt",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.hurt_fire": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.hurt_fire",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.hurt_player": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.hurt_player",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.tamed": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.tamed",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.item_get": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.item_get",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.death": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.death",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.game_win": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.game_win",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai.game_lost": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.ai.game_lost",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.environment.hot": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.environment.hot",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.environment.cold": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.environment.cold",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.environment.rain": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.environment.rain",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.environment.snow": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.environment.snow",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.environment.morning": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.environment.morning",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.environment.night": {
+    "category": "neutral",
+    "subtitle": "subtitle.touhou_little_maid.maid.environment.night",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.credit": {
+    "category": "voice",
+    "subtitle": "subtitle.touhou_little_maid.other.credit",
+    "sounds": [
+      "touhou_little_maid:maid/empty"
+    ]
+  },
+  "maid.ai_chat": {
+    "category": "voice",
+    "subtitle": "subtitle.touhou_little_maid.ai_chat",
+    "sounds": [
+      {
+        "name": "touhou_little_maid:maid/empty",
+        "stream": true
+      }
+    ]
+  },
+  "item.camera_use": {
+    "category": "voice",
+    "subtitle": "subtitle.touhou_little_maid.item.camera_use",
+    "sounds": [
+      {
+        "name": "touhou_little_maid:item/camera_use",
+        "stream": true
+      }
+    ]
+  },
+  "block.altar_craft": {
+    "category": "voice",
+    "subtitle": "subtitle.touhou_little_maid.block.altar_craft",
+    "sounds": [
+      "touhou_little_maid:block/altar_craft_1",
+      "touhou_little_maid:block/altar_craft_2"
+    ]
+  },
+  "block.gomoku": {
+    "category": "block",
+    "subtitle": "subtitle.touhou_little_maid.block.gomoku",
+    "sounds": [
+      "touhou_little_maid:block/piece"
+    ]
+  },
+  "block.gomoku_reset": {
+    "category": "block",
+    "subtitle": "subtitle.touhou_little_maid.block.gomoku_reset",
+    "sounds": [
+      "touhou_little_maid:block/gomoku_reset"
+    ]
+  },
+  "entity.box": {
+    "category": "voice",
+    "subtitle": "subtitle.touhou_little_maid.entity.box",
+    "sounds": [
+      "touhou_little_maid:entity/box"
+    ]
+  },
+  "item.compass": {
+    "category": "voice",
+    "subtitle": "subtitle.touhou_little_maid.item.compass",
+    "sounds": [
+      "touhou_little_maid:item/point"
+    ]
+  },
+  "entity.fairy.ambient": {
+    "sounds": [
+      "minecraft:mob/rabbit/idle1",
+      "minecraft:mob/rabbit/idle2",
+      "minecraft:mob/rabbit/idle3",
+      "minecraft:mob/rabbit/idle4"
+    ],
+    "subtitle": "subtitle.touhou_little_maid.entity.fairy.ambient"
+  },
+  "entity.fairy.death": {
+    "sounds": [
+      "minecraft:mob/rabbit/bunnymurder"
+    ],
+    "subtitle": "subtitle.touhou_little_maid.entity.fairy.death"
+  },
+  "entity.fairy.hurt": {
+    "sounds": [
+      "minecraft:mob/rabbit/hurt1",
+      "minecraft:mob/rabbit/hurt2",
+      "minecraft:mob/rabbit/hurt3",
+      "minecraft:mob/rabbit/hurt4"
+    ],
+    "subtitle": "subtitle.touhou_little_maid.entity.fairy.hurt"
+  },
+  "ui.recording_start": {
+    "sounds": [
+      "touhou_little_maid:ui/recording_start"
+    ],
+    "subtitle": "subtitle.touhou_little_maid.ui.recording_start"
+  },
+  "ui.recording_end": {
+    "sounds": [
+      "touhou_little_maid:ui/recording_end"
+    ],
+    "subtitle": "subtitle.touhou_little_maid.ui.recording_end"
+  }
+}

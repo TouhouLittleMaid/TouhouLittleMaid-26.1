@@ -1,0 +1,48 @@
+{
+  "sortnum": 4,
+  "name": "patchouli.touhou_little_maid.book.entries.maid.maid_bauble.name",
+  "icon": "touhou_little_maid:ultramarine_orb_elixir",
+  "category": "touhou_little_maid:maid",
+  "pages": [
+    {
+      "type": "text",
+      "text": "patchouli.touhou_little_maid.book.entries.maid.maid_bauble.pages.0.text"
+    },
+    {
+      "type": "text",
+      "text": "patchouli.touhou_little_maid.book.entries.maid.maid_bauble.pages.1.text"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/nimble_fabric"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/ultramarine_orb_elixir"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/drown_protect_bauble"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/explosion_protect_bauble"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/fall_protect_bauble"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/fire_protect_bauble"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/magic_protect_bauble"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/projectile_protect_bauble"
+    }
+  ]
+}

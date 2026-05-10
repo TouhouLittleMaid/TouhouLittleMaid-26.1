@@ -1,0 +1,21 @@
+{
+  "sortnum": 4,
+  "name": "patchouli.touhou_little_maid.book.entries.other.maid_beacon.name",
+  "icon": "touhou_little_maid:maid_beacon",
+  "category": "touhou_little_maid:other",
+  "pages": [
+    {
+      "type": "spotlight",
+      "item": "touhou_little_maid:maid_beacon",
+      "text": "patchouli.touhou_little_maid.book.entries.other.maid_beacon.pages.0.text"
+    },
+    {
+      "type": "text",
+      "text": "patchouli.touhou_little_maid.book.entries.other.maid_beacon.pages.1.text"
+    },
+    {
+      "type": "altar_recipe",
+      "recipe_id": "touhou_little_maid:altar_recipe/maid_beacon"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+package com.github.tartaricacid.touhoulittlemaid.event.maid;
+
+
+import com.github.tartaricacid.touhoulittlemaid.api.event.InteractMaidEvent;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+
+@EventBusSubscriber
+public final class SwitchSittingEvent {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onInteractMaid(InteractMaidEvent event) {
+        Player player = event.getPlayer();
+        EntityMaid maid = event.getMaid();
+        Level world = event.getWorld();
+
+        if (player.isShiftKeyDown() && !player.getMainHandItem().is(InitItems.KAPPA_COMPASS.get())) {
+            maid.setInSittingPose(!maid.isMaidInSittingPose());
+            if (maid.isMaidInSittingPose()) {
+                maid.getNavigation().stop();
+                maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+                maid.setTarget(null);
+            }
+            if (maid.hasRestriction() && maid.canBrainMoving()) {
+                maid.getSchedulePos().restrictTo(maid);
+                BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getRestrictCenter(), 0.7f, 3);
+            }
+            maid.playSound(SoundEvents.ITEM_PICKUP, 0.2F,
+                    ((world.random.nextFloat() - world.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            event.setCanceled(true);
+        }
+    }
+}
