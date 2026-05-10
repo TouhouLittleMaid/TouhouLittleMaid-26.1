@@ -69,15 +69,15 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
         int z = pos.getZ();
 
         PathType pathType = getMaidBlockPathTypeRaw(context, x, y, z);
-        if (pathType == PathType.OPEN && y >= context.level().getMinBuildHeight() + 1) {
+        if (pathType == PathType.OPEN && y >= context.level().getMinY() + 1) {
             return switch (getMaidBlockPathTypeRaw(context, x, y - 1, z)) {
                 case OPEN, WATER, LAVA, WALKABLE -> PathType.OPEN;
-                case DAMAGE_FIRE -> PathType.DAMAGE_FIRE;
+                case FIRE -> PathType.FIRE;
                 case DAMAGE_OTHER -> PathType.DAMAGE_OTHER;
                 case STICKY_HONEY -> PathType.STICKY_HONEY;
-                case POWDER_SNOW -> PathType.DANGER_POWDER_SNOW;
+                case POWDER_SNOW -> PathType.DAMAGING;
                 case DAMAGE_CAUTIOUS -> PathType.DAMAGE_CAUTIOUS;
-                case TRAPDOOR -> PathType.DANGER_TRAPDOOR;
+                case TRAPDOOR -> PathType.TRAPDOOR;
                 default -> checkNeighbourBlocks(context, x, y, z, PathType.WALKABLE);
             };
         } else {

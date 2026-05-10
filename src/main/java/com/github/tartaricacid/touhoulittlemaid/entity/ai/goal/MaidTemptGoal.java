@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.goal;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -40,13 +41,14 @@ public class MaidTemptGoal extends Goal {
         if (this.calmDown > 0) {
             --this.calmDown;
             return false;
-        } else {
-            this.maid = this.mob.level().getNearestEntity(EntityMaid.class, this.targetingConditions, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ(), this.mob.getBoundingBox().inflate(10));
+        } else if(this.mob.level instanceof ServerLevel level) {
+            this.maid = level.getNearestEntity(EntityMaid.class, this.targetingConditions, this.mob, this.mob.getX(), this.mob.getY(), this.mob.getZ(), this.mob.getBoundingBox().inflate(10));
             return this.maid != null;
         }
+        return false;
     }
 
-    private boolean shouldFollow(LivingEntity livingEntity) {
+    private boolean shouldFollow(LivingEntity livingEntity,ServerLevel level) {
         return this.items.test(livingEntity.getMainHandItem()) || this.items.test(livingEntity.getOffhandItem());
     }
 

@@ -40,7 +40,7 @@ public class CakeEdible implements IMaidEdibleBlock {
             level.removeBlock(pos, false);
         }
         maid.spawnItemParticles(new ItemStack(Items.CAKE), 8);
-        maid.playSound(SoundEvents.GENERIC_EAT);
+        maid.playSound(SoundEvents.GENERIC_EAT.value());
         return true;
     }
 

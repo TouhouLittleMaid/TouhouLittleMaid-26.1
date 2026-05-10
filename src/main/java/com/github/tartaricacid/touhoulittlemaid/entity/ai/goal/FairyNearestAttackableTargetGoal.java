@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.goal;
 
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagEntity;
 import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -39,11 +40,12 @@ public class FairyNearestAttackableTargetGoal<T extends LivingEntity> extends Ta
     }
 
     private void findTarget() {
-        Level level = this.mob.level;
-        AABB searchArea = this.getTargetSearchArea(this.getFollowDistance());
-        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, searchArea,
-                e -> e.getType().is(TagEntity.MAID_FAIRY_ATTACK_GOAL));
-        this.target = level.getNearestEntity(entities, this.targetConditions, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+        if(this.mob.level instanceof  ServerLevel level) {
+            AABB searchArea = this.getTargetSearchArea(this.getFollowDistance());
+            List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, searchArea,
+                    e -> e.is(TagEntity.MAID_FAIRY_ATTACK_GOAL));
+            this.target = level.getNearestEntity(entities, this.targetConditions, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+        }
     }
 
     @Override

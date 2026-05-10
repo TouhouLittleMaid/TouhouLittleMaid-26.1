@@ -62,7 +62,6 @@ import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
 import com.github.tartaricacid.touhoulittlemaid.world.backups.MaidBackupsManager;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -228,6 +227,14 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     // 给卓越前线之类的枪械模组使用的，标记女仆是否处于 aim 状态
     private static final EntityDataAccessor<Boolean> DATA_IS_AIMING = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
 
+
+    private static final Brain.Provider<EntityMaid> BRAIN_PROVIDER = Brain.provider(
+            MaidBrain.getMemoryTypes(),
+            MaidBrain.getSensorTypes(),
+            //TODO 是否可能简化Brain注册?
+            _ -> new ArrayList<>()
+    );
+
     // 游戏数据记录，包括赢棋次数和赢棋状态
     static final EntityDataAccessor<CompoundTag> GAME_SKILL = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.COMPOUND_TAG);
     static final EntityDataAccessor<Byte> GAME_STATUE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BYTE);
@@ -340,7 +347,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
         // 尝试修复 https://github.com/TartaricAcid/TouhouLittleMaid/issues/631
         ResourceKey<Level> dimension = Objects.requireNonNullElse(world.dimension(), Level.OVERWORLD);
-        this.schedulePos = new SchedulePos(BlockPos.ZERO, dimension.location());
+        this.schedulePos = new SchedulePos(BlockPos.ZERO, dimension.identifier());
 
         this.moveControl = new MaidMoveControl(this);
         this.swimManager = new MaidSwimManager(this);
@@ -489,13 +496,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     }
 
     @Override
-    protected Brain.Provider<EntityMaid> brainProvider() {
-        return Brain.provider(MaidBrain.getMemoryTypes(), MaidBrain.getSensorTypes());
-    }
-
-    @Override
-    protected Brain<?> makeBrain(Dynamic<?> dynamicIn) {
-        Brain<EntityMaid> brain = this.brainProvider().makeBrain(dynamicIn);
+    protected Brain<? extends LivingEntity> makeBrain(Brain.Packed packedBrain) {
+        Brain<EntityMaid> brain = BRAIN_PROVIDER.makeBrain(this, packedBrain);
         MaidBrain.registerBrainGoals(brain, this);
         return brain;
     }
