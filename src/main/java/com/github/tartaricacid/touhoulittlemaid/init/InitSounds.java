@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.init;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -55,6 +55,6 @@ public final class InitSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> RECORDING_END = registerSound("ui.recording_end");
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
-        return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name), 16.0F));
+        return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name), 16.0F));
     }
 }

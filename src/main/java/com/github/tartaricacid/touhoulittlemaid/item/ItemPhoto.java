@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.util.PlaceHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -46,7 +45,7 @@ public class ItemPhoto extends AbstractStoreMaidItem {
                 context.getItemInHand().shrink(1);
             });
         } else {
-            if (context.getItemInHand().get(InitDataComponent.MAID_INFO) != null && worldIn.isClientSide) {
+            if (context.getItemInHand().get(InitDataComponent.MAID_INFO) != null && worldIn.isClientSide()) {
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.photo.not_suitable_for_place_maid"));
             }
         }

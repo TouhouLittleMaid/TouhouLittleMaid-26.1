@@ -5,13 +5,13 @@ import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class BaubleButton extends Button implements ITooltipButton {
-    private static final ResourceLocation BAUBLE_BUTTON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/bauble_button.png");
+    private static final Identifier BAUBLE_BUTTON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/bauble_button.png");
     private final int vStart;
     private final int uStart;
     private final Component tooltip;
@@ -28,7 +28,7 @@ public class BaubleButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderTexture(guiGraphics, BAUBLE_BUTTON, this.getX(), this.getY(),
                 this.uStart, this.vStart, 0, this.getWidth(), this.getHeight(),
                 256, 256);
@@ -40,11 +40,11 @@ public class BaubleButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public void renderTooltip(GuiGraphics graphics, Minecraft mc, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphicsExtractor graphics, Minecraft mc, int mouseX, int mouseY) {
         graphics.renderTooltip(mc.font, this.tooltip, mouseX, mouseY);
     }
 
-    public void renderTexture(GuiGraphics pGuiGraphics, ResourceLocation pTexture, int pX, int pY, int uOffset,
+    public void renderTexture(GuiGraphicsExtractor pGuiGraphics, Identifier pTexture, int pX, int pY, int uOffset,
                               int vOffset, int yDiff, int pWidth, int pHeight, int pTextureWidth, int pTextureHeight) {
         int i = vOffset;
         if (!this.isActive()) {

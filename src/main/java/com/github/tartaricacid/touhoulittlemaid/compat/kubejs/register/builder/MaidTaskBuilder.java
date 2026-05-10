@@ -8,7 +8,7 @@ import com.google.common.collect.Sets;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -30,7 +30,7 @@ public class MaidTaskBuilder {
                     用物品来表示任务的图标
                     """)
     })
-    public BaseTaskJS.Builder baseTask(ResourceLocation id, ItemStack icon) {
+    public BaseTaskJS.Builder baseTask(Identifier id, ItemStack icon) {
         BaseTaskJS.Builder builder = new BaseTaskJS.Builder(id, icon);
         tasks.add(new BaseTaskJS(builder));
         return builder;
@@ -49,7 +49,7 @@ public class MaidTaskBuilder {
                     用物品来表示任务的图标
                     """)
     })
-    public MeleeTaskJS.Builder meleeTask(ResourceLocation id, ItemStack icon) {
+    public MeleeTaskJS.Builder meleeTask(Identifier id, ItemStack icon) {
         MeleeTaskJS.Builder builder = new MeleeTaskJS.Builder(id, icon);
         tasks.add(new MeleeTaskJS(builder));
         return builder;
@@ -68,7 +68,7 @@ public class MaidTaskBuilder {
                     用物品来表示任务的图标
                     """)
     })
-    public RangedAttackTaskJS.Builder rangedAttackTask(ResourceLocation id, ItemStack icon) {
+    public RangedAttackTaskJS.Builder rangedAttackTask(Identifier id, ItemStack icon) {
         RangedAttackTaskJS.Builder builder = new RangedAttackTaskJS.Builder(id, icon);
         tasks.add(new RangedAttackTaskJS(builder));
         return builder;
@@ -87,7 +87,7 @@ public class MaidTaskBuilder {
                     用物品来表示任务的图标
                     """)
     })
-    public FarmTaskJS.Builder farmTask(ResourceLocation id, ItemStack icon) {
+    public FarmTaskJS.Builder farmTask(Identifier id, ItemStack icon) {
         FarmTaskJS.Builder builder = new FarmTaskJS.Builder(id, icon);
         tasks.add(new FarmTaskJS(builder));
         return builder;
@@ -106,7 +106,7 @@ public class MaidTaskBuilder {
                     用物品来表示任务的图标
                     """)
     })
-    public WalkToBlockTaskJS.Builder walkToBlockTask(ResourceLocation id, ItemStack icon) {
+    public WalkToBlockTaskJS.Builder walkToBlockTask(Identifier id, ItemStack icon) {
         WalkToBlockTaskJS.Builder builder = new WalkToBlockTaskJS.Builder(id, icon);
         tasks.add(new WalkToBlockTaskJS(builder));
         return builder;
@@ -125,7 +125,7 @@ public class MaidTaskBuilder {
                     用物品来表示任务的图标
                     """)
     })
-    public WalkToLivingEntityTaskJS.Builder walkToLivingEntityTask(ResourceLocation id, ItemStack icon) {
+    public WalkToLivingEntityTaskJS.Builder walkToLivingEntityTask(Identifier id, ItemStack icon) {
         WalkToLivingEntityTaskJS.Builder builder = new WalkToLivingEntityTaskJS.Builder(id, icon);
         tasks.add(new WalkToLivingEntityTaskJS(builder));
         return builder;
@@ -133,9 +133,9 @@ public class MaidTaskBuilder {
 
     @HideFromJS
     public void register(TaskManager manager) {
-        Set<ResourceLocation> existingTasks = Sets.newHashSet();
+        Set<Identifier> existingTasks = Sets.newHashSet();
         for (IMaidTask task : this.tasks) {
-            ResourceLocation uid = task.getUid();
+            Identifier uid = task.getUid();
             if (!existingTasks.contains(uid)) {
                 existingTasks.add(uid);
                 manager.add(task);

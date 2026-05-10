@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -37,7 +37,7 @@ public class ItemKappaCompass extends Item {
         compass.set(KAPPA_COMPASS_ACTIVITY_POS, activityPos);
     }
 
-    public static void addDimension(ResourceLocation dimension, ItemStack compass) {
+    public static void addDimension(Identifier dimension, ItemStack compass) {
         compass.set(KAPPA_COMPASS_DIMENSION, dimension.toString());
     }
 
@@ -62,10 +62,10 @@ public class ItemKappaCompass extends Item {
     }
 
     @Nullable
-    public static ResourceLocation getDimension(ItemStack compass) {
+    public static Identifier getDimension(ItemStack compass) {
         String dim = compass.get(KAPPA_COMPASS_DIMENSION);
         if (dim != null) {
-            return ResourceLocation.parse(dim);
+            return Identifier.parse(dim);
         }
         return null;
     }
@@ -84,14 +84,14 @@ public class ItemKappaCompass extends Item {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack compass, Player player, LivingEntity livingEntity, InteractionHand hand) {
-        if (livingEntity instanceof EntityMaid maid && !maid.level.isClientSide) {
+        if (livingEntity instanceof EntityMaid maid && !maid.level.isClientSide()) {
             if (player.isDiscrete()) {
                 maid.getSchedulePos().clear(maid);
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.kappa_compass.maid_clear"));
                 player.level.playSound(null, player.blockPosition(), InitSounds.COMPASS_POINT.get(), SoundSource.PLAYERS, 0.8f, 1.5f);
                 return InteractionResult.SUCCESS;
             }
-            ResourceLocation dimension = getDimension(compass);
+            Identifier dimension = getDimension(compass);
             if (compass.has(KAPPA_COMPASS_ACTIVITY_POS) || dimension != null) {
                 if (!maid.level.dimension().location().equals(dimension)) {
                     player.sendSystemMessage(Component.translatable("message.touhou_little_maid.kappa_compass.maid_dimension_check"));
@@ -135,7 +135,7 @@ public class ItemKappaCompass extends Item {
             compass.remove(KAPPA_COMPASS_DIMENSION);
             sendMessage(player, Component.translatable("message.touhou_little_maid.kappa_compass.clear"));
         } else {
-            ResourceLocation dimension = getDimension(compass);
+            Identifier dimension = getDimension(compass);
             int recordCount = getRecordCount(compass);
             if (recordCount >= 3) {
                 sendMessage(player, Component.translatable("message.touhou_little_maid.kappa_compass.full"));
@@ -177,7 +177,7 @@ public class ItemKappaCompass extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> components, TooltipFlag flagIn) {
         if (hasKappaCompassData(stack)) {
-            ResourceLocation dimension = getDimension(stack);
+            Identifier dimension = getDimension(stack);
             BlockPos workPos = getPoint(Activity.WORK, stack);
             BlockPos idlePos = getPoint(Activity.IDLE, stack);
             BlockPos sleepPos = getPoint(Activity.REST, stack);
@@ -202,7 +202,7 @@ public class ItemKappaCompass extends Item {
     }
 
     private void sendMessage(Player player, Component component) {
-        if (!player.level.isClientSide) {
+        if (!player.level.isClientSide()) {
             player.sendSystemMessage(component);
         }
     }

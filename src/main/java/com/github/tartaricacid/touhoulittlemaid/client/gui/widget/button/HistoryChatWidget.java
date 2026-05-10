@@ -5,19 +5,19 @@ import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
 
 public class HistoryChatWidget extends AbstractWidget {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_history_chat.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_history_chat.png");
     private static final long TICKS_PER_DAY = 24000;
     private static final long TICKS_PER_HOUR = 1000;
 
@@ -30,10 +30,10 @@ public class HistoryChatWidget extends AbstractWidget {
      */
     private final boolean isTool;
 
-    private final ResourceLocation playerSkin;
+    private final Identifier playerSkin;
     private final Component time;
 
-    public HistoryChatWidget(int pX, int pY, int width, int height, Component message, ResourceLocation playerSkin,
+    public HistoryChatWidget(int pX, int pY, int width, int height, Component message, Identifier playerSkin,
                              long gameTime, boolean isLeft, boolean isTool) {
         super(pX, pY, width, height, message);
         this.isLeft = isLeft;
@@ -66,7 +66,7 @@ public class HistoryChatWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    protected void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.setColor(1, 1, 1, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -81,7 +81,7 @@ public class HistoryChatWidget extends AbstractWidget {
         }
     }
 
-    private void renderToolText(GuiGraphics graphics, Font font) {
+    private void renderToolText(GuiGraphicsExtractor graphics, Font font) {
         float scale = 0.5f;
         int width = (int) (this.getWidth() / scale);
         float posX = this.getX() / scale + width / 2f;
@@ -99,7 +99,7 @@ public class HistoryChatWidget extends AbstractWidget {
         graphics.pose().popPose();
     }
 
-    private void drawAvatar(GuiGraphics graphics) {
+    private void drawAvatar(GuiGraphicsExtractor graphics) {
         int size = 16;
         int offset = 6;
         int xOffset = this.isLeft ? (-size - offset) : this.getWidth() + offset;
@@ -110,7 +110,7 @@ public class HistoryChatWidget extends AbstractWidget {
         }
     }
 
-    private void drawBackground(GuiGraphics graphics) {
+    private void drawBackground(GuiGraphicsExtractor graphics) {
         int heightMiddle = this.getHeightMiddle(14);
         GuiTools.blitNineSliced(graphics, TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(),
                 8, 4, 100, 16, 0, this.getTextureY());
@@ -121,7 +121,7 @@ public class HistoryChatWidget extends AbstractWidget {
         }
     }
 
-    public void renderString(GuiGraphics graphics, Font font) {
+    public void renderString(GuiGraphicsExtractor graphics, Font font) {
         Component message = this.getMessage();
         graphics.setColor(1, 1, 1, 1);
         if (isLeft) {

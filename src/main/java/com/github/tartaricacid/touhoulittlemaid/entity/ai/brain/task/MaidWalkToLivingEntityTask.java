@@ -47,7 +47,7 @@ public class MaidWalkToLivingEntityTask extends MaidCheckRateTask {
             return;
         }
         this.getEntities(maid)
-                .find(e -> maid.isWithinRestriction(e.blockPosition()))
+                .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
                 .filter(e -> this.entityPredicate.test(maid, e))
                 .filter(maid::canPathReach)

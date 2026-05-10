@@ -39,7 +39,7 @@ public class STTCallback implements ResponseCallback<String> {
     public void onSuccess(String chatText) {
         if (StringUtils.isNotBlank(chatText)) {
             ChatClientInfo clientInfo = ChatClientInfo.fromMaid(this.maid);
-            PacketDistributor.sendToServer(new SendUserChatPackage(maid.getId(), chatText, clientInfo));
+            ClientPacketDistributor.sendToServer(new SendUserChatPackage(maid.getId(), chatText, clientInfo));
             String name = player.getScoreboardName();
             String format = String.format("<%s> %s", name, chatText);
             player.sendSystemMessage(Component.literal(format).withStyle(ChatFormatting.GRAY));

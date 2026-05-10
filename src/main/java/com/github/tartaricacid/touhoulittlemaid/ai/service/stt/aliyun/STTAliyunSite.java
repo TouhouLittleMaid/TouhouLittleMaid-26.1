@@ -10,7 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.http.UrlTool;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -19,7 +19,7 @@ public class STTAliyunSite implements STTSite {
     public static final String API_TYPE = STTApiType.ALIYUN.getName();
 
     private final String id;
-    private final ResourceLocation icon;
+    private final Identifier icon;
 
     private boolean enabled;
     private String url;
@@ -32,7 +32,7 @@ public class STTAliyunSite implements STTSite {
     private boolean enableVoiceDetection;
     private boolean disfluency;
 
-    public STTAliyunSite(String id, ResourceLocation icon, boolean enabled, String url, String secretKey, String appKey,
+    public STTAliyunSite(String id, Identifier icon, boolean enabled, String url, String secretKey, String appKey,
                          String vocabularyId, String customizationId, boolean enablePunctuationPrediction,
                          boolean enableInverseTextNormalization, boolean enableVoiceDetection, boolean disfluency) {
         this.id = id;
@@ -55,7 +55,7 @@ public class STTAliyunSite implements STTSite {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return this.icon;
     }
 
@@ -185,7 +185,7 @@ public class STTAliyunSite implements STTSite {
     public static class Serializer implements SerializableSite<STTAliyunSite> {
         public static final Codec<STTAliyunSite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(STTAliyunSite::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(STTAliyunSite::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(STTAliyunSite::icon),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(STTAliyunSite::enabled),
                 Codec.STRING.fieldOf(URL).forGetter(STTAliyunSite::getBaseUrl),
                 Codec.STRING.fieldOf(SECRET_KEY).forGetter(STTAliyunSite::getSecretKey),

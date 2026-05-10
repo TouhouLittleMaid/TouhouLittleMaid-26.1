@@ -13,7 +13,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,9 +49,9 @@ public abstract class AnimatableEntity<E extends Entity> {
         return manager;
     }
 
-    public abstract ResourceLocation getModelLocation();
+    public abstract Identifier getModelLocation();
 
-    public abstract ResourceLocation getTextureLocation();
+    public abstract Identifier getTextureLocation();
 
     public boolean setCustomAnimations(AnimationContext<?> ctx, @NotNull AnimationEvent<?> animationEvent) {
         if (!updateModel()) {
@@ -104,7 +104,7 @@ public abstract class AnimatableEntity<E extends Entity> {
         return animation.getAnimation(name);
     }
 
-    public abstract ResourceLocation getAnimationFileLocation();
+    public abstract Identifier getAnimationFileLocation();
 
     public boolean updateModel() {
         var model = GeckoLibCache.getInstance().getGeoModels().get(getModelLocation());

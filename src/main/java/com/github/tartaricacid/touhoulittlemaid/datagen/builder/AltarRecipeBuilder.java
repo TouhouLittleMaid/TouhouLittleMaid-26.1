@@ -8,7 +8,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -26,7 +26,7 @@ public class AltarRecipeBuilder implements RecipeBuilder {
     private final NonNullList<Ingredient> ingredients;
     private final ItemStack resultStack;
     private float power;
-    private ResourceLocation entityType;
+    private Identifier entityType;
     private String langKey;
 
     public AltarRecipeBuilder(RecipeCategory recipeCategory, ItemLike resultStack, int count) {
@@ -90,7 +90,7 @@ public class AltarRecipeBuilder implements RecipeBuilder {
         return this;
     }
 
-    public AltarRecipeBuilder entity(ResourceLocation entityType) {
+    public AltarRecipeBuilder entity(Identifier entityType) {
         this.entityType = entityType;
         return this;
     }
@@ -118,18 +118,18 @@ public class AltarRecipeBuilder implements RecipeBuilder {
     @Override
     public void save(RecipeOutput output) {
         String path = RecipeBuilder.getDefaultRecipeId(this.getResult()).getPath();
-        ResourceLocation filePath = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, NAME + "/" + path);
+        Identifier filePath = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, NAME + "/" + path);
         this.save(output, filePath);
     }
 
     @Override
     public void save(RecipeOutput output, String recipeId) {
-        ResourceLocation filePath = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, NAME + "/" + recipeId);
+        Identifier filePath = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, NAME + "/" + recipeId);
         this.save(output, filePath);
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void save(RecipeOutput recipeOutput, Identifier id) {
         CraftingBookCategory bookCategory = RecipeBuilder.determineBookCategory(this.category);
         AltarRecipe altarRecipe = new AltarRecipe(NAME, bookCategory, this.ingredients, this.power, this.resultStack, this.entityType, this.langKey);
         recipeOutput.accept(id, altarRecipe, null);

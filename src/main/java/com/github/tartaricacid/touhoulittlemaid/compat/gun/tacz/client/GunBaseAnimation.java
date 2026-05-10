@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.compat.gun.tacz.client;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.tacz.guns.api.item.IGun;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -25,7 +25,7 @@ public class GunBaseAnimation {
         if (gun == null) {
             return false;
         }
-        ResourceLocation gunId = gun.getGunId(handItem);
+        Identifier gunId = gun.getGunId(handItem);
 
         // 因为现在还没有 minigun 的专属标签，故只能用特判
         if (gunId.equals(MINIGUN_ID)) {

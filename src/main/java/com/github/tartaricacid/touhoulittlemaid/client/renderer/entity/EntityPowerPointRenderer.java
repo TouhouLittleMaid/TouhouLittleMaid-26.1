@@ -5,18 +5,18 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityPowerPoint;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class EntityPowerPointRenderer extends EntityRenderer<EntityPowerPoint> {
-    private static final ResourceLocation POWER_POINT_TEXTURES = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
-    private static final RenderType RENDER_TYPE = RenderType.itemEntityTranslucentCull(POWER_POINT_TEXTURES);
+    private static final Identifier POWER_POINT_TEXTURES = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
+    private static final RenderTypes RENDER_TYPE = RenderTypes.itemEntityTranslucentCull(POWER_POINT_TEXTURES);
 
     public EntityPowerPointRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager);
@@ -55,7 +55,7 @@ public class EntityPowerPointRenderer extends EntityRenderer<EntityPowerPoint> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityPowerPoint entity) {
+    public Identifier getTextureLocation(EntityPowerPoint entity) {
         return POWER_POINT_TEXTURES;
     }
 }

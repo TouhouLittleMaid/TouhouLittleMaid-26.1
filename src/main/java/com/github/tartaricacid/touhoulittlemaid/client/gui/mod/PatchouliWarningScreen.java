@@ -1,14 +1,14 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.mod;
 
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +38,7 @@ public class PatchouliWarningScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(graphics, pMouseX, pMouseY, pPartialTick);
         this.message.renderCentered(graphics, this.width / 2, 80);
         super.render(graphics, pMouseX, pMouseY, pPartialTick);

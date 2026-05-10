@@ -4,19 +4,19 @@ import com.github.tartaricacid.touhoulittlemaid.compat.rei.MaidREIClientPlugin;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.Optional;
 
 public class ReiAltarRecipeDisplay implements Display {
-    private final ResourceLocation id;
+    private final Identifier id;
     private final List<EntryIngredient> inputs;
     private final List<EntryIngredient> outputs;
     private final float powerCost;
     private final String langKey;
 
-    public ReiAltarRecipeDisplay(ResourceLocation id, List<EntryIngredient> inputs, List<EntryIngredient> outputs, float powerCost, String langKey) {
+    public ReiAltarRecipeDisplay(Identifier id, List<EntryIngredient> inputs, List<EntryIngredient> outputs, float powerCost, String langKey) {
         this.id = id;
         this.inputs = inputs;
         this.outputs = outputs;
@@ -34,7 +34,7 @@ public class ReiAltarRecipeDisplay implements Display {
         return outputs;
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 
@@ -52,7 +52,7 @@ public class ReiAltarRecipeDisplay implements Display {
     }
 
     @Override
-    public Optional<ResourceLocation> getDisplayLocation() {
+    public Optional<Identifier> getDisplayLocation() {
         return Optional.of(id);
     }
 }

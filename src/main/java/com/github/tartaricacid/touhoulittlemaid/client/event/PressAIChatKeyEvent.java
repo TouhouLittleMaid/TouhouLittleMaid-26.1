@@ -30,7 +30,7 @@ public class PressAIChatKeyEvent {
             }
             Minecraft.getInstance().options.keyChat.consumeClick();
             // 先通过服务端鉴权，然后发送同步信息后再打开客户端界面
-            PacketDistributor.sendToServer(new OpenMaidAIChatPacket(maid));
+            ClientPacketDistributor.sendToServer(new OpenMaidAIChatPacket(maid));
         }
     }
 

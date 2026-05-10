@@ -11,7 +11,7 @@ public class TopEventsPostJS {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void addTopInfo(AddTopInfoEvent event) {
         if (MaidEventsJS.ADD_TOP_INFO.hasListeners()) {
-            ScriptType scriptType = event.getMaid().level.isClientSide ? ScriptType.CLIENT : ScriptType.SERVER;
+            ScriptType scriptType = event.getMaid().level.isClientSide() ? ScriptType.CLIENT : ScriptType.SERVER;
             MaidEventsJS.ADD_TOP_INFO.post(scriptType, new AddTopInfoEventJS(event));
         }
     }

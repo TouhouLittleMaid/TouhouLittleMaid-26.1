@@ -7,7 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.ILoopType
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.predicate.AnimationEvent;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 
 import java.util.function.BiPredicate;
 

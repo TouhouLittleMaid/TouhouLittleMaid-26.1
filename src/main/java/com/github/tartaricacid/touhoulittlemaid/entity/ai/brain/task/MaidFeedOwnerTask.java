@@ -37,7 +37,7 @@ public class MaidFeedOwnerTask extends MaidCheckRateTask {
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid maid) {
         if (super.checkExtraStartConditions(worldIn, maid)) {
             LivingEntity owner = maid.getOwner();
-            if (owner instanceof Player && owner.isAlive() && maid.isWithinRestriction(owner.blockPosition())) {
+            if (owner instanceof Player && owner.isAlive() && maid.isWithinHome(owner.blockPosition())) {
                 if (owner.closerThan(maid, closeEnoughDist)) {
                     return true;
                 }

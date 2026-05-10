@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -31,7 +31,7 @@ public class GunMaidRender {
     public static void addItemTranslate(PoseStack matrixStack, ItemStack itemStack, boolean isLeft) {
         if (!isLeft && itemStack.getItem() instanceof GunItem gun) {
             matrixStack.translate(0, -0.0625, 0);
-            ResourceLocation id = BuiltInRegistries.ITEM.getKey(gun);
+            Identifier id = BuiltInRegistries.ITEM.getKey(gun);
             if (SWarfareCompat.MINIGUN_ID.equals(id)) {
                 matrixStack.mulPose(Axis.ZP.rotationDegrees(20));
                 matrixStack.mulPose(Axis.XP.rotationDegrees(25));

@@ -46,7 +46,7 @@ public class EntityThrowPowerPoint extends ThrowableItemProjectile {
     @Override
     protected void onHit(HitResult result) {
         super.onHit(result);
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             this.level.levelEvent(LevelEvent.PARTICLES_SPELL_POTION_SPLASH, this.blockPosition(), PotionContents.getColor(Potions.HEALING));
             int count = 30 + this.level.random.nextInt(30) + this.level.random.nextInt(30);
             while (count > 0) {

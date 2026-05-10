@@ -10,14 +10,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public final class TaskManager {
-    private static Map<ResourceLocation, IMaidTask> TASK_MAP;
+    private static Map<Identifier, IMaidTask> TASK_MAP;
     private static List<IMaidTask> TASK_INDEX;
     private static IMaidTask IDLE_TASK;
 
@@ -67,7 +67,7 @@ public final class TaskManager {
     /**
      * 获取 Task
      */
-    public static Optional<IMaidTask> findTask(ResourceLocation uid) {
+    public static Optional<IMaidTask> findTask(Identifier uid) {
         return Optional.ofNullable(TASK_MAP.get(uid));
     }
 
@@ -78,7 +78,7 @@ public final class TaskManager {
         return IDLE_TASK;
     }
 
-    public static Map<ResourceLocation, IMaidTask> getTaskMap() {
+    public static Map<Identifier, IMaidTask> getTaskMap() {
         return TASK_MAP;
     }
 

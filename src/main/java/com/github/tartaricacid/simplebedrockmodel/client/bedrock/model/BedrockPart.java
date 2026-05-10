@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.joml.Matrix3f;
@@ -17,7 +17,7 @@ import java.util.Random;
 @OnlyIn(Dist.CLIENT)
 public class BedrockPart {
     private static final Vector3f[] NORMALS = new Vector3f[6];
-    private static final int MAX_LIGHT_TEXTURE = LightTexture.pack(15, 15);
+    private static final int MAX_LIGHT_TEXTURE = LightCoordsUtil.pack(15, 15);
 
     public final ObjectList<BedrockCube> cubes = new ObjectArrayList<>();
     public final ObjectList<BedrockPart> children = new ObjectArrayList<>();

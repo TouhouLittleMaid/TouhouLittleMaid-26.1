@@ -5,12 +5,12 @@ import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBed;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBed;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -72,32 +72,32 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    public InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                            Player player, InteractionHand hand, BlockHitResult hitResult) {
         ItemStack itemStack = player.getItemInHand(hand);
         // 检查是否是染料物品
         if (!(itemStack.getItem() instanceof DyeItem dyeItem)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         DyeColor dyeColor = dyeItem.getDyeColor();
         // 检查染料颜色是否在可用颜色列表中
         if (!AVAILABLE_COLOR.contains(dyeColor)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         // 获取床头位置和方块实体
         BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(state.getValue(FACING));
         BlockEntity blockEntity = level.getBlockEntity(headPos);
         if (!(blockEntity instanceof TileEntityMaidBed bed)) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (bed.getColor() == dyeColor) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         bed.setColor(dyeColor);
         if (!player.isCreative()) {
             itemStack.shrink(1);
         }
-        return ItemInteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
 
     @Override
     public BlockState playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
-        if (!worldIn.isClientSide && player.isCreative()) {
+        if (!worldIn.isClientSide() && player.isCreative()) {
             BedPart bedpart = state.getValue(PART);
             if (bedpart == BedPart.FOOT) {
                 BlockPos blockpos = pos.relative(getNeighbourDirection(bedpart, state.getValue(FACING)));
@@ -141,7 +141,7 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
     @Override
     public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(worldIn, pos, state, placer, stack);
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             BlockPos headPos = pos.relative(state.getValue(FACING));
             worldIn.setBlock(headPos, state.setValue(PART, BedPart.HEAD), Block.UPDATE_ALL);
             worldIn.blockUpdated(pos, Blocks.AIR);

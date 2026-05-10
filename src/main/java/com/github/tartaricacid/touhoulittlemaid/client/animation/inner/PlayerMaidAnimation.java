@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.inner;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
 
@@ -15,8 +15,8 @@ public final class PlayerMaidAnimation {
     private static final float[] FIXED_HAND_ROTATION = new float[]{0, 0, 0};
 
     public static void init() {
-        INNER_ANIMATION.put(ResourceLocation.parse("touhou_little_maid:animation/maid/player/arm/default.js"), getPlayerArmDefault());
-        INNER_ANIMATION.put(ResourceLocation.parse("touhou_little_maid:animation/maid/player/sit/default.js"), getPlayerSitDefault());
+        INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/player/arm/default.js"), getPlayerArmDefault());
+        INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/player/sit/default.js"), getPlayerSitDefault());
     }
 
     public static IAnimation<Mob> getPlayerArmDefault() {

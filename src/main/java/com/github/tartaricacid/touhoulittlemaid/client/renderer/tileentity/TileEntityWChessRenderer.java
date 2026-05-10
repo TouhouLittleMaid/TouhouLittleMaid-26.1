@@ -17,21 +17,21 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 
 public class TileEntityWChessRenderer implements BlockEntityRenderer<TileEntityWChess> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/wchess.png");
-    private static final ResourceLocation PIECES_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/wchess_pieces.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/wchess.png");
+    private static final Identifier PIECES_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/wchess_pieces.png");
     private static final int TIPS_RENDER_DISTANCE = 16;
     private static final int PIECE_RENDER_DISTANCE = 24;
     private final Font font;
@@ -102,7 +102,7 @@ public class TileEntityWChessRenderer implements BlockEntityRenderer<TileEntityW
 
     private void renderPiece(TileEntityWChess cchess, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, Direction facing) {
         if (inRenderDistance(cchess, PIECE_RENDER_DISTANCE)) {
-            VertexConsumer piecesBuff = bufferIn.getBuffer(RenderType.entityCutoutNoCull(PIECES_TEXTURE));
+            VertexConsumer piecesBuff = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(PIECES_TEXTURE));
             int selectX = Position.FILE_X(cchess.getSelectChessPoint());
             int selectY = Position.RANK_Y(cchess.getSelectChessPoint());
             byte[] data = cchess.getChessData().squares;
@@ -152,7 +152,7 @@ public class TileEntityWChessRenderer implements BlockEntityRenderer<TileEntityW
         if (facing == Direction.SOUTH || facing == Direction.NORTH) {
             poseStack.mulPose(Axis.YN.rotationDegrees(180));
         }
-        VertexConsumer checkerBoardBuff = bufferIn.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer checkerBoardBuff = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(TEXTURE));
         chessModel.renderToBuffer(poseStack, checkerBoardBuff, combinedLightIn, combinedOverlayIn);
         poseStack.popPose();
     }

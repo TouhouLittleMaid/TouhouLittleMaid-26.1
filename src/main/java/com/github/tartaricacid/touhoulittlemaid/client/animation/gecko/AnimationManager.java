@@ -19,7 +19,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache
 import com.github.tartaricacid.touhoulittlemaid.network.message.MaidAnimationPackage;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -125,7 +125,7 @@ public final class AnimationManager {
                 playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.LOOP);
             }
 
-            ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+            Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
             ConditionalHold conditionalHold = ConditionManager.getHoldOffhand(id);
             if (conditionalHold != null) {
                 String name = conditionalHold.doTest(maid, InteractionHand.OFF_HAND);
@@ -163,7 +163,7 @@ public final class AnimationManager {
                 playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.LOOP);
             }
 
-            ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+            Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
             ConditionalHold conditionalHold = ConditionManager.getHoldMainhand(id);
             if (conditionalHold != null) {
                 String name = conditionalHold.doTest(maid, InteractionHand.MAIN_HAND);
@@ -193,7 +193,7 @@ public final class AnimationManager {
                 // 空动画用于重置 PLAY_ONCE 动画
                 playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
             }
-            ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+            Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
             ConditionalSwing conditionalSwing = (maid.asEntity().swingingArm == InteractionHand.MAIN_HAND) ? ConditionManager.getSwingMainhand(id) : ConditionManager.getSwingOffhand(id);
             if (conditionalSwing != null) {
                 String name = conditionalSwing.doTest(maid, maid.asEntity().swingingArm);
@@ -217,7 +217,7 @@ public final class AnimationManager {
                 playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
             }
             if (maid.asEntity().getUsedItemHand() == InteractionHand.MAIN_HAND) {
-                ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+                Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
                 ConditionalUse conditionalUse = ConditionManager.getUseMainhand(id);
                 if (conditionalUse != null) {
                     String name = conditionalUse.doTest(maid, InteractionHand.MAIN_HAND);
@@ -227,7 +227,7 @@ public final class AnimationManager {
                 }
                 return playAnimation(event, "use_mainhand", ILoopType.EDefaultLoopTypes.LOOP);
             } else {
-                ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+                Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
                 ConditionalUse conditionalUse = ConditionManager.getUseOffhand(id);
                 if (conditionalUse != null) {
                     String name = conditionalUse.doTest(maid, InteractionHand.OFF_HAND);
@@ -286,7 +286,7 @@ public final class AnimationManager {
             return PlayState.STOP;
         }
 
-        ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+        Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
         ConditionArmor conditionArmor = ConditionManager.getArmor(id);
         if (conditionArmor != null) {
             String name = conditionArmor.doTest(maid, slot);
@@ -295,7 +295,7 @@ public final class AnimationManager {
             }
         }
 
-        ResourceLocation animation = event.getAnimatableEntity().getAnimationFileLocation();
+        Identifier animation = event.getAnimatableEntity().getAnimationFileLocation();
         String defaultName = slot.getName() + ":default";
         if (GeckoLibCache.getInstance().getAnimations().get(animation).animations().containsKey(defaultName)) {
             return playAnimation(event, defaultName, ILoopType.EDefaultLoopTypes.LOOP);
@@ -313,7 +313,7 @@ public final class AnimationManager {
         if (vehicle == null || !vehicle.isAlive()) {
             return null;
         }
-        ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+        Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
 
         // 如果是坐垫
         if (vehicle instanceof EntityChair) {
@@ -347,7 +347,7 @@ public final class AnimationManager {
             return PlayState.STOP;
         }
 
-        ResourceLocation id = event.getAnimatableEntity().getAnimationFileLocation();
+        Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
         ConditionalPassenger conditionalPassenger = ConditionManager.getPassenger(id);
         if (conditionalPassenger != null) {
             String name = conditionalPassenger.doTest(mob);

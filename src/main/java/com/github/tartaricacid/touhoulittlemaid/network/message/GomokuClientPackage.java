@@ -3,12 +3,12 @@ package com.github.tartaricacid.touhoulittlemaid.network.message;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Point;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidGomokuAI;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.util.Util;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -61,7 +61,7 @@ public record GomokuClientPackage(BlockPos pos, List<byte[]> chessData, Point po
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        Minecraft.getInstance().submitAsync(() -> PacketDistributor.sendToServer(new GomokuServerPackage(message.pos, aiPoint)));
+        Minecraft.getInstance().submitAsync(() -> ClientPacketDistributor.sendToServer(new GomokuServerPackage(message.pos, aiPoint)));
     }
 
     @Override

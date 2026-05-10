@@ -42,7 +42,7 @@ public class GunAttackStrafingTask extends Behavior<EntityMaid> {
         }
         owner.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent((target) -> {
             double distance = owner.distanceTo(target);
-            float maxAttackDistance = owner.getRestrictRadius();
+            float maxAttackDistance = owner.getHomeRadius();
 
             // 如果在最大攻击距离（128）之内，而且看见的时长足够长
             if (distance < owner.searchRadius()) {
@@ -72,7 +72,7 @@ public class GunAttackStrafingTask extends Behavior<EntityMaid> {
                 }
 
                 // 应用走位，但需要考虑玩家位置
-                if (!owner.hasRestriction() && owner.getOwner() instanceof Player player && owner.distanceTo(player) >= maxAttackDistance) {
+                if (!owner.hasHome() && owner.getOwner() instanceof Player player && owner.distanceTo(player) >= maxAttackDistance) {
                     owner.stopInPlace();
                 } else {
                     owner.getMoveControl().strafe(this.strafingBackwards ? -0.4F : 0.4F, this.strafingClockwise ? 0.2F : -0.2F);

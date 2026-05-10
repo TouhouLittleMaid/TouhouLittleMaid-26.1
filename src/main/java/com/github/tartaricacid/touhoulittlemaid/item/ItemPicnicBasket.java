@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -76,10 +76,10 @@ public class ItemPicnicBasket extends BlockItem implements MenuProvider {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (handIn == InteractionHand.MAIN_HAND && playerIn instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(this, data -> ItemStack.STREAM_CODEC.encode(data, serverPlayer.getMainHandItem()));
-            return InteractionResultHolder.success(playerIn.getMainHandItem());
+            return InteractionResult.success(playerIn.getMainHandItem());
         }
         return super.use(worldIn, playerIn, handIn);
     }

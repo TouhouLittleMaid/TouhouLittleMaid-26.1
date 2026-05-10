@@ -10,10 +10,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -29,10 +29,10 @@ public class AltarRecipe extends ShapelessRecipe {
     private final CraftingBookCategory category;
     private final float power;
     private final ItemStack result;
-    private final ResourceLocation entityType;
+    private final Identifier entityType;
     private final String langKey;
 
-    public AltarRecipe(String group, CraftingBookCategory category, NonNullList<Ingredient> ingredients, float power, ItemStack result, ResourceLocation entityType, String langKey) {
+    public AltarRecipe(String group, CraftingBookCategory category, NonNullList<Ingredient> ingredients, float power, ItemStack result, Identifier entityType, String langKey) {
         super(group, category, result, ingredients);
         this.group = group;
         this.category = category;
@@ -42,7 +42,7 @@ public class AltarRecipe extends ShapelessRecipe {
         this.langKey = langKey;
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return InitRecipes.ALTAR_CRAFTING.getId();
     }
 
@@ -74,7 +74,7 @@ public class AltarRecipe extends ShapelessRecipe {
         }
 
         // 生成类型为 EVENT 也许更合适
-        type.spawn(world, pos, MobSpawnType.EVENT);
+        type.spawn(world, pos, EntitySpawnReason.EVENT);
     }
 
     private void rebornMaid(ServerLevel world, BlockPos pos, @Nullable List<ItemStack> list) {
@@ -88,7 +88,7 @@ public class AltarRecipe extends ShapelessRecipe {
             CompoundTag maidCompound = compoundData.copyTag();
             maid.readAdditionalSaveData(maidCompound);
         } else {
-            maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), MobSpawnType.SPAWN_EGG, null);
+            maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWN_EGG, null);
         }
         maid.setPos(pos.getX(), pos.getY(), pos.getZ());
         world.addFreshEntity(maid);
@@ -100,7 +100,7 @@ public class AltarRecipe extends ShapelessRecipe {
 
         EntityMaid maid = new EntityMaid(world);
         maid.setPos(pos.getX(), pos.getY(), pos.getZ());
-        maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), MobSpawnType.SPAWN_EGG, null);
+        maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWN_EGG, null);
         maid.startRiding(box, true);
 
         world.tryAddFreshEntityWithPassengers(box);
@@ -138,7 +138,7 @@ public class AltarRecipe extends ShapelessRecipe {
         return result;
     }
 
-    public ResourceLocation getEntityType() {
+    public Identifier getEntityType() {
         return entityType;
     }
 

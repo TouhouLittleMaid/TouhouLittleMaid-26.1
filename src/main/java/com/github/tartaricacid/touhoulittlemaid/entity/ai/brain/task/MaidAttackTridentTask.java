@@ -40,7 +40,7 @@ public class MaidAttackTridentTask extends Behavior<EntityMaid> {
     protected void tick(ServerLevel worldIn, EntityMaid owner, long gameTime) {
         owner.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> {
             double distance = owner.distanceTo(target);
-            float maxAttackDistance = owner.getRestrictRadius();
+            float maxAttackDistance = owner.getHomeRadius();
 
             // 如果在最大攻击距离之内，而且看见的时长足够长
             if (distance < owner.searchRadius()) {

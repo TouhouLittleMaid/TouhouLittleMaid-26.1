@@ -92,7 +92,7 @@ public class EntityPowerPoint extends Entity implements IEntityWithComplexSpawn 
     }
 
     public static void spawnExplosionParticle(Level world, float x, float y, float z, RandomSource rand) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             return;
         }
         for (int i = 0; i < 5; ++i) {
@@ -111,7 +111,7 @@ public class EntityPowerPoint extends Entity implements IEntityWithComplexSpawn 
         float x = (float) position().x;
         float y = (float) position().y + 0.125F;
         float z = (float) position().z;
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             spawnExplosionParticle(level, x, y, z, random);
         } else {
             NetworkHandler.sendToNearby(this, new BeaconAbsorbPackage(x, y, z));
@@ -215,7 +215,7 @@ public class EntityPowerPoint extends Entity implements IEntityWithComplexSpawn 
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (this.level.isClientSide || !this.isAlive()) {
+        if (this.level.isClientSide() || !this.isAlive()) {
             return false;
         }
         if (!this.isInvulnerableTo(source)) {
@@ -244,7 +244,7 @@ public class EntityPowerPoint extends Entity implements IEntityWithComplexSpawn 
 
     @Override
     public void playerTouch(Player player) {
-        if (this.level.isClientSide) {
+        if (this.level.isClientSide()) {
             return;
         }
 
@@ -274,7 +274,7 @@ public class EntityPowerPoint extends Entity implements IEntityWithComplexSpawn 
     }
 
     public void take(Entity player, int quantity) {
-        if (this.isAlive() && !this.level.isClientSide) {
+        if (this.isAlive() && !this.level.isClientSide()) {
             ((ServerLevel) this.level).getChunkSource().broadcast(this, new ClientboundTakeItemEntityPacket(this.getId(), player.getId(), quantity));
         }
     }

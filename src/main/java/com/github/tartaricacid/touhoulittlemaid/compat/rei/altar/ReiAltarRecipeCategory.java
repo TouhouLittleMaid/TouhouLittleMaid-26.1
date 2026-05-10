@@ -15,15 +15,15 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ReiAltarRecipeCategory implements DisplayCategory<ReiAltarRecipeDisplay> {
     private static final MutableComponent TITLE = Component.translatable("jei.touhou_little_maid.altar_craft.title");
-    private static final ResourceLocation ALTAR_ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/altar_icon.png");
-    private static final ResourceLocation POWER_ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
+    private static final Identifier ALTAR_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/altar_icon.png");
+    private static final Identifier POWER_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
     private final Renderer icon;
 
     public ReiAltarRecipeCategory() {

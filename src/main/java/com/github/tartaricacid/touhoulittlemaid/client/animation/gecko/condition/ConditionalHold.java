@@ -4,12 +4,12 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.google.common.collect.Lists;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.ItemUseAnimation;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
@@ -26,9 +26,9 @@ public class ConditionalHold {
     private final String idPre;
     private final String tagPre;
     private final String extraPre;
-    private final List<ResourceLocation> idTest = Lists.newArrayList();
+    private final List<Identifier> idTest = Lists.newArrayList();
     private final List<TagKey<Item>> tagTest = Lists.newArrayList();
-    private final List<UseAnim> extraTest = Lists.newArrayList();
+    private final List<ItemUseAnimation> extraTest = Lists.newArrayList();
     private final List<String> innerTest = Lists.newArrayList();
 
     public ConditionalHold(InteractionHand hand) {
@@ -51,19 +51,19 @@ public class ConditionalHold {
         }
         String substring = name.substring(preSize);
         if (name.startsWith(idPre) && isValidResourceLocation(substring)) {
-            idTest.add(ResourceLocation.parse(substring));
+            idTest.add(Identifier.parse(substring));
         }
         if (name.startsWith(tagPre) && isValidResourceLocation(substring)) {
             tagTest.add(TagKey.create(
                     Registries.ITEM,
-                    ResourceLocation.parse(substring)
+                    Identifier.parse(substring)
             ));
         }
         if (name.startsWith(extraPre)) {
-            if (substring.equals(UseAnim.NONE.name().toLowerCase(Locale.US))) {
+            if (substring.equals(ItemUseAnimation.NONE.name().toLowerCase(Locale.US))) {
                 return;
             }
-            Arrays.stream(UseAnim.values()).filter(a -> a.name().toLowerCase(Locale.US).equals(substring)).findFirst().ifPresent(extraTest::add);
+            Arrays.stream(ItemUseAnimation.values()).filter(a -> a.name().toLowerCase(Locale.US).equals(substring)).findFirst().ifPresent(extraTest::add);
             innerTest.add(name);
         }
     }
@@ -88,7 +88,7 @@ public class ConditionalHold {
             return EMPTY;
         }
         ItemStack itemInHand = maid.asEntity().getItemInHand(hand);
-        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(itemInHand.getItem());
+        Identifier registryName = BuiltInRegistries.ITEM.getKey(itemInHand.getItem());
         if (registryName == null) {
             return EMPTY;
         }
@@ -114,7 +114,7 @@ public class ConditionalHold {
         if (StringUtils.isNotBlank(innerName) && this.innerTest.contains(innerName)) {
             return innerName;
         }
-        UseAnim anim = maid.asEntity().getItemInHand(hand).getUseAnimation();
+        ItemUseAnimation anim = maid.asEntity().getItemInHand(hand).getUseAnimation();
         if (this.extraTest.contains(anim)) {
             return extraPre + anim.name().toLowerCase(Locale.US);
         }

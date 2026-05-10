@@ -10,11 +10,11 @@ import com.google.common.cache.CacheBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -51,7 +51,7 @@ public class MaidAreaRenderEvent {
                 if (!(entity instanceof EntityMaid maid)) {
                     return;
                 }
-                ResourceLocation dimension = pos.getDimension();
+                Identifier dimension = pos.getDimension();
                 if (mc.player.level.dimension().location().equals(dimension)) {
                     renderPos(pos.getWorkPos(), pos.getIdlePos(), pos.getSleepPos(), camera, poseStack, mc, maid, mc.player);
                 }
@@ -63,20 +63,20 @@ public class MaidAreaRenderEvent {
         poseStack.pushPose();
         poseStack.translate(0, 1, 0);
 
-        BlockPos restrictCenter = maid.getRestrictCenter();
+        BlockPos restrictCenter = maid.getHomePosition();
         Vec3 restrictPos = camera.add(restrictCenter.getX() + 0.5, restrictCenter.getY() + 0.5, restrictCenter.getZ() + 0.5);
         if (!maid.isHomeModeEnable()) {
             restrictPos = camera.add(player.position());
         }
         Vec3 maidPos = camera.add(maid.position());
-        RenderHelper.renderLine(poseStack, mc.renderBuffers().bufferSource().getBuffer(RenderType.LINES), restrictPos, maidPos, 1.0f, 0.2f, 0.2f);
+        RenderHelper.renderLine(poseStack, mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES), restrictPos, maidPos, 1.0f, 0.2f, 0.2f);
         AABB aabb = maid.getBoundingBox().move(0, -1, 0).move(camera);
         DebugRenderer.renderFilledBox(poseStack, mc.renderBuffers().bufferSource(), aabb, 0.8F, 0.8F, 0.2F, 0.75F);
 
         if (workPos != null) {
             Vec3 centerPos = camera.add(workPos.getX() + 0.5, workPos.getY() + 0.5, workPos.getZ() + 0.5);
             double radius = MaidConfig.MAID_WORK_RANGE.get() + 0.1;
-            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderType.LINES);
+            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
             RenderHelper.renderCylinder(poseStack, buffer, centerPos, radius, 16, 1.0F, 0, 0);
 
             Vec3 textPos = new Vec3(workPos.getX() + 0.5, workPos.getY() + 2, workPos.getZ() + 0.5);
@@ -88,7 +88,7 @@ public class MaidAreaRenderEvent {
         if (idlePos != null) {
             Vec3 centerPos = camera.add(idlePos.getX() + 0.5, idlePos.getY() + 0.5, idlePos.getZ() + 0.5);
             double radius = MaidConfig.MAID_IDLE_RANGE.get();
-            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderType.LINES);
+            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
             RenderHelper.renderCylinder(poseStack, buffer, centerPos, radius, 16, 0, 1.0F, 0);
             Vec3 textPos = new Vec3(idlePos.getX() + 0.5, idlePos.getY() + 2, idlePos.getZ() + 0.5);
             if (idlePos.equals(workPos)) {
@@ -105,7 +105,7 @@ public class MaidAreaRenderEvent {
         if (resetPos != null) {
             Vec3 centerPos = camera.add(resetPos.getX() + 0.5, resetPos.getY() + 0.5, resetPos.getZ() + 0.5);
             double radius = MaidConfig.MAID_SLEEP_RANGE.get() - 0.1;
-            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderType.LINES);
+            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
             RenderHelper.renderCylinder(poseStack, buffer, centerPos, radius, 16, 0, 0, 1.0F);
             Vec3 textPos = new Vec3(resetPos.getX() + 0.5, resetPos.getY() + 2, resetPos.getZ() + 0.5);
             if (resetPos.equals(idlePos)) {

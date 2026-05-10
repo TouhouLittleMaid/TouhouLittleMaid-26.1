@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -80,7 +80,7 @@ public final class ItemsUtil {
         }
 
         // 如果没找到，并且 handler 是 MaidInvWrapper，就触发事件请求物品后再找一次
-        if (!(handler instanceof MaidInvWrapper maidInv) || maidInv.getMaid().level.isClientSide) {
+        if (!(handler instanceof MaidInvWrapper maidInv) || maidInv.getMaid().level.isClientSide()) {
             return -1;
         }
 
@@ -184,7 +184,7 @@ public final class ItemsUtil {
      * 获取物品Id
      */
     public static String getItemId(Item item) {
-        ResourceLocation key = BuiltInRegistries.ITEM.getKey(item);
+        Identifier key = BuiltInRegistries.ITEM.getKey(item);
         Preconditions.checkNotNull(key);
         return key.toString();
     }
@@ -194,7 +194,7 @@ public final class ItemsUtil {
      * 获取物品
      */
     public static ItemStack getItemStack(String itemId) {
-        ResourceLocation resourceLocation = ResourceLocation.parse(itemId);
+        Identifier resourceLocation = Identifier.parse(itemId);
         Item value = BuiltInRegistries.ITEM.get(resourceLocation);
         return new ItemStack(value);
     }

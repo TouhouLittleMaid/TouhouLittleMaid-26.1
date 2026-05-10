@@ -11,7 +11,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.joml.Quaternionf;
@@ -27,8 +27,8 @@ import org.joml.Quaternionf;
 import javax.annotation.Nullable;
 
 public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends IModelInfo> extends Screen {
-    private static final ResourceLocation BUTTON_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_detail.png");
-    private static final ResourceLocation FLOOR_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/debug_floor.png");
+    private static final Identifier BUTTON_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_detail.png");
+    private static final Identifier FLOOR_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/debug_floor.png");
 
     private static final int LEFT_MOUSE_BUTTON = 0;
     private static final int RIGHT_MOUSE_BUTTON = 1;
@@ -106,7 +106,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (minecraft == null) {
             return;
         }
@@ -121,7 +121,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
         }
     }
 
-    private void renderViewBg(GuiGraphics graphics) {
+    private void renderViewBg(GuiGraphicsExtractor graphics) {
         this.fillGradient(graphics, BACKGROUND_SIZE, 0xfe17191d, -999);
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, -900);
@@ -131,7 +131,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
         graphics.pose().popPose();
     }
 
-    private void renderBottomStatueBar(GuiGraphics graphics) {
+    private void renderBottomStatueBar(GuiGraphicsExtractor graphics) {
         this.fillGradient(graphics, BOTTOM_STATUS_BAR_SIZE, 0xfe282c34);
         String name = String.format("%s %s", "✔", I18n.get(ParseI18n.getI18nKey(modelInfo.getName())));
         String info = String.format("%d FPS %.2f%%", Minecraft.fps, scale * 100 / 80);
@@ -189,7 +189,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
     }
 
 
-    private void renderEntity(int middleWidth, int middleHeight, GuiGraphics graphics) {
+    private void renderEntity(int middleWidth, int middleHeight, GuiGraphicsExtractor graphics) {
         graphics.enableScissor(132, 15, this.width, this.height - 16);
 
         PoseStack viewStack = graphics.pose();
@@ -237,11 +237,11 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
         return false;
     }
 
-    private void fillGradient(GuiGraphics graphics, Rectangle vec4d, int color) {
+    private void fillGradient(GuiGraphicsExtractor graphics, Rectangle vec4d, int color) {
         graphics.fillGradient((int) vec4d.x, (int) vec4d.y, (int) vec4d.w, (int) vec4d.h, color, color);
     }
 
-    private void fillGradient(GuiGraphics graphics, Rectangle vec4d, int color, int zLevel) {
+    private void fillGradient(GuiGraphicsExtractor graphics, Rectangle vec4d, int color, int zLevel) {
         graphics.fillGradient((int) vec4d.x, (int) vec4d.y, (int) vec4d.w, (int) vec4d.h, zLevel, color, color);
     }
 }

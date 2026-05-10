@@ -13,7 +13,7 @@ import einstein.jmc.init.ModCommonConfigs;
 import einstein.jmc.util.CakeUtil;
 import einstein.jmc.util.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -34,8 +34,8 @@ public class JmcEdible implements IMaidEdibleBlock {
     /**
      * Just More Cakes! 模组中的蛋糕标签
      */
-    private static final TagKey<Block> BLOCK_JMC_CAKES = TagBlock.createTagKey(ResourceLocation.fromNamespaceAndPath(JmcCompat.ID, "cakes"));
-    private static final TagKey<Item> ITEM_JMC_CAKES = TagItem.createTagKey(ResourceLocation.fromNamespaceAndPath(JmcCompat.ID, "cakes"));
+    private static final TagKey<Block> BLOCK_JMC_CAKES = TagBlock.createTagKey(Identifier.fromNamespaceAndPath(JmcCompat.ID, "cakes"));
+    private static final TagKey<Item> ITEM_JMC_CAKES = TagItem.createTagKey(Identifier.fromNamespaceAndPath(JmcCompat.ID, "cakes"));
 
     @Override
     public boolean shouldMoveTo(EntityMaid maid, BlockPos pos, BlockState state) {

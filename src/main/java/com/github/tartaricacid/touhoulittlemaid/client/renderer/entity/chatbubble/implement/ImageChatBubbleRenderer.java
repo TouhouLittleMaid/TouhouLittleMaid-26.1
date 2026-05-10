@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMai
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ImageChatBubbleRenderer implements IChatBubbleRenderer {
     private final int width;
@@ -13,11 +13,11 @@ public class ImageChatBubbleRenderer implements IChatBubbleRenderer {
     private final int vOffset;
     private final int textureWidth;
     private final int textureHeight;
-    private final ResourceLocation bg;
-    private final ResourceLocation image;
+    private final Identifier bg;
+    private final Identifier image;
 
     public ImageChatBubbleRenderer(int width, int height, int uOffset, int vOffset, int textureWidth,
-                                   int textureHeight, ResourceLocation bg, ResourceLocation image) {
+                                   int textureHeight, Identifier bg, Identifier image) {
         this.width = width;
         this.height = height;
         this.uOffset = uOffset;
@@ -46,7 +46,7 @@ public class ImageChatBubbleRenderer implements IChatBubbleRenderer {
     }
 
     @Override
-    public ResourceLocation getBackgroundTexture() {
+    public Identifier getBackgroundTexture() {
         return this.bg;
     }
 }

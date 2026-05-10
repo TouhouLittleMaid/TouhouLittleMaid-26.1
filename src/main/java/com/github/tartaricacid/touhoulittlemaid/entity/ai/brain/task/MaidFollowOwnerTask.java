@@ -57,7 +57,7 @@ public class MaidFollowOwnerTask extends Behavior<EntityMaid> {
         }
 
         // 否则正常传送
-        int startDistance = (int) maid.getRestrictRadius() - 2;
+        int startDistance = (int) maid.getHomeRadius() - 2;
         int minTeleportDistance = startDistance + 4;
         if (ownerStateConditions(owner, maid) && maidStateConditions(maid) && !maid.closerThan(owner, startDistance)) {
             if (!maid.closerThan(owner, minTeleportDistance)) {

@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.inner;
 
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 
 import java.util.HashMap;
@@ -11,8 +11,8 @@ import static com.github.tartaricacid.touhoulittlemaid.client.animation.inner.In
 
 public final class SpecialAnimation {
     public static void init() {
-        INNER_ANIMATION.put(ResourceLocation.parse("touhou_little_maid:animation/special/hecatia_dimension.js"), getSpecialHecatia());
-        INNER_ANIMATION.put(ResourceLocation.parse("touhou_little_maid:animation/special/wakasagihime_sit.js"), getSpecialWakasagihime());
+        INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/special/hecatia_dimension.js"), getSpecialHecatia());
+        INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/special/wakasagihime_sit.js"), getSpecialWakasagihime());
     }
 
     public static IAnimation<Mob> getSpecialHecatia() {

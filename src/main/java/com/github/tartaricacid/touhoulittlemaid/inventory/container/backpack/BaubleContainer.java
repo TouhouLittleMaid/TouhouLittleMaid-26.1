@@ -144,7 +144,7 @@ public class BaubleContainer extends MaidMainContainer {
 
         @Override
         public void onShiftTakeoff(@Nullable Player player, ItemStack stack) {
-            if (maid.level.isClientSide || stack.isEmpty()) {
+            if (maid.level.isClientSide() || stack.isEmpty()) {
                 return;
             }
             IMaidBauble bauble = BaubleManager.getBauble(stack);
@@ -169,7 +169,7 @@ public class BaubleContainer extends MaidMainContainer {
         @Override
         public void setByPlayer(ItemStack stack) {
             super.setByPlayer(stack);
-            if (maid.level.isClientSide || stack.isEmpty()) {
+            if (maid.level.isClientSide() || stack.isEmpty()) {
                 return;
             }
             IMaidBauble bauble = BaubleManager.getBauble(stack);

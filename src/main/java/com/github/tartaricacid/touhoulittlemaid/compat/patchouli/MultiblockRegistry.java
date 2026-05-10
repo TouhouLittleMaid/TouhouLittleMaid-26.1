@@ -2,12 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.compat.patchouli;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import vazkii.patchouli.api.IStateMatcher;
 import vazkii.patchouli.api.PatchouliAPI;
 
 public final class MultiblockRegistry {
-    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar");
+    private static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar");
     private static final String[][] TEMPLATE = new String[][]{
             {"        ", "       R", "       R", "       R", "       R", "       R", "       R", "        ",},
             {"        ", "        ", "       R", "        ", "        ", "       R", "        ", "        ",},

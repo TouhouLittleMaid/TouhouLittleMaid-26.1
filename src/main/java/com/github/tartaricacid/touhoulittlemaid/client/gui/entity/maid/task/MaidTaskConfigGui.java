@@ -16,7 +16,7 @@ public abstract class MaidTaskConfigGui<T extends TaskConfigContainer> extends A
     public void onClose() {
         // 重置女仆 Brain，让女仆重新读取任务相关数据
         if (this.maid != null) {
-            PacketDistributor.sendToServer(new RefreshMaidBrainPackage(maid.getId()));
+            ClientPacketDistributor.sendToServer(new RefreshMaidBrainPackage(maid.getId()));
         }
         super.onClose();
     }

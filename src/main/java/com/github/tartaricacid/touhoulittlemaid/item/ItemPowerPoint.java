@@ -5,7 +5,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -17,10 +17,10 @@ public class ItemPowerPoint extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_BOTTLE_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             EntityThrowPowerPoint powerPoint = new EntityThrowPowerPoint(world, player);
             powerPoint.setItem(stack);
             powerPoint.shootFromRotation(player, player.getXRot(), player.getYRot(), -20.0F, 0.7F, 1.0F);
@@ -30,6 +30,6 @@ public class ItemPowerPoint extends Item {
         if (!player.isCreative()) {
             stack.shrink(1);
         }
-        return InteractionResultHolder.sidedSuccess(stack, world.isClientSide());
+        return InteractionResult.sidedSuccess(stack, world.isClientSide());
     }
 }

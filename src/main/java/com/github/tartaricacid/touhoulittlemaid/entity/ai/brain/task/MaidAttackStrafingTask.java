@@ -72,7 +72,7 @@ public class MaidAttackStrafingTask extends Behavior<EntityMaid> {
                 }
 
                 // 应用走位，但需要考虑玩家位置
-                if (!owner.hasRestriction() && owner.getOwner() instanceof Player player && owner.distanceTo(player) >= owner.getRestrictRadius()) {
+                if (!owner.hasHome() && owner.getOwner() instanceof Player player && owner.distanceTo(player) >= owner.getHomeRadius()) {
                     owner.stopInPlace();
                 } else {
                     owner.getMoveControl().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);

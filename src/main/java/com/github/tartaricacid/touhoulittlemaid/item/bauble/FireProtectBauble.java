@@ -19,7 +19,7 @@ public class FireProtectBauble implements IMaidBauble {
         if (source.is(DamageTypeTags.IS_FIRE)) {
             maid.hurtAndBreak(baubleItem, 1);
             maid.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 300));
-            if (!maid.level.isClientSide) {
+            if (!maid.level.isClientSide()) {
                 maid.level.addFreshEntity(new EntityExtinguishingAgent(maid.level, maid.position()));
             }
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {

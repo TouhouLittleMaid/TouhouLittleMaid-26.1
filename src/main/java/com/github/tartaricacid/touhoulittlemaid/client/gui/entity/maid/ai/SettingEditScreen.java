@@ -13,7 +13,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveMaidAIDat
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -161,7 +161,7 @@ public class SettingEditScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
         graphics.drawString(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.owner_name"),
                 ownerName.getX() + 2, ownerName.getY() - 12, 0xFFFFFF);
@@ -179,7 +179,7 @@ public class SettingEditScreen extends Screen {
         }
     }
 
-    private void drawMaid(GuiGraphics graphics, int posX, int posY, EntityMaid rawMaid) {
+    private void drawMaid(GuiGraphicsExtractor graphics, int posX, int posY, EntityMaid rawMaid) {
         Level world = getMinecraft().level;
         if (world == null) {
             return;
@@ -237,6 +237,6 @@ public class SettingEditScreen extends Screen {
     }
 
     private void saveConfig() {
-        PacketDistributor.sendToServer(new SaveMaidAIDataPackage(this.maid.getId(), this.manager));
+        ClientPacketDistributor.sendToServer(new SaveMaidAIDataPackage(this.maid.getId(), this.manager));
     }
 }

@@ -1,13 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.api.entity.data;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface TaskDataKey<T> {
     /**
      * 该 Data 的注册名，用于在存储 NBT 作为 KEY
      */
-    ResourceLocation getKey();
+    Identifier getKey();
 
     /**
      * 存储成 NBT

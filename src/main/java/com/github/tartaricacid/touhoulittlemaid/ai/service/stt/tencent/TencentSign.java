@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.ai.service.stt.tencent;
 import com.google.common.collect.Maps;
 import com.google.common.net.HttpHeaders;
 import com.google.common.net.MediaType;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.StringUtils;

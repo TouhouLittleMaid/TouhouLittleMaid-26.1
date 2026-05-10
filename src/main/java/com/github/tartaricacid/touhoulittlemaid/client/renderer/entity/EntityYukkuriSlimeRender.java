@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Slime;
 
@@ -18,7 +18,7 @@ import java.util.Objects;
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.REIMU_YUKKURI;
 
 public class EntityYukkuriSlimeRender extends MobRenderer<Slime, SimpleBedrockModel<Slime>> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/reimu_yukkuri.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/reimu_yukkuri.png");
     private final SlimeRenderer vanillaRender;
 
     public EntityYukkuriSlimeRender(EntityRendererProvider.Context context) {
@@ -51,7 +51,7 @@ public class EntityYukkuriSlimeRender extends MobRenderer<Slime, SimpleBedrockMo
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Slime slime) {
+    public Identifier getTextureLocation(Slime slime) {
         return TEXTURE;
     }
 }

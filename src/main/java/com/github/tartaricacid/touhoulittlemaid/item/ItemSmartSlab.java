@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.util.PlaceHelper;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,8 +14,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -83,7 +83,7 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
                 // 有锁定则进行 UUID 判断
                 if (!initOwnerUid.equals(Util.NIL_UUID) && !player.getUUID().equals(initOwnerUid)) {
                     MutableComponent tip = Component.translatable("tooltips.touhou_little_maid.smart_slab.not_your_maid").withStyle(ChatFormatting.DARK_RED);
-                    if (!worldIn.isClientSide) {
+                    if (!worldIn.isClientSide()) {
                         player.sendSystemMessage(tip);
                     }
                     return InteractionResult.FAIL;
@@ -97,7 +97,7 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
                 });
             }
         } else {
-            if (this.type != Type.EMPTY && worldIn.isClientSide) {
+            if (this.type != Type.EMPTY && worldIn.isClientSide()) {
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.photo.not_suitable_for_place_maid"));
             }
         }
@@ -112,7 +112,7 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
             }
             maid.tame(player);
             if (worldIn instanceof ServerLevel) {
-                maid.finalizeSpawn((ServerLevel) worldIn, worldIn.getCurrentDifficultyAt(context.getClickedPos()), MobSpawnType.SPAWN_EGG, null);
+                maid.finalizeSpawn((ServerLevel) worldIn, worldIn.getCurrentDifficultyAt(context.getClickedPos()), EntitySpawnReason.SPAWN_EGG, null);
                 maid.moveTo(context.getClickedPos().above(), 0, 0);
                 worldIn.addFreshEntity(maid);
             }
@@ -120,9 +120,9 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
             maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, worldIn.random.nextFloat() * 0.1F + 0.9F);
             player.setItemInHand(context.getHand(), InitItems.SMART_SLAB_EMPTY.get().getDefaultInstance());
             player.getCooldowns().addCooldown(InitItems.SMART_SLAB_EMPTY.get(), 20);
-            return InteractionResult.sidedSuccess(worldIn.isClientSide);
+            return InteractionResult.sidedSuccess(worldIn.isClientSide());
         } else {
-            if (worldIn.isClientSide) {
+            if (worldIn.isClientSide()) {
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.owner_maid_num.can_not_add", cap.get(), cap.getMaxNum()));
             }
             return super.useOn(context);

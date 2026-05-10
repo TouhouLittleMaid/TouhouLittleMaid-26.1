@@ -11,10 +11,10 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPa
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -38,7 +38,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
     }
 
     @Override
-    protected void drawLeftEntity(GuiGraphics graphics, int middleX, int middleY, float mouseX, float mouseY) {
+    protected void drawLeftEntity(GuiGraphicsExtractor graphics, int middleX, int middleY, float mouseX, float mouseY) {
         float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(entity.getModelId());
         int centerX = (middleX - 256 / 2) / 2;
         int yOffset = (int) (45 * (renderItemScale - 1));
@@ -56,8 +56,8 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
     }
 
     @Override
-    protected void drawRightEntity(GuiGraphics graphics, int posX, int posY, MaidModelInfo modelItem) {
-        ResourceLocation cacheIconId = modelItem.getCacheIconId();
+    protected void drawRightEntity(GuiGraphicsExtractor graphics, int posX, int posY, MaidModelInfo modelItem) {
+        Identifier cacheIconId = modelItem.getCacheIconId();
         var allTextures = Minecraft.getInstance().getTextureManager().byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
@@ -77,10 +77,10 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
     @Override
     protected void notifyModelChange(EntityMaid maid, MaidModelInfo info) {
         if (info.getEasterEgg() == null) {
-            PacketDistributor.sendToServer(new MaidModelPackage(maid.getId(), info.getModelId()));
+            ClientPacketDistributor.sendToServer(new MaidModelPackage(maid.getId(), info.getModelId()));
             String useSoundPackId = info.getUseSoundPackId();
             if (StringUtils.isNotBlank(useSoundPackId)) {
-                PacketDistributor.sendToServer(new SetMaidSoundIdPackage(maid.getId(), useSoundPackId));
+                ClientPacketDistributor.sendToServer(new SetMaidSoundIdPackage(maid.getId(), useSoundPackId));
             }
             // 切换模型时，重置手部动作
             maid.handItemsForAnimation[0] = ItemStack.EMPTY;
@@ -127,7 +127,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
         ROW_INDEX = rowIndex;
     }
 
-    private void drawEntity(GuiGraphics graphics, int posX, int posY, MaidModelInfo modelItem) {
+    private void drawEntity(GuiGraphicsExtractor graphics, int posX, int posY, MaidModelInfo modelItem) {
         Level world = getMinecraft().level;
         if (world == null) {
             return;
@@ -168,7 +168,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
     @Override
     protected void onClickCloseButton() {
         if (this.entity != null) {
-            PacketDistributor.sendToServer(new OpenMaidGuiPackage(this.entity.getId()));
+            ClientPacketDistributor.sendToServer(new OpenMaidGuiPackage(this.entity.getId()));
         }
     }
 }

@@ -4,11 +4,11 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMai
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import com.mojang.math.Axis;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 import javax.annotation.Nullable;
 
@@ -19,12 +19,12 @@ public class WaitingChatBubbleRenderer implements IChatBubbleRenderer {
     private final Font font;
     private final int width;
     private final int height;
-    private final ResourceLocation bg;
+    private final Identifier bg;
     private final Component text;
     private final @Nullable Component secondaryText;
-    private final ResourceLocation icon;
+    private final Identifier icon;
 
-    public WaitingChatBubbleRenderer(ResourceLocation bg, Component text, @Nullable Component secondaryText, ResourceLocation icon) {
+    public WaitingChatBubbleRenderer(Identifier bg, Component text, @Nullable Component secondaryText, Identifier icon) {
         this.font = Minecraft.getInstance().font;
         this.bg = bg;
         this.text = text;
@@ -75,7 +75,7 @@ public class WaitingChatBubbleRenderer implements IChatBubbleRenderer {
     }
 
     @Override
-    public ResourceLocation getBackgroundTexture() {
+    public Identifier getBackgroundTexture() {
         return this.bg;
     }
 }

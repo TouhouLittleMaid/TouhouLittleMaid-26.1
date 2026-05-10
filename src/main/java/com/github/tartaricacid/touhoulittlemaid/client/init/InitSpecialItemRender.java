@@ -8,7 +8,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT)
 public final class InitSpecialItemRender {
     private static final List<Triple<ModelResourceLocation, ModelResourceLocation, Supplier<Boolean>>> REPLACEABLE_MODEL_LIST = Lists.newArrayList();
 
-    private static final ResourceLocation LIFE_POINT = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "life_point");
-    private static final ResourceLocation POINT_ITEM = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "point_item");
+    private static final Identifier LIFE_POINT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "life_point");
+    private static final Identifier POINT_ITEM = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "point_item");
 
     // 祭坛合成占位符的物品模型
     private static final ModelResourceLocation SPAWN_BOX = standalone("item/spawn_box");
@@ -61,17 +61,17 @@ public final class InitSpecialItemRender {
         event.register(SPAWN_LIGHTNING_BOLT);
     }
 
-    public static void addReplaceableModel(Item item, ResourceLocation replacedModel, Supplier<Boolean> isReplace) {
-        ResourceLocation res = BuiltInRegistries.ITEM.getKey(item);
+    public static void addReplaceableModel(Item item, Identifier replacedModel, Supplier<Boolean> isReplace) {
+        Identifier res = BuiltInRegistries.ITEM.getKey(item);
         if (res != null) {
             ModelResourceLocation rawModelResourceLocation = ModelResourceLocation.inventory(res);
-            ModelResourceLocation replacedModelResourceLocation = ModelResourceLocation.standalone(ResourceLocation.fromNamespaceAndPath(replacedModel.getNamespace(), "item/" + replacedModel.getPath()));
+            ModelResourceLocation replacedModelResourceLocation = ModelResourceLocation.standalone(Identifier.fromNamespaceAndPath(replacedModel.getNamespace(), "item/" + replacedModel.getPath()));
             REPLACEABLE_MODEL_LIST.add(Triple.of(rawModelResourceLocation, replacedModelResourceLocation, isReplace));
         }
     }
 
     private static ModelResourceLocation standalone(String path) {
-        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, path);
+        Identifier loc = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, path);
         return ModelResourceLocation.standalone(loc);
     }
 }

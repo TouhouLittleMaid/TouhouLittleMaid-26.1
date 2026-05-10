@@ -16,7 +16,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -55,7 +55,7 @@ public class SwitchWorkTaskTool implements ITool<SwitchWorkTaskTool.Result> {
     private static final String TARGET_SUCCESS = "The task switch succeeded, and the attack target is successfully set to %s";
 
     private static final Codec<Result> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf(TASK_ID_PARAMETER_ID).forGetter(Result::id),
+            Identifier.CODEC.fieldOf(TASK_ID_PARAMETER_ID).forGetter(Result::id),
             Codec.INT.optionalFieldOf(ENTITY_ID_PARAMETER_ID, -1).forGetter(Result::entityId)
     ).apply(instance, Result::new));
 
@@ -78,7 +78,7 @@ public class SwitchWorkTaskTool implements ITool<SwitchWorkTaskTool.Result> {
 
         List<IMaidTask> tasks = TaskManager.getTaskIndex();
         tasks.stream().map(IMaidTask::getUid)
-                .map(ResourceLocation::toString)
+                .map(Identifier::toString)
                 .forEach(taskId::addEnumValues);
 
         root.addProperties(TASK_ID_PARAMETER_ID, taskId);
@@ -93,14 +93,14 @@ public class SwitchWorkTaskTool implements ITool<SwitchWorkTaskTool.Result> {
 
     @Override
     public LLMCallback onCall(String toolId, SwitchWorkTaskTool.Result result, LLMCallback callback) {
-        ResourceLocation taskId = result.id;
+        Identifier taskId = result.id;
         List<IMaidTask> tasks = TaskManager.getTaskIndex();
         Optional<IMaidTask> optional = TaskManager.findTask(taskId);
 
         if (optional.isEmpty()) {
             List<String> values = tasks.stream()
                     .map(IMaidTask::getUid)
-                    .map(ResourceLocation::toString)
+                    .map(Identifier::toString)
                     .toList();
             String text = "Unknown task_id '%s'".formatted(taskId);
             return callback.addToolResult(ITool.invalidParam(TASK_ID_PARAMETER_ID, values, text), toolId);
@@ -135,7 +135,7 @@ public class SwitchWorkTaskTool implements ITool<SwitchWorkTaskTool.Result> {
 
     @Override
     public Component invocationSummaryComponent(Result result) {
-        ResourceLocation id = result.id();
+        Identifier id = result.id();
         return TaskManager.findTask(id).map(task -> {
             MutableComponent name = task.getName();
             return Component.translatable("ai.touhou_little_maid.chat.tool_call.switch_work_task", name)
@@ -143,7 +143,7 @@ public class SwitchWorkTaskTool implements ITool<SwitchWorkTaskTool.Result> {
         }).orElse(Component.empty());
     }
 
-    private String switchResult(ResourceLocation taskId, boolean sameTask, FunctionCallSwitchResult switchResult) {
+    private String switchResult(Identifier taskId, boolean sameTask, FunctionCallSwitchResult switchResult) {
         if (sameTask) {
             return switch (switchResult) {
                 case NO_CHANGE -> NO_CHANGE.formatted(taskId);
@@ -192,6 +192,6 @@ public class SwitchWorkTaskTool implements ITool<SwitchWorkTaskTool.Result> {
         return joiner.toString();
     }
 
-    public record Result(ResourceLocation id, int entityId) {
+    public record Result(Identifier id, int entityId) {
     }
 }

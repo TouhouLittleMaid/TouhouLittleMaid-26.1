@@ -39,7 +39,7 @@ public class MaidJoyTask extends MaidCheckRateTask {
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid maid) {
         if (super.checkExtraStartConditions(worldIn, maid) && maid.canBrainMoving()) {
             BlockPos joyPos = findJoy(worldIn, maid);
-            if (joyPos != null && maid.isWithinRestriction(joyPos)) {
+            if (joyPos != null && maid.isWithinHome(joyPos)) {
                 if (joyPos.distToCenterSqr(maid.position()) < Math.pow(this.closeEnoughDist, 2)) {
                     maid.getBrain().setMemory(InitEntities.TARGET_POS.get(), new BlockPosTracker(joyPos));
                     return true;
@@ -74,7 +74,7 @@ public class MaidJoyTask extends MaidCheckRateTask {
     private BlockPos findJoy(ServerLevel world, EntityMaid maid) {
         BlockPos blockPos = maid.getBrainSearchPos();
         PoiManager poiManager = world.getPoiManager();
-        int range = (int) maid.getRestrictRadius();
+        int range = (int) maid.getHomeRadius();
         return poiManager.getInRange(type -> type.value().equals(InitPoi.JOY_BLOCK.get()), blockPos, range, PoiManager.Occupancy.ANY)
                 .map(PoiRecord::getPos).filter(pos -> !isOccupied(world, pos))
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition()))).orElse(null);

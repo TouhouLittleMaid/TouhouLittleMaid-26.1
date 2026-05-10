@@ -4,14 +4,14 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 public class CacheIconTexture extends AbstractTexture {
-    private final ResourceLocation modelId;
+    private final Identifier modelId;
     private NativeImage imageIn;
 
-    public CacheIconTexture(ResourceLocation modelId, NativeImage imageIn) {
+    public CacheIconTexture(Identifier modelId, NativeImage imageIn) {
         this.modelId = modelId;
         this.imageIn = imageIn;
     }
@@ -37,7 +37,7 @@ public class CacheIconTexture extends AbstractTexture {
         imageIn = null;
     }
 
-    public ResourceLocation getModelId() {
+    public Identifier getModelId() {
         return modelId;
     }
 }

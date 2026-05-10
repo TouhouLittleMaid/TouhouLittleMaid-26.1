@@ -6,7 +6,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.texture.Tickable;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.awt.*;
@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
 public class GifTexture extends SizeTexture implements Tickable {
-    private final ResourceLocation texturePath;
+    private final Identifier texturePath;
     private NativeImage[] frames;
     private int[] frameDelays;
     private int currentFrame = 0;
@@ -22,7 +22,7 @@ public class GifTexture extends SizeTexture implements Tickable {
     private int width = 16;
     private int height = 16;
 
-    public GifTexture(ResourceLocation texturePath) {
+    public GifTexture(Identifier texturePath) {
         this.texturePath = texturePath;
     }
 

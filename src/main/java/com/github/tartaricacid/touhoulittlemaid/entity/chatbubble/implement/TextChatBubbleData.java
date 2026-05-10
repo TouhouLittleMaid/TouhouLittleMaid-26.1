@@ -7,29 +7,29 @@ import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleDat
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class TextChatBubbleData implements IChatBubbleData {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "text");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "text");
 
     private final int existTick;
-    private final ResourceLocation bg;
+    private final Identifier bg;
     private final int priority;
     private Component text;
 
     @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
-    private TextChatBubbleData(int existTick, Component text, ResourceLocation bg, int priority) {
+    private TextChatBubbleData(int existTick, Component text, Identifier bg, int priority) {
         this.existTick = existTick;
         this.text = text;
         this.bg = bg;
         this.priority = priority;
     }
 
-    private TextChatBubbleData(int existTick, Component text, ResourceLocation bg) {
+    private TextChatBubbleData(int existTick, Component text, Identifier bg) {
         this(existTick, text, bg, DEFAULT_PRIORITY);
     }
 
@@ -41,7 +41,7 @@ public class TextChatBubbleData implements IChatBubbleData {
         return new TextChatBubbleData(DEFAULT_EXIST_TICK, text, TYPE_2);
     }
 
-    public static TextChatBubbleData create(int existTick, Component text, ResourceLocation bg, int priority) {
+    public static TextChatBubbleData create(int existTick, Component text, Identifier bg, int priority) {
         return new TextChatBubbleData(existTick, text, bg, priority);
     }
 
@@ -51,7 +51,7 @@ public class TextChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ID;
     }
 

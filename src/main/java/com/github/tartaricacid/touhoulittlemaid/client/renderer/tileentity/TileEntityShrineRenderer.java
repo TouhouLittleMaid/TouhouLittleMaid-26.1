@@ -10,18 +10,18 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class TileEntityShrineRenderer implements BlockEntityRenderer<TileEntityShrine> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/shrine.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/shrine.png");
     private final SimpleBedrockModel<Entity> model;
 
     public TileEntityShrineRenderer(BlockEntityRendererProvider.Context context) {
@@ -35,7 +35,7 @@ public class TileEntityShrineRenderer implements BlockEntityRenderer<TileEntityS
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         poseStack.mulPose(Axis.YN.rotationDegrees(180 - facing.get2DDataValue() * 90));
-        VertexConsumer buffer = bufferIn.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(TEXTURE));
         model.renderToBuffer(poseStack, buffer, combinedLightIn, combinedOverlayIn);
         poseStack.popPose();
 

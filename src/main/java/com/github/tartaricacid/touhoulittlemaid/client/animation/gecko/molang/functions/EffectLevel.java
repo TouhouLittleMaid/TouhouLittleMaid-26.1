@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.MolangUtils;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -20,7 +20,7 @@ public class EffectLevel extends ContextFunction<Entity> {
 
     @Override
     protected Object eval(ExecutionContext<IContext<Entity>> context, ArgumentCollection arguments) {
-        ResourceLocation effectId = MolangUtils.parseResourceLocation(context.entity(), arguments.getAsString(context, 0));
+        Identifier effectId = MolangUtils.parseResourceLocation(context.entity(), arguments.getAsString(context, 0));
         if (effectId == null) {
             return null;
         }

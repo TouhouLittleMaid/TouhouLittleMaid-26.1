@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitLootModifier;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemSmartSlab;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SetInitMaidOwnerFunction extends LootItemConditionalFunction {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "set_init_maid_owner");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "set_init_maid_owner");
     public static final MapCodec<SetInitMaidOwnerFunction> CODEC = RecordCodecBuilder.mapCodec(
             instance -> commonFields(instance).apply(instance, SetInitMaidOwnerFunction::new)
     );

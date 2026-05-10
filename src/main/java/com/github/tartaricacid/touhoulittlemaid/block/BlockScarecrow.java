@@ -71,7 +71,7 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         // 阻止创造模式破坏掉落双份物品
-        if (!level.isClientSide && player.isCreative()) {
+        if (!level.isClientSide() && player.isCreative()) {
             DoubleBlockHalf half = state.getValue(HALF);
             if (half == DoubleBlockHalf.UPPER) {
                 BlockPos belowPos = pos.below();

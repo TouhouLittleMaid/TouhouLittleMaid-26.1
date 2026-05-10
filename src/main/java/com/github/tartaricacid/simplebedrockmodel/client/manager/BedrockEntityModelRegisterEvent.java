@@ -1,7 +1,7 @@
 package com.github.tartaricacid.simplebedrockmodel.client.manager;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.AbstractBedrockEntityModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
@@ -17,7 +17,7 @@ public class BedrockEntityModelRegisterEvent<T extends AbstractBedrockEntityMode
         this.modelSet = modelSet;
     }
 
-    public void register(ResourceLocation location, Function<InputStream, T> function) {
+    public void register(Identifier location, Function<InputStream, T> function) {
         this.modelSet.addModel(location, function);
     }
 }

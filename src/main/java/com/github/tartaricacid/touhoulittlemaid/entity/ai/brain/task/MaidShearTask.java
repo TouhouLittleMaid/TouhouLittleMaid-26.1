@@ -41,7 +41,7 @@ public class MaidShearTask extends MaidCheckRateTask {
         }
 
         this.getEntities(maid)
-                .find(e -> maid.isWithinRestriction(e.blockPosition()))
+                .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
                 .filter(e -> e instanceof IShearable)
                 .filter(e -> ((IShearable) e).isShearable(null, mainHandItem, maid.level(), e.blockPosition()))

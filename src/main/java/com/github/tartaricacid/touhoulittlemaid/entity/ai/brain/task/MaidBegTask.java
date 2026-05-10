@@ -24,7 +24,7 @@ public class MaidBegTask extends Behavior<EntityMaid> {
                         list.find(owner::isOwnedBy)
                                 .filter(LivingEntity::isAlive)
                                 .filter(e -> e.closerThan(owner, BEG_DISTANCE))
-                                .filter(e -> owner.isWithinRestriction(e.blockPosition()))
+                                .filter(e -> owner.isWithinHome(e.blockPosition()))
                                 .anyMatch((e) -> holdTemptationItem(owner, e)))
                 .orElse(false);
     }

@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout.TTSSystemFormLayout;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -18,10 +18,10 @@ public final class TTSSystemSite implements TTSSite {
     public static final String API_TYPE = TTSApiType.SYSTEM.getName();
 
     private final String id;
-    private final ResourceLocation icon;
+    private final Identifier icon;
     private boolean enabled;
 
-    public TTSSystemSite(String id, ResourceLocation icon, boolean enabled) {
+    public TTSSystemSite(String id, Identifier icon, boolean enabled) {
         this.id = id;
         this.icon = icon;
         this.enabled = enabled;
@@ -58,7 +58,7 @@ public final class TTSSystemSite implements TTSSite {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return icon;
     }
 
@@ -75,7 +75,7 @@ public final class TTSSystemSite implements TTSSite {
     public static class Serializer implements SerializableSite<TTSSystemSite> {
         public static final Codec<TTSSystemSite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(TTSSystemSite::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(TTSSystemSite::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(TTSSystemSite::icon),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(TTSSystemSite::enabled)
         ).apply(instance, TTSSystemSite::new));
 

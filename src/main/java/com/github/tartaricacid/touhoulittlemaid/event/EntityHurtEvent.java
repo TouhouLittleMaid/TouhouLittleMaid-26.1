@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.event;
 
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
@@ -32,7 +32,7 @@ public final class EntityHurtEvent {
                     event.setCanceled(true);
                 }
             }
-            ResourceLocation registryName = BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType());
+            Identifier registryName = BuiltInRegistries.ENTITY_TYPE.getKey(victim.getType());
             if (MaidConfig.MAID_RANGED_ATTACK_IGNORE.get().contains(registryName.toString())) {
                 event.setCanceled(true);
             }

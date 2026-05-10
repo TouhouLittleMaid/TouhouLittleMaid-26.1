@@ -8,7 +8,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -28,14 +28,14 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.TA
 public class SetTankCountFunction extends LootItemConditionalFunction {
     public static MapCodec<SetTankCountFunction> CODEC = RecordCodecBuilder.mapCodec(instance -> commonFields(instance)
             .and(instance.group(
-                    ResourceLocation.CODEC.fieldOf("fluid_id").forGetter(f -> f.fluidId),
+                    Identifier.CODEC.fieldOf("fluid_id").forGetter(f -> f.fluidId),
                     Codec.INT.fieldOf("count").forGetter(f -> f.count)
             )).apply(instance, SetTankCountFunction::new));
 
-    private final ResourceLocation fluidId;
+    private final Identifier fluidId;
     private final int count;
 
-    public SetTankCountFunction(List<LootItemCondition> predicates, ResourceLocation fluidId, int count) {
+    public SetTankCountFunction(List<LootItemCondition> predicates, Identifier fluidId, int count) {
         super(predicates);
         this.fluidId = fluidId;
         this.count = count;
@@ -76,7 +76,7 @@ public class SetTankCountFunction extends LootItemConditionalFunction {
 
         @Override
         public LootItemFunction build() {
-            ResourceLocation key = BuiltInRegistries.FLUID.getKey(fluid);
+            Identifier key = BuiltInRegistries.FLUID.getKey(fluid);
             return new SetTankCountFunction(this.getConditions(), key, bucketCount * FluidType.BUCKET_VOLUME);
         }
     }

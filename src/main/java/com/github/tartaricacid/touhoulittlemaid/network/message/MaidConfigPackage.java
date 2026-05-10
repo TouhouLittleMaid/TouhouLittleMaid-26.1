@@ -13,7 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -63,7 +63,7 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
                         maid.setSchedule(message.schedule);
                         maid.getSchedulePos().restrictTo(maid);
                         if (maid.isHomeModeEnable()) {
-                            BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getRestrictCenter(), 0.7f, 3);
+                            BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getHomePosition(), 0.7f, 3);
                         }
                         if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                             InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.SWITCH_SCHEDULE);
@@ -86,7 +86,7 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
         if (message.home) {
             SchedulePos schedulePos = maid.getSchedulePos();
             if (schedulePos.isConfigured()) {
-                ResourceLocation dimension = schedulePos.getDimension();
+                Identifier dimension = schedulePos.getDimension();
                 if (!dimension.equals(maid.level.dimension().location())) {
                     CheckSchedulePosPacket tips = new CheckSchedulePosPacket("message.touhou_little_maid.check_schedule_pos.dimension");
                     PacketDistributor.sendToPlayer(sender, tips);
@@ -101,7 +101,7 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
             }
             schedulePos.setHomeModeEnable(maid, maid.blockPosition());
         } else {
-            maid.restrictTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
+            maid.setHomeTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
         }
         maid.setHomeModeEnable(message.home);
     }

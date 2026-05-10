@@ -25,7 +25,7 @@ public record OpenAIConfigPacket() implements CustomPacketPayload {
     );
 
     public static void sendToServer() {
-        PacketDistributor.sendToServer(new OpenAIConfigPacket());
+        ClientPacketDistributor.sendToServer(new OpenAIConfigPacket());
     }
 
     @Override

@@ -8,7 +8,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -19,10 +19,10 @@ import java.util.Map;
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SetAttackListPackage(int entityId,
-                                   Map<ResourceLocation, MonsterType> attackGroups) implements CustomPacketPayload {
+                                   Map<Identifier, MonsterType> attackGroups) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SetAttackListPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("set_attack_list"));
-    public static final StreamCodec<ByteBuf, Map<ResourceLocation, MonsterType>> LIST_STREAM_CODEC = ByteBufCodecs.map(HashMap::new,
-            ResourceLocation.STREAM_CODEC,
+    public static final StreamCodec<ByteBuf, Map<Identifier, MonsterType>> LIST_STREAM_CODEC = ByteBufCodecs.map(HashMap::new,
+            Identifier.STREAM_CODEC,
             ByteBufCodecs.fromCodec(MonsterType.CODEC),
             65536
     );

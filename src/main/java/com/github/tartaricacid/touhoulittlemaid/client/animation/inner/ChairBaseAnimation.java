@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.inner;
 
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 
@@ -10,8 +10,8 @@ import static com.github.tartaricacid.touhoulittlemaid.client.animation.inner.In
 
 public final class ChairBaseAnimation {
     public static void init() {
-        INNER_ANIMATION.put(ResourceLocation.parse("touhou_little_maid:animation/chair/passenger/hidden.js"), getPassengerHidden());
-        INNER_ANIMATION.put(ResourceLocation.parse("touhou_little_maid:animation/chair/passenger/rotation.js"), getPassengerRotation());
+        INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/chair/passenger/hidden.js"), getPassengerHidden());
+        INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/chair/passenger/rotation.js"), getPassengerRotation());
     }
 
     public static IAnimation<EntityChair> getPassengerHidden() {

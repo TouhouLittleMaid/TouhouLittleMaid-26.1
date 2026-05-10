@@ -15,7 +15,7 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.GunTabType;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.resource.index.CommonGunIndex;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
@@ -47,7 +47,7 @@ public class GunGeckoAnimation {
     public static PlayState playGunMainAnimation(AnimationEvent<GeckoMaidEntity<?>> event, String animationName, ILoopType loopType) {
         String tacName = "tac:" + animationName;
         var animatable = event.getAnimatableEntity();
-        ResourceLocation animation = animatable.getAnimationFileLocation();
+        Identifier animation = animatable.getAnimationFileLocation();
         AnimationFile animationFile = GeckoLibCache.getInstance().getAnimations().get(animation);
         if (!isMaidCarrying(animatable.getMaid()) && animationFile.animations().containsKey(tacName)) {
             return playAnimation(event, tacName, loopType);
@@ -124,7 +124,7 @@ public class GunGeckoAnimation {
 
     @NotNull
     private static PlayState getGunTypeAnimation(AnimationEvent<GeckoMaidEntity<?>> event, String weaponType, String prefix) {
-        ResourceLocation modelId = event.getAnimatableEntity().getAnimationFileLocation();
+        Identifier modelId = event.getAnimatableEntity().getAnimationFileLocation();
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;

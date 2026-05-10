@@ -17,15 +17,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -76,7 +76,7 @@ public abstract class GeoReplacedEntityRenderer<T extends LivingEntity, E extend
         float piecePosPercent = segment / 24f;
         int lerpBlockLight = (int) Mth.lerp(piecePosPercent, entityBlockLight, holderBlockLight);
         int lerpSkyLight = (int) Mth.lerp(piecePosPercent, entitySkyLight, holderSkyLight);
-        int packedLight = LightTexture.pack(lerpBlockLight, lerpSkyLight);
+        int packedLight = LightCoordsUtil.pack(lerpBlockLight, lerpSkyLight);
         float knotColourMod = segment % 2 == (isLeashKnot ? 1 : 0) ? 0.7f : 1f;
         float red = 0.5f * knotColourMod;
         float green = 0.4f * knotColourMod;
@@ -199,11 +199,11 @@ public abstract class GeoReplacedEntityRenderer<T extends LivingEntity, E extend
             RenderSystem.setShaderTexture(0, getTextureLocation(entity));
 
             Color renderColor = getRenderColor(entity, partialTick, poseStack, bufferSource, null, packedLight);
-            RenderType renderType = getRenderType(entity, partialTick, poseStack, bufferSource, null, packedLight,
+            RenderTypes renderType = getRenderType(entity, partialTick, poseStack, bufferSource, null, packedLight,
                     getTextureLocation(entity));
 
             if (Minecraft.getInstance().player != null && !entity.isInvisibleTo(Minecraft.getInstance().player)) {
-                VertexConsumer translucentBuffer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
+                VertexConsumer translucentBuffer = bufferSource.getBuffer(RenderTypes.entityCutoutNoCull(getTextureLocation(entity)));
                 render(model, entity, partialTick, renderType, poseStack, bufferSource, translucentBuffer,
                         packedLight, getPackedOverlay(entity, getOverlayProgress(entity, partialTick)),
                         renderColor.getRed() / 255f, renderColor.getGreen() / 255f,
@@ -231,7 +231,7 @@ public abstract class GeoReplacedEntityRenderer<T extends LivingEntity, E extend
 
     @Override
     @NotNull
-    public ResourceLocation getTextureLocation(T entity) {
+    public Identifier getTextureLocation(T entity) {
         return this.getAnimatableEntity(entity).getTextureLocation();
     }
 
@@ -292,7 +292,7 @@ public abstract class GeoReplacedEntityRenderer<T extends LivingEntity, E extend
         float offsetMod = (float) Mth.fastInvSqrt(xDif * xDif + zDif * zDif) * 0.025f / 2f;
         float xOffset = zDif * offsetMod;
         float zOffset = xDif * offsetMod;
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.leash());
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderTypes.leash());
         BlockPos entityEyePos = BlockPos.containing(entity.getEyePosition(partialTick));
         BlockPos holderEyePos = BlockPos.containing(leashHolder.getEyePosition(partialTick));
         int entityBlockLight = getBlockLightLevel(entity, entityEyePos);

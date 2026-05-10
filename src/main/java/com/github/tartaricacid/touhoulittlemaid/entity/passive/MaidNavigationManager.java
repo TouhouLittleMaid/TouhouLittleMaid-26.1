@@ -28,7 +28,7 @@ public class MaidNavigationManager {
     }
 
     public void tick() {
-        if (!level.isClientSide && maid.isEffectiveAi()) {
+        if (!level.isClientSide() && maid.isEffectiveAi()) {
             if (mode != Mode.WATER && maid.isInWater() && shouldStartOrStopSwim(5)) {
                 // 对于一般寻路，当满足：女仆接触到水，前方有长水面时，切换到水中寻路
                 if (switchToNavigation(Mode.WATER, waterNavigation)) {

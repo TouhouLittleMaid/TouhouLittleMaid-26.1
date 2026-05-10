@@ -95,7 +95,7 @@ public class BlockStatue extends Block implements EntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             this.getStatue(worldIn, pos).ifPresent(statue -> {
                 this.restoreClayBlock(worldIn, pos, statue);
                 if (!player.isCreative()) {
@@ -108,7 +108,7 @@ public class BlockStatue extends Block implements EntityBlock {
 
     @Override
     public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             this.getStatue(world, pos).ifPresent(statue -> this.restoreClayBlock(world, pos, statue));
         }
         super.onBlockExploded(state, world, pos, explosion);

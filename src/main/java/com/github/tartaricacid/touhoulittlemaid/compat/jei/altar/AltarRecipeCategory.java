@@ -12,11 +12,11 @@ import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Collections;
@@ -24,8 +24,8 @@ import java.util.List;
 
 public class AltarRecipeCategory implements IRecipeCategory<AltarRecipeWrapper> {
     public static final RecipeType<AltarRecipeWrapper> ALTAR = RecipeType.create(TouhouLittleMaid.MOD_ID, "altar", AltarRecipeWrapper.class);
-    private static final ResourceLocation ALTAR_ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/altar_icon.png");
-    private static final ResourceLocation POWER_ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
+    private static final Identifier ALTAR_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/altar_icon.png");
+    private static final Identifier POWER_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
     private static final MutableComponent TITLE = Component.translatable("jei.touhou_little_maid.altar_craft.title");
     private final IDrawableStatic bgDraw;
     private final IDrawable slotDraw;
@@ -40,7 +40,7 @@ public class AltarRecipeCategory implements IRecipeCategory<AltarRecipeWrapper> 
     }
 
     @Override
-    public void draw(AltarRecipeWrapper recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+    public void draw(AltarRecipeWrapper recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor graphics, double mouseX, double mouseY) {
         int darkGray = 0x555555;
         Font font = Minecraft.getInstance().font;
         String result = I18n.get("jei.touhou_little_maid.altar_craft.result", I18n.get(recipe.getLangKey()));

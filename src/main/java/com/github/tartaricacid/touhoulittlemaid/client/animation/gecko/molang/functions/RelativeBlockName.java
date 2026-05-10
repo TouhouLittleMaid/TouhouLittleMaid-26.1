@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.e
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -25,7 +25,7 @@ public class RelativeBlockName extends EntityFunction {
                 (int) entity.getY() + offsetY,
                 (int) entity.getZ() + offsetZ);
         BlockState block = ctx.entity().entity().level().getBlockState(pos);
-        ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(block.getBlock());
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(block.getBlock());
         if (blockId == null) {
             return null;
         }

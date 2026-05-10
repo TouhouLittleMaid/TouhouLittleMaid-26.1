@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
 import java.io.File;
@@ -14,12 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class FilePackTexture extends SizeTexture {
-    private final ResourceLocation texturePath;
+    private final Identifier texturePath;
     private final Path rootPath;
     private int width = 16;
     private int height = 16;
 
-    public FilePackTexture(Path rootPath, ResourceLocation texturePath) {
+    public FilePackTexture(Path rootPath, Identifier texturePath) {
         this.rootPath = rootPath;
         this.texturePath = texturePath;
     }

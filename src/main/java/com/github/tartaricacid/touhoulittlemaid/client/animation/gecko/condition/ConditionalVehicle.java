@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.conditio
 import com.google.common.collect.Lists;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,7 +15,7 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil
 
 public class ConditionalVehicle {
     private static final String EMPTY = "";
-    private final List<ResourceLocation> idTest = Lists.newArrayList();
+    private final List<Identifier> idTest = Lists.newArrayList();
     private final List<TagKey<EntityType<?>>> tagTest = Lists.newArrayList();
     private final String idPre;
     private final String tagPre;
@@ -32,12 +32,12 @@ public class ConditionalVehicle {
         }
         String substring = name.substring(preSize);
         if (name.startsWith(idPre) && isValidResourceLocation(substring)) {
-            idTest.add(ResourceLocation.parse(substring));
+            idTest.add(Identifier.parse(substring));
         }
         if (name.startsWith(tagPre) && isValidResourceLocation(substring)) {
             tagTest.add(TagKey.create(
                     Registries.ENTITY_TYPE,
-                    ResourceLocation.parse(substring)
+                    Identifier.parse(substring)
             ));
         }
     }
@@ -58,7 +58,7 @@ public class ConditionalVehicle {
         if (idTest.isEmpty()) {
             return EMPTY;
         }
-        ResourceLocation registryName = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
+        Identifier registryName = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
         if (registryName == null) {
             return EMPTY;
         }

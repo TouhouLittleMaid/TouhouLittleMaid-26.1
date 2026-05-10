@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.regex.Pattern;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber()
 public class MaidMealRegConfigEvent {
     private static final String CONFIG_NAME = TouhouLittleMaid.MOD_ID + "-common.toml";
 

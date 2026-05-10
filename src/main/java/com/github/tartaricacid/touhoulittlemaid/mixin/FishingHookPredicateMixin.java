@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.mixin;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
-import net.minecraft.advancements.critereon.FishingHookPredicate;
+import net.minecraft.advancements.criterion.FishingHookPredicate;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;

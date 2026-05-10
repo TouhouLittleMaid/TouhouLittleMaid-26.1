@@ -12,7 +12,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.functional.TriConsumer;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.typings.Info;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
@@ -34,7 +34,7 @@ public class RangedAttackTaskJS implements IRangedAttackTask {
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return this.builder.id;
     }
 
@@ -171,8 +171,8 @@ public class RangedAttackTaskJS implements IRangedAttackTask {
     public AABB searchDimension(EntityMaid maid) {
         if (isWeapon(maid, maid.getMainHandItem())) {
             float searchRange = this.searchRadius(maid);
-            if (maid.hasRestriction()) {
-                return new AABB(maid.getRestrictCenter()).inflate(searchRange);
+            if (maid.hasHome()) {
+                return new AABB(maid.getHomePosition()).inflate(searchRange);
             } else {
                 return maid.getBoundingBox().inflate(searchRange);
             }
@@ -200,7 +200,7 @@ public class RangedAttackTaskJS implements IRangedAttackTask {
         // 默认步行速度
         private float walkSpeed = 0.5f;
 
-        public Builder(ResourceLocation id, ItemStack icon) {
+        public Builder(Identifier id, ItemStack icon) {
             super(id, icon);
         }
 

@@ -7,10 +7,10 @@ import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IconCache;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -43,7 +43,7 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
     }
 
     @SuppressWarnings("unchecked")
-    private void drawEntity(GuiGraphics graphics, int posX, int posY, E modelInfo, int scaleModified) {
+    private void drawEntity(GuiGraphicsExtractor graphics, int posX, int posY, E modelInfo, int scaleModified) {
         Level world = getMinecraft().level;
         if (world == null) {
             return;
@@ -59,7 +59,7 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
 
         if (modelInfos.isEmpty()) {
@@ -86,7 +86,7 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
         graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.cache_screen.desc"), this.width / 2, this.height - 30, 0xFFFFFF);
     }
 
-    protected void doCacheIcon(GuiGraphics graphics) {
+    protected void doCacheIcon(GuiGraphicsExtractor graphics) {
         E modelInfo = modelInfos.poll();
         if (modelInfo != null) {
             double guiScale = Minecraft.getInstance().getWindow().getGuiScale();
@@ -96,13 +96,13 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
             this.drawEntity(graphics, 0, 0, modelInfo, scaleModified);
             NativeImage nativeImage = IconCache.exportImageFromScreenshot(256, IconCache.BACKGROUND_COLOR_SHIFTED);
 
-            ResourceLocation modelId = modelInfo.getModelId();
+            Identifier modelId = modelInfo.getModelId();
             CacheIconTexture cacheIconTexture = new CacheIconTexture(modelId, nativeImage);
             Minecraft.getInstance().getTextureManager().register(modelInfo.getCacheIconId(), cacheIconTexture);
         }
     }
 
     public interface EntityRender<T extends LivingEntity, E extends IModelInfo> {
-        void render(GuiGraphics graphics, int posX, int posY, E modelInfo, int scaleModified, T entity);
+        void render(GuiGraphicsExtractor graphics, int posX, int posY, E modelInfo, int scaleModified, T entity);
     }
 }

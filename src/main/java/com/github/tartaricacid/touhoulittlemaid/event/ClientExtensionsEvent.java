@@ -14,7 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 
-@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID)
 public class ClientExtensionsEvent {
     @SubscribeEvent
     public static void RegisterClientExtensions(RegisterClientExtensionsEvent event) {

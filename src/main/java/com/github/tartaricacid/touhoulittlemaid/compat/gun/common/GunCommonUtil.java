@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.gun.swarfare.SWarfareComp
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.tacz.TacCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -58,7 +58,7 @@ public class GunCommonUtil {
     }
 
     @Nullable
-    public static ResourceLocation getGunId(ItemStack stack) {
+    public static Identifier getGunId(ItemStack stack) {
         if (SWarfareCompat.isGun(stack)) {
             return SWarfareCompat.getGunId(stack);
         }

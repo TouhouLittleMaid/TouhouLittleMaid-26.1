@@ -12,7 +12,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.CreativeModeTab;
@@ -57,18 +57,18 @@ public class ItemEntityPlaceholder extends Item {
 
     @SuppressWarnings("all")
     @Nullable
-    public static ResourceLocation getRecipeId(ItemStack stack) {
+    public static Identifier getRecipeId(ItemStack stack) {
         if (stack.has(InitDataComponent.RECIPES_ID_TAG)) {
-            return ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, InitRecipes.ALTAR_CRAFTING.getId().getPath() + "/" + stack.get(InitDataComponent.RECIPES_ID_TAG));
+            return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, InitRecipes.ALTAR_CRAFTING.getId().getPath() + "/" + stack.get(InitDataComponent.RECIPES_ID_TAG));
         }
         return null;
     }
 
     @SuppressWarnings("all")
     @Nullable
-    public static ResourceLocation getId(ItemStack stack) {
+    public static Identifier getId(ItemStack stack) {
         if (stack.has(InitDataComponent.RECIPES_ID_TAG)) {
-            return ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, stack.get(InitDataComponent.RECIPES_ID_TAG));
+            return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, stack.get(InitDataComponent.RECIPES_ID_TAG));
         }
         return null;
     }
@@ -89,7 +89,7 @@ public class ItemEntityPlaceholder extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         if (context.getClickedFace() == Direction.UP) {
-            ResourceLocation id = getRecipeId(context.getItemInHand());
+            Identifier id = getRecipeId(context.getItemInHand());
             Level world = context.getLevel();
             if (id != null && world instanceof ServerLevel) {
                 Optional<RecipeHolder<?>> recipe = context.getLevel().getRecipeManager().byKey(id);
@@ -105,7 +105,7 @@ public class ItemEntityPlaceholder extends Item {
     @Override
     @OnlyIn(Dist.CLIENT)
     public Component getName(ItemStack stack) {
-        ResourceLocation recipeId = getId(stack);
+        Identifier recipeId = getId(stack);
         if (recipeId != null) {
             Path path = Paths.get(recipeId.getPath().toLowerCase(Locale.US));
             String langKey = String.format("jei.%s.altar_craft.%s.result", TouhouLittleMaid.MOD_ID, path.getFileName());

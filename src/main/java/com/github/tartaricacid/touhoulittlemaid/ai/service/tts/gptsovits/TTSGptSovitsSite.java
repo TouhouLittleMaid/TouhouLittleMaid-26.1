@@ -9,7 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout.TTSSiteFormLayout;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public final class TTSGptSovitsSite implements TTSSite {
     public static final String API_TYPE = TTSApiType.GPT_SOVITS.getName();
 
     private final String id;
-    private final ResourceLocation icon;
+    private final Identifier icon;
     private final List<String> auxRefAudioPaths;
     private final Map<String, String> headers;
 
@@ -31,7 +31,7 @@ public final class TTSGptSovitsSite implements TTSSite {
     private String promptLang;
     private String textSplitMethod;
 
-    public TTSGptSovitsSite(String id, ResourceLocation icon, String url, boolean enabled,
+    public TTSGptSovitsSite(String id, Identifier icon, String url, boolean enabled,
                             String secretKey, String refAudioPath,
                             String promptText, String promptLang,
                             String textSplitMethod, List<String> auxRefAudioPaths,
@@ -70,7 +70,7 @@ public final class TTSGptSovitsSite implements TTSSite {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return icon;
     }
 
@@ -145,7 +145,7 @@ public final class TTSGptSovitsSite implements TTSSite {
     public static class Serializer implements SerializableSite<TTSGptSovitsSite> {
         public static final Codec<TTSGptSovitsSite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(TTSGptSovitsSite::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(TTSGptSovitsSite::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(TTSGptSovitsSite::icon),
                 Codec.STRING.fieldOf(URL).forGetter(TTSGptSovitsSite::url),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(TTSGptSovitsSite::enabled),
                 Codec.STRING.fieldOf(SECRET_KEY).forGetter(TTSGptSovitsSite::secretKey),

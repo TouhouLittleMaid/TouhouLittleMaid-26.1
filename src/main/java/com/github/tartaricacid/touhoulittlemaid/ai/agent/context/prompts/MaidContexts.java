@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.AbstractMaidCon
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.GameContextRegister;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 
 import static com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.papi.StringConstant.HEALTHY_FORMAT;
@@ -85,7 +85,7 @@ public final class MaidContexts {
             if (vehicle == null) {
                 return "not";
             }
-            ResourceLocation type = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
+            Identifier type = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
             if (type == null) {
                 return "not";
             }

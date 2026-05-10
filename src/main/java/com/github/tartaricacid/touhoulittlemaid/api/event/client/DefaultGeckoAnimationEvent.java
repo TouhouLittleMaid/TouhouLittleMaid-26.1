@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.api.event.client;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -46,7 +46,7 @@ public class DefaultGeckoAnimationEvent extends Event {
         return animationFiles.get(type);
     }
 
-    public void addAnimation(AnimationFile animationFile, ResourceLocation file) {
+    public void addAnimation(AnimationFile animationFile, Identifier file) {
         try (InputStream stream = Minecraft.getInstance().getResourceManager().open(file)) {
             mergeAnimationFile(stream, animationFile);
         } catch (IOException e) {
@@ -55,7 +55,7 @@ public class DefaultGeckoAnimationEvent extends Event {
     }
 
     @ApiStatus.AvailableSince("1.4.7")
-    public void addAnimation(AnimationType type, ResourceLocation file) {
+    public void addAnimation(AnimationType type, Identifier file) {
         AnimationFile animationFile = animationFiles.get(type);
         if (animationFile != null) {
             addAnimation(animationFile, file);

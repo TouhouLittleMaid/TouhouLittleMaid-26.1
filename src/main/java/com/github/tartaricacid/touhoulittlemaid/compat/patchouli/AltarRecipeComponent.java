@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -34,7 +34,7 @@ public class AltarRecipeComponent implements IComponentProcessor {
     @SuppressWarnings("all")
     @Override
     public void setup(Level level, IVariableProvider variables) {
-        ResourceLocation recipeId = ResourceLocation.parse(variables.get(RECIPE_ID, level.registryAccess()).asString());
+        Identifier recipeId = Identifier.parse(variables.get(RECIPE_ID, level.registryAccess()).asString());
         List<RecipeHolder<AltarRecipe>> allAltarRecipes = level.getRecipeManager().getAllRecipesFor(InitRecipes.ALTAR_CRAFTING.get());
         for (RecipeHolder<AltarRecipe> recipe : allAltarRecipes) {
             if (recipe.id().equals(recipeId)) {
@@ -43,7 +43,7 @@ public class AltarRecipeComponent implements IComponentProcessor {
             }
         }
         this.recipe = new AltarRecipe("altar_recipe", CraftingBookCategory.MISC, NonNullList.of(Ingredient.EMPTY),
-                0, ItemStack.EMPTY, ResourceLocation.withDefaultNamespace("item"), "");
+                0, ItemStack.EMPTY, Identifier.withDefaultNamespace("item"), "");
         TouhouLittleMaid.LOGGER.error("Altar recipe not found: {}", recipeId);
     }
 
@@ -62,7 +62,7 @@ public class AltarRecipeComponent implements IComponentProcessor {
             }
             List<String> stackNames = Lists.newArrayList();
             for (ItemStack stack : stacks) {
-                ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+                Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
                 stackNames.add(itemId.toString());
             }
             return IVariable.wrap(StringUtils.join(stackNames, ","), level.registryAccess());

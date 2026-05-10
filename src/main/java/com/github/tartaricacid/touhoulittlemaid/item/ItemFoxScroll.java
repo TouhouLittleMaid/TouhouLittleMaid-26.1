@@ -19,7 +19,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -47,8 +47,8 @@ public class ItemFoxScroll extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        if (!level.isClientSide && hand == InteractionHand.MAIN_HAND) {
+    public InteractionResult<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
             ItemStack item = player.getMainHandItem();
             MaidWorldData maidWorldData = MaidWorldData.get(level);
             if (maidWorldData == null) {
@@ -76,7 +76,7 @@ public class ItemFoxScroll extends Item {
                     InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_WHITE_FOX_SCROLL);
                 }
             }
-            return InteractionResultHolder.success(item);
+            return InteractionResult.success(item);
         }
         return super.use(level, player, hand);
     }

@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/1/12 15:32
  **/
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public class InfoGetManager {
     /**
      * 线路 1，PCL 作者宅魂 Kill 提供的 CDN

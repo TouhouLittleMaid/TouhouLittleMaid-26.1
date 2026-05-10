@@ -2,13 +2,13 @@ package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -73,7 +73,7 @@ public class EntityTombstone extends Entity {
                         continue;
                     }
                     // 一旦发现有物品不能插入，立即中断检查
-                    if (!player.level.isClientSide) {
+                    if (!player.level.isClientSide()) {
                         player.sendSystemMessage(Component.translatable("message.touhou_little_maid.tombstone.player_inventory_full.1"));
                         player.sendSystemMessage(Component.translatable("message.touhou_little_maid.tombstone.player_inventory_full.2"));
                     }
@@ -92,11 +92,11 @@ public class EntityTombstone extends Entity {
 
             // 所有物品处理完毕后，再销毁实体
             this.discard();
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
         // 其他逻辑...
-        if (!player.level.isClientSide) {
+        if (!player.level.isClientSide()) {
             ItemStack stack = Arrays.stream(ntrItem.getItems()).findFirst().orElse(ItemStack.EMPTY);
             Component displayName = stack.getDisplayName();
             player.sendSystemMessage(Component.translatable("message.touhou_little_maid.tombstone.not_yours.1"));
@@ -133,7 +133,7 @@ public class EntityTombstone extends Entity {
 
     @Override
     public void tick() {
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             this.checkBelowWorld();
         }
     }

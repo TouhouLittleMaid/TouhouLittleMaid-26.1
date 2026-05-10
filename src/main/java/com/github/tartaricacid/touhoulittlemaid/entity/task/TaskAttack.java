@@ -11,7 +11,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskAttack implements IAttackTask {
-    public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "attack");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "attack");
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return UID;
     }
 
@@ -123,7 +123,7 @@ public class TaskAttack implements IAttackTask {
             return true;
         }
         boolean enable = maid.isHomeModeEnable();
-        float radius = maid.getRestrictRadius();
+        float radius = maid.getHomeRadius();
         if (!enable && maid.getOwner() != null) {
             return maid.getOwner().distanceTo(target) > radius;
         }

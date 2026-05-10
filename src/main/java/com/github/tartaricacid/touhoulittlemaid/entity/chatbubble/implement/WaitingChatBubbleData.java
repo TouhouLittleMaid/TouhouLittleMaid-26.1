@@ -7,27 +7,27 @@ import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleDat
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
 public class WaitingChatBubbleData implements IChatBubbleData {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "waiting");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "waiting");
 
     private final int existTick;
-    private final ResourceLocation bg;
+    private final Identifier bg;
     private final int priority;
     private final Component text;
     private final @Nullable Component secondaryText;
-    private final ResourceLocation icon;
+    private final Identifier icon;
 
     @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
-    private WaitingChatBubbleData(int existTick, ResourceLocation bg, int priority, Component text,
-                                  @Nullable Component secondaryText, ResourceLocation icon) {
+    private WaitingChatBubbleData(int existTick, Identifier bg, int priority, Component text,
+                                  @Nullable Component secondaryText, Identifier icon) {
         this.existTick = existTick;
         this.bg = bg;
         this.priority = priority;
@@ -36,20 +36,20 @@ public class WaitingChatBubbleData implements IChatBubbleData {
         this.icon = icon;
     }
 
-    public static WaitingChatBubbleData create(int existTick, ResourceLocation bg, int priority, Component text, ResourceLocation icon) {
+    public static WaitingChatBubbleData create(int existTick, Identifier bg, int priority, Component text, Identifier icon) {
         return new WaitingChatBubbleData(existTick, bg, priority, text, null, icon);
     }
 
-    public static WaitingChatBubbleData create(int existTick, ResourceLocation bg, int priority, Component text,
-                                               @Nullable Component secondaryText, ResourceLocation icon) {
+    public static WaitingChatBubbleData create(int existTick, Identifier bg, int priority, Component text,
+                                               @Nullable Component secondaryText, Identifier icon) {
         return new WaitingChatBubbleData(existTick, bg, priority, text, secondaryText, icon);
     }
 
-    public static WaitingChatBubbleData create(Component text, ResourceLocation icon) {
+    public static WaitingChatBubbleData create(Component text, Identifier icon) {
         return new WaitingChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY, text, null, icon);
     }
 
-    public static WaitingChatBubbleData create(Component text, @Nullable Component secondaryText, ResourceLocation icon) {
+    public static WaitingChatBubbleData create(Component text, @Nullable Component secondaryText, Identifier icon) {
         return new WaitingChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY, text, secondaryText, icon);
     }
 
@@ -59,7 +59,7 @@ public class WaitingChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ID;
     }
 
@@ -86,7 +86,7 @@ public class WaitingChatBubbleData implements IChatBubbleData {
         @Override
         public IChatBubbleData readFromBuff(FriendlyByteBuf buf) {
             // 往客户端同步的数据里，不需要同步 existTick 和 priority，这两个数据仅在服务端有效
-            ResourceLocation bg = buf.readResourceLocation();
+            Identifier bg = buf.readResourceLocation();
             Component text = buf.readJsonWithCodec(ComponentSerialization.CODEC);
             Component secondaryText = null;
             if (buf.readBoolean()) {

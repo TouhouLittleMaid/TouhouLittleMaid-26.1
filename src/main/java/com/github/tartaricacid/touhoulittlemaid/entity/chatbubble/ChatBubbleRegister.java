@@ -9,14 +9,14 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectAVLTreeMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.syncher.EntityDataSerializer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
 import static com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleDataCollection.MAX_SIZE;
 
 public class ChatBubbleRegister {
-    public static Map<ResourceLocation, IChatBubbleData.ChatSerializer> CODEC_MAP = Maps.newHashMap();
+    public static Map<Identifier, IChatBubbleData.ChatSerializer> CODEC_MAP = Maps.newHashMap();
     public static final EntityDataSerializer<ChatBubbleDataCollection> INSTANCE = new EntityDataSerializer<>() {
         @Override
         public StreamCodec<? super RegistryFriendlyByteBuf, ChatBubbleDataCollection> codec() {
@@ -29,7 +29,7 @@ public class ChatBubbleRegister {
                         if (i < MAX_SIZE) {
                             IChatBubbleData bubbleData = data.get(key);
                             buf.writeLong(key);
-                            ResourceLocation id = bubbleData.id();
+                            Identifier id = bubbleData.id();
                             buf.writeResourceLocation(id);
                             ChatBubbleRegister.CODEC_MAP.get(id).writeToBuff(buf, bubbleData);
                         }
@@ -43,7 +43,7 @@ public class ChatBubbleRegister {
                     int size = buf.readVarInt();
                     for (int i = 0; i < size; i++) {
                         long key = buf.readLong();
-                        ResourceLocation id = buf.readResourceLocation();
+                        Identifier id = buf.readResourceLocation();
                         IChatBubbleData bubbleData = ChatBubbleRegister.CODEC_MAP.get(id).readFromBuff(buf);
                         map.put(key, bubbleData);
                     }
@@ -71,7 +71,7 @@ public class ChatBubbleRegister {
         CODEC_MAP = ImmutableMap.copyOf(CODEC_MAP);
     }
 
-    public void register(ResourceLocation id, IChatBubbleData.ChatSerializer serializer) {
+    public void register(Identifier id, IChatBubbleData.ChatSerializer serializer) {
         if (CODEC_MAP.containsKey(id)) {
             throw new IllegalArgumentException("Duplicate codec id: " + id);
         }

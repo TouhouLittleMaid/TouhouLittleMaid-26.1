@@ -12,7 +12,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber()
 public final class CompatRegistry {
     public static final String TOP = "theoneprobe";
     public static final String PATCHOULI = "patchouli";

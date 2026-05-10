@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnim
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.IModelInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.io.IOUtils;
@@ -29,13 +29,13 @@ import java.util.zip.ZipFile;
 @OnlyIn(Dist.CLIENT)
 public class CustomJsAnimationManger {
     public static final ScriptEngine NASHORN = new NashornScriptEngineFactory().getScriptEngine();
-    private static final Map<ResourceLocation, Object> CUSTOM_ANIMATION_MAP = Maps.newHashMap();
+    private static final Map<Identifier, Object> CUSTOM_ANIMATION_MAP = Maps.newHashMap();
 
     @Nullable
     public static List<Object> getCustomAnimation(Path rootPath, IModelInfo item) {
         List<Object> animations = Lists.newArrayList();
         if (item.getAnimation() != null && !item.getAnimation().isEmpty()) {
-            for (ResourceLocation res : item.getAnimation()) {
+            for (Identifier res : item.getAnimation()) {
                 Object animation = CustomJsAnimationManger.getCustomAnimation(rootPath, res);
                 if (animation != null) {
                     animations.add(animation);
@@ -50,7 +50,7 @@ public class CustomJsAnimationManger {
     public static List<Object> getCustomAnimation(ZipFile zipFile, IModelInfo item) {
         List<Object> animations = Lists.newArrayList();
         if (item.getAnimation() != null && !item.getAnimation().isEmpty()) {
-            for (ResourceLocation res : item.getAnimation()) {
+            for (Identifier res : item.getAnimation()) {
                 Object animation = CustomJsAnimationManger.getCustomAnimation(zipFile, res);
                 if (animation != null) {
                     animations.add(animation);
@@ -62,7 +62,7 @@ public class CustomJsAnimationManger {
     }
 
     @Nullable
-    private static Object getCustomAnimation(Path rootPath, @Nullable ResourceLocation resourceLocation) {
+    private static Object getCustomAnimation(Path rootPath, @Nullable Identifier resourceLocation) {
         if (resourceLocation == null) {
             return null;
         }
@@ -88,7 +88,7 @@ public class CustomJsAnimationManger {
     }
 
     @Nullable
-    private static Object getCustomAnimation(ZipFile zipFile, @Nullable ResourceLocation resourceLocation) {
+    private static Object getCustomAnimation(ZipFile zipFile, @Nullable Identifier resourceLocation) {
         if (resourceLocation == null) {
             return null;
         }

@@ -10,10 +10,10 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ChairModelPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -31,7 +31,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
     }
 
     @Override
-    protected void drawLeftEntity(GuiGraphics graphics, int middleX, int middleY, float mouseX, float mouseY) {
+    protected void drawLeftEntity(GuiGraphicsExtractor graphics, int middleX, int middleY, float mouseX, float mouseY) {
         float renderItemScale = CustomPackLoader.CHAIR_MODELS.getModelRenderItemScale(entity.getModelId());
         int centerX = (middleX - 256 / 2) / 2;
         int centerY = middleY + 80;
@@ -49,8 +49,8 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
     }
 
     @Override
-    protected void drawRightEntity(GuiGraphics graphics, int posX, int posY, ChairModelInfo modelItem) {
-        ResourceLocation cacheIconId = modelItem.getCacheIconId();
+    protected void drawRightEntity(GuiGraphicsExtractor graphics, int posX, int posY, ChairModelInfo modelItem) {
+        Identifier cacheIconId = modelItem.getCacheIconId();
         var allTextures = Minecraft.getInstance().getTextureManager().byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
@@ -69,7 +69,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
 
     @Override
     protected void notifyModelChange(EntityChair entity, ChairModelInfo modelInfo) {
-        PacketDistributor.sendToServer(new ChairModelPackage(entity.getId(), modelInfo.getModelId(), modelInfo.getMountedYOffset(),
+        ClientPacketDistributor.sendToServer(new ChairModelPackage(entity.getId(), modelInfo.getModelId(), modelInfo.getMountedYOffset(),
                 modelInfo.isTameableCanRide(), modelInfo.isNoGravity()));
     }
 
@@ -107,7 +107,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
         ROW_INDEX = rowIndex;
     }
 
-    private void drawEntity(GuiGraphics graphics, int posX, int posY, ChairModelInfo modelItem) {
+    private void drawEntity(GuiGraphicsExtractor graphics, int posX, int posY, ChairModelInfo modelItem) {
         Level world = getMinecraft().level;
         if (world == null) {
             return;

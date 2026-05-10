@@ -129,7 +129,7 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
         if (!this.getPassengers().isEmpty() && !(this.getControllingPassenger() instanceof Player)) {
             return;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             List<EntityMaid> list = level.getEntitiesOfClass(EntityMaid.class, getBoundingBox().expandTowards(0.5, 0.1, 0.5), this::canMaidRide);
             list.stream().findFirst().ifPresent(entity -> entity.startRiding(this));
         }
@@ -196,12 +196,12 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
     public InteractionResult interact(Player player, InteractionHand hand) {
         if (!player.isDiscrete() && !this.isPassenger() && !(this.getControllingPassenger() instanceof Player)) {
             if (this.getPassengers().size() > 1) {
-                return InteractionResult.sidedSuccess(this.level.isClientSide);
+                return InteractionResult.sidedSuccess(this.level.isClientSide());
             }
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 player.startRiding(this);
             }
-            return InteractionResult.sidedSuccess(this.level.isClientSide);
+            return InteractionResult.sidedSuccess(this.level.isClientSide());
         }
         return super.interact(player, hand);
     }

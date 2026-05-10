@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.MolangUtils;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.biome.Biome;
@@ -18,7 +18,7 @@ public class BiomeHasAnyTag extends EntityFunction {
         Holder<Biome> biome = entity.level().getBiome(entity.blockPosition());
 
         for (int i = 0; i < arguments.size(); i++) {
-            ResourceLocation id = MolangUtils.parseResourceLocation(context.entity(), arguments.getAsString(context, i));
+            Identifier id = MolangUtils.parseResourceLocation(context.entity(), arguments.getAsString(context, i));
             if (id == null) {
                 return null;
             }

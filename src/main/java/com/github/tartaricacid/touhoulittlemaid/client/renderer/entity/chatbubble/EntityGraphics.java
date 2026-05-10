@@ -8,10 +8,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.ApiStatus;
@@ -37,14 +37,14 @@ public class EntityGraphics {
     }
 
     public void fill(int minX, int minY, int maxX, int maxY, int z, int color) {
-        this.fill(RenderType.textBackground(), minX, minY, maxX, maxY, z, color);
+        this.fill(RenderTypes.textBackground(), minX, minY, maxX, maxY, z, color);
     }
 
-    public void fill(RenderType renderType, int minX, int minY, int maxX, int maxY, int color) {
+    public void fill(RenderTypes renderType, int minX, int minY, int maxX, int maxY, int color) {
         this.fill(renderType, minX, minY, maxX, maxY, 0, color);
     }
 
-    public void fill(RenderType renderType, int minX, int minY, int maxX, int maxY, int z, int color) {
+    public void fill(RenderTypes renderType, int minX, int minY, int maxX, int maxY, int z, int color) {
         Matrix4f matrix4f = this.pose.last().pose();
         if (minX < maxX) {
             int i = minX;
@@ -83,15 +83,15 @@ public class EntityGraphics {
         }
     }
 
-    public void blitNineSliced(ResourceLocation atlasLocation, int x, int y, int width, int height, int sliceSize, int uOffset, int vOffset, int textureWidth, int textureHeight) {
+    public void blitNineSliced(Identifier atlasLocation, int x, int y, int width, int height, int sliceSize, int uOffset, int vOffset, int textureWidth, int textureHeight) {
         this.blitNineSliced(atlasLocation, x, y, width, height, sliceSize, sliceSize, sliceSize, sliceSize, uOffset, vOffset, textureWidth, textureHeight);
     }
 
-    public void blitNineSliced(ResourceLocation atlasLocation, int x, int y, int width, int height, int sliceWidth, int sliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
+    public void blitNineSliced(Identifier atlasLocation, int x, int y, int width, int height, int sliceWidth, int sliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
         this.blitNineSliced(atlasLocation, x, y, width, height, sliceWidth, sliceHeight, sliceWidth, sliceHeight, uWidth, vHeight, textureX, textureY);
     }
 
-    public void blitNineSliced(ResourceLocation atlasLocation, int x, int y, int width, int height, int leftSliceWidth, int topSliceHeight, int rightSliceWidth, int bottomSliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
+    public void blitNineSliced(Identifier atlasLocation, int x, int y, int width, int height, int leftSliceWidth, int topSliceHeight, int rightSliceWidth, int bottomSliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
         leftSliceWidth = Math.min(leftSliceWidth, width / 2);
         rightSliceWidth = Math.min(rightSliceWidth, width / 2);
         topSliceHeight = Math.min(topSliceHeight, height / 2);
@@ -119,11 +119,11 @@ public class EntityGraphics {
         }
     }
 
-    public void blitRepeating(ResourceLocation atlas, int startX, int startY, int areaWidth, int areaHeight, int uOffset, int vOffset, int sourceWidth, int sourceHeight) {
+    public void blitRepeating(Identifier atlas, int startX, int startY, int areaWidth, int areaHeight, int uOffset, int vOffset, int sourceWidth, int sourceHeight) {
         blitRepeating(atlas, startX, startY, areaWidth, areaHeight, uOffset, vOffset, sourceWidth, sourceHeight, 256, 256);
     }
 
-    public void blitRepeating(ResourceLocation atlas, int startX, int startY, int areaWidth, int areaHeight, int uOffset, int vOffset, int sourceWidth, int sourceHeight, int textureWidth, int textureHeight) {
+    public void blitRepeating(Identifier atlas, int startX, int startY, int areaWidth, int areaHeight, int uOffset, int vOffset, int sourceWidth, int sourceHeight, int textureWidth, int textureHeight) {
         int currentX = startX;
         int sliceWidth;
         for (IntIterator widthIterator = slices(areaWidth, sourceWidth); widthIterator.hasNext(); currentX += sliceWidth) {
@@ -144,27 +144,27 @@ public class EntityGraphics {
         return new Divisor(totalLength, count);
     }
 
-    public void blit(ResourceLocation atlasLocation, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight) {
+    public void blit(Identifier atlasLocation, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight) {
         this.blit(atlasLocation, x, y, 0, uOffset, vOffset, uWidth, vHeight, 256, 256);
     }
 
-    public void blit(ResourceLocation atlasLocation, int x, int y, int blitOffset, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
+    public void blit(Identifier atlasLocation, int x, int y, int blitOffset, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
         this.blit(atlasLocation, x, x + uWidth, y, y + vHeight, blitOffset, uWidth, vHeight, uOffset, vOffset, textureWidth, textureHeight);
     }
 
-    public void blit(ResourceLocation atlasLocation, int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight) {
+    public void blit(Identifier atlasLocation, int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight) {
         this.blit(atlasLocation, x, y, width, height, uOffset, vOffset, width, height, textureWidth, textureHeight);
     }
 
-    public void blit(ResourceLocation atlasLocation, int x, int y, int width, int height, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
+    public void blit(Identifier atlasLocation, int x, int y, int width, int height, float uOffset, float vOffset, int uWidth, int vHeight, int textureWidth, int textureHeight) {
         this.blit(atlasLocation, x, x + width, y, y + height, 0, uWidth, vHeight, uOffset, vOffset, textureWidth, textureHeight);
     }
 
-    void blit(ResourceLocation atlasLocation, int x1, int x2, int y1, int y2, int blitOffset, int uWidth, int vHeight, float uOffset, float vOffset, int textureWidth, int textureHeight) {
+    void blit(Identifier atlasLocation, int x1, int x2, int y1, int y2, int blitOffset, int uWidth, int vHeight, float uOffset, float vOffset, int textureWidth, int textureHeight) {
         this.innerBlit(atlasLocation, x1, x2, y1, y2, blitOffset, (uOffset + 0.0F) / textureWidth, (uOffset + uWidth) / textureWidth, (vOffset + 0.0F) / textureHeight, (vOffset + vHeight) / textureHeight);
     }
 
-    public void innerBlit(ResourceLocation atlas, int x1, int x2, int y1, int y2, int z, float minU, float maxU, float minV, float maxV) {
+    public void innerBlit(Identifier atlas, int x1, int x2, int y1, int y2, int z, float minU, float maxU, float minV, float maxV) {
         RenderSystem.setShaderTexture(0, atlas);
         RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
         Matrix4f matrix4f = this.pose.last().pose();

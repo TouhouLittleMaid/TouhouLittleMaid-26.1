@@ -16,10 +16,10 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
@@ -157,19 +157,19 @@ public class BlockGarageKit extends Block implements EntityBlock {
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = playerIn.getItemInHand(hand);
         if (!(worldIn instanceof ServerLevel) || !(stack.getItem() instanceof SpawnEggItem)) {
-            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
         BlockEntity tile = worldIn.getBlockEntity(pos);
         if (!(tile instanceof TileEntityGarageKit garageKit)) {
-            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
         EntityType<?> type = ((SpawnEggItem) stack.getItem()).getType(stack);
-        ResourceLocation key = BuiltInRegistries.ENTITY_TYPE.getKey(type);
+        Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(type);
         if (key == null) {
-            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
 
         String id = key.toString();
@@ -178,13 +178,13 @@ public class BlockGarageKit extends Block implements EntityBlock {
 
         Entity entity = type.create(worldIn);
         if (entity instanceof Mob mobEntity) {
-            mobEntity.finalizeSpawn((ServerLevel) worldIn, worldIn.getCurrentDifficultyAt(pos), MobSpawnType.SPAWN_EGG, null);
+            mobEntity.finalizeSpawn((ServerLevel) worldIn, worldIn.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWN_EGG, null);
             CustomData.of(data).loadInto(mobEntity);
             mobEntity.addAdditionalSaveData(data);
         }
 
         garageKit.setData(garageKit.getFacing(), data);
-        return ItemInteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     private ItemStack getGarageKitFromWorld(BlockGetter world, BlockPos pos) {

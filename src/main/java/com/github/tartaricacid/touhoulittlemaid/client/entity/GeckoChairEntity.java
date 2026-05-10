@@ -11,11 +11,11 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.controller.Animat
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.predicate.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class GeckoChairEntity extends AnimatableEntity<EntityChair> {
-    private static final ResourceLocation GECKO_DEFAULT_ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "fox_miko");
-    private static final ResourceLocation GECKO_DEFAULT_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
+    private static final Identifier GECKO_DEFAULT_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "fox_miko");
+    private static final Identifier GECKO_DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
     private static final int FPS = 30;
 
     private ChairModelInfo chairInfo;
@@ -34,7 +34,7 @@ public class GeckoChairEntity extends AnimatableEntity<EntityChair> {
     }
 
     @Override
-    public ResourceLocation getModelLocation() {
+    public Identifier getModelLocation() {
         if (this.chairInfo != null && GeckoLibCache.getInstance().getGeoModels().containsKey(this.chairInfo.getModelId())) {
             return this.chairInfo.getModelId();
         }
@@ -42,12 +42,12 @@ public class GeckoChairEntity extends AnimatableEntity<EntityChair> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation() {
+    public Identifier getTextureLocation() {
         return this.chairInfo != null ? chairInfo.getTexture() : GECKO_DEFAULT_TEXTURE;
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation() {
+    public Identifier getAnimationFileLocation() {
         if (this.chairInfo != null && GeckoLibCache.getInstance().getAnimations().containsKey(this.chairInfo.getModelId())) {
             return this.chairInfo.getModelId();
         }

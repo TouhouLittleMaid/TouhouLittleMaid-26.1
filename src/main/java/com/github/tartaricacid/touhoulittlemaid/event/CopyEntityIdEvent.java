@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +24,7 @@ public final class CopyEntityIdEvent {
         InteractionHand hand = event.getHand();
         Entity target = event.getTarget();
         if (player.getItemInHand(hand).is(InitItems.ENTITY_ID_COPY.get())) {
-            if (player.level.isClientSide && FMLEnvironment.dist == Dist.CLIENT) {
+            if (player.level.isClientSide() && FMLEnvironment.dist == Dist.CLIENT) {
                 copyEntityId(player, target);
             }
             event.setCanceled(true);
@@ -33,7 +33,7 @@ public final class CopyEntityIdEvent {
 
     @OnlyIn(Dist.CLIENT)
     private static void copyEntityId(Player player, Entity target) {
-        ResourceLocation key = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
+        Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
         if (key == null) {
             return;
         }

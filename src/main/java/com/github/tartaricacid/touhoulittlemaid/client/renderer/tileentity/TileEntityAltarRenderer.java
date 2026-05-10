@@ -10,17 +10,17 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 
 public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAltar> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/altar.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/altar.png");
     private final SimpleBedrockModel<? extends Entity> model;
 
     public TileEntityAltarRenderer(BlockEntityRendererProvider.Context render) {
@@ -33,7 +33,7 @@ public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAl
             poseStack.pushPose();
             this.setTranslateAndPose(te, poseStack);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-            VertexConsumer buffer = bufferIn.getBuffer(RenderType.entityTranslucent(TEXTURE));
+            VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.entityTranslucent(TEXTURE));
             model.renderToBuffer(poseStack, buffer, combinedLightIn, combinedOverlayIn);
             poseStack.popPose();
         }

@@ -2,9 +2,9 @@ package com.github.tartaricacid.touhoulittlemaid.util;
 
 import com.mojang.math.Divisor;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -14,11 +14,11 @@ public final class GuiTools {
     public static final Button.OnPress NO_ACTION = (button) -> {
     };
 
-    public static void blitNineSliced(GuiGraphics graphics, ResourceLocation atlasLocation, int x, int y, int width, int height, int sliceWidth, int sliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
+    public static void blitNineSliced(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int sliceWidth, int sliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
         blitNineSliced(graphics, atlasLocation, x, y, width, height, sliceWidth, sliceHeight, sliceWidth, sliceHeight, uWidth, vHeight, textureX, textureY);
     }
 
-    public static void blitNineSliced(GuiGraphics graphics, ResourceLocation atlasLocation, int x, int y, int width, int height, int leftSliceWidth, int topSliceHeight, int rightSliceWidth, int bottomSliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
+    public static void blitNineSliced(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int leftSliceWidth, int topSliceHeight, int rightSliceWidth, int bottomSliceHeight, int uWidth, int vHeight, int textureX, int textureY) {
         leftSliceWidth = Math.min(leftSliceWidth, width / 2);
         rightSliceWidth = Math.min(rightSliceWidth, width / 2);
         topSliceHeight = Math.min(topSliceHeight, height / 2);
@@ -46,11 +46,11 @@ public final class GuiTools {
         }
     }
 
-    public static void blitRepeating(GuiGraphics graphics, ResourceLocation atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int sourceWidth, int sourceHeight) {
+    public static void blitRepeating(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int sourceWidth, int sourceHeight) {
         blitRepeating(graphics, atlasLocation, x, y, width, height, uOffset, vOffset, sourceWidth, sourceHeight, 256, 256);
     }
 
-    public static void blitRepeating(GuiGraphics graphics, ResourceLocation atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int sourceWidth, int sourceHeight, int textureWidth, int textureHeight) {
+    public static void blitRepeating(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int sourceWidth, int sourceHeight, int textureWidth, int textureHeight) {
         int drawX = x;
         int sliceWidth;
         for (IntIterator widthIterator = slices(width, sourceWidth); widthIterator.hasNext(); drawX += sliceWidth) {

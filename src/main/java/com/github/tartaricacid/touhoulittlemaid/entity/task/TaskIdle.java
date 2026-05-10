@@ -12,7 +12,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.TaskEquipUtil;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class TaskIdle implements IMaidTask {
-    public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "idle");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "idle");
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return UID;
     }
 
@@ -61,7 +61,7 @@ public class TaskIdle implements IMaidTask {
     private Optional<? extends LivingEntity> findFirstValidSnowballTarget(EntityMaid maid) {
         return maid.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).flatMap(
                 list -> list.find(e -> isSnowballTarget(e, maid))
-                        .filter(e -> maid.isWithinRestriction(e.blockPosition()))
+                        .filter(e -> maid.isWithinHome(e.blockPosition()))
                         .findFirst());
     }
 

@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.io.InputStream;
 public class NewEntityFairyModel extends SimpleBedrockModel<EntityFairy> {
     // 为了别的模组兼容，暂时保留
     @Deprecated
-    public static ModelLayerLocation LAYER = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "main"), "new_fairy");
+    public static ModelLayerLocation LAYER = new ModelLayerLocation(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "main"), "new_fairy");
 
     private final BedrockPart head;
     private final BedrockPart blink;

@@ -11,7 +11,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.ClearMaidAIDataPacket;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,7 +20,7 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +51,7 @@ public class HistoryAIChatScreen extends Screen {
 
     private final EntityMaid maid;
     private final @Nullable Screen parent;
-    private final ResourceLocation playerSkin;
+    private final Identifier playerSkin;
     private final List<LLMMessage> history = Lists.newArrayList();
     private final List<Renderable> historyWidgets = Lists.newArrayList();
 
@@ -134,7 +134,7 @@ public class HistoryAIChatScreen extends Screen {
                     this.historyWidgets.clear();
                     this.summaryText = StringUtils.EMPTY;
                     this.maid.getAiChatManager().clearAllChatMemory();
-                    PacketDistributor.sendToServer(new ClearMaidAIDataPacket(this.maid.getId()));
+                    ClientPacketDistributor.sendToServer(new ClearMaidAIDataPacket(this.maid.getId()));
                     this.init();
                 }
                 this.getMinecraft().setScreen(this);
@@ -171,7 +171,7 @@ public class HistoryAIChatScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
 
         graphics.drawCenteredString(font, HISTORY_TITLE, posX + 210, 8, 0xFFFFFF);
@@ -291,7 +291,7 @@ public class HistoryAIChatScreen extends Screen {
         }
     }
 
-    private void renderSummaryPanel(GuiGraphics graphics) {
+    private void renderSummaryPanel(GuiGraphicsExtractor graphics) {
         int left = this.getRightColumnLeft();
         int right = left + SUMMARY_WIDTH;
 
@@ -387,7 +387,7 @@ public class HistoryAIChatScreen extends Screen {
         return lines;
     }
 
-    private ResourceLocation getPlayerSkin() {
+    private Identifier getPlayerSkin() {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player == null) {

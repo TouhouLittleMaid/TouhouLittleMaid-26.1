@@ -37,7 +37,7 @@ public class DismountBroomKey {
             }
             DISMOUNT_KEY.consumeClick();
             if (event.getAction() == GLFW.GLFW_RELEASE) {
-                PacketDistributor.sendToServer(new DismountPackage(DismountPackage.DISMOUNT_BROOM));
+                ClientPacketDistributor.sendToServer(new DismountPackage(DismountPackage.DISMOUNT_BROOM));
             }
         }
     }

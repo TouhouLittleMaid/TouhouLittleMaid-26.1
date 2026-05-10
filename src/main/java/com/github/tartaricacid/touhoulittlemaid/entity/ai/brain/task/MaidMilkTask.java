@@ -44,7 +44,7 @@ public class MaidMilkTask extends MaidCheckRateTask {
     protected void start(ServerLevel worldIn, EntityMaid maid, long gameTimeIn) {
         milkTarget = null;
         this.getEntities(maid)
-                .find(e -> maid.isWithinRestriction(e.blockPosition()))
+                .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
                 .filter(e -> e instanceof Cow)
                 .filter(e -> !e.isBaby())

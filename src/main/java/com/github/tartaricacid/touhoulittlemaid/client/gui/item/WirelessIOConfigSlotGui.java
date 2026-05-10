@@ -4,12 +4,12 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.WirelessIOSlotButton;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemWirelessIO;
 import com.github.tartaricacid.touhoulittlemaid.network.message.WirelessIOSlotConfigPackage;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.compress.utils.Lists;
@@ -17,7 +17,7 @@ import org.apache.commons.compress.utils.Lists;
 import java.util.List;
 
 public class WirelessIOConfigSlotGui extends Screen {
-    private static final ResourceLocation SLOT = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/wireless_io_slot_config.png");
+    private static final Identifier SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/wireless_io_slot_config.png");
     private static final int SLOT_NUM = 38;
     private List<Boolean> configData;
     protected int imageWidth = 155;
@@ -86,23 +86,23 @@ public class WirelessIOConfigSlotGui extends Screen {
             index++;
         }
 
-        Button confirm = Button.builder(Component.translatable("gui.done"), b -> PacketDistributor.sendToServer(new WirelessIOSlotConfigPackage(this.configData)))
+        Button confirm = Button.builder(Component.translatable("gui.done"), b -> ClientPacketDistributor.sendToServer(new WirelessIOSlotConfigPackage(this.configData)))
                 .pos(leftPos, topPos + 140).size(60, 20).build();
-        Button cancel = Button.builder(Component.translatable("gui.cancel"), b -> PacketDistributor.sendToServer(new WirelessIOSlotConfigPackage()))
+        Button cancel = Button.builder(Component.translatable("gui.cancel"), b -> ClientPacketDistributor.sendToServer(new WirelessIOSlotConfigPackage()))
                 .pos(leftPos + 62, topPos + 140).size(60, 20).build();
         addRenderableWidget(confirm);
         addRenderableWidget(cancel);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBg(graphics, mouseX, mouseY, partialTicks);
         for (Renderable renderable : this.renderables) {
             renderable.render(graphics, mouseX, mouseY, partialTicks);
         }
     }
 
-    private void renderBg(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    private void renderBg(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         guiGraphics.blit(SLOT, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }

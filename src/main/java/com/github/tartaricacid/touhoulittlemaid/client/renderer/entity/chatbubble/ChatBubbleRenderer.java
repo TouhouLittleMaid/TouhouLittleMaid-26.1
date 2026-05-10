@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleDat
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.ClientHooks;
 
 public class ChatBubbleRenderer {
@@ -68,7 +68,7 @@ public class ChatBubbleRenderer {
 
         int width = chatBubble.getWidth();
         int height = chatBubble.getHeight();
-        ResourceLocation texture = chatBubble.getBackgroundTexture();
+        Identifier texture = chatBubble.getBackgroundTexture();
         int bgWidth = width + 2 * offset;
         int bgHeight = height + 2 * offset;
 

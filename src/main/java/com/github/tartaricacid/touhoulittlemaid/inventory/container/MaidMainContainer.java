@@ -7,7 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitCapabilities;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -30,9 +30,9 @@ import static net.minecraft.world.inventory.InventoryMenu.*;
 
 public abstract class MaidMainContainer extends AbstractMaidContainer {
     protected static final int PLAYER_INVENTORY_SIZE = 36;
-    protected static final ResourceLocation EMPTY_MAINHAND_SLOT = ResourceLocation.parse("item/empty_slot_sword");
-    protected static final ResourceLocation EMPTY_BACK_SHOW_SLOT = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/empty_back_show_slot");
-    protected static final ResourceLocation[] TEXTURE_EMPTY_SLOTS = new ResourceLocation[]{EMPTY_ARMOR_SLOT_BOOTS, EMPTY_ARMOR_SLOT_LEGGINGS, EMPTY_ARMOR_SLOT_CHESTPLATE, EMPTY_ARMOR_SLOT_HELMET};
+    protected static final Identifier EMPTY_MAINHAND_SLOT = Identifier.parse("item/empty_slot_sword");
+    protected static final Identifier EMPTY_BACK_SHOW_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/empty_back_show_slot");
+    protected static final Identifier[] TEXTURE_EMPTY_SLOTS = new Identifier[]{EMPTY_ARMOR_SLOT_BOOTS, EMPTY_ARMOR_SLOT_LEGGINGS, EMPTY_ARMOR_SLOT_CHESTPLATE, EMPTY_ARMOR_SLOT_HELMET};
     protected static final EquipmentSlot[] SLOT_IDS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     public MaidMainContainer(MenuType<?> type, int id, Inventory inventory, int entityId) {
@@ -53,14 +53,14 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
         addSlot(new SlotItemHandler(handler, 0, 87, 77) {
             @Override
             @OnlyIn(Dist.CLIENT)
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+            public Pair<Identifier, Identifier> getNoItemIcon() {
                 return Pair.of(BLOCK_ATLAS, EMPTY_MAINHAND_SLOT);
             }
         });
         addSlot(new SlotItemHandler(handler, 1, 121, 77) {
             @Override
             @OnlyIn(Dist.CLIENT)
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+            public Pair<Identifier, Identifier> getNoItemIcon() {
                 return Pair.of(BLOCK_ATLAS, EMPTY_ARMOR_SLOT_SHIELD);
             }
         });
@@ -93,7 +93,7 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
 
                         @Override
                         @OnlyIn(Dist.CLIENT)
-                        public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                        public Pair<Identifier, Identifier> getNoItemIcon() {
                             return Pair.of(BLOCK_ATLAS, TEXTURE_EMPTY_SLOTS[equipmentSlot.getIndex()]);
                         }
                     });
@@ -110,7 +110,7 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
             if (i == 5) {
                 addSlot(new BackpackSlot(maid, i, 143 + 18 * i, 37) {
                     @Override
-                    public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                    public Pair<Identifier, Identifier> getNoItemIcon() {
                         return Pair.of(BLOCK_ATLAS, EMPTY_BACK_SHOW_SLOT);
                     }
                 });
@@ -177,7 +177,7 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
 
         @Override
         public void onShiftTakeoff(@Nullable Player player, ItemStack stack) {
-            if (!maid.level.isClientSide && !stack.isEmpty()) {
+            if (!maid.level.isClientSide() && !stack.isEmpty()) {
                 NeoForge.EVENT_BUS.post(new MaidBackpackChangeEvent.TakeOff(maid, stack));
             }
         }
@@ -191,7 +191,7 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
         @Override
         public void setByPlayer(ItemStack stack) {
             super.setByPlayer(stack);
-            if (!maid.level.isClientSide && !stack.isEmpty()) {
+            if (!maid.level.isClientSide() && !stack.isEmpty()) {
                 NeoForge.EVENT_BUS.post(new MaidBackpackChangeEvent.PutOn(maid, stack));
             }
         }

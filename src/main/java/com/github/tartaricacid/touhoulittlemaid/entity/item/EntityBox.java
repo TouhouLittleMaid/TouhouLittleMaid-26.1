@@ -71,15 +71,15 @@ public class EntityBox extends Entity {
         this.addStageChange();
         if (this.getOpenStage() == SECOND_STAGE) {
             this.playSound(InitSounds.BOX_OPEN.get(), 3.0f, 1.0f);
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return InteractionResult.sidedSuccess(level().isClientSide());
         }
         if (this.getOpenStage() == THIRD_STAGE) {
             this.thirdStageTimeStamp = System.currentTimeMillis();
             this.playSound(InitSounds.BOX_OPEN.get(), 3.0f, 1.0f);
-            return InteractionResult.sidedSuccess(level().isClientSide);
+            return InteractionResult.sidedSuccess(level().isClientSide());
         }
         this.playSound(InitSounds.BOX_OPEN.get(), 3.0f, 2.0f);
-        return InteractionResult.sidedSuccess(level().isClientSide);
+        return InteractionResult.sidedSuccess(level().isClientSide());
     }
 
     @Override

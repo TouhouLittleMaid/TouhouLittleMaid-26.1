@@ -15,7 +15,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.predicate.A
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.ILocationModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -26,7 +26,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import javax.annotation.Nullable;
 
 public class TacCompat {
-    public static final ResourceLocation MINIGUN_ID = ResourceLocation.fromNamespaceAndPath("tacz", "minigun");
+    public static final Identifier MINIGUN_ID = Identifier.fromNamespaceAndPath("tacz", "minigun");
     private static final String TACZ_ID = "tacz";
     private static boolean INSTALLED = false;
 
@@ -56,7 +56,7 @@ public class TacCompat {
     }
 
     @Nullable
-    public static ResourceLocation getGunId(ItemStack stack) {
+    public static Identifier getGunId(ItemStack stack) {
         if (INSTALLED) {
             return TacInnerCompat.getGunId(stack);
         }

@@ -5,20 +5,20 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.ModelDownloadG
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.TipsHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class MaidDownloadButton extends TouhouImageButton {
-    public MaidDownloadButton(int pX, int pY, ResourceLocation texture, EntityMaid maid) {
+    public MaidDownloadButton(int pX, int pY, Identifier texture, EntityMaid maid) {
         super(pX, pY, 41, 20, 0, 86, 20, texture, (b) -> {
             InfoGetManager.STATUE = InfoGetManager.Statue.NOT_UPDATE;
             Minecraft.getInstance().setScreen(new ModelDownloadGui(maid));
         });
     }
 
-    public void renderExtraTips(GuiGraphics graphics) {
+    public void renderExtraTips(GuiGraphicsExtractor graphics) {
         TipsHelper.renderTips(graphics, this, getText());
     }
 

@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -25,7 +25,7 @@ public class AltarRecipeSerializer implements RecipeSerializer<AltarRecipe> {
                     Ingredient.CODEC.listOf().fieldOf("ingredients").flatXmap(AltarRecipeSerializer::checkIngredients, DataResult::success).forGetter(AltarRecipe::getIngredients),
                     Codec.FLOAT.fieldOf("power").forGetter(AltarRecipe::getPower),
                     ItemStack.STRICT_CODEC.fieldOf("result").forGetter(AltarRecipe::getResult),
-                    ResourceLocation.CODEC.fieldOf("entity").forGetter(AltarRecipe::getEntityType),
+                    Identifier.CODEC.fieldOf("entity").forGetter(AltarRecipe::getEntityType),
                     Codec.STRING.optionalFieldOf("lang", StringUtils.EMPTY).forGetter(AltarRecipe::getLangKey)
             ).apply(instance, AltarRecipe::new)
     );
@@ -50,7 +50,7 @@ public class AltarRecipeSerializer implements RecipeSerializer<AltarRecipe> {
         ingredients.replaceAll((ingredient) -> Ingredient.CONTENTS_STREAM_CODEC.decode(byteBuf));
         float power = byteBuf.readFloat();
         ItemStack result = ItemStack.STREAM_CODEC.decode(byteBuf);
-        ResourceLocation entityType = byteBuf.readResourceLocation();
+        Identifier entityType = byteBuf.readResourceLocation();
         String langKey = byteBuf.readUtf();
         return new AltarRecipe(group, category, ingredients, power, result, entityType, langKey);
     }

@@ -12,7 +12,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +25,7 @@ import static com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTas
 
 public class TacInnerCompat {
     @Nullable
-    static ResourceLocation getGunId(ItemStack stack) {
+    static Identifier getGunId(ItemStack stack) {
         IGun iGun = IGun.getIGunOrNull(stack);
         if (iGun != null) {
             return iGun.getGunId(stack);
@@ -43,7 +43,7 @@ public class TacInnerCompat {
         if (iGun == null) {
             return BehaviorUtils.canSee(maid, target);
         }
-        ResourceLocation gunId = iGun.getGunId(handItem);
+        Identifier gunId = iGun.getGunId(handItem);
         return TimelessAPI.getCommonGunIndex(gunId).map(index -> {
             String type = index.getType();
             // 狙击枪？用远距离模式
@@ -68,7 +68,7 @@ public class TacInnerCompat {
         if (iGun == null) {
             return 100;
         }
-        ResourceLocation gunId = iGun.getGunId(gunItem);
+        Identifier gunId = iGun.getGunId(gunItem);
         Optional<CommonGunIndex> optional = TimelessAPI.getCommonGunIndex(gunId);
         if (optional.isEmpty()) {
             return 100;
@@ -83,7 +83,7 @@ public class TacInnerCompat {
         float yaw = (float) -Math.toDegrees(Math.atan2(x, z));
         float pitch = (float) -Math.toDegrees(Math.atan2(y, Math.sqrt(x * x + z * z)));
 
-        float radius = shooter.getRestrictRadius();
+        float radius = shooter.getHomeRadius();
 
         IGunOperator gunOperator = IGunOperator.fromLivingEntity(shooter);
         ShootResult result = gunOperator.shoot(() -> pitch, () -> yaw);
@@ -152,7 +152,7 @@ public class TacInnerCompat {
         if (iGun == null) {
             return;
         }
-        ResourceLocation gunId = iGun.getGunId(mainHandItem);
+        Identifier gunId = iGun.getGunId(mainHandItem);
         TimelessAPI.getCommonGunIndex(gunId).ifPresent(gunIndex -> {
             IGunOperator gunOperator = IGunOperator.fromLivingEntity(maid);
             if (gunOperator.getSynIsAiming()) {

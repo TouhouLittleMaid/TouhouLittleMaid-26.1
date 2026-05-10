@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.editor.TTSSiteEditorScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai.TTSSiteButton;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +53,7 @@ public class AIChatSettingsTTSSiteScreen extends AIChatSettingsHubScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderListScrollbar(graphics, this.state.ttsSites.size(), this.getVisibleListCount(ROW_HEIGHT));
         this.renderInsufficientPermissions(graphics);

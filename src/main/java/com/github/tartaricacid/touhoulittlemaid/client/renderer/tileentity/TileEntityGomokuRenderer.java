@@ -15,22 +15,22 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Camera;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 
 public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityGomoku> {
-    private static final ResourceLocation CHECKER_BOARD_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/gomoku.png");
-    private static final ResourceLocation BLACK_PIECE_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/gomoku_black_piece.png");
-    private static final ResourceLocation WHITE_PIECE_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/gomoku_white_piece.png");
+    private static final Identifier CHECKER_BOARD_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/gomoku.png");
+    private static final Identifier BLACK_PIECE_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/gomoku_black_piece.png");
+    private static final Identifier WHITE_PIECE_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/gomoku_white_piece.png");
     private static final int TIPS_RENDER_DISTANCE = 16;
     private static final int PIECE_RENDER_DISTANCE = 24;
     private final SimpleBedrockModel<Entity> CHECKER_BOARD_MODEL;
@@ -77,7 +77,7 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
         if (facing == Direction.SOUTH || facing == Direction.NORTH) {
             poseStack.mulPose(Axis.YN.rotationDegrees(180));
         }
-        VertexConsumer checkerBoardBuff = bufferIn.getBuffer(RenderType.entityCutoutNoCull(CHECKER_BOARD_TEXTURE));
+        VertexConsumer checkerBoardBuff = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(CHECKER_BOARD_TEXTURE));
         CHECKER_BOARD_MODEL.renderToBuffer(poseStack, checkerBoardBuff, combinedLightIn, combinedOverlayIn);
         poseStack.popPose();
     }
@@ -93,11 +93,11 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
                 for (int j = 0; j < chessData[0].length; j++) {
                     poseStack.translate(0, 0, 0.1316);
                     if (row[j] == Point.BLACK) {
-                        VertexConsumer blackPieceBuff = bufferIn.getBuffer(RenderType.entityCutoutNoCull(BLACK_PIECE_TEXTURE));
+                        VertexConsumer blackPieceBuff = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(BLACK_PIECE_TEXTURE));
                         PIECE_MODEL.renderToBuffer(poseStack, blackPieceBuff, combinedLightIn, combinedOverlayIn);
                     }
                     if (row[j] == Point.WHITE) {
-                        VertexConsumer whitePieceBuff = bufferIn.getBuffer(RenderType.entityCutoutNoCull(WHITE_PIECE_TEXTURE));
+                        VertexConsumer whitePieceBuff = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(WHITE_PIECE_TEXTURE));
                         PIECE_MODEL.renderToBuffer(poseStack, whitePieceBuff, combinedLightIn, combinedOverlayIn);
                     }
                 }

@@ -55,7 +55,7 @@ public final class EntityCacheUtil {
 
     @SubscribeEvent
     public static void onChangeDim(EntityJoinLevelEvent event) {
-        if (event.getLevel().isClientSide && event.getEntity() == Minecraft.getInstance().player) {
+        if (event.getLevel().isClientSide() && event.getEntity() == Minecraft.getInstance().player) {
             ResourceKey<Level> dim = event.getEntity().level.dimension();
             if (!dim.equals(dimAt)) {
                 dimAt = dim;

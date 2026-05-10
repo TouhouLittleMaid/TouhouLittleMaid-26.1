@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MagmaCubeRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.MagmaCube;
 
@@ -19,7 +19,7 @@ import java.util.Objects;
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.MARISA_YUKKURI;
 
 public class EntityMarisaYukkuriSlimeRender extends MobRenderer<MagmaCube, SimpleBedrockModel<MagmaCube>> {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/marisa_yukkuri.png");
+    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/marisa_yukkuri.png");
     private final MagmaCubeRenderer vanillaRender;
 
     public EntityMarisaYukkuriSlimeRender(EntityRendererProvider.Context context) {
@@ -57,7 +57,7 @@ public class EntityMarisaYukkuriSlimeRender extends MobRenderer<MagmaCube, Simpl
     }
 
     @Override
-    public ResourceLocation getTextureLocation(MagmaCube slime) {
+    public Identifier getTextureLocation(MagmaCube slime) {
         return TEXTURE;
     }
 }

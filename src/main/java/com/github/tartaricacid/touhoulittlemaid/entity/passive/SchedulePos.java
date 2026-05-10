@@ -8,7 +8,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.schedule.Activity;
@@ -21,29 +21,29 @@ public final class SchedulePos {
     private BlockPos workPos;
     private BlockPos idlePos;
     private BlockPos sleepPos;
-    private ResourceLocation dimension;
+    private Identifier dimension;
     private boolean configured = false;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, SchedulePos> SCHEDULE_POS_STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, SchedulePos::getWorkPos,
             BlockPos.STREAM_CODEC, SchedulePos::getIdlePos,
             BlockPos.STREAM_CODEC, SchedulePos::getSleepPos,
-            ResourceLocation.STREAM_CODEC, SchedulePos::getDimension,
+            Identifier.STREAM_CODEC, SchedulePos::getDimension,
             SchedulePos::new
     );
 
-    public SchedulePos(BlockPos workPos, BlockPos idlePos, BlockPos sleepPos, ResourceLocation dimension) {
+    public SchedulePos(BlockPos workPos, BlockPos idlePos, BlockPos sleepPos, Identifier dimension) {
         this.workPos = workPos;
         this.idlePos = idlePos;
         this.sleepPos = sleepPos;
         this.dimension = dimension;
     }
 
-    public SchedulePos(BlockPos workPos, BlockPos idlePos, ResourceLocation dimension) {
+    public SchedulePos(BlockPos workPos, BlockPos idlePos, Identifier dimension) {
         this(workPos, idlePos, idlePos, dimension);
     }
 
-    public SchedulePos(BlockPos workPos, ResourceLocation dimension) {
+    public SchedulePos(BlockPos workPos, Identifier dimension) {
         this(workPos, workPos, dimension);
     }
 
@@ -59,7 +59,7 @@ public final class SchedulePos {
         this.sleepPos = sleepPos;
     }
 
-    public void setDimension(ResourceLocation dimension) {
+    public void setDimension(Identifier dimension) {
         this.dimension = dimension;
     }
 
@@ -72,12 +72,12 @@ public final class SchedulePos {
             if (!maid.canBrainMoving()) {
                 return;
             }
-            double distanceSqr = maid.getRestrictCenter().distSqr(maid.blockPosition());
-            int minTeleportDistance = (int) maid.getRestrictRadius() + 4;
+            double distanceSqr = maid.getHomePosition().distSqr(maid.blockPosition());
+            int minTeleportDistance = (int) maid.getHomeRadius() + 4;
             if (distanceSqr > (minTeleportDistance * minTeleportDistance) && !this.sameWithRestrictCenter(maid)) {
                 teleport(maid);
             } else {
-                BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getRestrictCenter(), 0.7f, 3);
+                BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getHomePosition(), 0.7f, 3);
             }
         }
     }
@@ -98,7 +98,7 @@ public final class SchedulePos {
             this.workPos = NbtUtils.readBlockPos(data, "Work").orElse(null);
             this.idlePos = NbtUtils.readBlockPos(data, "Idle").orElse(null);
             this.sleepPos = NbtUtils.readBlockPos(data, "Sleep").orElse(null);
-            this.dimension = ResourceLocation.parse(data.getString("Dimension"));
+            this.dimension = Identifier.parse(data.getString("Dimension"));
             this.configured = data.getBoolean("Configured");
             this.restrictTo(maid);
         }
@@ -110,15 +110,15 @@ public final class SchedulePos {
         }
         Activity activity = maid.getScheduleDetail();
         if (activity == Activity.WORK) {
-            maid.restrictTo(this.workPos, MaidConfig.MAID_WORK_RANGE.get());
+            maid.setHomeTo(this.workPos, MaidConfig.MAID_WORK_RANGE.get());
             return;
         }
         if (activity == Activity.IDLE) {
-            maid.restrictTo(this.idlePos, MaidConfig.MAID_IDLE_RANGE.get());
+            maid.setHomeTo(this.idlePos, MaidConfig.MAID_IDLE_RANGE.get());
             return;
         }
         if (activity == Activity.REST) {
-            maid.restrictTo(this.sleepPos, MaidConfig.MAID_SLEEP_RANGE.get());
+            maid.setHomeTo(this.sleepPos, MaidConfig.MAID_SLEEP_RANGE.get());
         }
     }
 
@@ -142,7 +142,7 @@ public final class SchedulePos {
         return configured;
     }
 
-    public ResourceLocation getDimension() {
+    public Identifier getDimension() {
         return dimension;
     }
 
@@ -184,7 +184,7 @@ public final class SchedulePos {
     }
 
     private boolean sameWithRestrictCenter(EntityMaid maid) {
-        BlockPos restrictCenter = maid.getRestrictCenter();
+        BlockPos restrictCenter = maid.getHomePosition();
         return maid.getBrain().getMemory(MemoryModuleType.WALK_TARGET)
                 .filter(walkTarget -> walkTarget.getTarget().currentBlockPosition().equals(restrictCenter))
                 .isPresent();

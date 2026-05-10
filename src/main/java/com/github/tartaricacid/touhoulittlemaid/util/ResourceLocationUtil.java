@@ -1,11 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.util;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
-import static net.minecraft.resources.ResourceLocation.isValidNamespace;
-import static net.minecraft.resources.ResourceLocation.isValidPath;
+import static net.minecraft.resources.Identifier.isValidNamespace;
+import static net.minecraft.resources.Identifier.isValidPath;
 
 public class ResourceLocationUtil {
     public static boolean isValidResourceLocation(String pLocation) {
@@ -26,7 +26,7 @@ public class ResourceLocationUtil {
         return astring;
     }
 
-    public static ResourceLocation getResourceLocation(String pLocation) {
-        return ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, pLocation);
+    public static Identifier getResourceLocation(String pLocation) {
+        return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, pLocation);
     }
 }

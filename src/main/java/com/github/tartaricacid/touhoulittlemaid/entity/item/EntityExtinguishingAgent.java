@@ -47,7 +47,7 @@ public class EntityExtinguishingAgent extends Entity {
             this.removeEntityFire();
         }
         this.damageFireImmuneMonster();
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             this.spawnCloudParticle();
         }
         this.playSound(SoundEvents.WOOL_PLACE, 2.0f - (1.8f / MAX_AGE) * tickCount, 0.1f);

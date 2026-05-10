@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout.STTTencentFormLayout;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ public class STTTencentSite implements STTSite {
     public static final String API_TYPE = STTApiType.TENCENT.getName();
 
     private final String id;
-    private final ResourceLocation icon;
+    private final Identifier icon;
 
     private boolean enabled;
     private String url;
@@ -28,7 +28,7 @@ public class STTTencentSite implements STTSite {
     private String engSerViceType;
     private String hotWord;
 
-    public STTTencentSite(String id, ResourceLocation icon, boolean enabled, String url,
+    public STTTencentSite(String id, Identifier icon, boolean enabled, String url,
                           String secretId, String secretKey, String engSerViceType, String hotWord) {
         this.id = id;
         this.icon = icon;
@@ -46,7 +46,7 @@ public class STTTencentSite implements STTSite {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return this.icon;
     }
 
@@ -124,7 +124,7 @@ public class STTTencentSite implements STTSite {
     public static class Serializer implements SerializableSite<STTTencentSite> {
         public static final Codec<STTTencentSite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(STTTencentSite::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(STTTencentSite::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(STTTencentSite::icon),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(STTTencentSite::enabled),
                 Codec.STRING.fieldOf(URL).forGetter(STTTencentSite::url),
                 Codec.STRING.fieldOf(SECRET_ID).forGetter(STTTencentSite::getSecretId),

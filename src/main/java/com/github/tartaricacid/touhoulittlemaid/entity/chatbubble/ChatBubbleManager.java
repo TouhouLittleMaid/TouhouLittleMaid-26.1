@@ -8,7 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import javax.annotation.Nullable;
@@ -89,7 +89,7 @@ public class ChatBubbleManager {
 
     public long addThinkingText(String langKey, @Nullable Component secondaryText) {
         MutableComponent component = Component.translatable(langKey).withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC);
-        ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/yinyang_orb.png");
+        Identifier icon = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/yinyang_orb.png");
         return this.addChatBubble(WaitingChatBubbleData.create(90 * 20, TYPE_2, DEFAULT_PRIORITY, component, secondaryText, icon));
     }
 

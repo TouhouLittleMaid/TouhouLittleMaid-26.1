@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.tooltip;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemContainerTooltip;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -47,7 +47,7 @@ public class ClientItemContainerTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font font, int pX, int pY, GuiGraphics guiGraphics) {
+    public void renderImage(Font font, int pX, int pY, GuiGraphicsExtractor guiGraphics) {
         if (emptyTip != null) {
             guiGraphics.drawString(font, emptyTip, pX, pY, ChatFormatting.GRAY.getColor());
         } else {

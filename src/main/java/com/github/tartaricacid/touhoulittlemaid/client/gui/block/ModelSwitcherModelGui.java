@@ -11,10 +11,10 @@ import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityModelSwitch
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +40,7 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
     }
 
     @Override
-    protected void drawLeftEntity(GuiGraphics graphics, int middleX, int middleY, float mouseX, float mouseY) {
+    protected void drawLeftEntity(GuiGraphicsExtractor graphics, int middleX, int middleY, float mouseX, float mouseY) {
         float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(entity.getModelId());
         int centerX = (middleX - 256 / 2) / 2;
         int yOffset = (int) (45 * (renderItemScale - 1));
@@ -58,8 +58,8 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
     }
 
     @Override
-    protected void drawRightEntity(GuiGraphics graphics, int posX, int posY, MaidModelInfo modelItem) {
-        ResourceLocation cacheIconId = modelItem.getCacheIconId();
+    protected void drawRightEntity(GuiGraphicsExtractor graphics, int posX, int posY, MaidModelInfo modelItem) {
+        Identifier cacheIconId = modelItem.getCacheIconId();
         var allTextures = Minecraft.getInstance().getTextureManager().byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
@@ -124,7 +124,7 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
         ROW_INDEX = rowIndex;
     }
 
-    private void drawEntity(GuiGraphics graphics, int posX, int posY, MaidModelInfo modelItem) {
+    private void drawEntity(GuiGraphicsExtractor graphics, int posX, int posY, MaidModelInfo modelItem) {
         Level world = getMinecraft().level;
         if (world == null) {
             return;

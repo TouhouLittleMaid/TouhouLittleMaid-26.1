@@ -8,31 +8,31 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Locale;
 import java.util.Objects;
 
 public class NewEntityFairyRenderer extends MobRenderer<EntityFairy, SimpleBedrockModel<EntityFairy>> {
-    private static final ResourceLocation TEXTURE_0 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_0.png");
-    private static final ResourceLocation TEXTURE_1 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_1.png");
-    private static final ResourceLocation TEXTURE_2 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_2.png");
-    private static final ResourceLocation TEXTURE_3 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_3.png");
-    private static final ResourceLocation TEXTURE_4 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_4.png");
-    private static final ResourceLocation TEXTURE_5 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_5.png");
-    private static final ResourceLocation TEXTURE_6 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_6.png");
-    private static final ResourceLocation TEXTURE_7 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_7.png");
-    private static final ResourceLocation TEXTURE_8 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_8.png");
-    private static final ResourceLocation TEXTURE_9 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_9.png");
-    private static final ResourceLocation TEXTURE_10 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_10.png");
-    private static final ResourceLocation TEXTURE_11 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_11.png");
-    private static final ResourceLocation TEXTURE_12 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_12.png");
-    private static final ResourceLocation TEXTURE_13 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_13.png");
-    private static final ResourceLocation TEXTURE_14 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_14.png");
-    private static final ResourceLocation TEXTURE_15 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_15.png");
-    private static final ResourceLocation TEXTURE_16 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_16.png");
-    private static final ResourceLocation TEXTURE_17 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_17.png");
-    private static final ResourceLocation TEXTURE_RICK = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_rick.png");
+    private static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_0.png");
+    private static final Identifier TEXTURE_1 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_1.png");
+    private static final Identifier TEXTURE_2 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_2.png");
+    private static final Identifier TEXTURE_3 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_3.png");
+    private static final Identifier TEXTURE_4 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_4.png");
+    private static final Identifier TEXTURE_5 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_5.png");
+    private static final Identifier TEXTURE_6 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_6.png");
+    private static final Identifier TEXTURE_7 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_7.png");
+    private static final Identifier TEXTURE_8 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_8.png");
+    private static final Identifier TEXTURE_9 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_9.png");
+    private static final Identifier TEXTURE_10 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_10.png");
+    private static final Identifier TEXTURE_11 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_11.png");
+    private static final Identifier TEXTURE_12 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_12.png");
+    private static final Identifier TEXTURE_13 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_13.png");
+    private static final Identifier TEXTURE_14 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_14.png");
+    private static final Identifier TEXTURE_15 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_15.png");
+    private static final Identifier TEXTURE_16 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_16.png");
+    private static final Identifier TEXTURE_17 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_17.png");
+    private static final Identifier TEXTURE_RICK = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_rick.png");
 
     @SuppressWarnings("unchecked")
     public NewEntityFairyRenderer(EntityRendererProvider.Context context) {
@@ -48,7 +48,7 @@ public class NewEntityFairyRenderer extends MobRenderer<EntityFairy, SimpleBedro
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityFairy entity) {
+    public Identifier getTextureLocation(EntityFairy entity) {
         String name = entity.getName().getString().toLowerCase(Locale.ENGLISH);
         // Rick-rolling 彩蛋
         if (EntityFairy.RICK.equals(name)) {

@@ -12,20 +12,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class EmiAltarRecipe implements EmiRecipe {
-    private static final EmiTexture POWER_ICON = new EmiTexture(ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png"), 32, 0, 16, 16, 16, 16, 64, 64);
-    private final ResourceLocation id;
+    private static final EmiTexture POWER_ICON = new EmiTexture(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png"), 32, 0, 16, 16, 16, 16, 64, 64);
+    private final Identifier id;
     private final List<EmiStack> outputs;
     private final List<EmiIngredient> inputs;
     private final float powerCost;
     private final String langKey;
 
-    public EmiAltarRecipe(ResourceLocation id, List<EmiIngredient> inputs, List<EmiStack> outputs, float powerCost, String langKey) {
+    public EmiAltarRecipe(Identifier id, List<EmiIngredient> inputs, List<EmiStack> outputs, float powerCost, String langKey) {
         this.id = id;
         this.inputs = inputs;
         this.outputs = outputs;
@@ -39,7 +39,7 @@ public class EmiAltarRecipe implements EmiRecipe {
     }
 
     @Override
-    public @Nullable ResourceLocation getId() {
+    public @Nullable Identifier getId() {
         return id;
     }
 

@@ -19,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.VisibleForDebug;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
@@ -102,7 +102,7 @@ public final class MaidDebugCommand {
                 if (StringUtils.isNotBlank(modelId)) {
                     entityMaid.setModelId(modelId);
                 } else {
-                    entityMaid.finalizeSpawn(level, level.getCurrentDifficultyAt(serverPlayer.blockPosition()), MobSpawnType.SPAWN_EGG, null);
+                    entityMaid.finalizeSpawn(level, level.getCurrentDifficultyAt(serverPlayer.blockPosition()), EntitySpawnReason.SPAWN_EGG, null);
                 }
                 entityMaid.setInSittingPose(true);
                 level.addFreshEntity(entityMaid);

@@ -52,7 +52,7 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
 
     @Override
     public boolean hurt(@Nonnull DamageSource source, float amount) {
-        if (!this.level().isClientSide && !this.dead && this.isAlive()) {
+        if (!this.level().isClientSide() && !this.dead && this.isAlive()) {
             // 如果实体是无敌的
             if (this.isInvulnerableTo(source)) {
                 return false;

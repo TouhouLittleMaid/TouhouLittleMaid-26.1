@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.typings.Info;
 import dev.latvian.mods.kubejs.typings.Param;
 import dev.latvian.mods.rhino.util.HideFromJS;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 @SuppressWarnings("unchecked")
 public abstract class TaskBuilder<T extends TaskBuilder<T, E>, E> {
     @HideFromJS
-    public final ResourceLocation id;
+    public final Identifier id;
     @HideFromJS
     public final ItemStack icon;
     @HideFromJS
@@ -42,7 +42,7 @@ public abstract class TaskBuilder<T extends TaskBuilder<T, E>, E> {
     @HideFromJS
     public @Nullable SoundEvent sound;
 
-    public TaskBuilder(ResourceLocation id, ItemStack icon) {
+    public TaskBuilder(Identifier id, ItemStack icon) {
         this.id = id;
         this.icon = icon;
     }

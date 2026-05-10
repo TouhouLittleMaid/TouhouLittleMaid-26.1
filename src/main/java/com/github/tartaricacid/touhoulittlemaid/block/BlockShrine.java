@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -24,7 +24,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty; import net.minecraft.core.Direction;
+
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -34,7 +35,7 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockShrine extends BaseEntityBlock {
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final VoxelShape SHAPE = Shapes.or(Block.box(0, 0, 0, 16, 5, 16),
             Block.box(2, 5, 2, 14, 10, 14),
             Block.box(4, 10, 4, 12, 16, 12));
@@ -50,37 +51,37 @@ public class BlockShrine extends BaseEntityBlock {
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit) {
         if (hand == InteractionHand.MAIN_HAND && worldIn.getBlockEntity(pos) instanceof TileEntityShrine shrine) {
             if (playerIn.isShiftKeyDown()) {
                 if (!shrine.isEmpty()) {
                     ItemStack storageItem = shrine.extractStorageItem();
                     ItemHandlerHelper.giveItemToPlayer(playerIn, storageItem);
                     worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, 1, 1);
-                    return ItemInteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
-                return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+                return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
             }
             if (shrine.isEmpty()) {
                 if (shrine.canInsert(playerIn.getMainHandItem())) {
                     shrine.insertStorageItem(playerIn.getMainHandItem().copyWithCount(1));
                     playerIn.getMainHandItem().shrink(1);
                     worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.PLAYERS, 1, 1);
-                    return ItemInteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
-                if (!worldIn.isClientSide) {
+                if (!worldIn.isClientSide()) {
                     playerIn.sendSystemMessage(Component.translatable("message.touhou_little_maid.shrine.not_film"));
                 }
-                return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+                return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
             }
             if (playerIn.getMainHandItem().isEmpty()) {
                 // 创造模式玩家可以随意复活
                 if (!playerIn.isCreative()) {
                     if (playerIn.getHealth() < (playerIn.getMaxHealth() / 2) + 1) {
-                        if (!worldIn.isClientSide) {
+                        if (!worldIn.isClientSide()) {
                             playerIn.sendSystemMessage(Component.translatable("message.touhou_little_maid.shrine.health_low"));
                         }
-                        return ItemInteractionResult.FAIL;
+                        return InteractionResult.FAIL;
                     }
                     playerIn.setHealth(0.25f);
                 }

@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.PlayerSkin;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.neoforged.api.distmarker.Dist;
@@ -28,27 +28,27 @@ public final class PlayerMaidModels {
     private static final GameProfile EMPTY_GAME_PROFILE = new GameProfile(UUID.randomUUID(), "alex");
     private static final PlayerMaidModel PLAYER_MAID_MODEL = new PlayerMaidModel(false);
     private static final PlayerMaidModel PLAYER_MAID_MODEL_SLIM = new PlayerMaidModel(true);
-    private static final List<ResourceLocation> PLAYER_MAID_ANIMATION_RES = Lists.newArrayList(
-            ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/default.js"),
-            ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/beg.js"),
-            ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/leg/default.js"),
-            ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/player/arm/default.js"),
-            ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/swing.js"),
-            ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/player/sit/default.js")
+    private static final List<Identifier> PLAYER_MAID_ANIMATION_RES = Lists.newArrayList(
+            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/default.js"),
+            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/beg.js"),
+            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/leg/default.js"),
+            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/player/arm/default.js"),
+            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/swing.js"),
+            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/player/sit/default.js")
     );
-    private static final ResourceLocation TEXTURE_ALEX = ResourceLocation.withDefaultNamespace("textures/entity/alex.png");
+    private static final Identifier TEXTURE_ALEX = Identifier.withDefaultNamespace("textures/entity/alex.png");
     private static final List<Object> PLAYER_MAID_ANIMATIONS = Lists.newArrayList();
     private static MaidModelInfo playerMaidInfo;
-    private static ResourceLocation playerSkin;
+    private static Identifier playerSkin;
 
     public static void reload() {
         PLAYER_MAID_ANIMATIONS.clear();
-        for (ResourceLocation res : PLAYER_MAID_ANIMATION_RES) {
+        for (Identifier res : PLAYER_MAID_ANIMATION_RES) {
             PLAYER_MAID_ANIMATIONS.add(InnerAnimation.get(res));
         }
         playerMaidInfo = new MaidModelInfo() {
             @Override
-            public ResourceLocation getTexture() {
+            public Identifier getTexture() {
                 return playerSkin;
             }
         };
@@ -88,7 +88,7 @@ public final class PlayerMaidModels {
         return playerMaidInfo;
     }
 
-    public static ResourceLocation getPlayerSkin(String name) {
+    public static Identifier getPlayerSkin(String name) {
         GameProfile newProfile = null;
         Minecraft minecraft = Minecraft.getInstance();
 

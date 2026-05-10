@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
@@ -24,7 +24,7 @@ public class ConditionArmor {
     private static final Pattern TAG_PRE_REG = Pattern.compile("^(.+?)#(.*?)$");
     private static final String EMPTY = "";
 
-    private final Map<EquipmentSlot, List<ResourceLocation>> idTest = Maps.newHashMap();
+    private final Map<EquipmentSlot, List<Identifier>> idTest = Maps.newHashMap();
     private final Map<EquipmentSlot, List<TagKey<Item>>> tagTest = Maps.newHashMap();
 
     public void addTest(String name) {
@@ -38,7 +38,7 @@ public class ConditionArmor {
             if (!isValidResourceLocation(id)) {
                 return;
             }
-            ResourceLocation res = ResourceLocation.parse(id);
+            Identifier res = Identifier.parse(id);
             if (idTest.containsKey(type)) {
                 idTest.get(type).add(res);
             } else {
@@ -59,7 +59,7 @@ public class ConditionArmor {
             }
             TagKey<Item> tagKey = TagKey.create(
                     Registries.ITEM,
-                    ResourceLocation.parse(id)
+                    Identifier.parse(id)
             );
             if (tagTest.containsKey(type)) {
                 tagTest.get(type).add(tagKey);
@@ -88,9 +88,9 @@ public class ConditionArmor {
         if (!idTest.containsKey(slot) || idTest.get(slot).isEmpty()) {
             return EMPTY;
         }
-        List<ResourceLocation> idListTest = idTest.get(slot);
+        List<Identifier> idListTest = idTest.get(slot);
         ItemStack item = maid.asEntity().getItemBySlot(slot);
-        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(item.getItem());
+        Identifier registryName = BuiltInRegistries.ITEM.getKey(item.getItem());
         if (registryName == null) {
             return EMPTY;
         }

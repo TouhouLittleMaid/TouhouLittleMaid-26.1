@@ -5,16 +5,16 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubbl
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.implement.ImageChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class ImageChatBubbleData implements IChatBubbleData {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "image");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "image");
 
     private final int existTick;
-    private final ResourceLocation bg;
-    private final ResourceLocation image;
+    private final Identifier bg;
+    private final Identifier image;
     private final int width;
     private final int height;
     private final int uOffset;
@@ -26,7 +26,7 @@ public class ImageChatBubbleData implements IChatBubbleData {
     @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
-    private ImageChatBubbleData(int existTick, ResourceLocation bg, ResourceLocation image, int width, int height,
+    private ImageChatBubbleData(int existTick, Identifier bg, Identifier image, int width, int height,
                                 int uOffset, int vOffset, int textureWidth, int textureHeight, int priority) {
         this.existTick = existTick;
         this.bg = bg;
@@ -40,19 +40,19 @@ public class ImageChatBubbleData implements IChatBubbleData {
         this.priority = priority;
     }
 
-    public static ImageChatBubbleData create(ResourceLocation image, int width, int height) {
+    public static ImageChatBubbleData create(Identifier image, int width, int height) {
         return new ImageChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, image, width, height, 0, 0, 256, 256, DEFAULT_PRIORITY);
     }
 
-    public static ImageChatBubbleData create(ResourceLocation image, int width, int height, int uOffset, int vOffset) {
+    public static ImageChatBubbleData create(Identifier image, int width, int height, int uOffset, int vOffset) {
         return new ImageChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, image, width, height, uOffset, vOffset, 256, 256, DEFAULT_PRIORITY);
     }
 
-    public static ImageChatBubbleData singleImage(ResourceLocation image, int width, int height) {
+    public static ImageChatBubbleData singleImage(Identifier image, int width, int height) {
         return new ImageChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, image, width, height, 0, 0, width, height, DEFAULT_PRIORITY);
     }
 
-    public static ImageChatBubbleData create(int existTick, ResourceLocation bg, ResourceLocation image, int width, int height,
+    public static ImageChatBubbleData create(int existTick, Identifier bg, Identifier image, int width, int height,
                                              int uOffset, int vOffset, int textureWidth, int textureHeight, int priority) {
         return new ImageChatBubbleData(existTick, bg, image, width, height, uOffset, vOffset, textureWidth, textureHeight, priority);
     }
@@ -63,7 +63,7 @@ public class ImageChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ID;
     }
 
@@ -91,8 +91,8 @@ public class ImageChatBubbleData implements IChatBubbleData {
             int vOffset = buf.readVarInt();
             int textureWidth = buf.readVarInt();
             int textureHeight = buf.readVarInt();
-            ResourceLocation bg = buf.readResourceLocation();
-            ResourceLocation image = buf.readResourceLocation();
+            Identifier bg = buf.readResourceLocation();
+            Identifier image = buf.readResourceLocation();
             return new ImageChatBubbleData(DEFAULT_EXIST_TICK, bg, image, width, height,
                     uOffset, vOffset, textureWidth, textureHeight, DEFAULT_PRIORITY);
         }

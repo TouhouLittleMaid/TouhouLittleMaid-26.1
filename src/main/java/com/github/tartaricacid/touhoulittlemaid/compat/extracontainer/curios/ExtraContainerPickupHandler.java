@@ -32,7 +32,7 @@ public class ExtraContainerPickupHandler {
     }
 
     private boolean tryPickup(EntityMaid maid, ItemEntity itemEntity, boolean simulate) {
-        if (maid.level.isClientSide || !itemEntity.isAlive() || itemEntity.hasPickUpDelay()) {
+        if (maid.level.isClientSide() || !itemEntity.isAlive() || itemEntity.hasPickUpDelay()) {
             return false;
         }
         ItemStack itemStack = itemEntity.getItem();

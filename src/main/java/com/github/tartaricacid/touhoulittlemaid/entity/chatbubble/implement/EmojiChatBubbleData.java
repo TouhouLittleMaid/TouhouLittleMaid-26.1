@@ -5,17 +5,17 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubbl
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.implement.EmojiChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class EmojiChatBubbleData implements IChatBubbleData {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "emoji");
-    private final ResourceLocation bg;
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "emoji");
+    private final Identifier bg;
     @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
-    public EmojiChatBubbleData(ResourceLocation bg) {
+    public EmojiChatBubbleData(Identifier bg) {
         this.bg = bg;
     }
 
@@ -29,7 +29,7 @@ public class EmojiChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ID;
     }
 
@@ -45,7 +45,7 @@ public class EmojiChatBubbleData implements IChatBubbleData {
     public static class EmojiChatSerializer implements IChatBubbleData.ChatSerializer {
         @Override
         public IChatBubbleData readFromBuff(FriendlyByteBuf buf) {
-            ResourceLocation bg = buf.readResourceLocation();
+            Identifier bg = buf.readResourceLocation();
             return new EmojiChatBubbleData(bg);
         }
 

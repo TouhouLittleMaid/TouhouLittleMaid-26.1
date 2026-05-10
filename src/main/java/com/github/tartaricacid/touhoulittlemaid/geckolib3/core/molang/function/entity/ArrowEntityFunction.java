@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.
 
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.IContext;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.ContextFunction;
-import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
 
 public abstract class ArrowEntityFunction extends ContextFunction<Arrow> {
     @Override

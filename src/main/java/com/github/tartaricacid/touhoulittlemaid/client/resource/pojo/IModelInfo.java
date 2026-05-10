@@ -1,35 +1,35 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.pojo;
 
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public interface IModelInfo {
-    static ResourceLocation createCacheIconId(ResourceLocation modelId) {
+    static Identifier createCacheIconId(Identifier modelId) {
         String namespace = modelId.getNamespace();
         String path = modelId.getPath();
-        return ResourceLocation.fromNamespaceAndPath(namespace, path + "/cache");
+        return Identifier.fromNamespaceAndPath(namespace, path + "/cache");
     }
 
-    ResourceLocation getModelId();
+    Identifier getModelId();
 
-    ResourceLocation getCacheIconId();
+    Identifier getCacheIconId();
 
     String getName();
 
-    ResourceLocation getModel();
+    Identifier getModel();
 
     boolean isGeckoModel();
 
     @Nullable
-    List<ResourceLocation> getAnimation();
+    List<Identifier> getAnimation();
 
-    ResourceLocation getTexture();
+    Identifier getTexture();
 
     @Nullable
-    List<ResourceLocation> getExtraTextures();
+    List<Identifier> getExtraTextures();
 
     List<String> getDescription();
 
@@ -37,5 +37,5 @@ public interface IModelInfo {
 
     <T extends IModelInfo> T decorate();
 
-    <T extends IModelInfo> T extra(ResourceLocation newModelId, ResourceLocation texture);
+    <T extends IModelInfo> T extra(Identifier newModelId, Identifier texture);
 }

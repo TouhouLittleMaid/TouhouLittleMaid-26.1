@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.animation.IMaidData;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.BiomeCacheUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -47,7 +47,7 @@ public final class EntityMaidWrapper implements IMaidData {
 
     @Override
     public String getHelmet() {
-        ResourceLocation res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.HEAD).getItem());
+        Identifier res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.HEAD).getItem());
         if (res != null) {
             return res.toString();
         }
@@ -61,7 +61,7 @@ public final class EntityMaidWrapper implements IMaidData {
 
     @Override
     public String getChestPlate() {
-        ResourceLocation res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.CHEST).getItem());
+        Identifier res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.CHEST).getItem());
         if (res != null) {
             return res.toString();
         }
@@ -75,7 +75,7 @@ public final class EntityMaidWrapper implements IMaidData {
 
     @Override
     public String getLeggings() {
-        ResourceLocation res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.LEGS).getItem());
+        Identifier res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.LEGS).getItem());
         if (res != null) {
             return res.toString();
         }
@@ -89,7 +89,7 @@ public final class EntityMaidWrapper implements IMaidData {
 
     @Override
     public String getBoots() {
-        ResourceLocation res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.FEET).getItem());
+        Identifier res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getItemBySlot(EquipmentSlot.FEET).getItem());
         if (res != null) {
             return res.toString();
         }
@@ -103,7 +103,7 @@ public final class EntityMaidWrapper implements IMaidData {
 
     @Override
     public String getItemMainhand() {
-        ResourceLocation res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getMainHandItem().getItem());
+        Identifier res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getMainHandItem().getItem());
         if (res != null) {
             return res.toString();
         }
@@ -117,7 +117,7 @@ public final class EntityMaidWrapper implements IMaidData {
 
     @Override
     public String getItemOffhand() {
-        ResourceLocation res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getOffhandItem().getItem());
+        Identifier res = BuiltInRegistries.ITEM.getKey(maid.asEntity().getOffhandItem().getItem());
         if (res != null) {
             return res.toString();
         }

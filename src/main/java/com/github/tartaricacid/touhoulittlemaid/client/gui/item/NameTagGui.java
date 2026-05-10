@@ -3,19 +3,19 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.item;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendNameTagPackage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
 public class NameTagGui extends Screen {
-    final ResourceLocation CONFIRM_SPRITE = ResourceLocation.withDefaultNamespace("container/beacon/confirm");
-    final ResourceLocation CANCEL_SPRITE = ResourceLocation.withDefaultNamespace("container/beacon/cancel");
+    final Identifier CONFIRM_SPRITE = Identifier.withDefaultNamespace("container/beacon/confirm");
+    final Identifier CANCEL_SPRITE = Identifier.withDefaultNamespace("container/beacon/cancel");
     private final EntityMaid maid;
     private EditBox textField;
     private Button alwaysShowButton;
@@ -52,7 +52,7 @@ public class NameTagGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int middleX = this.width / 2;
         int middleY = this.height / 2;
         renderBackground(graphics, mouseX, mouseY, partialTicks);
@@ -90,7 +90,7 @@ public class NameTagGui extends Screen {
 
     private void sendDoneMessage(Button button) {
         if (StringUtils.isNotBlank(textField.getValue())) {
-            PacketDistributor.sendToServer(new SendNameTagPackage(maid.getId(), textField.getValue(), alwaysShow));
+            ClientPacketDistributor.sendToServer(new SendNameTagPackage(maid.getId(), textField.getValue(), alwaysShow));
         }
         this.onClose();
     }

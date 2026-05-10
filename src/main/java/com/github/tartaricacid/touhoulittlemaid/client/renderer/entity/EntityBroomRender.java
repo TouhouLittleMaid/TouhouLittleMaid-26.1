@@ -6,12 +6,12 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoad
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.BROOM;
 
 public class EntityBroomRender extends LivingEntityRenderer<EntityBroom, BroomModel> {
-    private static final ResourceLocation BROOM_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/broom.png");
+    private static final Identifier BROOM_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/broom.png");
 
     public EntityBroomRender(EntityRendererProvider.Context context) {
         super(context, (BroomModel) BedrockModelLoader.<EntityBroom>getModel(BROOM), 0.5f);
@@ -23,7 +23,7 @@ public class EntityBroomRender extends LivingEntityRenderer<EntityBroom, BroomMo
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityBroom entityBroom) {
+    public Identifier getTextureLocation(EntityBroom entityBroom) {
         return BROOM_TEXTURE;
     }
 }

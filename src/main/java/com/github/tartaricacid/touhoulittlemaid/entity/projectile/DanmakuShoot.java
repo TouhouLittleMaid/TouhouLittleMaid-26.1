@@ -35,7 +35,7 @@ public final class DanmakuShoot {
         Preconditions.checkNotNull(world);
         Preconditions.checkNotNull(thrower);
         Preconditions.checkNotNull(target);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             EntityDanmaku danmaku = new EntityDanmaku(world, thrower)
                     .setDamage(damage).setGravityVelocity(gravity)
                     .setDanmakuType(type).setColor(color)
@@ -53,7 +53,7 @@ public final class DanmakuShoot {
         Preconditions.checkNotNull(target);
         Preconditions.checkArgument(yawTotal >= 0 && yawTotal <= MAX_YAW, "yaw should >=0 and <= 2π");
         Preconditions.checkArgument(fanNum >= MIN_FAN_NUM, "fan number should >=2");
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             float offset = 0.3f / target.getBbHeight();
             Vec3 v = new Vec3(target.getX() - thrower.getX(), target.getY() - thrower.getY() - offset, target.getZ() - thrower.getZ());
             double yaw = -(yawTotal / 2);

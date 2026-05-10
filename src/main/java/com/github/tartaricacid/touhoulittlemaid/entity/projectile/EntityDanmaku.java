@@ -11,7 +11,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -92,7 +92,7 @@ public class EntityDanmaku extends ThrowableProjectile {
                 this.discard();
                 return;
             }
-            ResourceLocation registryName = BuiltInRegistries.ENTITY_TYPE.getKey(hit.getType());
+            Identifier registryName = BuiltInRegistries.ENTITY_TYPE.getKey(hit.getType());
             if (registryName != null && MaidConfig.MAID_RANGED_ATTACK_IGNORE.get().contains(registryName.toString())) {
                 this.discard();
                 return;

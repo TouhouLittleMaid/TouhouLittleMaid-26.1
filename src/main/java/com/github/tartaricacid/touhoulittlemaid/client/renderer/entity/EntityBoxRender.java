@@ -8,11 +8,11 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.CAKE_BOX;
 
 public class EntityBoxRender extends EntityRenderer<EntityBox> {
-    private final List<ResourceLocation> texturesGroup = Lists.newArrayList();
+    private final List<Identifier> texturesGroup = Lists.newArrayList();
     private final SimpleBedrockModel<EntityBox> boxModel;
 
     public EntityBoxRender(EntityRendererProvider.Context manager) {
@@ -35,19 +35,19 @@ public class EntityBoxRender extends EntityRenderer<EntityBox> {
         poseStack.scale(-1.0F, -1.0F, 1.0F);
         poseStack.translate(0.0, -1.501, 0.0);
         boxModel.setupAnim(entityBox, 0, 0, -0.1f, 0, 0);
-        RenderType renderType = RenderType.entityCutoutNoCull(getTextureLocation(entityBox));
+        RenderTypes renderType = RenderTypes.entityCutoutNoCull(getTextureLocation(entityBox));
         VertexConsumer buffer = bufferIn.getBuffer(renderType);
         boxModel.renderToBuffer(poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityBox entity) {
+    public Identifier getTextureLocation(EntityBox entity) {
         return texturesGroup.get(entity.getTextureIndex());
     }
 
     private void addBoxTexture(int index) {
         String fileName = String.format("textures/bedrock/entity/cake_box/cake_box_%s.png", index);
-        texturesGroup.add(ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, fileName));
+        texturesGroup.add(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, fileName));
     }
 }

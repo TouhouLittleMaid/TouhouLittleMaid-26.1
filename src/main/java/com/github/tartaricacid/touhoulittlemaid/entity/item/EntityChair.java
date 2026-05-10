@@ -88,7 +88,7 @@ public class EntityChair extends AbstractEntityFromItem {
         if (!isTameableCanRide()) {
             return;
         }
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             List<TamableAnimal> list = level.getEntitiesOfClass(TamableAnimal.class,
                     getBoundingBox().expandTowards(0, 0.5, 0),
                     e -> !e.isInSittingPose() && !e.isPassenger() && e.getPassengers().isEmpty());
@@ -115,7 +115,7 @@ public class EntityChair extends AbstractEntityFromItem {
                 PacketDistributor.sendToPlayer(serverPlayer, new OpenChairGuiPackage(getId()));
             }
         } else {
-            if (!level.isClientSide && getPassengers().isEmpty() && !player.isPassenger()) {
+            if (!level.isClientSide() && getPassengers().isEmpty() && !player.isPassenger()) {
                 player.startRiding(this);
             }
         }

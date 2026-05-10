@@ -6,9 +6,9 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitPoi;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -38,7 +38,7 @@ public class MaidFindHomeMealTask extends MaidCheckRateTask {
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid maid) {
         if (super.checkExtraStartConditions(worldIn, maid) && maid.canBrainMoving()) {
             BlockPos picnicMatPos = findPicnicMat(worldIn, maid);
-            if (picnicMatPos != null && maid.isWithinRestriction(picnicMatPos)) {
+            if (picnicMatPos != null && maid.isWithinHome(picnicMatPos)) {
                 if (picnicMatPos.distToCenterSqr(maid.position()) < Math.pow(this.closeEnoughDist, 3)) {
                     maid.getBrain().setMemory(InitEntities.TARGET_POS.get(), new BlockPosTracker(picnicMatPos));
                     return true;
@@ -70,7 +70,7 @@ public class MaidFindHomeMealTask extends MaidCheckRateTask {
     private BlockPos findPicnicMat(ServerLevel world, EntityMaid maid) {
         BlockPos blockPos = maid.getBrainSearchPos();
         PoiManager poiManager = world.getPoiManager();
-        int range = (int) maid.getRestrictRadius();
+        int range = (int) maid.getHomeRadius();
         return poiManager.getInRange(type -> type.value().equals(InitPoi.HOME_MEAL_BLOCK.get()), blockPos, range, PoiManager.Occupancy.ANY)
                 .map(PoiRecord::getPos).filter(pos -> !isOccupied(world, pos))
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(maid.blockPosition()))).orElse(null);

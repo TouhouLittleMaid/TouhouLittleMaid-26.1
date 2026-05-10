@@ -47,9 +47,9 @@ public abstract class ParrotMixin {
         if (mob instanceof EntityMaid maid) {
             SoundEvent soundevent = SoundUtil.environmentSound(maid, InitSounds.MAID_IDLE.get(), 0.5f);
             // 服务端发送在鹦鹉坐标播放女仆语音的包
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 NetworkHandler.sendToNearby(parrot, new PlayMaidSoundAtPosPackage(
-                        soundevent.getLocation(), maid.getSoundPackId(),
+                        soundevent.location(), maid.getSoundPackId(),
                         parrot.getX(), parrot.getY(), parrot.getZ(),
                         0.7F, getPitch(level.random)
                 ), 16);

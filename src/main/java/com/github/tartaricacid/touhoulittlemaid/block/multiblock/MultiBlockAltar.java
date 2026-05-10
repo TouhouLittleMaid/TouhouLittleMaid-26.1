@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
 import com.github.tartaricacid.touhoulittlemaid.util.PosListData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -18,10 +18,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class MultiBlockAltar implements IMultiBlock {
-    private static final ResourceLocation ALTAR_SOUTH = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_south");
-    private static final ResourceLocation ALTAR_NORTH = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_north");
-    private static final ResourceLocation ALTAR_EAST = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_east");
-    private static final ResourceLocation ALTAR_WEST = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_west");
+    private static final Identifier ALTAR_SOUTH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_south");
+    private static final Identifier ALTAR_NORTH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_north");
+    private static final Identifier ALTAR_EAST = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_east");
+    private static final Identifier ALTAR_WEST = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_west");
     private static final BlockPos SOUTH_POS = new BlockPos(-4, -3, 0);
     private static final BlockPos NORTH_POS = new BlockPos(-3, -3, -7);
     private static final BlockPos EAST_POS = new BlockPos(0, -3, -3);
@@ -111,7 +111,7 @@ public class MultiBlockAltar implements IMultiBlock {
         };
     }
 
-    private StructureTemplate getAltarTemplate(ServerLevel world, ResourceLocation location) {
+    private StructureTemplate getAltarTemplate(ServerLevel world, Identifier location) {
         return world.getStructureManager().getOrCreate(location);
     }
 }

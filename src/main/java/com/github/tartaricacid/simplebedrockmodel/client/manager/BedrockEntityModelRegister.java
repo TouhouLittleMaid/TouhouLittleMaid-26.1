@@ -4,7 +4,7 @@ import com.github.tartaricacid.simplebedrockmodel.SimpleBedrockModel;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.AbstractBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
@@ -12,12 +12,12 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 
 import java.util.Set;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public class BedrockEntityModelRegister<T extends AbstractBedrockEntityModel<? extends Entity>> {
     public static BedrockEntityModelRegister INSTANCE = null;
     private final BedrockEntityModelSet<T> modelSet;
@@ -27,7 +27,7 @@ public class BedrockEntityModelRegister<T extends AbstractBedrockEntityModel<? e
     }
 
     @SubscribeEvent
-    public static void onRegisterClientReloadListenersEvent(RegisterClientReloadListenersEvent event) {
+    public static void onRegisterClientReloadListenersEvent(AddClientReloadListenersEvent event) {
         ResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
         if (resourceManager instanceof ReloadableResourceManager manager) {
             INSTANCE = new BedrockEntityModelRegister<>(new BedrockEntityModelSet<>());
@@ -39,11 +39,11 @@ public class BedrockEntityModelRegister<T extends AbstractBedrockEntityModel<? e
         }
     }
 
-    public AbstractBedrockEntityModel<? extends Entity> getModel(ResourceLocation location) {
+    public AbstractBedrockEntityModel<? extends Entity> getModel(Identifier location) {
         return modelSet.getModels().get(location);
     }
 
-    public Set<ResourceLocation> getAllModelKeys() {
+    public Set<Identifier> getAllModelKeys() {
         return modelSet.getModels().keySet();
     }
 }

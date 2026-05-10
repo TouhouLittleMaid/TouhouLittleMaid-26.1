@@ -67,7 +67,7 @@ public class EntitySit extends Entity {
 
     @Override
     public void tick() {
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             this.checkBelowWorld();
             this.checkPassengers();
             if (this.getFirstPassenger() instanceof EntityMaid maid) {

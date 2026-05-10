@@ -3,13 +3,13 @@ package com.github.tartaricacid.touhoulittlemaid.util;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -30,15 +30,15 @@ public final class MaidFluidRender {
     private static final int TEXTURE_SIZE = 16;
 
     public static Component getFluidName(String fluidId, int amount) {
-        Fluid fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(fluidId));
+        Fluid fluid = BuiltInRegistries.FLUID.get(Identifier.parse(fluidId));
         if (amount <= 0 || fluid == null || fluid.isSame(Fluids.EMPTY)) {
             return Component.translatable("tooltips.touhou_little_maid.tank_backpack.empty_fluid");
         }
         return fluid.getFluidType().getDescription();
     }
 
-    public static void drawFluid(GuiGraphics graphics, int x, int y, int width, int height, String fluidId, int amount, int capacity) {
-        Fluid fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(fluidId));
+    public static void drawFluid(GuiGraphicsExtractor graphics, int x, int y, int width, int height, String fluidId, int amount, int capacity) {
+        Fluid fluid = BuiltInRegistries.FLUID.get(Identifier.parse(fluidId));
         if (amount <= 0 || fluid == null || fluid.isSame(Fluids.EMPTY)) {
             return;
         }
@@ -69,7 +69,7 @@ public final class MaidFluidRender {
     public static Optional<TextureAtlasSprite> getStillFluidSprite(FluidStack fluidStack) {
         Fluid fluid = fluidStack.getFluid();
         IClientFluidTypeExtensions renderProperties = IClientFluidTypeExtensions.of(fluid);
-        ResourceLocation fluidStill = renderProperties.getStillTexture(fluidStack);
+        Identifier fluidStill = renderProperties.getStillTexture(fluidStack);
         return Optional.of(fluidStill)
                 .map(f -> Minecraft.getInstance()
                         .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
@@ -78,7 +78,7 @@ public final class MaidFluidRender {
                 .filter(s -> s.atlasLocation() != MissingTextureAtlasSprite.getLocation());
     }
 
-    private static void drawTiledSprite(GuiGraphics guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
+    private static void drawTiledSprite(GuiGraphicsExtractor guiGraphics, final int tiledWidth, final int tiledHeight, int color, long scaledAmount, TextureAtlasSprite sprite) {
         RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
         Matrix4f matrix = guiGraphics.pose().last().pose();
         setGLColorFromInt(color);

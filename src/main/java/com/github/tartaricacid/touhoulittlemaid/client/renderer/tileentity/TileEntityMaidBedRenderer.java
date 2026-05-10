@@ -9,13 +9,13 @@ import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.Util;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.phys.AABB;
@@ -25,11 +25,11 @@ import java.util.function.Function;
 public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntityMaidBed> {
     private final BlockEntityRendererProvider.Context context;
     private final Function<DyeColor, SimpleBedrockModel<?>> cacheModel = Util.memoize(color -> {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/maid_bed/" + color.getName());
+        Identifier id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/maid_bed/" + color.getName());
         return BedrockModelLoader.getModel(id);
     });
-    private final Function<DyeColor, ResourceLocation> cacheTexture = Util.memoize(color ->
-            ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/maid_bed/" + color.getName() + ".png"));
+    private final Function<DyeColor, Identifier> cacheTexture = Util.memoize(color ->
+            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/maid_bed/" + color.getName() + ".png"));
 
     public TileEntityMaidBedRenderer(BlockEntityRendererProvider.Context context) {
         this.context = context;
@@ -40,7 +40,7 @@ public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntity
                        MultiBufferSource buffer, int packedLight, int packedOverlay) {
         DyeColor dyeColor = bed.getColor();
         SimpleBedrockModel<?> model = cacheModel.apply(dyeColor);
-        ResourceLocation texture = cacheTexture.apply(dyeColor);
+        Identifier texture = cacheTexture.apply(dyeColor);
 
         poseStack.pushPose();
         int rotation = bed.getBlockState().getValue(HorizontalDirectionalBlock.FACING).get2DDataValue();
@@ -49,9 +49,9 @@ public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntity
         poseStack.scale(-1, -1, 1);
         VertexConsumer vertexConsumer;
         if (dyeColor == DyeColor.BLUE) {
-            vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+            vertexConsumer = buffer.getBuffer(RenderTypes.entityTranslucent(texture));
         } else {
-            vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
+            vertexConsumer = buffer.getBuffer(RenderTypes.entityCutoutNoCull(texture));
         }
         model.renderToBuffer(poseStack, vertexConsumer, packedLight, packedOverlay);
         poseStack.popPose();

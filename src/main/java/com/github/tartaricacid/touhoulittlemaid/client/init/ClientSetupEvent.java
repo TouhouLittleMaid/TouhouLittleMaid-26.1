@@ -24,7 +24,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -33,7 +33,7 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil
 import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.CROSSHAIR;
 import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.HOTBAR;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT, modid = TouhouLittleMaid.MOD_ID)
+@EventBusSubscriber(value = Dist.CLIENT, modid = TouhouLittleMaid.MOD_ID)
 public class ClientSetupEvent {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
@@ -74,7 +74,7 @@ public class ClientSetupEvent {
     }
 
     @SubscribeEvent
-    public static void onRegisterClientReloadListeners(RegisterClientReloadListenersEvent event) {
+    public static void onRegisterClientReloadListeners(AddClientReloadListenersEvent event) {
         event.registerReloadListener(new EmojiReloadListener());
     }
 }

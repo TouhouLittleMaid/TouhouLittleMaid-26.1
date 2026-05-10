@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -19,18 +19,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.UseAnim;
 import net.neoforged.neoforge.common.EffectCures;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class TaskFeedOwner implements IFeedTask {
-    public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "feed");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "feed");
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return UID;
     }
 
@@ -101,7 +101,7 @@ public class TaskFeedOwner implements IFeedTask {
 
     @Override
     public ItemStack feed(ItemStack stack, Player owner) {
-        if (stack.getUseAnimation() == UseAnim.DRINK) {
+        if (stack.getUseAnimation() == ItemUseAnimation.DRINK) {
             owner.level.playSound(null, owner, stack.getDrinkingSound(), SoundSource.NEUTRAL,
                     0.5f, owner.level.getRandom().nextFloat() * 0.1f + 0.9f);
         }

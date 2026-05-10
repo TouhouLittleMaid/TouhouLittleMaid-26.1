@@ -112,7 +112,7 @@ public class CraftingTableBackpackContainer extends MaidMainContainer {
     }
 
     private void slotChangedCraftingGrid(AbstractContainerMenu menu, Level level, Player player, CraftingContainer container, ResultContainer result) {
-        if (!level.isClientSide && level.getServer() != null) {
+        if (!level.isClientSide() && level.getServer() != null) {
             ServerPlayer serverPlayer = (ServerPlayer) player;
             ItemStack stack1 = ItemStack.EMPTY;
             CraftingInput craftInput = container.asCraftInput();

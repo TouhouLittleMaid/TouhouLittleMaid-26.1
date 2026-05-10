@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -11,8 +11,8 @@ public interface IChatBubbleData {
     /**
      * 默认提供的两种气泡背景，推荐 type2
      */
-    ResourceLocation TYPE_1 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/type1.png");
-    ResourceLocation TYPE_2 = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/type2.png");
+    Identifier TYPE_1 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/type1.png");
+    Identifier TYPE_2 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/type2.png");
 
     /**
      * 默认的气泡持续时间，15 秒
@@ -36,7 +36,7 @@ public interface IChatBubbleData {
      *
      * @return 气泡对应的序列化器的注册 ID
      */
-    ResourceLocation id();
+    Identifier id();
 
     /**
      * 气泡的优先级，数字越大越高

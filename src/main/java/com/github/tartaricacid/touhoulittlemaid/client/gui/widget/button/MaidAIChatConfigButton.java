@@ -4,16 +4,16 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class MaidAIChatConfigButton extends Button {
-    private static final ResourceLocation ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_ai_chat_config.png");
+    private static final Identifier ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_ai_chat_config.png");
     private final MaidAIChatConfigButton.OnPress leftPress;
     private final MaidAIChatConfigButton.OnPress rightPress;
     private boolean leftClicked = false;
@@ -32,7 +32,7 @@ public class MaidAIChatConfigButton extends Button {
     }
 
     @Override
-    protected void renderWidget(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void renderWidget(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
         RenderSystem.enableDepthTest();
         if (this.isHovered) {
@@ -75,7 +75,7 @@ public class MaidAIChatConfigButton extends Button {
         }
     }
 
-    public void drawButtonText(GuiGraphics graphics, Font font) {
+    public void drawButtonText(GuiGraphicsExtractor graphics, Font font) {
         float scale = 0.75f;
 
         FormattedCharSequence leftText = this.getMessage().getVisualOrderText();

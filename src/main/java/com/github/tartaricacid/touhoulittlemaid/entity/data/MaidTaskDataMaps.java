@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.data.TaskDataKey;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -57,7 +57,7 @@ public final class MaidTaskDataMaps {
         dataMaps.clear();
         CompoundTag dataTags = readOrCreateTag(entityTag);
         for (String key : dataTags.getAllKeys()) {
-            TaskDataKey<?> dataKey = TaskDataRegister.getValue(ResourceLocation.parse(key));
+            TaskDataKey<?> dataKey = TaskDataRegister.getValue(Identifier.parse(key));
             if (dataKey != null) {
                 CompoundTag tag = dataTags.getCompound(key);
                 dataMaps.put(dataKey, Optional.of(dataKey.readSaveData(tag)));
@@ -82,7 +82,7 @@ public final class MaidTaskDataMaps {
     public void readFromServer(CompoundTag taskTags) {
         dataMaps.clear();
         for (String key : taskTags.getAllKeys()) {
-            TaskDataKey<?> dataKey = TaskDataRegister.getValue(ResourceLocation.parse(key));
+            TaskDataKey<?> dataKey = TaskDataRegister.getValue(Identifier.parse(key));
             if (dataKey != null) {
                 CompoundTag tag = taskTags.getCompound(key);
                 dataMaps.put(dataKey, Optional.of(dataKey.readSyncData(tag)));

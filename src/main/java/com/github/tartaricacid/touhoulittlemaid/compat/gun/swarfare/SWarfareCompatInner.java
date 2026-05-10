@@ -171,7 +171,7 @@ public class SWarfareCompatInner {
         // 如果是非狙击枪，超出 radius 范围，那么也瞄准
         if (!isSniper) {
             float distance = shooter.distanceTo(target);
-            float radius = shooter.getRestrictRadius();
+            float radius = shooter.getHomeRadius();
             if (distance <= radius && shooter.isAiming()) {
                 shooter.setAiming(false);
                 return 10;

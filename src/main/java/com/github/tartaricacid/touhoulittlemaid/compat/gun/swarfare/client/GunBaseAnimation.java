@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.swarfare.SWarfareCompat;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -24,7 +24,7 @@ public class GunBaseAnimation {
         if (!(handItem.getItem() instanceof GunItem)) {
             return false;
         }
-        ResourceLocation gunId = BuiltInRegistries.ITEM.getKey(handItem.getItem());
+        Identifier gunId = BuiltInRegistries.ITEM.getKey(handItem.getItem());
 
         // 因为现在还没有 minigun 的专属标签，故只能用特判
         if (gunId.equals(SWarfareCompat.MINIGUN_ID) || gunId.equals(SWarfareCompat.M_2_HB_ID)) {

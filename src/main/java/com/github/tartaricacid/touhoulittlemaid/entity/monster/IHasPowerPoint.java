@@ -23,7 +23,7 @@ public interface IHasPowerPoint {
             return;
         }
         int dropTime = 20;
-        if (entity.deathTime == dropTime && !entity.level.isClientSide) {
+        if (entity.deathTime == dropTime && !entity.level.isClientSide()) {
             int totalPowerPoint = getPowerPoint();
             while (totalPowerPoint > 0) {
                 int powerSplit = EntityPowerPoint.getPowerValue(totalPowerPoint);

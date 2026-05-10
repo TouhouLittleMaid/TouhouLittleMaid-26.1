@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.aquaculture.entity.Aquacu
 import com.github.tartaricacid.touhoulittlemaid.compat.aquaculture.entity.AquacultureFishingType;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.fishing.FishingTypeManager;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -40,6 +40,6 @@ public class AquacultureCompat {
 
     @SubscribeEvent
     public void register(RegisterEvent event) {
-        event.register(BuiltInRegistries.ENTITY_TYPE.key(), helper -> helper.register(ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "aquaculture_fishing_hook"), AquacultureFishingHook.TYPE));
+        event.register(BuiltInRegistries.ENTITY_TYPE.key(), helper -> helper.register(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "aquaculture_fishing_hook"), AquacultureFishingHook.TYPE));
     }
 }

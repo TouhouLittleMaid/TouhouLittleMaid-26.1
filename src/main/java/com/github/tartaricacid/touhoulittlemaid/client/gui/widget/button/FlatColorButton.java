@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -30,14 +30,14 @@ public class FlatColorButton extends Button {
         return this;
     }
 
-    public void renderToolTip(GuiGraphics graphics, Screen screen, int pMouseX, int pMouseY) {
+    public void renderToolTip(GuiGraphicsExtractor graphics, Screen screen, int pMouseX, int pMouseY) {
         if (this.isHovered && tooltips != null) {
             graphics.renderComponentTooltip(screen.getMinecraft().font, tooltips, pMouseX, pMouseY);
         }
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         if (isSelect) {
             graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xff_1E90FF, 0xff_1E90FF);
@@ -55,7 +55,7 @@ public class FlatColorButton extends Button {
     }
 
     @Override
-    public void renderString(GuiGraphics graphics, Font font, int pColor) {
+    public void renderString(GuiGraphicsExtractor graphics, Font font, int pColor) {
         graphics.drawCenteredString(font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, 0xF3EFE0);
     }
 

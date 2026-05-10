@@ -29,7 +29,7 @@ public class CuriosEvent {
                 container.resetPage(player);
 
                 // 客户端需要再次更新，否则可能会触发增减槽位不更新问题
-                if (entity.level.isClientSide) {
+                if (entity.level.isClientSide()) {
                     CuriosCompat.clientResetPage();
                 }
             }

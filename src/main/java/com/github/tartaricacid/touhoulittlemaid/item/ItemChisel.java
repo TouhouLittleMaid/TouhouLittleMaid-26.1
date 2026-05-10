@@ -42,13 +42,13 @@ public class ItemChisel extends Item {
 
         if (context.getHand() == InteractionHand.MAIN_HAND && player != null) {
             if (worldIn.getBlockState(pos).getBlock() != Blocks.CLAY) {
-                if (!worldIn.isClientSide) {
+                if (!worldIn.isClientSide()) {
                     player.sendSystemMessage(Component.translatable("message.touhou_little_maid.chisel.hit_block_error"));
                 }
                 return InteractionResult.PASS;
             }
             if (player.getOffhandItem().getItem() != InitItems.PHOTO.get()) {
-                if (!worldIn.isClientSide) {
+                if (!worldIn.isClientSide()) {
                     player.sendSystemMessage(Component.translatable("message.touhou_little_maid.chisel.offhand_not_photo"));
                 }
                 return InteractionResult.PASS;

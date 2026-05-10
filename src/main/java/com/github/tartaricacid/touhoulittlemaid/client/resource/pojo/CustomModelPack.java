@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -37,7 +37,7 @@ public class CustomModelPack<T extends IModelInfo> {
     private String version;
 
     @SerializedName("icon")
-    private ResourceLocation icon;
+    private Identifier icon;
     @SerializedName("icon_delay")
     private int iconDelay = 2;
     @Expose(deserialize = false)
@@ -76,7 +76,7 @@ public class CustomModelPack<T extends IModelInfo> {
     }
 
     @Nullable
-    public ResourceLocation getIcon() {
+    public Identifier getIcon() {
         return icon;
     }
 
@@ -122,7 +122,7 @@ public class CustomModelPack<T extends IModelInfo> {
             author = Collections.EMPTY_LIST;
         }
         if (icon == null) {
-            icon = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/empty_model_pack_icon.png");
+            icon = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/empty_model_pack_icon.png");
         }
         if (iconDelay <= 0) {
             iconDelay = 1;
@@ -133,13 +133,13 @@ public class CustomModelPack<T extends IModelInfo> {
         // 多材质模型拆分
         List<T> newModelList = Lists.newArrayList();
         for (T item : modelList) {
-            ResourceLocation modelId = item.getModelId();
+            Identifier modelId = item.getModelId();
             newModelList.add(item.extra(modelId, item.getTexture()));
-            List<ResourceLocation> extraTextures = item.getExtraTextures();
+            List<Identifier> extraTextures = item.getExtraTextures();
             if (extraTextures != null && !extraTextures.isEmpty()) {
                 extraTextures.forEach(r -> {
                     String suffix = Md5Utils.md5Hex(r.getPath()).toLowerCase(Locale.US);
-                    ResourceLocation newModelId = ResourceLocation.fromNamespaceAndPath(modelId.getNamespace(), modelId.getPath() + "_" + suffix);
+                    Identifier newModelId = Identifier.fromNamespaceAndPath(modelId.getNamespace(), modelId.getPath() + "_" + suffix);
                     newModelList.add(item.extra(newModelId, r));
                 });
             }

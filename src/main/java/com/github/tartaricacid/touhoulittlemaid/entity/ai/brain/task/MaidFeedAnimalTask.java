@@ -35,13 +35,13 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
     protected void start(ServerLevel worldIn, EntityMaid maid, long gameTimeIn) {
         feedEntity = null;
         long animalCount = this.getEntities(maid)
-                .find(e -> maid.isWithinRestriction(e.blockPosition()))
+                .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
                 .filter(e -> e instanceof Animal).count();
 
         if (animalCount < maxAnimalCount) {
             this.getEntities(maid)
-                    .find(e -> maid.isWithinRestriction(e.blockPosition()))
+                    .find(e -> maid.isWithinHome(e.blockPosition()))
                     .filter(Entity::isAlive)
                     .filter(e -> e instanceof Animal)
                     .filter(e -> ((Animal) e).getAge() == 0)

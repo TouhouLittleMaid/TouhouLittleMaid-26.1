@@ -6,7 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -27,13 +27,13 @@ public class TagEntity extends EntityTypeTagsProvider {
      */
     public static TagKey<EntityType<?>> MAID_VEHICLE_ROTATE_BLOCKLIST = createTagKey("maid_vehicle_rotate_blocklist");
 
-    public static TagKey<EntityType<?>> CARRYON_ENTITY_BLACKLIST = createTagKey(ResourceLocation.parse("carryon:entity_blacklist"));
+    public static TagKey<EntityType<?>> CARRYON_ENTITY_BLACKLIST = createTagKey(Identifier.parse("carryon:entity_blacklist"));
 
     /**
      * 冰与火的石化效果免疫标签
      */
     public static final TagKey<EntityType<?>> IMMUNE_TO_GORGON_STONE = createTagKey(
-            ResourceLocation.parse("iceandfire:immune_to_gorgon_stone")
+            Identifier.parse("iceandfire:immune_to_gorgon_stone")
     );
 
 
@@ -42,10 +42,10 @@ public class TagEntity extends EntityTypeTagsProvider {
     }
 
     private static TagKey<EntityType<?>> createTagKey(String name) {
-        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name));
+        return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name));
     }
 
-    private static TagKey<EntityType<?>> createTagKey(ResourceLocation id) {
+    private static TagKey<EntityType<?>> createTagKey(Identifier id) {
         return TagKey.create(Registries.ENTITY_TYPE, id);
     }
 
@@ -77,7 +77,7 @@ public class TagEntity extends EntityTypeTagsProvider {
         tag(IMMUNE_TO_GORGON_STONE).add(InitEntities.MAID.get());
     }
 
-    private ResourceLocation id(String name) {
-        return ResourceLocation.parse(name);
+    private Identifier id(String name) {
+        return Identifier.parse(name);
     }
 }

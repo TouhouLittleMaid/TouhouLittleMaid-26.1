@@ -8,12 +8,12 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
 public class TaskDataRegister {
-    private static final Map<ResourceLocation, TaskDataKey<?>> MAPS = Maps.newHashMap();
+    private static final Map<Identifier, TaskDataKey<?>> MAPS = Maps.newHashMap();
 
     public static void init() {
         TaskDataRegister register = new TaskDataRegister();
@@ -26,18 +26,18 @@ public class TaskDataRegister {
     }
 
     @SuppressWarnings("all")
-    public static <T> TaskDataKey<T> getValue(ResourceLocation key) {
+    public static <T> TaskDataKey<T> getValue(Identifier key) {
         return (TaskDataKey<T>) MAPS.get(key);
     }
 
-    public <T> TaskDataKey<T> register(ResourceLocation key, Codec<T> codec) {
+    public <T> TaskDataKey<T> register(Identifier key, Codec<T> codec) {
         return register(key, codec, codec);
     }
 
-    public <T> TaskDataKey<T> register(ResourceLocation key, Codec<T> saveCodec, Codec<T> syncCodec) {
+    public <T> TaskDataKey<T> register(Identifier key, Codec<T> saveCodec, Codec<T> syncCodec) {
         TaskDataKey<T> value = new TaskDataKey<>() {
             @Override
-            public ResourceLocation getKey() {
+            public Identifier getKey() {
                 return key;
             }
 

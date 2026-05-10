@@ -8,10 +8,10 @@ import com.github.tartaricacid.touhoulittlemaid.item.ItemKappaCompass;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -41,7 +41,7 @@ public class CompassRenderEvent {
             if (!ItemKappaCompass.hasKappaCompassData(stack)) {
                 return;
             }
-            ResourceLocation dimension = ItemKappaCompass.getDimension(stack);
+            Identifier dimension = ItemKappaCompass.getDimension(stack);
             if (dimension != null && !mc.player.level.dimension().location().equals(dimension)) {
                 return;
             }
@@ -52,7 +52,7 @@ public class CompassRenderEvent {
             if (workPos != null) {
                 Vec3 centerPos = camera.add(workPos.getX() + 0.5, workPos.getY() + 0.5, workPos.getZ() + 0.5);
                 double radius = MaidConfig.MAID_WORK_RANGE.get() + 0.1;
-                VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderType.LINES);
+                VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
                 RenderHelper.renderCylinder(event.getPoseStack(), buffer, centerPos, radius, 16, 1.0F, 0, 0);
                 Vec3 textPos = new Vec3(workPos.getX() + 0.5, workPos.getY() + 2, workPos.getZ() + 0.5);
                 String text = I18n.get("message.touhou_little_maid.kappa_compass.work_area");
@@ -64,7 +64,7 @@ public class CompassRenderEvent {
             if (idlePos != null) {
                 Vec3 centerPos = camera.add(idlePos.getX() + 0.5, idlePos.getY() + 0.5, idlePos.getZ() + 0.5);
                 double radius = MaidConfig.MAID_IDLE_RANGE.get();
-                VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderType.LINES);
+                VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
                 RenderHelper.renderCylinder(event.getPoseStack(), buffer, centerPos, radius, 16, 0, 1.0F, 0);
                 Vec3 textPos = new Vec3(idlePos.getX() + 0.5, idlePos.getY() + 2, idlePos.getZ() + 0.5);
                 if (idlePos.equals(workPos)) {
@@ -82,7 +82,7 @@ public class CompassRenderEvent {
             if (resetPos != null) {
                 Vec3 centerPos = camera.add(resetPos.getX() + 0.5, resetPos.getY() + 0.5, resetPos.getZ() + 0.5);
                 double radius = MaidConfig.MAID_SLEEP_RANGE.get() - 0.1;
-                VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderType.LINES);
+                VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
                 RenderHelper.renderCylinder(event.getPoseStack(), buffer, centerPos, radius, 16, 0, 0, 1.0F);
                 Vec3 textPos = new Vec3(resetPos.getX() + 0.5, resetPos.getY() + 2, resetPos.getZ() + 0.5);
                 if (resetPos.equals(idlePos)) {

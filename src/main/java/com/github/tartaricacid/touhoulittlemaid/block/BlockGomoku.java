@@ -31,7 +31,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -48,7 +48,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty; import net.minecraft.core.Direction;
+
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -63,7 +64,7 @@ import javax.annotation.Nullable;
 
 public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     public static final EnumProperty<GomokuPart> PART = EnumProperty.create("part", GomokuPart.class);
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final VoxelShape LEFT_UP = Block.box(8, 0, 8, 16, 2, 16);
     public static final VoxelShape LEFT_UP_WITH_BOX = Shapes.or(LEFT_UP, Block.box(11, 0, 2, 16, 4, 7));
     public static final VoxelShape UP = Block.box(0, 0, 8, 16, 2, 16);
@@ -84,7 +85,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     }
 
     private static void handleGomokuRemove(Level world, BlockPos pos, BlockState state) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             GomokuPart part = state.getValue(PART);
             BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
             BlockEntity te = world.getBlockEntity(centerPos);
@@ -218,7 +219,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     @Override
     public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         super.setPlacedBy(worldIn, pos, state, placer, stack);
-        if (worldIn.isClientSide) {
+        if (worldIn.isClientSide()) {
             return;
         }
         for (int i = -1; i < 2; i++) {
@@ -233,13 +234,13 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level instanceof ServerLevel serverLevel && hand == InteractionHand.MAIN_HAND) {
             GomokuPart part = state.getValue(PART);
             BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
             BlockEntity te = level.getBlockEntity(centerPos);
             if (!(te instanceof TileEntityGomoku gomoku)) {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
 
             Vec3 location = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
@@ -247,7 +248,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
 
             // 如果是创造模式，有特殊用法
             if (player.getAbilities().instabuild) {
-                ItemInteractionResult success = this.onCreativePlayerClick(level, pos, player, gomoku, centerPos, location, part, facing);
+                InteractionResult success = this.onCreativePlayerClick(level, pos, player, gomoku, centerPos, location, part, facing);
                 if (success != null) {
                     return success;
                 }
@@ -258,20 +259,20 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
             if (heldItem.is(InitItems.GOMOKU_BOARD_STATE.get())) {
                 String[] boardState = ItemBoardState.getState(heldItem);
                 if (boardState == null) {
-                    return ItemInteractionResult.FAIL;
+                    return InteractionResult.FAIL;
                 }
                 String data = boardState[0];
                 if (StringUtils.isEmpty(data)) {
-                    return ItemInteractionResult.FAIL;
+                    return InteractionResult.FAIL;
                 }
                 gomoku.setStateData(GomokuCodec.decode(data));
                 level.playSound(null, pos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
 
             // 然后是下棋，必须空手
             if (!itemStack.isEmpty()) {
-                return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+                return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
             }
 
             if (isClickChessBox(location.x, location.z, part, facing)) {
@@ -285,25 +286,25 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                     maid.getGameRecordManager().resetStatue();
                 }
 
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
             if (sitEntity == null || !sitEntity.isAlive() || !(sitEntity.getFirstPassenger() instanceof EntityMaid maid)) {
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.no_maid"));
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             // 检查是不是自己的女仆
             if (MaidConfig.MAID_GOMOKU_OWNER_LIMIT.get() && !maid.isOwnedBy(player)) {
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.not_owner"));
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             if (!gomoku.isPlayerTurn()) {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             byte[][] chessData = gomoku.getChessData();
             int[] clickPos = getChessPos(location.x, location.z, part);
             if (clickPos == null) {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             Point playerPoint = new Point(clickPos[0], clickPos[1], Point.BLACK);
             if (gomoku.getStatue() == Statue.IN_PROGRESS && chessData[playerPoint.x][playerPoint.y] == Point.EMPTY) {
@@ -333,14 +334,14 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                     PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.getGameRecordManager().getGomokuWinCount()));
                 }
                 gomoku.refresh();
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
-        return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Nullable
-    private ItemInteractionResult onCreativePlayerClick(Level level, BlockPos pos, Player player, TileEntityGomoku gomoku,
+    private InteractionResult onCreativePlayerClick(Level level, BlockPos pos, Player player, TileEntityGomoku gomoku,
                                                         BlockPos centerPos, Vec3 location, GomokuPart part, Direction facing) {
         Item item = player.getMainHandItem().getItem();
 
@@ -349,7 +350,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
             gomoku.clickWithDebug();
             gomoku.refresh();
             level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         // 如果是木棍，那么就是预设棋局模式
@@ -359,13 +360,13 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 String result = GomokuCodec.encode(gomoku.getStateData());
                 MutableComponent component = ComponentUtils.copyOnClickText(result);
                 player.sendSystemMessage(component);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
 
             // 否则就是预设棋局
             int[] clickPos = getChessPos(location.x, location.z, part);
             if (clickPos == null) {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
             int type = gomoku.isPlayerTurn() ? Point.BLACK : Point.WHITE;
             Point playerPoint = new Point(clickPos[0], clickPos[1], type);
@@ -373,7 +374,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
             level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.random.nextFloat() * 0.4F);
             gomoku.setPlayerTurn(!gomoku.isPlayerTurn());
             gomoku.refresh();
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         return null;

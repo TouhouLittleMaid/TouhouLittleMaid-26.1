@@ -34,7 +34,7 @@ public class MaidPathFindingBFS {
 
     public MaidPathFindingBFS(NodeEvaluator nodeEvaluator, ServerLevel level, EntityMaid maid, float maxDistance, int verticalSearchRange) {
         this(nodeEvaluator, level, maid,
-                maid.hasRestriction() ? maid.getRestrictCenter() : maid.blockPosition(),
+                maid.hasHome() ? maid.getHomePosition() : maid.blockPosition(),
                 maxDistance, verticalSearchRange);
     }
 

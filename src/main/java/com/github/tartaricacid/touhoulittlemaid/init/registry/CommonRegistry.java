@@ -24,14 +24,14 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.chest.ChestManager;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
 import com.github.tartaricacid.touhoulittlemaid.util.AnnotatedInstanceUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber()
 public final class CommonRegistry {
     @SubscribeEvent
     public static void onSetupEvent(FMLCommonSetupEvent event) {
@@ -45,7 +45,7 @@ public final class CommonRegistry {
         if (event.getRegistry().equals(BuiltInRegistries.MENU)) {
             // Curios 兼容
             if (ModList.get().isLoaded(CompatRegistry.CURIOS)) {
-                ResourceLocation id = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "curios_container");
+                Identifier id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "curios_container");
                 event.register(BuiltInRegistries.MENU.key(), id, () -> CuriosContainer.TYPE);
             }
         }

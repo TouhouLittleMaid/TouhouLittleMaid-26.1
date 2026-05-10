@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.config.subconfig;
 
 import com.google.common.collect.Lists;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
@@ -214,7 +214,7 @@ public final class MaidConfig {
         if (obj instanceof String text) {
             if (text.startsWith("#")) {
                 text = text.substring(1);
-                return ResourceLocation.tryParse(text) != null;
+                return Identifier.tryParse(text) != null;
             } else {
                 return checkItemId(text);
             }
@@ -224,7 +224,7 @@ public final class MaidConfig {
 
     private static boolean checkItemId(Object obj) {
         if (obj instanceof String text) {
-            return ResourceLocation.tryParse(text) != null;
+            return Identifier.tryParse(text) != null;
         }
         return false;
     }

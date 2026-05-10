@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -23,7 +23,7 @@ public class WirelessIOButton extends TouhouStateSwitchButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.renderWidget(graphics, mouseX, mouseY, partialTicks);
         if (this.isHovered()) {
             this.onTooltip.onTooltip(graphics, mouseX, mouseY);
@@ -32,6 +32,6 @@ public class WirelessIOButton extends TouhouStateSwitchButton {
 
     @OnlyIn(Dist.CLIENT)
     public interface ITooltip {
-        void onTooltip(GuiGraphics graphics, int x, int y);
+        void onTooltip(GuiGraphicsExtractor graphics, int x, int y);
     }
 }

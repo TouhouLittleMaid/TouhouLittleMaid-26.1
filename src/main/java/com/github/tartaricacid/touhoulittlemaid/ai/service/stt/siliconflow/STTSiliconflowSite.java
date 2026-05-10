@@ -7,7 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout.STTSiteFormLayout;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -16,14 +16,14 @@ public class STTSiliconflowSite implements STTSite {
     public static final String API_TYPE = STTApiType.SILICONFLOW.getName();
 
     private final String id;
-    private final ResourceLocation icon;
+    private final Identifier icon;
 
     private boolean enabled;
     private String url;
     private String secretKey;
     private String model;
 
-    public STTSiliconflowSite(String id, ResourceLocation icon, boolean enabled, String url, String secretKey, String model) {
+    public STTSiliconflowSite(String id, Identifier icon, boolean enabled, String url, String secretKey, String model) {
         this.id = id;
         this.icon = icon;
         this.enabled = enabled;
@@ -43,7 +43,7 @@ public class STTSiliconflowSite implements STTSite {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return this.icon;
     }
 
@@ -100,7 +100,7 @@ public class STTSiliconflowSite implements STTSite {
     public static class Serializer implements SerializableSite<STTSiliconflowSite> {
         public static final Codec<STTSiliconflowSite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(STTSiliconflowSite::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(STTSiliconflowSite::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(STTSiliconflowSite::icon),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(STTSiliconflowSite::enabled),
                 Codec.STRING.fieldOf(URL).forGetter(STTSiliconflowSite::url),
                 Codec.STRING.fieldOf(SECRET_KEY).forGetter(STTSiliconflowSite::getSecretKey),

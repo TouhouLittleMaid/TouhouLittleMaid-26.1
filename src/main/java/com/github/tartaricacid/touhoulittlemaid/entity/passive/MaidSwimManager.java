@@ -53,7 +53,7 @@ public class MaidSwimManager {
      * 依据游泳状态，切换成游泳的寻路
      */
     public void updateSwimming() {
-        if (!maid.level.isClientSide) {
+        if (!maid.level.isClientSide()) {
             this.updatePose();
         }
     }

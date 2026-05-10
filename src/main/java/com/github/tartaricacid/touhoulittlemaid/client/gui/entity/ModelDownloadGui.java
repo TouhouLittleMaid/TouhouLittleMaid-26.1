@@ -15,9 +15,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
@@ -26,8 +25,9 @@ import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +39,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 public class ModelDownloadGui extends Screen {
-    private static final ResourceLocation BG = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/download_background.png");
+    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/download_background.png");
     private static final String PACK_FILE_SUFFIX = ".zip";
     private final Map<Long, String> crc32Infos = Maps.newHashMap();
     private final List<DownloadInfo> showInfos = Lists.newArrayList();
@@ -156,7 +156,7 @@ public class ModelDownloadGui extends Screen {
         this.addRenderableWidget(new FlatColorButton(x + 400, y + 2, 20, 20, Component.empty(),
                 b -> {
                     if (this.maid != null) {
-                        PacketDistributor.sendToServer(new OpenMaidGuiPackage(this.maid.getId()));
+                        ClientPacketDistributor.sendToServer(new OpenMaidGuiPackage(this.maid.getId()));
                     }
                 }).setTooltips("gui.touhou_little_maid.skin.button.close"));
         this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.resources_download.open_folder"), b -> Util.getPlatform().openFile(CustomPackLoader.PACK_FOLDER.toFile()))
@@ -182,7 +182,7 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         super.renderBlurredBackground(pPartialTick);
         this.renderBase(graphics);
         this.renderSearchBox(graphics, mouseX, mouseY, pPartialTick);
@@ -196,7 +196,7 @@ public class ModelDownloadGui extends Screen {
         this.renderables.stream().filter(b -> b instanceof FlatColorButton).forEach(b -> ((FlatColorButton) b).renderToolTip(graphics, this, mouseX, mouseY));
     }
 
-    private void renderNoDataTips(GuiGraphics graphics) {
+    private void renderNoDataTips(GuiGraphicsExtractor graphics) {
         if (!InfoGetManager.DOWNLOAD_INFO_LIST_ALL.isEmpty()) {
             return;
         }
@@ -208,13 +208,13 @@ public class ModelDownloadGui extends Screen {
         }
     }
 
-    private void renderPageNumber(GuiGraphics graphics) {
+    private void renderPageNumber(GuiGraphicsExtractor graphics) {
         int maxPage = (this.showInfos.size() - 1) / 4;
         String pageInfo = String.format("%d/%d", currentPage + 1, maxPage + 1);
         graphics.drawString(font, pageInfo, x + 134 - font.width(pageInfo) / 2, y + 227 - font.lineHeight / 2, 0xF3EFE0);
     }
 
-    private void renderPackHandleButtons(GuiGraphics graphics) {
+    private void renderPackHandleButtons(GuiGraphicsExtractor graphics) {
         if (0 <= this.selectIndex && this.selectIndex < this.showInfos.size()) {
             DownloadInfo info = this.showInfos.get(this.selectIndex);
             graphics.drawCenteredString(font, Component.translatable(info.getName()), x + 345, y + 34, 0xffffff);
@@ -223,11 +223,11 @@ public class ModelDownloadGui extends Screen {
         }
     }
 
-    private void renderBaseButtons(GuiGraphics graphics) {
+    private void renderBaseButtons(GuiGraphicsExtractor graphics) {
         graphics.blit(BG, x + 402, y + 4, 32, 16, 16, 16);
     }
 
-    private void renderSearchBox(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    private void renderSearchBox(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         graphics.drawString(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search"), x + 274, y + 102, 0xffffff);
         graphics.drawWordWrap(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search_key"), x + 274, y + 115, 146, ChatFormatting.GRAY.getColor());
         textField.render(graphics, pMouseX, pMouseY, pPartialTick);
@@ -236,7 +236,7 @@ public class ModelDownloadGui extends Screen {
         }
     }
 
-    private void renderBase(GuiGraphics graphics) {
+    private void renderBase(GuiGraphicsExtractor graphics) {
         graphics.fillGradient(0, 0, this.width, this.height, 0xe2_000000, 0xe2_000000);
         graphics.fillGradient(x + 270, y + 26, x + 420, y + 72, 0xff_232221, 0xff_232221);
         graphics.fillGradient(x + 270, y + 74, x + 420, y + 216, 0xff_232221, 0xff_232221);

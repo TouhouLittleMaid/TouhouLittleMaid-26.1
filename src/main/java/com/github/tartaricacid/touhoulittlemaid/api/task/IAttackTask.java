@@ -12,7 +12,7 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.AttackT
 import com.github.tartaricacid.touhoulittlemaid.util.TaskEquipUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,7 +36,7 @@ public interface IAttackTask extends IMaidTask {
      */
     static Optional<? extends LivingEntity> findFirstValidAttackTarget(EntityMaid maid) {
         return maid.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).flatMap(
-                mobs -> mobs.findClosest((e) -> maid.canAttack(e) && maid.isWithinRestriction(e.blockPosition())));
+                mobs -> mobs.findClosest((e) -> maid.canAttack(e) && maid.isWithinHome(e.blockPosition())));
     }
 
     /**
@@ -48,7 +48,7 @@ public interface IAttackTask extends IMaidTask {
      */
     default boolean canAttack(EntityMaid maid, LivingEntity target) {
         // 获取实体 ID
-        ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
+        Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
 
         // 排除一些盔甲架，还有本模组的实体，以及玩家
         if (target instanceof ArmorStand || target instanceof AbstractEntityFromItem || target instanceof Player) {

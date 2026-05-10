@@ -25,7 +25,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -55,12 +55,12 @@ import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 @OnlyIn(Dist.CLIENT)
 public class CustomPackLoader {
     public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+            .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
             .registerTypeAdapter(CubesItem.class, new CubesItem.Deserializer())
             .create();
     public static final MaidModels MAID_MODELS = MaidModels.getInstance();
     public static final ChairModels CHAIR_MODELS = ChairModels.getInstance();
-    private static final Set<ResourceLocation> TMP_REGISTER_TEXTURE = Sets.newHashSet();
+    private static final Set<Identifier> TMP_REGISTER_TEXTURE = Sets.newHashSet();
     private static final String CUSTOM_PACK_DIR_NAME = "tlm_custom_pack";
     public static final Path PACK_FOLDER = Paths.get(Minecraft.getInstance().gameDirectory.toURI()).resolve(CUSTOM_PACK_DIR_NAME);
     private static final Marker MARKER = MarkerManager.getMarker("CustomPackLoader");
@@ -204,9 +204,9 @@ public class CustomPackLoader {
     }
 
     private static void loadGeckoMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) throws IOException {
-        ResourceLocation uid = maidModelItem.getModelId();
+        Identifier uid = maidModelItem.getModelId();
         // 尝试加载模型
-        ResourceLocation modelLocation = maidModelItem.getModel();
+        Identifier modelLocation = maidModelItem.getModel();
         File modelFile = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!modelFile.isFile()) {
             return;
@@ -217,12 +217,12 @@ public class CustomPackLoader {
         // 加载贴图
         registerFilePackTexture(rootPath, maidModelItem.getTexture());
         // 加载动画
-        List<ResourceLocation> animation = maidModelItem.getAnimation();
+        List<Identifier> animation = maidModelItem.getAnimation();
         if (animation == null || animation.isEmpty()) {
             return;
         }
         AnimationFile animationData = new AnimationFile();
-        for (ResourceLocation animationPath : animation) {
+        for (Identifier animationPath : animation) {
             if (animationPath.equals(GeckoModelLoader.DEFAULT_MAID_ANIMATION)) {
                 break;
             }
@@ -245,9 +245,9 @@ public class CustomPackLoader {
     }
 
     private static void loadGeckoChairModelElement(Path rootPath, ChairModelInfo chairModelItem) throws IOException {
-        ResourceLocation uid = chairModelItem.getModelId();
+        Identifier uid = chairModelItem.getModelId();
         // 尝试加载模型
-        ResourceLocation modelLocation = chairModelItem.getModel();
+        Identifier modelLocation = chairModelItem.getModel();
         File modelFile = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!modelFile.isFile()) {
             return;
@@ -258,12 +258,12 @@ public class CustomPackLoader {
         // 加载贴图
         registerFilePackTexture(rootPath, chairModelItem.getTexture());
         // 加载动画
-        List<ResourceLocation> animation = chairModelItem.getAnimation();
+        List<Identifier> animation = chairModelItem.getAnimation();
         if (animation == null || animation.isEmpty()) {
             return;
         }
         AnimationFile animationData = new AnimationFile();
-        for (ResourceLocation animationPath : animation) {
+        for (Identifier animationPath : animation) {
             if (animationPath.equals(GeckoModelLoader.DEFAULT_CHAIR_ANIMATION)) {
                 break;
             }
@@ -333,9 +333,9 @@ public class CustomPackLoader {
     }
 
     private static void loadGeckoMaidModelElement(ZipFile zipFile, MaidModelInfo maidModelItem) throws IOException {
-        ResourceLocation uid = maidModelItem.getModelId();
+        Identifier uid = maidModelItem.getModelId();
         // 尝试加载模型
-        ResourceLocation modelLocation = maidModelItem.getModel();
+        Identifier modelLocation = maidModelItem.getModel();
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry modelZipEntry = zipFile.getEntry(path);
         if (modelZipEntry == null) {
@@ -347,12 +347,12 @@ public class CustomPackLoader {
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), maidModelItem.getTexture());
         // 加载动画
-        List<ResourceLocation> animation = maidModelItem.getAnimation();
+        List<Identifier> animation = maidModelItem.getAnimation();
         if (animation == null || animation.isEmpty()) {
             return;
         }
         AnimationFile animationData = new AnimationFile();
-        for (ResourceLocation animationPath : animation) {
+        for (Identifier animationPath : animation) {
             if (animationPath.equals(GeckoModelLoader.DEFAULT_MAID_ANIMATION)) {
                 break;
             }
@@ -375,9 +375,9 @@ public class CustomPackLoader {
     }
 
     private static void loadGeckoChairModelElement(ZipFile zipFile, ChairModelInfo chairModelItem) throws IOException {
-        ResourceLocation uid = chairModelItem.getModelId();
+        Identifier uid = chairModelItem.getModelId();
         // 尝试加载模型
-        ResourceLocation modelLocation = chairModelItem.getModel();
+        Identifier modelLocation = chairModelItem.getModel();
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry modelZipEntry = zipFile.getEntry(path);
         if (modelZipEntry == null) {
@@ -389,12 +389,12 @@ public class CustomPackLoader {
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), chairModelItem.getTexture());
         // 加载动画
-        List<ResourceLocation> animation = chairModelItem.getAnimation();
+        List<Identifier> animation = chairModelItem.getAnimation();
         if (animation == null || animation.isEmpty()) {
             return;
         }
         AnimationFile animationData = new AnimationFile();
-        for (ResourceLocation animationPath : animation) {
+        for (Identifier animationPath : animation) {
             if (animationPath.equals(GeckoModelLoader.DEFAULT_CHAIR_ANIMATION)) {
                 break;
             }
@@ -540,7 +540,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<Mob> loadMaidModel(Path rootPath, ResourceLocation modelLocation) {
+    public static BedrockModel<Mob> loadMaidModel(Path rootPath, Identifier modelLocation) {
         File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!file.isFile()) {
             return null;
@@ -581,7 +581,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<Mob> loadMaidModel(ZipFile zipFile, ResourceLocation modelLocation) {
+    public static BedrockModel<Mob> loadMaidModel(ZipFile zipFile, Identifier modelLocation) {
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry entry = zipFile.getEntry(path);
         if (entry == null) {
@@ -623,7 +623,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityChair> loadChairModel(Path rootPath, ResourceLocation modelLocation) {
+    public static BedrockModel<EntityChair> loadChairModel(Path rootPath, Identifier modelLocation) {
         File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!file.isFile()) {
             return null;
@@ -664,7 +664,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityChair> loadChairModel(ZipFile zipFile, ResourceLocation modelLocation) {
+    public static BedrockModel<EntityChair> loadChairModel(ZipFile zipFile, Identifier modelLocation) {
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry entry = zipFile.getEntry(path);
         if (entry == null) {
@@ -705,7 +705,7 @@ public class CustomPackLoader {
         return null;
     }
 
-    public static void registerFilePackTexture(Path rootPath, ResourceLocation texturePath) {
+    public static void registerFilePackTexture(Path rootPath, Identifier texturePath) {
         if (!TMP_REGISTER_TEXTURE.contains(texturePath)) {
             FilePackTexture filePackTexture = new FilePackTexture(rootPath, texturePath);
             if (filePackTexture.isExist()) {
@@ -715,7 +715,7 @@ public class CustomPackLoader {
         }
     }
 
-    public static void registerZipPackTexture(String zipFilePath, ResourceLocation texturePath) {
+    public static void registerZipPackTexture(String zipFilePath, Identifier texturePath) {
         if (!TMP_REGISTER_TEXTURE.contains(texturePath)) {
             ZipPackTexture zipPackTexture = new ZipPackTexture(zipFilePath, texturePath);
             if (zipPackTexture.isExist()) {

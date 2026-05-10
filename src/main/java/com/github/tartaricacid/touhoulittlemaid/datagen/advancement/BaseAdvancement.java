@@ -9,12 +9,12 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemEntityPlaceholder;
 import net.minecraft.advancements.*;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.KilledTrigger;
-import net.minecraft.advancements.critereon.RecipeCraftedTrigger;
+import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.advancements.criterion.KilledTrigger;
+import net.minecraft.advancements.criterion.RecipeCraftedTrigger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
@@ -90,7 +90,7 @@ public class BaseAdvancement {
         MutableComponent desc = Component.translatable(String.format("advancements.touhou_little_maid.base.%s.description", key));
 
         return Advancement.Builder.advancement().display(item, title, desc,
-                ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
+                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
                 AdvancementType.TASK, true, true, false);
     }
 
@@ -99,7 +99,7 @@ public class BaseAdvancement {
         MutableComponent desc = Component.translatable(String.format("advancements.touhou_little_maid.base.%s.description", key));
 
         return Advancement.Builder.advancement().display(item, title, desc,
-                ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
+                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
                 AdvancementType.TASK, true, true, false);
     }
 
@@ -108,11 +108,11 @@ public class BaseAdvancement {
         MutableComponent desc = Component.translatable(String.format("advancements.touhou_little_maid.base.%s.description", key));
 
         return Advancement.Builder.advancement().display(item, title, desc,
-                ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
+                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
                 AdvancementType.GOAL, true, true, false);
     }
 
-    private static ResourceLocation id(String id) {
-        return ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, id);
+    private static Identifier id(String id) {
+        return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, id);
     }
 }

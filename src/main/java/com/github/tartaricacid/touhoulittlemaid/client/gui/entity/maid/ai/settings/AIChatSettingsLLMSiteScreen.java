@@ -10,7 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai.LLMSiteButt
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
 import com.google.common.collect.Lists;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -88,7 +88,7 @@ public class AIChatSettingsLLMSiteScreen extends AIChatSettingsHubScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderListScrollbar(graphics, this.state.llmSites.size(), this.getVisibleListCount(ROW_HEIGHT));
         this.renderInsufficientPermissions(graphics);

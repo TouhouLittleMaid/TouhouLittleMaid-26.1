@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -40,7 +40,7 @@ public class ItemBroom extends Item {
                         if (stack.get(DataComponents.CUSTOM_NAME) != null) {
                             e.setCustomName(stack.get(DataComponents.CUSTOM_NAME));
                         }
-                    }, context.getClickedPos(), MobSpawnType.SPAWN_EGG, true, true);
+                    }, context.getClickedPos(), EntitySpawnReason.SPAWN_EGG, true, true);
                     if (broom == null) {
                         return InteractionResult.FAIL;
                     }
@@ -51,7 +51,7 @@ public class ItemBroom extends Item {
                     world.playSound(null, broom.getX(), broom.getY(), broom.getZ(), SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
                 }
                 stack.shrink(1);
-                return InteractionResult.sidedSuccess(world.isClientSide);
+                return InteractionResult.sidedSuccess(world.isClientSide());
             }
         }
         return InteractionResult.FAIL;

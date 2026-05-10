@@ -20,7 +20,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.model.provider.data.En
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -41,8 +41,8 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> implemen
         throw new IllegalArgumentException();
     }).build();
 
-    private static final ResourceLocation GECKO_DEFAULT_ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "fox_miko");
-    private static final ResourceLocation GECKO_DEFAULT_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
+    private static final Identifier GECKO_DEFAULT_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "fox_miko");
+    private static final Identifier GECKO_DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
     private static final int FPS = 60;
 
     private final IMaid maid;
@@ -132,7 +132,7 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> implemen
     }
 
     @Override
-    public ResourceLocation getModelLocation() {
+    public Identifier getModelLocation() {
         if (this.maidInfo != null && GeckoLibCache.getInstance().getGeoModels().containsKey(this.maidInfo.getModelId())) {
             return this.maidInfo.getModelId();
         }
@@ -140,12 +140,12 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> implemen
     }
 
     @Override
-    public ResourceLocation getTextureLocation() {
+    public Identifier getTextureLocation() {
         return this.maidInfo != null ? maidInfo.getTexture() : GECKO_DEFAULT_TEXTURE;
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation() {
+    public Identifier getAnimationFileLocation() {
         if (this.maidInfo != null && GeckoLibCache.getInstance().getAnimations().containsKey(this.maidInfo.getModelId())) {
             return this.maidInfo.getModelId();
         }

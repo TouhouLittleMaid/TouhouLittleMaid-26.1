@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -133,17 +132,17 @@ public class ItemWirelessIO extends Item implements MenuProvider {
             if (type.canOpenByPlayer(te, player)) {
                 ItemStack stack = player.getMainHandItem();
                 setBindingPos(stack, pos);
-                return InteractionResult.sidedSuccess(worldIn.isClientSide);
+                return InteractionResult.sidedSuccess(worldIn.isClientSide());
             }
         }
         return super.useOn(context);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (handIn == InteractionHand.MAIN_HAND && playerIn instanceof ServerPlayer) {
             playerIn.openMenu(this, buffer -> ItemStack.STREAM_CODEC.encode(buffer, playerIn.getMainHandItem()));
-            return InteractionResultHolder.success(playerIn.getMainHandItem());
+            return InteractionResult.success(playerIn.getMainHandItem());
         }
         return super.use(worldIn, playerIn, handIn);
     }

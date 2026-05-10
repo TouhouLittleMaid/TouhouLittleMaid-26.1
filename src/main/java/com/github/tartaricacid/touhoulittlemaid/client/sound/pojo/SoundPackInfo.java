@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModel
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -27,7 +27,7 @@ public class SoundPackInfo {
     private String version;
 
     @SerializedName("icon")
-    private ResourceLocation icon;
+    private Identifier icon;
     @SerializedName("icon_delay")
     private int iconDelay = 2;
     @Expose(deserialize = false)
@@ -62,7 +62,7 @@ public class SoundPackInfo {
     }
 
     @Nullable
-    public ResourceLocation getIcon() {
+    public Identifier getIcon() {
         return icon;
     }
 

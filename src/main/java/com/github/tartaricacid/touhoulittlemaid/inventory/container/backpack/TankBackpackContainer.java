@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.data.TankBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.MaidMainContainer;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerData;
@@ -22,8 +22,8 @@ import static net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS;
 
 public class TankBackpackContainer extends MaidMainContainer {
     public static final MenuType<TankBackpackContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new TankBackpackContainer(windowId, inv, data.readInt()));
-    private static final ResourceLocation INPUT_SLOT = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/tank_input_slot");
-    private static final ResourceLocation OUTPUT_SLOT = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/tank_output_slot");
+    private static final Identifier INPUT_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/tank_input_slot");
+    private static final Identifier OUTPUT_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/tank_output_slot");
     private final ContainerData data;
 
     public TankBackpackContainer(int id, Inventory inventory, int entityId) {
@@ -66,7 +66,7 @@ public class TankBackpackContainer extends MaidMainContainer {
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+        public Pair<Identifier, Identifier> getNoItemIcon() {
             return Pair.of(BLOCK_ATLAS, INPUT_SLOT);
         }
     }
@@ -83,7 +83,7 @@ public class TankBackpackContainer extends MaidMainContainer {
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+        public Pair<Identifier, Identifier> getNoItemIcon() {
             return Pair.of(BLOCK_ATLAS, OUTPUT_SLOT);
         }
     }

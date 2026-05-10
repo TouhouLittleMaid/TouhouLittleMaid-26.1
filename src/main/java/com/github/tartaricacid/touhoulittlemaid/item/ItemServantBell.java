@@ -17,15 +17,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -68,14 +67,14 @@ public class ItemServantBell extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         UUID searchUuid = getMaidUuid(stack);
         if (searchUuid != null) {
             playerIn.startUsingItem(handIn);
-            return InteractionResultHolder.consume(stack);
+            return InteractionResult.consume(stack);
         }
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             playerIn.sendSystemMessage(Component.translatable("message.touhou_little_maid.servant_bell.data_is_empty"));
         }
         return super.use(worldIn, playerIn, handIn);
@@ -153,7 +152,7 @@ public class ItemServantBell extends Item {
 
     @OnlyIn(Dist.CLIENT)
     private void openServantBellSetScreen(EntityMaid maid) {
-        if (maid.level.isClientSide) {
+        if (maid.level.isClientSide()) {
             Minecraft.getInstance().setScreen(new ServantBellSetScreen(maid));
         }
     }
@@ -164,8 +163,8 @@ public class ItemServantBell extends Item {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack pStack) {
-        return UseAnim.BLOCK;
+    public ItemUseAnimation getUseAnimation(ItemStack pStack) {
+        return ItemUseAnimation.BLOCK;
     }
 
     @Override

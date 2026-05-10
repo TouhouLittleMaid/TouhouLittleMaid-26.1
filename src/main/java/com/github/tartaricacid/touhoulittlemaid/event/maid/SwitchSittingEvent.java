@@ -28,9 +28,9 @@ public final class SwitchSittingEvent {
                 maid.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
                 maid.setTarget(null);
             }
-            if (maid.hasRestriction() && maid.canBrainMoving()) {
+            if (maid.hasHome() && maid.canBrainMoving()) {
                 maid.getSchedulePos().restrictTo(maid);
-                BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getRestrictCenter(), 0.7f, 3);
+                BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getHomePosition(), 0.7f, 3);
             }
             maid.playSound(SoundEvents.ITEM_PICKUP, 0.2F,
                     ((world.random.nextFloat() - world.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);

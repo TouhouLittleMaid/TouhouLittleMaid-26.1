@@ -29,7 +29,7 @@ import me.shedaniel.rei.plugin.common.displays.DefaultInformationDisplay;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class MaidREIClientPlugin implements REIClientPlugin {
         groupItems.add(InitItems.GARAGE_KIT.get());
         groupItems.add(InitItems.CHAIR.get());
         for (Item item : groupItems) {
-            ResourceLocation groupId = BuiltInRegistries.ITEM.getKey(item);
+            Identifier groupId = BuiltInRegistries.ITEM.getKey(item);
             registry.group(groupId, item.getDescription(), VanillaEntryTypes.ITEM, (entryStack) -> entryStack.getValue().is(item));
         }
     }

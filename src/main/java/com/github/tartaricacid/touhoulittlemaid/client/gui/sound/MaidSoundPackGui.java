@@ -13,8 +13,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.Util;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,8 +21,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Util;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MaidSoundPackGui extends Screen {
-    private static final ResourceLocation ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_custom_sound.png");
+    private static final Identifier ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_custom_sound.png");
     private final int packPerSize = 4;
     private final int soundPerSize = 13;
     private final EntityMaid maid;
@@ -87,8 +87,8 @@ public class MaidSoundPackGui extends Screen {
     private void addSoundElementButtons() {
         int yOffset = 41;
         boolean otherColor = false;
-        Map<ResourceLocation, List<SoundData>> buffers = CustomSoundLoader.getSoundCache(selectSoundId).buffers();
-        List<ResourceLocation> soundIds = List.copyOf(buffers.keySet());
+        Map<Identifier, List<SoundData>> buffers = CustomSoundLoader.getSoundCache(selectSoundId).buffers();
+        List<Identifier> soundIds = List.copyOf(buffers.keySet());
         this.soundMaxPage = (buffers.size() - 1) / soundPerSize;
         int startSoundIndex = soundPage * soundPerSize;
         if (startSoundIndex >= soundIds.size()) {
@@ -97,7 +97,7 @@ public class MaidSoundPackGui extends Screen {
         }
         int endSoundIndex = Math.min(soundIds.size(), startSoundIndex + soundPerSize);
         for (int i = startSoundIndex; i < endSoundIndex; i++) {
-            ResourceLocation soundEvent = soundIds.get(i);
+            Identifier soundEvent = soundIds.get(i);
             this.addRenderableWidget(new SoundElementButton(startX + 245, startY + yOffset, 152, 12, soundEvent, buffers.get(soundEvent), otherColor, (b) -> {
                 SoundElementButton soundButton = (SoundElementButton) b;
                 SoundEvent event = BuiltInRegistries.SOUND_EVENT.get(soundButton.getSoundEvent());
@@ -114,7 +114,7 @@ public class MaidSoundPackGui extends Screen {
         this.addRenderableWidget(new FlatColorButton(startX + 245, startY + 19, 110, 18, Component.translatable("gui.touhou_little_maid.custom_sound.pack.apply"), (b) -> {
             if (StringUtils.isNotBlank(selectSoundId) && CustomSoundLoader.CACHE.containsKey(selectSoundId)) {
                 this.maid.setSoundPackId(this.selectSoundId);
-                PacketDistributor.sendToServer(new SetMaidSoundIdPackage(this.maid.getId(), this.selectSoundId));
+                ClientPacketDistributor.sendToServer(new SetMaidSoundIdPackage(this.maid.getId(), this.selectSoundId));
                 this.init();
             }
         }));
@@ -150,7 +150,7 @@ public class MaidSoundPackGui extends Screen {
 
         this.addRenderableWidget(new FlatColorButton(startX + 381, startY + 201, 16, 16, Component.literal(">"), (b) -> {
             if (StringUtils.isNotBlank(selectSoundId) && CustomSoundLoader.CACHE.containsKey(selectSoundId)) {
-                Map<ResourceLocation, List<SoundData>> buffersIn = CustomSoundLoader.getSoundCache(selectSoundId).buffers();
+                Map<Identifier, List<SoundData>> buffersIn = CustomSoundLoader.getSoundCache(selectSoundId).buffers();
                 if ((soundPage + 1) * soundPerSize < buffersIn.size()) {
                     soundPage++;
                     this.init();
@@ -192,7 +192,7 @@ public class MaidSoundPackGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(graphics, pMouseX, pMouseY, pPartialTick);
         graphics.fill(startX, startY, startX + 240, startY + 220, 0xFF2A2A2A);
         graphics.fill(startX + 242, startY, startX + 400, startY + 220, 0xFF2A2A2A);

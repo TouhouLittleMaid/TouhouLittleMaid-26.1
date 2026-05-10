@@ -7,17 +7,17 @@ import com.google.common.collect.Lists;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import java.util.List;
 
 public class PackInfoButton extends FlatColorButton {
-    private static final ResourceLocation BG = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/download_background.png");
+    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/download_background.png");
     private final DownloadInfo info;
 
     public PackInfoButton(int pX, int pY, DownloadInfo info, OnPress onPress) {
@@ -27,7 +27,7 @@ public class PackInfoButton extends FlatColorButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         // 背景色
         if (isSelect) {
@@ -89,7 +89,7 @@ public class PackInfoButton extends FlatColorButton {
     }
 
     @Override
-    public void renderString(GuiGraphics graphics, Font font, int pColor) {
+    public void renderString(GuiGraphicsExtractor graphics, Font font, int pColor) {
         int startX = this.getX() + 50;
         int startY = this.getY() + 4;
 

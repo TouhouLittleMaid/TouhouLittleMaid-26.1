@@ -11,8 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.SkullModelBase;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.SkullBlockRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -65,7 +65,7 @@ public class GeckoLayerMaidBipedHead<T extends Mob, R extends IGeoEntityRenderer
                     poseStack.translate(-0.5D, 0.0D, -0.5D);
                     SkullBlock.Type type = skullBlock.getType();
                     SkullModelBase modelBase = this.skullModels.get(type);
-                    RenderType rendertype = SkullBlockRenderer.getRenderType(type, resolvableProfile);
+                    RenderTypes rendertype = SkullBlockRenderer.getRenderType(type, resolvableProfile);
                     SkullBlockRenderer.renderSkull(null, 180.0F, 0.0F, poseStack, bufferIn, packedLightIn, modelBase, rendertype);
                 }
                 poseStack.popPose();

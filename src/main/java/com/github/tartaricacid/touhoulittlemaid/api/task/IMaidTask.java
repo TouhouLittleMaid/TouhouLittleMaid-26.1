@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
@@ -33,7 +33,7 @@ public interface IMaidTask {
      *
      * @return 用 ResourceLocation 类描述的模式 ID
      */
-    ResourceLocation getUid();
+    Identifier getUid();
 
     /**
      * 该模式的图标
@@ -233,8 +233,8 @@ public interface IMaidTask {
      */
     default AABB searchDimension(EntityMaid maid) {
         float radius = this.searchRadius(maid);
-        if (maid.hasRestriction()) {
-            return new AABB(maid.getRestrictCenter()).inflate(radius, VERTICAL_SEARCH_RANGE, radius);
+        if (maid.hasHome()) {
+            return new AABB(maid.getHomePosition()).inflate(radius, VERTICAL_SEARCH_RANGE, radius);
         } else {
             return maid.getBoundingBox().inflate(radius, VERTICAL_SEARCH_RANGE, radius);
         }
@@ -248,7 +248,7 @@ public interface IMaidTask {
      */
     default float searchRadius(EntityMaid maid) {
         // 默认依据女仆的工作范围划定搜索范围
-        return maid.getRestrictRadius();
+        return maid.getHomeRadius();
     }
 
     /**

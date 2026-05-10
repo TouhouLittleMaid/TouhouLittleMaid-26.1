@@ -121,7 +121,7 @@ public class MaidFishingHook extends Projectile {
         // 女仆为空，那么吊钩也不应当存在
         if (maid == null) {
             this.discard();
-        } else if (this.level.isClientSide || !this.shouldStopFishing(maid)) {
+        } else if (this.level.isClientSide() || !this.shouldStopFishing(maid)) {
             if (this.lifeTick()) {
                 return;
             }
@@ -198,7 +198,7 @@ public class MaidFishingHook extends Projectile {
             this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.1D * (double) this.syncronizedRandom.nextFloat() * (double) this.syncronizedRandom.nextFloat(), 0.0D));
         }
         // 咬钩！
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             this.catchingFish(blockPos, (ServerLevel) this.level);
         }
     }
@@ -347,7 +347,7 @@ public class MaidFishingHook extends Projectile {
 
     public int retrieve(ItemStack stack) {
         EntityMaid maid = this.getMaidOwner();
-        if (!this.level.isClientSide && maid != null && !this.shouldStopFishing(maid)) {
+        if (!this.level.isClientSide() && maid != null && !this.shouldStopFishing(maid)) {
             MaidFishedEvent event = null;
             MinecraftServer server = this.level.getServer();
             int rodDamage = 0;

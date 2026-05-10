@@ -6,7 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
@@ -28,16 +28,16 @@ public class MaidModelInfo implements IModelInfo {
     private List<String> description;
 
     @SerializedName("model")
-    private ResourceLocation model;
+    private Identifier model;
 
     @SerializedName("texture")
-    private ResourceLocation texture;
+    private Identifier texture;
 
     @SerializedName("extra_textures")
-    private List<ResourceLocation> extraTextures;
+    private List<Identifier> extraTextures;
 
     @SerializedName("model_id")
-    private ResourceLocation modelId;
+    private Identifier modelId;
 
     @SerializedName("use_sound_pack_id")
     private String useSoundPackId;
@@ -49,7 +49,7 @@ public class MaidModelInfo implements IModelInfo {
     private float renderEntityScale = 1.0f;
 
     @SerializedName("animation")
-    private List<ResourceLocation> animation;
+    private List<Identifier> animation;
 
     @SerializedName("show_hata")
     private boolean showHata = true;
@@ -76,15 +76,15 @@ public class MaidModelInfo implements IModelInfo {
     private boolean isGeckoModel = false;
 
     @Expose(deserialize = false, serialize = false)
-    private ResourceLocation cacheIconId = null;
+    private Identifier cacheIconId = null;
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return texture;
     }
 
     @Override
-    public List<ResourceLocation> getExtraTextures() {
+    public List<Identifier> getExtraTextures() {
         return extraTextures;
     }
 
@@ -99,12 +99,12 @@ public class MaidModelInfo implements IModelInfo {
     }
 
     @Override
-    public List<ResourceLocation> getAnimation() {
+    public List<Identifier> getAnimation() {
         return animation;
     }
 
     @Override
-    public ResourceLocation getModelId() {
+    public Identifier getModelId() {
         return modelId;
     }
 
@@ -114,7 +114,7 @@ public class MaidModelInfo implements IModelInfo {
     }
 
     @Override
-    public ResourceLocation getModel() {
+    public Identifier getModel() {
         return model;
     }
 
@@ -166,13 +166,13 @@ public class MaidModelInfo implements IModelInfo {
     }
 
     @Override
-    public ResourceLocation getCacheIconId() {
+    public Identifier getCacheIconId() {
         return cacheIconId;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public MaidModelInfo extra(ResourceLocation newModelId, ResourceLocation texture) {
+    public MaidModelInfo extra(Identifier newModelId, Identifier texture) {
         MaidModelInfo cloneInfo = new MaidModelInfo();
         cloneInfo.modelId = newModelId;
         cloneInfo.texture = texture;
@@ -209,10 +209,10 @@ public class MaidModelInfo implements IModelInfo {
         this.cacheIconId = IModelInfo.createCacheIconId(modelId);
         // 如果 model 或 texture 为空，自动生成默认位置的模型
         if (model == null) {
-            model = ResourceLocation.fromNamespaceAndPath(modelId.getNamespace(), "models/entity/" + modelId.getPath() + ".json");
+            model = Identifier.fromNamespaceAndPath(modelId.getNamespace(), "models/entity/" + modelId.getPath() + ".json");
         }
         if (texture == null) {
-            texture = ResourceLocation.fromNamespaceAndPath(modelId.getNamespace(), "textures/entity/" + modelId.getPath() + ".png");
+            texture = Identifier.fromNamespaceAndPath(modelId.getNamespace(), "textures/entity/" + modelId.getPath() + ".png");
         }
         // 彩蛋
         if (easterEgg != null) {
@@ -235,21 +235,21 @@ public class MaidModelInfo implements IModelInfo {
         } else {
             if (animation == null || animation.isEmpty()) {
                 animation = Lists.newArrayList(
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/default.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/blink.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/beg.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/music_shake.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/leg/default.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/default.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/swing.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/vertical.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/sit/default.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/armor/default.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/armor/reverse.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/wing/default.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/tail/default.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/sit/skirt_rotation.js"),
-                        ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/base/float/default.js")
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/default.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/blink.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/beg.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/music_shake.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/leg/default.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/default.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/swing.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/vertical.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/sit/default.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/armor/default.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/armor/reverse.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/wing/default.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/tail/default.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/sit/skirt_rotation.js"),
+                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/base/float/default.js")
                 );
             }
         }

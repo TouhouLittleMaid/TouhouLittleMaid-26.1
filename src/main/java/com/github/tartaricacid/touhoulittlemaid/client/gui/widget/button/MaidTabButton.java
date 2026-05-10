@@ -6,15 +6,15 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
 public class MaidTabButton extends Button implements ITooltipButton {
-    private static final ResourceLocation SIDE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_side.png");
+    private static final Identifier SIDE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_side.png");
     private final int left;
     private final List<Component> tooltips;
 
@@ -28,7 +28,7 @@ public class MaidTabButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.enableDepthTest();
         if (!this.active) {
             graphics.blit(SIDE, this.getX(), this.getY(), left, 21, this.width, this.height, 256, 256);
@@ -42,7 +42,7 @@ public class MaidTabButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public void renderTooltip(GuiGraphics graphics, Minecraft mc, int mouseX, int mouseY) {
+    public void renderTooltip(GuiGraphicsExtractor graphics, Minecraft mc, int mouseX, int mouseY) {
         Font font = Minecraft.getInstance().font;
         graphics.renderComponentTooltip(font, tooltips, mouseX, mouseY);
     }

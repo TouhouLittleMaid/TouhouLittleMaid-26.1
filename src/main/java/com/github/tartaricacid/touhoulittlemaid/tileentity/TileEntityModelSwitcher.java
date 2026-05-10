@@ -16,7 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -131,7 +131,7 @@ public class TileEntityModelSwitcher extends BlockEntity {
 
     public static class ModeInfo {
         public static final StreamCodec<ByteBuf, ModeInfo> MODE_INFO_STREAM_CODEC = StreamCodec.composite(
-                ResourceLocation.STREAM_CODEC,
+                Identifier.STREAM_CODEC,
                 ModeInfo::getModelId,
                 ByteBufCodecs.STRING_UTF8,
                 ModeInfo::getText,
@@ -139,14 +139,14 @@ public class TileEntityModelSwitcher extends BlockEntity {
                 ModeInfo::getDirection,
                 ModeInfo::new
         );
-        private ResourceLocation modelId;
+        private Identifier modelId;
         private String text;
         private Direction direction;
 
         public ModeInfo() {
         }
 
-        public ModeInfo(ResourceLocation modelId, String text, Direction direction) {
+        public ModeInfo(Identifier modelId, String text, Direction direction) {
             this.modelId = modelId;
             this.text = text;
             this.direction = direction;
@@ -156,11 +156,11 @@ public class TileEntityModelSwitcher extends BlockEntity {
             return new ModeInfo(buf.readResourceLocation(), buf.readUtf(), Direction.from2DDataValue(buf.readVarInt()));
         }
 
-        public ResourceLocation getModelId() {
+        public Identifier getModelId() {
             return modelId;
         }
 
-        public void setModelId(ResourceLocation modelId) {
+        public void setModelId(Identifier modelId) {
             this.modelId = modelId;
         }
 
@@ -195,7 +195,7 @@ public class TileEntityModelSwitcher extends BlockEntity {
         }
 
         public void deserialize(CompoundTag nbt) {
-            this.modelId = ResourceLocation.parse(nbt.getString("model_id"));
+            this.modelId = Identifier.parse(nbt.getString("model_id"));
             this.text = nbt.getString("text");
             this.direction = Direction.from2DDataValue(nbt.getInt("direction"));
         }

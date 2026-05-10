@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.e
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.MolangUtils;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.Block;
@@ -26,7 +26,7 @@ public class RelativeBlockHasAnyTag extends EntityFunction {
         BlockState block = ctx.entity().entity().level().getBlockState(entity.blockPosition());
 
         for (int i = 3; i < arguments.size(); i++) {
-            ResourceLocation tagId = MolangUtils.parseResourceLocation(ctx.entity(), arguments.getAsString(ctx, i));
+            Identifier tagId = MolangUtils.parseResourceLocation(ctx.entity(), arguments.getAsString(ctx, i));
             if(tagId == null) {
                 return null;
             }

@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.GeckoModelLoader
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
@@ -24,16 +24,16 @@ public class ChairModelInfo implements IModelInfo {
     private List<String> description;
 
     @SerializedName("model")
-    private ResourceLocation model;
+    private Identifier model;
 
     @SerializedName("texture")
-    private ResourceLocation texture;
+    private Identifier texture;
 
     @SerializedName("extra_textures")
-    private List<ResourceLocation> extraTextures;
+    private List<Identifier> extraTextures;
 
     @SerializedName("model_id")
-    private ResourceLocation modelId;
+    private Identifier modelId;
 
     @SerializedName("render_item_scale")
     private float renderItemScale = 1.0f;
@@ -42,7 +42,7 @@ public class ChairModelInfo implements IModelInfo {
     private float renderEntityScale = 1.0f;
 
     @SerializedName("animation")
-    private List<ResourceLocation> animation;
+    private List<Identifier> animation;
 
     @SerializedName("mounted_height")
     private float mountedYOffset;
@@ -57,15 +57,15 @@ public class ChairModelInfo implements IModelInfo {
     private boolean isGeckoModel = false;
 
     @Expose(deserialize = false, serialize = false)
-    private ResourceLocation cacheIconId = null;
+    private Identifier cacheIconId = null;
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return texture;
     }
 
     @Override
-    public List<ResourceLocation> getExtraTextures() {
+    public List<Identifier> getExtraTextures() {
         return extraTextures;
     }
 
@@ -81,17 +81,17 @@ public class ChairModelInfo implements IModelInfo {
 
     @Override
     @Nullable
-    public List<ResourceLocation> getAnimation() {
+    public List<Identifier> getAnimation() {
         return animation;
     }
 
     @Override
-    public ResourceLocation getModelId() {
+    public Identifier getModelId() {
         return modelId;
     }
 
     @Override
-    public ResourceLocation getModel() {
+    public Identifier getModel() {
         return model;
     }
 
@@ -122,13 +122,13 @@ public class ChairModelInfo implements IModelInfo {
     }
 
     @Override
-    public ResourceLocation getCacheIconId() {
+    public Identifier getCacheIconId() {
         return cacheIconId;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public ChairModelInfo extra(ResourceLocation newModelId, ResourceLocation texture) {
+    public ChairModelInfo extra(Identifier newModelId, Identifier texture) {
         ChairModelInfo cloneInfo = new ChairModelInfo();
         cloneInfo.modelId = newModelId;
         cloneInfo.texture = texture;
@@ -160,10 +160,10 @@ public class ChairModelInfo implements IModelInfo {
         this.cacheIconId = IModelInfo.createCacheIconId(modelId);
         // 如果 model 或 texture 为空，自动生成默认位置的模型
         if (model == null) {
-            model = ResourceLocation.fromNamespaceAndPath(modelId.getNamespace(), "models/entity/" + modelId.getPath() + ".json");
+            model = Identifier.fromNamespaceAndPath(modelId.getNamespace(), "models/entity/" + modelId.getPath() + ".json");
         }
         if (texture == null) {
-            texture = ResourceLocation.fromNamespaceAndPath(modelId.getNamespace(), "textures/entity/" + modelId.getPath() + ".png");
+            texture = Identifier.fromNamespaceAndPath(modelId.getNamespace(), "textures/entity/" + modelId.getPath() + ".png");
         }
         // 如果名称为空，自动生成本地化名称
         if (name == null) {

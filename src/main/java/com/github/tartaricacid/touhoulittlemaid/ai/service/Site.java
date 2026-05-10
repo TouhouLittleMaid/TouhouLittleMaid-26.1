@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.service;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -71,7 +71,7 @@ public interface Site {
      * 该站点的图标
      * 用于游戏内配置站点功能的显示
      */
-    ResourceLocation icon();
+    Identifier icon();
 
     /**
      * 该站点的 URL

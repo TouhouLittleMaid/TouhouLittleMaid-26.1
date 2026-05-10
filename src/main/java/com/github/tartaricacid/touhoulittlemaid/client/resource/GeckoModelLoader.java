@@ -17,7 +17,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.json.JsonAnimatio
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.ChainedJsonException;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.common.NeoForge;
@@ -32,11 +32,11 @@ import java.util.Map;
 import static com.github.tartaricacid.touhoulittlemaid.api.event.client.DefaultGeckoAnimationEvent.AnimationType.*;
 
 public class GeckoModelLoader {
-    public static final ResourceLocation DEFAULT_MAID_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid.animation.json");
-    public static final ResourceLocation DEFAULT_TAC_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/tac.animation.json");
-    public static final ResourceLocation DEFAULT_CHAIR_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/chair.animation.json");
-    public static final ResourceLocation DEFAULT_ISS_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/iss.animation.json");
-    public static final ResourceLocation DEFAULT_IM_ANIMATION = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/im.animation.json");
+    public static final Identifier DEFAULT_MAID_ANIMATION = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid.animation.json");
+    public static final Identifier DEFAULT_TAC_ANIMATION = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/tac.animation.json");
+    public static final Identifier DEFAULT_CHAIR_ANIMATION = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/chair.animation.json");
+    public static final Identifier DEFAULT_ISS_ANIMATION = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/iss.animation.json");
+    public static final Identifier DEFAULT_IM_ANIMATION = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/im.animation.json");
     public static AnimationFile DEFAULT_MAID_ANIMATION_FILE = new AnimationFile();
     public static AnimationFile DEFAULT_CHAIR_ANIMATION_FILE = new AnimationFile();
     public static AnimationFile DEFAULT_TAC_ANIMATION_FILE = new AnimationFile();
@@ -48,8 +48,8 @@ public class GeckoModelLoader {
         loadDefaultAnimation();
     }
 
-    public static void registerGeo(ResourceLocation id, InputStream inputStream) {
-        Map<ResourceLocation, GeoModel> geoModels = GeckoLibCache.getInstance().getGeoModels();
+    public static void registerGeo(Identifier id, InputStream inputStream) {
+        Map<Identifier, GeoModel> geoModels = GeckoLibCache.getInstance().getGeoModels();
         RawGeoModel rawModel = Converter.fromInputStream(inputStream);
         if (rawModel.getFormatVersion() == FormatVersion.NEW) {
             RawGeometryTree rawGeometryTree = RawGeometryTree.parseHierarchy(rawModel);
@@ -58,7 +58,7 @@ public class GeckoModelLoader {
         }
     }
 
-    public static void registerMaidAnimations(ResourceLocation id, AnimationFile animationFile) {
+    public static void registerMaidAnimations(Identifier id, AnimationFile animationFile) {
         DEFAULT_MAID_ANIMATION_FILE.animations().forEach((name, action) -> {
             if (!animationFile.animations().containsKey(name)) {
                 animationFile.putAnimation(name, action);
@@ -83,7 +83,7 @@ public class GeckoModelLoader {
         GeckoLibCache.getInstance().getAnimations().put(id, animationFile);
     }
 
-    public static void registerChairAnimations(ResourceLocation id, AnimationFile animationFile) {
+    public static void registerChairAnimations(Identifier id, AnimationFile animationFile) {
         DEFAULT_CHAIR_ANIMATION_FILE.animations().forEach((name, action) -> {
             if (!animationFile.animations().containsKey(name)) {
                 animationFile.putAnimation(name, action);

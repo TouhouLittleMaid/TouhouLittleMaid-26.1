@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,10 +20,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public class BackpackManager {
-    private static Map<ResourceLocation, IMaidBackpack> BACKPACK_ID_MAP;
+    private static Map<Identifier, IMaidBackpack> BACKPACK_ID_MAP;
     private static Map<Item, IMaidBackpack> BACKPACK_ITEM_MAP;
     @OnlyIn(Dist.CLIENT)
-    private static Map<ResourceLocation, Pair<EntityModel<EntityMaid>, ResourceLocation>> BACKPACK_MODEL_MAP;
+    private static Map<Identifier, Pair<EntityModel<EntityMaid>, Identifier>> BACKPACK_MODEL_MAP;
     private static IMaidBackpack EMPTY_BACKPACK;
 
     private BackpackManager() {
@@ -66,7 +66,7 @@ public class BackpackManager {
         return EMPTY_BACKPACK;
     }
 
-    public static Optional<IMaidBackpack> findBackpack(ResourceLocation id) {
+    public static Optional<IMaidBackpack> findBackpack(Identifier id) {
         return Optional.ofNullable(BACKPACK_ID_MAP.get(id));
     }
 
@@ -81,8 +81,8 @@ public class BackpackManager {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static Optional<Pair<EntityModel<EntityMaid>, ResourceLocation>> findBackpackModel(ResourceLocation id) {
-        Pair<EntityModel<EntityMaid>, ResourceLocation> pair = BACKPACK_MODEL_MAP.get(id);
+    public static Optional<Pair<EntityModel<EntityMaid>, Identifier>> findBackpackModel(Identifier id) {
+        Pair<EntityModel<EntityMaid>, Identifier> pair = BACKPACK_MODEL_MAP.get(id);
         if (pair == null) {
             return Optional.empty();
         }

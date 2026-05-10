@@ -3,8 +3,8 @@ package com.github.tartaricacid.touhoulittlemaid.datagen;
 import com.github.tartaricacid.touhoulittlemaid.loot.LootTableTypeCondition;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class GlobalLootModifier extends GlobalLootModifierProvider {
-    private static final ResourceLocation CHEST = ResourceLocation.withDefaultNamespace("chest");
-    private static final ResourceLocation FISHING = ResourceLocation.withDefaultNamespace("fishing");
+    private static final Identifier CHEST = Identifier.withDefaultNamespace("chest");
+    private static final Identifier FISHING = Identifier.withDefaultNamespace("fishing");
 
     public GlobalLootModifier(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, String modId) {
         super(output, registries, modId);

@@ -4,8 +4,8 @@ import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.AbstractMaidCon
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.GameContextRegister;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
@@ -87,7 +87,7 @@ public final class WorldContexts {
         @Override
         public String getValue(EntityMaid maid) {
             Biome biome = maid.level.getBiome(maid.blockPosition()).value();
-            ResourceLocation key = maid.level.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome);
+            Identifier key = maid.level.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome);
             return key == null ? UNKNOWN_BIOME : key.toString();
         }
     }

@@ -59,10 +59,10 @@ public class MaidRangedWalkToTarget {
     }
 
     private static boolean shouldEraseWalkTarget(EntityMaid maid, LivingEntity target) {
-        float restrictRadius = maid.getRestrictRadius() - 2;
+        float restrictRadius = maid.getHomeRadius() - 2;
         double checkRadius = 8;
-        if (maid.hasRestriction()) {
-            BlockPos center = maid.getRestrictCenter();
+        if (maid.hasHome()) {
+            BlockPos center = maid.getHomePosition();
             checkRadius = Math.sqrt(target.distanceToSqr(center.getX(), center.getY(), center.getZ()));
         } else if (maid.getOwner() instanceof Player player) {
             checkRadius = target.distanceTo(player);

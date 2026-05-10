@@ -12,13 +12,13 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.TabIndex;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -35,7 +35,7 @@ import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 @IPNGuiHint(button = IPNButton.SHOW_EDITOR, horizontalOffset = -5)
 @IPNGuiHint(button = IPNButton.SETTINGS, horizontalOffset = -5)
 public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContainer> implements IBackpackContainerScreen {
-    private static final ResourceLocation CURIOS_BG = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_curios.png");
+    private static final Identifier CURIOS_BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_curios.png");
 
     private static final int PREV = 0;
     private static final int NEXT = 1;
@@ -78,7 +78,7 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
         // 添加 curios 兼容按钮
         CuriosButton curiosButton = new CuriosButton(leftPos, topPos, true, btn -> {
             OpenMaidGuiPackage message = new OpenMaidGuiPackage(maid.getId(), TabIndex.MAIN);
-            PacketDistributor.sendToServer(message);
+            ClientPacketDistributor.sendToServer(message);
         });
         this.addRenderableWidget(curiosButton);
 
@@ -104,7 +104,7 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
     }
 
     @Override
-    protected void renderAddition(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         // 如果大于 36 个 Curios 槽位，渲染页数
         if (this.maxPages > 0) {
             MutableComponent page = Component.literal("%d/%d".formatted(this.page + 1, maxPages + 1));
@@ -118,7 +118,7 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
     }
 
     @Override
-    protected void renderAdditionTransTooltip(GuiGraphics graphics, int x, int y) {
+    protected void renderAdditionTransTooltip(GuiGraphicsExtractor graphics, int x, int y) {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer != null && clientPlayer.inventoryMenu.getCarried().isEmpty() && this.getSlotUnderMouse() != null) {
             Slot slot = this.getSlotUnderMouse();
@@ -130,7 +130,7 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
         super.renderBg(graphics, partialTicks, x, y);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, CURIOS_BG);

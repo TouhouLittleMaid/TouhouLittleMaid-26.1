@@ -6,7 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -63,7 +63,7 @@ public class TagBlock extends BlockTagsProvider {
     /**
      * CarryOn 黑名单标签，被此标签包含的方块将无法被 CarryOn 抱起
      */
-    public static final TagKey<Block> CARRYON_BLOCK_BLACKLIST = createTagKey(ResourceLocation.parse("carryon:block_blacklist"));
+    public static final TagKey<Block> CARRYON_BLOCK_BLACKLIST = createTagKey(Identifier.parse("carryon:block_blacklist"));
 
     public TagBlock(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider,
                     String modId, @Nullable ExistingFileHelper existingFileHelper) {
@@ -71,10 +71,10 @@ public class TagBlock extends BlockTagsProvider {
     }
 
     public static TagKey<Block> createTagKey(String name) {
-        return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name));
+        return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name));
     }
 
-    public static TagKey<Block> createTagKey(ResourceLocation resourceLocation) {
+    public static TagKey<Block> createTagKey(Identifier resourceLocation) {
         return TagKey.create(Registries.BLOCK, resourceLocation);
     }
 
@@ -87,7 +87,7 @@ public class TagBlock extends BlockTagsProvider {
 
         tag(ALTAR_TORII)
                 .add(Blocks.RED_WOOL, Blocks.RED_CONCRETE)
-                .addOptional(ResourceLocation.parse("biomesoplenty:redwood_planks"));
+                .addOptional(Identifier.parse("biomesoplenty:redwood_planks"));
         tag(ALTAR_PILLAR).addTag(BlockTags.LOGS);
 
         var blacklist = tag(CARRYON_BLOCK_BLACKLIST);
@@ -96,100 +96,100 @@ public class TagBlock extends BlockTagsProvider {
 
         tag(MAID_SNACK_STAND_BLOCK)
                 .add(InitBlocks.SNACK_CABINET.get())
-                .addOptionalTag(ResourceLocation.parse("kaleidoscope_cookery:table"));
+                .addOptionalTag(Identifier.parse("kaleidoscope_cookery:table"));
 
         tag(SNACK_CABINET_FULL)
                 // 蛋糕全部是完整玻璃橱窗
                 .add(Blocks.CAKE)
-                .addOptionalTag(ResourceLocation.parse("forge:cakes"))
-                .addOptionalTag(ResourceLocation.parse("c:cakes"))
-                .addOptionalTag(ResourceLocation.parse("jmc:cakes"))
+                .addOptionalTag(Identifier.parse("forge:cakes"))
+                .addOptionalTag(Identifier.parse("c:cakes"))
+                .addOptionalTag(Identifier.parse("jmc:cakes"))
                 // 农夫乐事的盛宴
-                .addOptional(ResourceLocation.parse("farmersdelight:roast_chicken_block"))
-                .addOptional(ResourceLocation.parse("farmersdelight:stuffed_pumpkin_block"))
-                .addOptional(ResourceLocation.parse("farmersdelight:honey_glazed_ham_block"))
-                .addOptional(ResourceLocation.parse("farmersdelight:shepherds_pie_block"))
-                .addOptional(ResourceLocation.parse("farmersdelight:rice_roll_medley_block"));
+                .addOptional(Identifier.parse("farmersdelight:roast_chicken_block"))
+                .addOptional(Identifier.parse("farmersdelight:stuffed_pumpkin_block"))
+                .addOptional(Identifier.parse("farmersdelight:honey_glazed_ham_block"))
+                .addOptional(Identifier.parse("farmersdelight:shepherds_pie_block"))
+                .addOptional(Identifier.parse("farmersdelight:rice_roll_medley_block"));
 
         tag(SNACK_CABINET_HALF)
                 // 农夫乐事的糕点
-                .addOptional(ResourceLocation.parse("farmersdelight:apple_pie"))
-                .addOptional(ResourceLocation.parse("farmersdelight:sweet_berry_cheesecake"))
-                .addOptional(ResourceLocation.parse("farmersdelight:chocolate_pie"))
+                .addOptional(Identifier.parse("farmersdelight:apple_pie"))
+                .addOptional(Identifier.parse("farmersdelight:sweet_berry_cheesecake"))
+                .addOptional(Identifier.parse("farmersdelight:chocolate_pie"))
                 // 森罗物语的方块菜，后续应该让森罗物语添加专门的 tag
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:dark_cuisine"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:suspicious_stir_fry"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:slime_ball_meal"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:fondant_pie"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:dongpo_pork"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:fondant_spider_eye"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:chorus_fried_egg"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:braised_fish"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:golden_salad"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:spicy_chicken"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:yakitori"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:pan_seared_knight_steak"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:stargazy_pie"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:sweet_and_sour_ender_pearls"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:crystal_lamb_chop"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:blaze_lamb_chop"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:frost_lamb_chop"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:nether_style_sashimi"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:end_style_sashimi"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:desert_style_sashimi"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:tundra_style_sashimi"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:cold_style_sashimi"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:shengjian_mantou"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:candied_potato"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:dough_drop_soup"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:stuffed_tiger_skin_pepper"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:spicy_rabbit_head"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:four_joy_meatball_soup"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:numbing_spicy_chicken"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:fried_caterpillar"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:fried_spring_roll"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:spicy_blood_stew"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:fruit_platter"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:braised_pork_ribs"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:cold_roasted_meat"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:oil_splashed_fish"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:brown_mushroom_pot_soup"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:red_mushroom_pot_soup"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:warped_fungus_pot_soup"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:crimson_fungus_pot_soup"))
-                .addOptional(ResourceLocation.parse("kaleidoscope_cookery:buddha_jumps_over_the_wall"));
+                .addOptional(Identifier.parse("kaleidoscope_cookery:dark_cuisine"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:suspicious_stir_fry"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:slime_ball_meal"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:fondant_pie"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:dongpo_pork"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:fondant_spider_eye"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:chorus_fried_egg"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:braised_fish"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:golden_salad"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:spicy_chicken"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:yakitori"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:pan_seared_knight_steak"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:stargazy_pie"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:sweet_and_sour_ender_pearls"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:crystal_lamb_chop"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:blaze_lamb_chop"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:frost_lamb_chop"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:nether_style_sashimi"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:end_style_sashimi"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:desert_style_sashimi"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:tundra_style_sashimi"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:cold_style_sashimi"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:shengjian_mantou"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:candied_potato"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:dough_drop_soup"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:stuffed_tiger_skin_pepper"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:spicy_rabbit_head"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:four_joy_meatball_soup"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:numbing_spicy_chicken"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:fried_caterpillar"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:fried_spring_roll"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:spicy_blood_stew"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:fruit_platter"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:braised_pork_ribs"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:cold_roasted_meat"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:oil_splashed_fish"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:brown_mushroom_pot_soup"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:red_mushroom_pot_soup"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:warped_fungus_pot_soup"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:crimson_fungus_pot_soup"))
+                .addOptional(Identifier.parse("kaleidoscope_cookery:buddha_jumps_over_the_wall"));
 
         tag(MAID_AVOID_BLOCK)
                 // 怎么能在吃饭的桌子上跳来跳去呢
                 .addTag(MAID_SNACK_STAND_BLOCK)
                 // 机械动力
-                .addOptional(ResourceLocation.parse("create:mechanical_saw"))
-                .addOptional(ResourceLocation.parse("create:crushing_wheel"))
-                .addOptional(ResourceLocation.parse("create:crushing_wheel_controller"))
+                .addOptional(Identifier.parse("create:mechanical_saw"))
+                .addOptional(Identifier.parse("create:crushing_wheel"))
+                .addOptional(Identifier.parse("create:crushing_wheel_controller"))
                 // 黄蜂领域
-                .addOptional(ResourceLocation.parse("the_bumblezone:heavy_air"))
-                .addOptional(ResourceLocation.parse("the_bumblezone:windy_air"))
+                .addOptional(Identifier.parse("the_bumblezone:heavy_air"))
+                .addOptional(Identifier.parse("the_bumblezone:windy_air"))
                 // 农夫乐事
-                .addOptional(ResourceLocation.parse("farmersdelight:stove"))
+                .addOptional(Identifier.parse("farmersdelight:stove"))
                 // 暮色森林
-                .addOptional(ResourceLocation.parse("twilightforest:hedge"))
-                .addOptional(ResourceLocation.parse("twilightforest:fiery_block"))
-                .addOptional(ResourceLocation.parse("twilightforest:knightmetal_block"))
+                .addOptional(Identifier.parse("twilightforest:hedge"))
+                .addOptional(Identifier.parse("twilightforest:fiery_block"))
+                .addOptional(Identifier.parse("twilightforest:knightmetal_block"))
                 // Alex 的洞穴
-                .addOptional(ResourceLocation.parse("alexscaves:primal_magma"))
-                .addOptional(ResourceLocation.parse("alexscaves:primal_magma"))
+                .addOptional(Identifier.parse("alexscaves:primal_magma"))
+                .addOptional(Identifier.parse("alexscaves:primal_magma"))
                 // MEK 反应堆的聚变堆和超临界移相器
-                .addOptional(ResourceLocation.parse("mekanismgenerators:fusion_reactor_frame"))
-                .addOptional(ResourceLocation.parse("mekanism:sps_casing"))
+                .addOptional(Identifier.parse("mekanismgenerators:fusion_reactor_frame"))
+                .addOptional(Identifier.parse("mekanism:sps_casing"))
                 // 机械动力附属的铁丝网
-                .addOptional(ResourceLocation.parse("createaddition:barbed_wire"))
+                .addOptional(Identifier.parse("createaddition:barbed_wire"))
                 // 沉浸工程的铁丝网
-                .addOptional(ResourceLocation.parse("immersiveengineering:razor_wire"))
+                .addOptional(Identifier.parse("immersiveengineering:razor_wire"))
                 // 铁魔法的两个火堆
-                .addOptional(ResourceLocation.parse("irons_spellbooks:brazier"))
-                .addOptional(ResourceLocation.parse("irons_spellbooks:brazier_soul"))
+                .addOptional(Identifier.parse("irons_spellbooks:brazier"))
+                .addOptional(Identifier.parse("irons_spellbooks:brazier_soul"))
                 // 刷怪塔实用设备的锥刺和研磨机
-                .addOptional(ResourceLocation.parse("mob_grinding_utils:spikes"))
-                .addOptional(ResourceLocation.parse("mob_grinding_utils:saw"));
+                .addOptional(Identifier.parse("mob_grinding_utils:spikes"))
+                .addOptional(Identifier.parse("mob_grinding_utils:saw"));
     }
 }

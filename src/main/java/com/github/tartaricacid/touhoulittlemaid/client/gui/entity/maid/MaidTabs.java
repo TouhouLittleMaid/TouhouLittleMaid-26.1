@@ -22,19 +22,19 @@ public class MaidTabs<T extends AbstractMaidContainer> {
 
     public MaidTabButton[] getTabs(AbstractMaidContainerGui<T> screen) {
         MaidTabButton main = new MaidTabButton(leftPos + 94, topPos + 5, 107, "main",
-                (b) -> PacketDistributor.sendToServer(new ToggleTabPackage(entityId, TabIndex.MAIN)));
+                (b) -> ClientPacketDistributor.sendToServer(new ToggleTabPackage(entityId, TabIndex.MAIN)));
         if (screen instanceof IBackpackContainerScreen) {
             main.active = false;
         }
 
         MaidTabButton taskConfig = new MaidTabButton(leftPos + 119, topPos + 5, 132, "task_config",
-                (b) -> PacketDistributor.sendToServer(new ToggleTabPackage(entityId, TabIndex.TASK_CONFIG)));
+                (b) -> ClientPacketDistributor.sendToServer(new ToggleTabPackage(entityId, TabIndex.TASK_CONFIG)));
         if (screen instanceof MaidTaskConfigGui<?>) {
             taskConfig.active = false;
         }
 
         MaidTabButton maidConfig = new MaidTabButton(leftPos + 144, topPos + 5, 157, "maid_config",
-                (b) -> PacketDistributor.sendToServer(new ToggleTabPackage(entityId, TabIndex.MAID_CONFIG)));
+                (b) -> ClientPacketDistributor.sendToServer(new ToggleTabPackage(entityId, TabIndex.MAID_CONFIG)));
         if (screen instanceof MaidConfigContainerGui) {
             maidConfig.active = false;
         }

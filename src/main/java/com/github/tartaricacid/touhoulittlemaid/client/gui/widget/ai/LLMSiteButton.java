@@ -7,16 +7,16 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveLLMSitePa
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class LLMSiteButton extends Button {
-    private static final ResourceLocation MISC = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/ai_chat/misc.png");
+    private static final Identifier MISC = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/ai_chat/misc.png");
 
     private final LLMSite site;
     private final AIChatSettingsLLMSiteScreen parent;
@@ -37,7 +37,7 @@ public class LLMSiteButton extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0xbf_090909, 0xbf_090909);
         if (this.isHoveredOrFocused()) {
             graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x2f_F3EFE0, 0x2f_F3EFE0);
@@ -63,7 +63,7 @@ public class LLMSiteButton extends Button {
 
         // 启用按钮
         if (right - 72 <= mouseX && mouseX <= right - 48) {
-            PacketDistributor.sendToServer(SaveLLMSitePacket.toggle(site.id(), !site.enabled()));
+            ClientPacketDistributor.sendToServer(SaveLLMSitePacket.toggle(site.id(), !site.enabled()));
             return;
         }
 
@@ -79,7 +79,7 @@ public class LLMSiteButton extends Button {
             Component title = Component.translatable("ai.touhou_little_maid.chat.settings.hub.delete_confirm", this.getMessage());
             mc.setScreen(new ConfirmScreen(yes -> {
                 if (yes) {
-                    PacketDistributor.sendToServer(SaveLLMSitePacket.delete(site.id()));
+                    ClientPacketDistributor.sendToServer(SaveLLMSitePacket.delete(site.id()));
                 }
                 mc.setScreen(parent);
             }, title, Component.empty()));
@@ -87,7 +87,7 @@ public class LLMSiteButton extends Button {
     }
 
     @Override
-    public void renderString(GuiGraphics graphics, Font font, int color) {
+    public void renderString(GuiGraphicsExtractor graphics, Font font, int color) {
         graphics.drawString(font, this.getMessage(), this.getX() + 28, this.getY() + (this.height - 8) / 2,
                 this.site.enabled() ? 0xFF999999 : 0xFF444444, false);
     }

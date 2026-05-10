@@ -17,14 +17,14 @@ import java.util.List;
 
 
 @VisibleForDebug
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, modid = TouhouLittleMaid.MOD_ID)
+@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID)
 public class SendMaidDebugDataEvent {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         if (!TouhouLittleMaid.DEBUG) {
             return;
         }
-        if (event.getEntity().level.isClientSide || !(event.getEntity() instanceof ServerPlayer serverPlayer)) {
+        if (event.getEntity().level.isClientSide() || !(event.getEntity() instanceof ServerPlayer serverPlayer)) {
             return;
         }
         // 每 4 tick 发送一次数据

@@ -12,20 +12,20 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.text.DecimalFormat;
 
 public class MaidBeaconGui extends Screen {
-    private static final ResourceLocation BG = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_beacon.png");
+    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_beacon.png");
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
     private final TileEntityMaidBeacon beacon;
 
@@ -53,17 +53,17 @@ public class MaidBeaconGui extends Screen {
         this.addStorageAndTakeButton();
         this.addRenderableWidget(Button.builder(getOverflowDeleteButtonText(this.overflowDelete), b -> {
             this.overflowDelete = !this.overflowDelete;
-            PacketDistributor.sendToServer(new SetBeaconOverflowPackage(beacon.getBlockPos(), this.overflowDelete));
+            ClientPacketDistributor.sendToServer(new SetBeaconOverflowPackage(beacon.getBlockPos(), this.overflowDelete));
             this.init();
         }).pos(leftPos + 118, topPos + 94).size(154, 20).build());
     }
 
     private void addStorageAndTakeButton() {
         this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.maid_beacon.add_one")
-                , b -> PacketDistributor.sendToServer(new StorageAndTakePowerPackage(beacon.getBlockPos(), 1, true))).pos(leftPos + 118, topPos + 72).size(76, 20).build());
+                , b -> ClientPacketDistributor.sendToServer(new StorageAndTakePowerPackage(beacon.getBlockPos(), 1, true))).pos(leftPos + 118, topPos + 72).size(76, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.maid_beacon.min_one")
-                , b -> PacketDistributor.sendToServer(new StorageAndTakePowerPackage(beacon.getBlockPos(), 1, false))).pos(leftPos + 196, topPos + 72).size(76, 20).build());
+                , b -> ClientPacketDistributor.sendToServer(new StorageAndTakePowerPackage(beacon.getBlockPos(), 1, false))).pos(leftPos + 196, topPos + 72).size(76, 20).build());
     }
 
     private void addEffectButton(int start, int spacing, int y) {
@@ -90,7 +90,7 @@ public class MaidBeaconGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
         graphics.blit(BG, leftPos, topPos + 2, 0, 0, 142, 111);
         graphics.blit(BG, leftPos + 118, topPos + 1, 44, 111, 154, 15);
@@ -128,7 +128,7 @@ public class MaidBeaconGui extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    private void renderPlayerPower(GuiGraphics graphics) {
+    private void renderPlayerPower(GuiGraphicsExtractor graphics) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player != null) {
             PowerAttachment power = player.getData(InitDataAttachment.POWER_NUM);
@@ -143,11 +143,11 @@ public class MaidBeaconGui extends Screen {
                 Component.translatable("gui.touhou_little_maid.maid_beacon.overflow_delete_false");
     }
 
-    private void drawCenteredString(GuiGraphics graphics, Font font, String text, int pX, int pY, int color) {
+    private void drawCenteredString(GuiGraphicsExtractor graphics, Font font, String text, int pX, int pY, int color) {
         graphics.drawString(font, text, pX - font.width(text) / 2, pY, color, false);
     }
 
-    private void drawCenteredString(GuiGraphics graphics, Font font, Component text, int pX, int pY, int color) {
+    private void drawCenteredString(GuiGraphicsExtractor graphics, Font font, Component text, int pX, int pY, int color) {
         graphics.drawString(font, text, pX - font.width(text) / 2, pY, color, false);
     }
 }

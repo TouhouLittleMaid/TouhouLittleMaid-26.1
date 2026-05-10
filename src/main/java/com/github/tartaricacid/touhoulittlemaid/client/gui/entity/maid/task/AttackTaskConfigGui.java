@@ -10,13 +10,13 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.TaskCon
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetAttackListPackage;
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
@@ -40,10 +40,10 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil
 @IPNGuiHint(button = IPNButton.SHOW_EDITOR, horizontalOffset = -5)
 @IPNGuiHint(button = IPNButton.SETTINGS, horizontalOffset = -5)
 public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> {
-    private static final ResourceLocation BG = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/attack_task_config.png");
+    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/attack_task_config.png");
 
-    private final Map<ResourceLocation, MonsterType> attackGroups;
-    private final List<ResourceLocation> attackGroupsKey;
+    private final Map<Identifier, MonsterType> attackGroups;
+    private final List<Identifier> attackGroupsKey;
     private EditBox inputField;
     private int page = 0;
 
@@ -57,11 +57,11 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
     private void sortKey() {
         this.attackGroupsKey.clear();
 
-        List<ResourceLocation> hostile = Lists.newArrayList();
-        List<ResourceLocation> neutral = Lists.newArrayList();
-        List<ResourceLocation> friendly = Lists.newArrayList();
+        List<Identifier> hostile = Lists.newArrayList();
+        List<Identifier> neutral = Lists.newArrayList();
+        List<Identifier> friendly = Lists.newArrayList();
 
-        for (ResourceLocation id : attackGroups.keySet()) {
+        for (Identifier id : attackGroups.keySet()) {
             if (attackGroups.get(id) == MonsterType.HOSTILE) {
                 hostile.add(id);
             }
@@ -108,7 +108,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
             if (index >= attackGroupsKey.size()) {
                 return;
             }
-            ResourceLocation id = attackGroupsKey.get(index);
+            Identifier id = attackGroupsKey.get(index);
             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(id);
             Component name = type.getDescription();
             int yOffset = startTop + 31 + 13 * i;
@@ -124,7 +124,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
         if (!isValidResourceLocation(value)) {
             return;
         }
-        ResourceLocation id = ResourceLocation.parse(value);
+        Identifier id = Identifier.parse(value);
         if (BuiltInRegistries.ENTITY_TYPE.containsKey(id)) {
             this.attackGroups.put(id, MonsterType.NEUTRAL);
             this.sortKey();
@@ -132,7 +132,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
         }
     }
 
-    public void removeMonsterType(ResourceLocation id) {
+    public void removeMonsterType(Identifier id) {
         this.attackGroups.remove(id);
         this.sortKey();
         super.init();
@@ -146,7 +146,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
     }
 
     @Override
-    protected void renderAddition(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         this.inputField.render(graphics, mouseX, mouseY, partialTicks);
 
         MutableComponent pageText = Component.literal(String.format("%d/%d", this.page + 1, (this.attackGroupsKey.size() - 1) / 7 + 1));
@@ -155,7 +155,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
         super.renderBg(graphics, partialTicks, x, y);
         graphics.blit(BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
@@ -170,11 +170,11 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
 
     @Override
     public void onClose() {
-        PacketDistributor.sendToServer(new SetAttackListPackage(this.getMaid().getId(), this.attackGroups));
+        ClientPacketDistributor.sendToServer(new SetAttackListPackage(this.getMaid().getId(), this.attackGroups));
         super.onClose();
     }
 
-    public Map<ResourceLocation, MonsterType> getAttackGroups() {
+    public Map<Identifier, MonsterType> getAttackGroups() {
         return attackGroups;
     }
 }

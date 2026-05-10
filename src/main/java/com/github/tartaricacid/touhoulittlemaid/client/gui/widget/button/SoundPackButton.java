@@ -9,19 +9,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public class SoundPackButton extends FlatColorButton {
-    private static final ResourceLocation ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_custom_sound.png");
+    private static final Identifier ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_custom_sound.png");
     private final SoundPackInfo info;
     private boolean isUse = false;
 
@@ -31,9 +31,9 @@ public class SoundPackButton extends FlatColorButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         super.renderWidget(graphics, mouseX, mouseY, pPartialTick);
-        ResourceLocation icon = info.getIcon();
+        Identifier icon = info.getIcon();
         if (icon == null) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, ICON);
@@ -64,7 +64,7 @@ public class SoundPackButton extends FlatColorButton {
 
     @Override
     @SuppressWarnings("all")
-    public void renderString(GuiGraphics graphics, Font font, int pColor) {
+    public void renderString(GuiGraphicsExtractor graphics, Font font, int pColor) {
         int startX = this.getX() + 42;
         int startY = this.getY() + 7;
 
@@ -98,7 +98,7 @@ public class SoundPackButton extends FlatColorButton {
         return (int) System.currentTimeMillis() / 50;
     }
 
-    private void checkIconAnimation(SoundPackInfo info, ResourceLocation icon) {
+    private void checkIconAnimation(SoundPackInfo info, Identifier icon) {
         AbstractTexture iconText = Minecraft.getInstance().getTextureManager().getTexture(icon);
         if (iconText instanceof SizeTexture) {
             int width = ((SizeTexture) iconText).getWidth();

@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.init.registry;
 
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -27,7 +27,7 @@ public final class MobSpawnInfoRegistry {
                 // 优先判断等于 0 的情况，减少性能消耗
                 return;
             }
-            ResourceLocation dimension = level.dimension().location();
+            Identifier dimension = level.dimension().location();
             if (event.getMobCategory() == MobCategory.MONSTER && dimensionIsOkay(dimension)) {
                 List<MobSpawnSettings.SpawnerData> spawnerData = event.getSpawnerDataList();
                 boolean canZombieSpawn = spawnerData.stream().anyMatch(data -> data.type.equals(EntityType.ZOMBIE));
@@ -41,7 +41,7 @@ public final class MobSpawnInfoRegistry {
         }
     }
 
-    private static boolean dimensionIsOkay(ResourceLocation id) {
+    private static boolean dimensionIsOkay(Identifier id) {
         return !MAID_FAIRY_BLACKLIST_DIMENSION.get().contains(id.toString());
     }
 }

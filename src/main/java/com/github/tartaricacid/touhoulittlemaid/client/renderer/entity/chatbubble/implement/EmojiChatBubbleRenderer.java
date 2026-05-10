@@ -9,15 +9,15 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.listener.EmojiRe
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class EmojiChatBubbleRenderer implements IChatBubbleRenderer {
     private final int width;
     private final int height;
-    private final ResourceLocation bg;
-    private final ResourceLocation emoji;
+    private final Identifier bg;
+    private final Identifier emoji;
 
-    public EmojiChatBubbleRenderer(ResourceLocation bg) {
+    public EmojiChatBubbleRenderer(Identifier bg) {
         this.bg = bg;
         var randomEmojis = EmojiReloadListener.getRandomEmojis();
         if (randomEmojis.isPresent()) {
@@ -31,7 +31,7 @@ public class EmojiChatBubbleRenderer implements IChatBubbleRenderer {
             }
         } else {
             // 如果没有表情资源，就使用一个默认的空白资源
-            this.emoji = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/chat_bubble/maid_emoji/emoji_0.png");
+            this.emoji = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/chat_bubble/maid_emoji/emoji_0.png");
             this.width = 24;
             this.height = 24;
         }
@@ -67,7 +67,7 @@ public class EmojiChatBubbleRenderer implements IChatBubbleRenderer {
     }
 
     @Override
-    public ResourceLocation getBackgroundTexture() {
+    public Identifier getBackgroundTexture() {
         return this.bg;
     }
 }

@@ -7,18 +7,18 @@ import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityDanmaku;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class EntityDanmakuRenderer extends EntityRenderer<EntityDanmaku> {
-    private static final ResourceLocation DANMAKU_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/danmaku.png");
-    private static final RenderType RENDER_TYPE = RenderType.itemEntityTranslucentCull(DANMAKU_TEXTURE);
+    private static final Identifier DANMAKU_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/danmaku.png");
+    private static final RenderTypes RENDER_TYPE = RenderTypes.itemEntityTranslucentCull(DANMAKU_TEXTURE);
 
     public EntityDanmakuRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager);
@@ -60,7 +60,7 @@ public class EntityDanmakuRenderer extends EntityRenderer<EntityDanmaku> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityDanmaku entity) {
+    public Identifier getTextureLocation(EntityDanmaku entity) {
         return DANMAKU_TEXTURE;
     }
 }

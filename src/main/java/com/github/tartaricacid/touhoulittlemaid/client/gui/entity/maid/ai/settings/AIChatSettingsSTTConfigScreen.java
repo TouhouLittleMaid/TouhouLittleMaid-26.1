@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatCol
 import com.github.tartaricacid.touhoulittlemaid.client.sound.record.MicrophoneManager;
 import com.github.tartaricacid.touhoulittlemaid.config.GeneralConfig;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -131,7 +131,7 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
 
         MutableComponent enable = Component.translatable("config.touhou_little_maid.global_ai.stt_enable");
@@ -149,7 +149,7 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
         this.renderInputField(graphics, this.proxyInput, mouseX, mouseY, partialTick);
     }
 
-    private void renderInputField(GuiGraphics graphics, @Nullable EditBox box, int mouseX, int mouseY, float partialTick) {
+    private void renderInputField(GuiGraphicsExtractor graphics, @Nullable EditBox box, int mouseX, int mouseY, float partialTick) {
         if (box == null) {
             return;
         }

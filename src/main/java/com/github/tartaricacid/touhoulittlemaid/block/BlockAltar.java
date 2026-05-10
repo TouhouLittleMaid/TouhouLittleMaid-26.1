@@ -16,13 +16,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -127,7 +127,7 @@ public class BlockAltar extends Block implements EntityBlock {
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
         return this.getAltar(worldIn, pos).filter(altar -> handIn == InteractionHand.MAIN_HAND).map(altar -> {
             if (player.isShiftKeyDown() || player.getMainHandItem().isEmpty()) {
                 takeOutItem(worldIn, altar, player);
@@ -135,13 +135,13 @@ public class BlockAltar extends Block implements EntityBlock {
                 takeInOrCraft(worldIn, altar, player);
             }
             altar.refresh();
-            return ItemInteractionResult.sidedSuccess(worldIn.isClientSide);
+            return InteractionResult.sidedSuccess(worldIn.isClientSide());
         }).orElse(super.useItemOn(itemStack, state, worldIn, pos, player, handIn, hit));
     }
 
     @Override
     public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!worldIn.isClientSide && !state.is(newState.getBlock()) && !isMoving) {
+        if (!worldIn.isClientSide() && !state.is(newState.getBlock()) && !isMoving) {
             this.getAltar(worldIn, pos).ifPresent(altar -> {
                 ItemStack stack = altar.handler.getStackInSlot(0);
                 if (!stack.isEmpty()) {
@@ -154,7 +154,7 @@ public class BlockAltar extends Block implements EntityBlock {
 
     @Override
     public void onBlockExploded(BlockState state, Level world, BlockPos pos, Explosion explosion) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             this.getAltar(world, pos).ifPresent(altar -> this.restoreStorageBlock(world, pos, altar.getBlockPosList()));
         }
         super.onBlockExploded(state, world, pos, explosion);
@@ -162,7 +162,7 @@ public class BlockAltar extends Block implements EntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             this.getAltar(worldIn, pos).ifPresent(altar -> {
                 this.restoreStorageBlock(worldIn, pos, altar.getBlockPosList());
                 if (!player.isCreative()) {
@@ -257,7 +257,7 @@ public class BlockAltar extends Block implements EntityBlock {
         return Optional.empty();
     }
 
-    private void spawnResultEntity(Level world, Player playerIn, PowerAttachment power, ResourceLocation altarId,
+    private void spawnResultEntity(Level world, Player playerIn, PowerAttachment power, Identifier altarId,
                                    AltarRecipe altarRecipe, List<ItemStack> inventory, TileEntityAltar altar) {
         if (power.get() >= altarRecipe.getPower()) {
             power.min(altarRecipe.getPower());
@@ -273,7 +273,7 @@ public class BlockAltar extends Block implements EntityBlock {
                 InitTrigger.ALTAR_CRAFT.get().trigger(serverPlayer, altarId);
             }
         } else {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 playerIn.sendSystemMessage(Component.translatable("message.touhou_little_maid.altar.not_enough_power"));
             }
         }

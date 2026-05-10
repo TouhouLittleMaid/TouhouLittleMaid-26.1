@@ -8,7 +8,7 @@ import mcjty.theoneprobe.api.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class MaidProvider implements IProbeInfoEntityProvider {
-    private static final String ID = (ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid")).toString();
+    private static final String ID = (Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid")).toString();
 
     @Override
     public void addProbeEntityInfo(ProbeMode probeMode, IProbeInfo probeInfo, Player playerEntity, Level world, Entity entity, IProbeHitEntityData iProbeHitEntityData) {

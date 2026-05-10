@@ -13,7 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -55,8 +55,8 @@ public class ItemFilm extends AbstractStoreMaidItem {
             return;
         }
         CompoundTag data = compoundData.copyTag();
-        ResourceLocation entityId = ResourceLocation.tryParse(data.getString(ID_TAG));
-        ResourceLocation maidId = BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get());
+        Identifier entityId = Identifier.tryParse(data.getString(ID_TAG));
+        Identifier maidId = BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get());
 
         if (entityId != null && entityId.equals(maidId)) {
             EntityMaid maid = new EntityMaid(worldIn);
@@ -67,7 +67,7 @@ public class ItemFilm extends AbstractStoreMaidItem {
             maid.readAdditionalSaveData(data);
             maid.setPos(pos.getX(), pos.getY(), pos.getZ());
             // 实体生成必须在服务端应用
-            if (!worldIn.isClientSide) {
+            if (!worldIn.isClientSide()) {
                 worldIn.addFreshEntity(maid);
                 NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.EXPLOSION));
                 worldIn.playSound(null, pos, InitSounds.ALTAR_CRAFT.get(), SoundSource.VOICE, 1.0f, 1.0f);
@@ -76,7 +76,7 @@ public class ItemFilm extends AbstractStoreMaidItem {
             return;
         }
 
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             player.sendSystemMessage(Component.translatable("tooltips.touhou_little_maid.film.no_data.desc"));
         }
     }

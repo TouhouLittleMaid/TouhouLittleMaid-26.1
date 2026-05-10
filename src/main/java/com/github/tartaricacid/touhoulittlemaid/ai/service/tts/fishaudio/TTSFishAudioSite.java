@@ -9,7 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout.TTSSiteFormLayout;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ public final class TTSFishAudioSite implements TTSSite, SupportModelSelect {
     public static final String API_TYPE = TTSApiType.FISH_AUDIO.getName();
 
     private final String id;
-    private final ResourceLocation icon;
+    private final Identifier icon;
     private final Map<String, String> headers;
     private final Map<String, String> models;
 
@@ -26,7 +26,7 @@ public final class TTSFishAudioSite implements TTSSite, SupportModelSelect {
     private boolean enabled;
     private String secretKey;
 
-    public TTSFishAudioSite(String id, ResourceLocation icon, String url, boolean enabled,
+    public TTSFishAudioSite(String id, Identifier icon, String url, boolean enabled,
                             String secretKey, Map<String, String> headers, Map<String, String> models) {
         this.id = id;
         this.icon = icon;
@@ -58,7 +58,7 @@ public final class TTSFishAudioSite implements TTSSite, SupportModelSelect {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return icon;
     }
 
@@ -102,7 +102,7 @@ public final class TTSFishAudioSite implements TTSSite, SupportModelSelect {
     public static class Serializer implements SerializableSite<TTSFishAudioSite> {
         public static final Codec<TTSFishAudioSite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(TTSFishAudioSite::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(TTSFishAudioSite::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(TTSFishAudioSite::icon),
                 Codec.STRING.fieldOf(URL).forGetter(TTSFishAudioSite::url),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(TTSFishAudioSite::enabled),
                 Codec.STRING.fieldOf(SECRET_KEY).forGetter(TTSFishAudioSite::secretKey),

@@ -45,7 +45,7 @@ public class MaidPickupEntitiesTask extends Behavior<EntityMaid> {
         var pathFinding = new MaidPathFindingBFS(maid.getNavigation().getNodeEvaluator(), worldIn, maid);
         for (Entity entity : items) {
             BlockPos blockPos = entity.blockPosition();
-            if (maid.isWithinRestriction(blockPos)
+            if (maid.isWithinHome(blockPos)
                 && entity.isAlive()
                 && !entity.isInWater()
                 && pathFinding.canPathReach(blockPos)) {

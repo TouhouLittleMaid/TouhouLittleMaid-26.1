@@ -9,7 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout.TTSSiteFormLayout;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 
@@ -17,13 +17,13 @@ public class TTSPlayer2Site implements TTSSite, SupportModelSelect {
     public static final String API_TYPE = TTSApiType.PLAYER2.getName();
 
     private final String id;
-    private final ResourceLocation icon;
+    private final Identifier icon;
     private final String url;
     private final Map<String, String> models;
     private final Map<String, String> headers;
     private boolean enabled;
 
-    public TTSPlayer2Site(String id, ResourceLocation icon, String url, boolean enabled,
+    public TTSPlayer2Site(String id, Identifier icon, String url, boolean enabled,
                           Map<String, String> models, Map<String, String> headers) {
         this.id = id;
         this.icon = icon;
@@ -44,7 +44,7 @@ public class TTSPlayer2Site implements TTSSite, SupportModelSelect {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return this.icon;
     }
 
@@ -86,7 +86,7 @@ public class TTSPlayer2Site implements TTSSite, SupportModelSelect {
     public static class Serializer implements SerializableSite<TTSPlayer2Site> {
         public static final Codec<TTSPlayer2Site> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(TTSPlayer2Site::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(TTSPlayer2Site::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(TTSPlayer2Site::icon),
                 Codec.STRING.fieldOf(URL).forGetter(TTSPlayer2Site::url),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(TTSPlayer2Site::enabled),
                 Codec.unboundedMap(Codec.STRING, Codec.STRING).fieldOf(MODELS).forGetter(TTSPlayer2Site::models),

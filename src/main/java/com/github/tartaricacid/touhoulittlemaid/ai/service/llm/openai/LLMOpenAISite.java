@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class LLMOpenAISite implements LLMSite, SupportModelSelect {
     public static final String API_TYPE = LLMApiType.OPENAI.getName();
 
     protected final String id;
-    protected final ResourceLocation icon;
+    protected final Identifier icon;
     protected final Map<String, String> headers;
     protected final Map<String, String> models;
     protected final Map<String, ModelEntry> modelEntries;
@@ -31,7 +31,7 @@ public class LLMOpenAISite implements LLMSite, SupportModelSelect {
     protected String secretKey;
     protected boolean hasThinkingField;
 
-    public LLMOpenAISite(String id, ResourceLocation icon, String url, boolean enabled, String secretKey, boolean hasThinkingField,
+    public LLMOpenAISite(String id, Identifier icon, String url, boolean enabled, String secretKey, boolean hasThinkingField,
                          Map<String, String> headers, Map<String, ModelEntry> modelEntries) {
         this.id = id;
         this.icon = icon;
@@ -44,13 +44,13 @@ public class LLMOpenAISite implements LLMSite, SupportModelSelect {
         this.modelEntries = modelEntries;
     }
 
-    public LLMOpenAISite(String id, ResourceLocation icon, String url, boolean enabled, String secretKey, boolean hasThinkingField,
+    public LLMOpenAISite(String id, Identifier icon, String url, boolean enabled, String secretKey, boolean hasThinkingField,
                          Map<String, String> headers, List<ModelEntry> modelEntries) {
         this(id, icon, url, enabled, secretKey, hasThinkingField, headers,
                 modelEntries.stream().collect(Collectors.toMap(ModelEntry::name, Function.identity())));
     }
 
-    public LLMOpenAISite(String id, ResourceLocation icon, String url, boolean enabled,
+    public LLMOpenAISite(String id, Identifier icon, String url, boolean enabled,
                          String secretKey, Map<String, String> headers, List<ModelEntry> modelEntries) {
         this(id, icon, url, enabled, secretKey, false, headers, modelEntries);
     }
@@ -71,7 +71,7 @@ public class LLMOpenAISite implements LLMSite, SupportModelSelect {
     }
 
     @Override
-    public ResourceLocation icon() {
+    public Identifier icon() {
         return icon;
     }
 
@@ -180,7 +180,7 @@ public class LLMOpenAISite implements LLMSite, SupportModelSelect {
 
         public static final Codec<LLMOpenAISite> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf(ID).forGetter(LLMOpenAISite::id),
-                ResourceLocation.CODEC.fieldOf(ICON).forGetter(LLMOpenAISite::icon),
+                Identifier.CODEC.fieldOf(ICON).forGetter(LLMOpenAISite::icon),
                 Codec.STRING.fieldOf(URL).forGetter(LLMOpenAISite::url),
                 Codec.BOOL.fieldOf(ENABLED).forGetter(LLMOpenAISite::enabled),
                 Codec.STRING.fieldOf(SECRET_KEY).forGetter(LLMOpenAISite::secretKey),

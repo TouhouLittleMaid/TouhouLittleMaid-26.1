@@ -11,7 +11,7 @@ public class JadeEventsPostJS {
     @SubscribeEvent(priority = EventPriority.LOW)
     public void addJadeInfo(AddJadeInfoEvent event) {
         if (MaidEventsJS.ADD_JADE_INFO.hasListeners()) {
-            ScriptType scriptType = event.getMaid().level.isClientSide ? ScriptType.CLIENT : ScriptType.SERVER;
+            ScriptType scriptType = event.getMaid().level.isClientSide() ? ScriptType.CLIENT : ScriptType.SERVER;
             MaidEventsJS.ADD_JADE_INFO.post(scriptType, new AddJadeInfoEventJS(event));
         }
     }

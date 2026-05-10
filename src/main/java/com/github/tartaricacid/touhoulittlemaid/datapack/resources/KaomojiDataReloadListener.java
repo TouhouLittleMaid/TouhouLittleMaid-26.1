@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.datapack.KaomojiData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class KaomojiDataReloadListener implements ResourceManagerReloadListener {
-    private static final ResourceLocation FILE_PATH = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "chat_bubble/kaomoji.json");
+    private static final Identifier FILE_PATH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "chat_bubble/kaomoji.json");
     private static final Gson GSON = new Gson();
 
     @Override

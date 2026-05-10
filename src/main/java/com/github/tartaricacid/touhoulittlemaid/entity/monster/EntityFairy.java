@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
@@ -48,7 +48,7 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
     public static final EntityType<EntityFairy> TYPE = EntityType.Builder.<EntityFairy>of(EntityFairy::new, MobCategory.MONSTER)
             .sized(0.6f, 1.5f).clientTrackingRange(10).build("fairy");
 
-    private static final ResourceLocation SPEED_MODIFIER_BABY_ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "baby");
+    private static final Identifier SPEED_MODIFIER_BABY_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "baby");
     private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_ID, 0.2, ADD_MULTIPLIED_BASE);
     private static final EntityDimensions BABY_DIMENSIONS = TYPE.getDimensions().scale(0.75F).withEyeHeight(1);
 
@@ -79,7 +79,7 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
                 .add(Attributes.FLYING_SPEED, 0.4);
     }
 
-    public static boolean checkFairySpawnRules(EntityType<EntityFairy> entityType, ServerLevelAccessor levelAccessor, MobSpawnType spawnType, BlockPos pos, RandomSource randomSource) {
+    public static boolean checkFairySpawnRules(EntityType<EntityFairy> entityType, ServerLevelAccessor levelAccessor, EntitySpawnReason spawnType, BlockPos pos, RandomSource randomSource) {
         if (Monster.checkMonsterSpawnRules(entityType, levelAccessor, spawnType, pos, randomSource) && levelAccessor instanceof ServerLevel level) {
             int scarecrowRange = MiscConfig.SCARECROW_RANGE.get();
             long findCount = level.getPoiManager().getInSquare(type -> type.value().equals(InitPoi.SCARECROW.get()), pos, scarecrowRange, PoiManager.Occupancy.ANY).count();
@@ -171,7 +171,7 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason,
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason,
                                         @Nullable SpawnGroupData spawnDataIn) {
         this.setFairyTypeOrdinal(random.nextInt(FairyType.values().length));
         // 有 5% 概率生成 Rick-rolling 彩蛋
@@ -226,7 +226,7 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
     public void setBaby(boolean isBaby) {
         this.getEntityData().set(DATA_BABY_ID, isBaby);
 
-        if (!this.level.isClientSide) {
+        if (!this.level.isClientSide()) {
             AttributeInstance attribute = this.getAttribute(Attributes.FLYING_SPEED);
             if (attribute == null) {
                 return;

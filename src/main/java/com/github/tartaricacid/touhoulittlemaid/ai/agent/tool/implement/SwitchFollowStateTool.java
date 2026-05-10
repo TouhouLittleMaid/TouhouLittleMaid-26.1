@@ -59,7 +59,7 @@ public class SwitchFollowStateTool implements ITool<SwitchFollowStateTool.Result
             if (!isHome) {
                 return callback.addToolResult("Already following the owner", toolId);
             }
-            maid.restrictTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
+            maid.setHomeTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
             maid.setHomeModeEnable(false);
             return callback.addToolResult("Follow mode enabled", toolId);
         }

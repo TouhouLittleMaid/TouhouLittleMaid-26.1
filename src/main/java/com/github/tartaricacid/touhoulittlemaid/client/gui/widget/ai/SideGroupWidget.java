@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 
@@ -21,7 +21,7 @@ public class SideGroupWidget implements Renderable {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fillGradient(this.x, this.y, this.x + this.width, this.y + this.height, 0xbf_090909, 0xbf_090909);
         graphics.drawCenteredString(Minecraft.getInstance().font, this.text, this.x + this.width / 2, this.y + (this.height - 8) / 2, 0xF3EFE0);
     }

@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.mixin;
 
 import com.github.tartaricacid.touhoulittlemaid.api.mixin.IPlayerMixin;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

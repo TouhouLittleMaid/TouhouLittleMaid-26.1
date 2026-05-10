@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -39,14 +38,14 @@ public class ItemCamera extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (handIn == InteractionHand.MAIN_HAND) {
             int searchDistance = 8;
             ItemStack camera = playerIn.getItemInHand(handIn);
             Optional<EntityMaid> result = MaidRayTraceHelper.rayTraceMaid(playerIn, searchDistance);
             if (result.isPresent()) {
                 EntityMaid maid = result.get();
-                if (!worldIn.isClientSide && maid.isAlive() && maid.isOwnedBy(playerIn) && !maid.isSleeping()) {
+                if (!worldIn.isClientSide() && maid.isAlive() && maid.isOwnedBy(playerIn) && !maid.isSleeping()) {
                     spawnMaidPhoto(worldIn, maid, playerIn);
                     maid.discard();
                     playerIn.getCooldowns().addCooldown(this, 20);
@@ -57,7 +56,7 @@ public class ItemCamera extends Item {
                 }
                 maid.spawnExplosionParticle();
                 playerIn.playSound(InitSounds.CAMERA_USE.get(), 1.0f, 1.0f);
-                return InteractionResultHolder.sidedSuccess(camera, worldIn.isClientSide);
+                return InteractionResult.sidedSuccess(camera, worldIn.isClientSide());
             }
         }
         return super.use(worldIn, playerIn, handIn);

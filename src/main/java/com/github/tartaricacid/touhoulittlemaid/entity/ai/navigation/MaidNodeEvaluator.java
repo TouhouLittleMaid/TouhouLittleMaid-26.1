@@ -88,7 +88,7 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
     private PathType getMaidBlockPathTypeRaw(PathfindingContext context, int pX, int pY, int pZ) {
         BlockPos pos = new BlockPos(pX, pY, pZ);
         // 女仆在限定范围内寻路寻到了范围外，失败
-        if (this.mob instanceof EntityMaid maid && maid.isWithinRestriction() && !maid.isWithinRestriction(pos)) {
+        if (this.mob instanceof EntityMaid maid && maid.isWithinRestriction() && !maid.isWithinHome(pos)) {
             return PathType.BLOCKED;
         }
 

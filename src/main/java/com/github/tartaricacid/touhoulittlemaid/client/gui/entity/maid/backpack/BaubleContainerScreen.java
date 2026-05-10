@@ -9,10 +9,10 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.TabIndex;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.BaubleContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.anti_ad.mc.ipn.api.IPNButton;
@@ -26,7 +26,7 @@ import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
 @IPNGuiHint(button = IPNButton.SHOW_EDITOR, horizontalOffset = -5)
 @IPNGuiHint(button = IPNButton.SETTINGS, horizontalOffset = -5)
 public class BaubleContainerScreen extends AbstractMaidContainerGui<BaubleContainer> implements IBackpackContainerScreen {
-    private static final ResourceLocation BAUBLE_BG = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_bauble.png");
+    private static final Identifier BAUBLE_BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_bauble.png");
     private final EntityMaid maid;
     private final int favorabilityLevel;
 
@@ -42,7 +42,7 @@ public class BaubleContainerScreen extends AbstractMaidContainerGui<BaubleContai
     protected void initAdditionWidgets() {
         BaubleButton baubleButton = new BaubleButton(leftPos, topPos, true, btn -> {
             OpenMaidGuiPackage message = new OpenMaidGuiPackage(maid.getId(), TabIndex.MAIN);
-            PacketDistributor.sendToServer(message);
+            ClientPacketDistributor.sendToServer(message);
         });
         this.addRenderableWidget(baubleButton);
 
@@ -53,7 +53,7 @@ public class BaubleContainerScreen extends AbstractMaidContainerGui<BaubleContai
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
         super.renderBg(graphics, partialTicks, x, y);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, BAUBLE_BG);
@@ -73,7 +73,7 @@ public class BaubleContainerScreen extends AbstractMaidContainerGui<BaubleContai
     }
 
     @Override
-    protected void renderAdditionTransTooltip(GuiGraphics graphics, int x, int y) {
+    protected void renderAdditionTransTooltip(GuiGraphicsExtractor graphics, int x, int y) {
         if (favorabilityLevel < 2) {
             if (leftPos + 152 <= x && x < leftPos + 240 && topPos + 81 <= y && y < topPos + 115) {
                 graphics.renderTooltip(font, Component.translatable("gui.touhou_little_maid.bauble_button.need_favorability_level", 2), x, y);

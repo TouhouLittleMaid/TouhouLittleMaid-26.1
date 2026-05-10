@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRen
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Mob;
 
@@ -16,8 +16,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class PlayerMaidModel extends BedrockModel<Mob> {
-    private static final ResourceLocation STEVE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid.json");
-    private static final ResourceLocation ALEX = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid_slim.json");
+    private static final Identifier STEVE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid.json");
+    private static final Identifier ALEX = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid_slim.json");
 
     public PlayerMaidModel(boolean smallArms) {
         ResourceManager manager = Minecraft.getInstance().getResourceManager();

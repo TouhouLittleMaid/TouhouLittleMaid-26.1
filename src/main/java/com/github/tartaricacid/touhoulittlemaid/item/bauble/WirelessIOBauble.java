@@ -88,7 +88,7 @@ public class WirelessIOBauble implements IMaidBauble {
             if (bindingPos == null) {
                 return;
             }
-            float maxDistance = maid.getRestrictRadius();
+            float maxDistance = maid.getHomeRadius();
             if (maid.distanceToSqr(bindingPos.getX(), bindingPos.getY(), bindingPos.getZ()) > (maxDistance * maxDistance)) {
                 return;
             }

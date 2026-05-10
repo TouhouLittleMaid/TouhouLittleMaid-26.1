@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import dev.latvian.mods.kubejs.typings.Info;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.ai.behavior.BehaviorControl;
 import net.minecraft.world.item.ItemStack;
@@ -32,7 +32,7 @@ public class FarmTaskJS implements IFarmTask {
     }
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return builder.id;
     }
 
@@ -163,7 +163,7 @@ public class FarmTaskJS implements IFarmTask {
         private double closeEnoughDist = 2;
         private boolean checkCropPosAbove = true;
 
-        public Builder(ResourceLocation id, ItemStack icon) {
+        public Builder(Identifier id, ItemStack icon) {
             super(id, icon);
         }
 

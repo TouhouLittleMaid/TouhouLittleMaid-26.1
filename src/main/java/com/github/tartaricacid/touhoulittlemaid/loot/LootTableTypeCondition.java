@@ -4,8 +4,8 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitLootModifier;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -16,11 +16,11 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-public record LootTableTypeCondition(ResourceLocation lootTableType,
+public record LootTableTypeCondition(Identifier lootTableType,
                                      @Nullable ResourceKey<LootTable> lootTableId,
                                      ResourceKey<LootTable> lootTableAdd) implements LootItemCondition {
     public static final MapCodec<LootTableTypeCondition> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("loot_table_type").forGetter(m -> m.lootTableType),
+            Identifier.CODEC.fieldOf("loot_table_type").forGetter(m -> m.lootTableType),
             ResourceKey.codec(Registries.LOOT_TABLE).optionalFieldOf("loot_table_id").forGetter(m -> Optional.ofNullable(m.lootTableId)),
             ResourceKey.codec(Registries.LOOT_TABLE).fieldOf("loot_table_add").forGetter(m -> m.lootTableAdd)
     ).apply(instance, (type, id, add)
@@ -28,7 +28,7 @@ public record LootTableTypeCondition(ResourceLocation lootTableType,
 
     @Override
     public boolean test(LootContext context) {
-        ResourceLocation currentLootTable = context.getQueriedLootTableId();
+        Identifier currentLootTable = context.getQueriedLootTableId();
         return !currentLootTable.equals(lootTableAdd.location()) && typeAreEquals(context) && idAreEquals(context);
     }
 

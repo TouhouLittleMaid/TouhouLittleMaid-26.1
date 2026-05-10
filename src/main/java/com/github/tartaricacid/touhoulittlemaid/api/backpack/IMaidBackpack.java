@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 
 
 public abstract class IMaidBackpack {
-    public abstract ResourceLocation getId();
+    public abstract Identifier getId();
 
     public abstract Item getItem();
 
@@ -56,7 +56,7 @@ public abstract class IMaidBackpack {
 
     @Nullable
     @OnlyIn(Dist.CLIENT)
-    public abstract ResourceLocation getBackpackTexture();
+    public abstract Identifier getBackpackTexture();
 
     protected final void dropAllItems(EntityMaid maid) {
         ItemsUtil.dropEntityItems(maid, maid.getMaidInv(), BackpackLevel.EMPTY_CAPACITY);

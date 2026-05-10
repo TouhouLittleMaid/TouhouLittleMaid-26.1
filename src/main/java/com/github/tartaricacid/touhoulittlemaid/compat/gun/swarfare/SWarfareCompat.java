@@ -18,7 +18,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -36,14 +36,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class SWarfareCompat {
-    public static final ResourceLocation MINIGUN_ID = ResourceLocation.fromNamespaceAndPath("superbwarfare", "minigun");
-    public static final ResourceLocation M_2_HB_ID = ResourceLocation.fromNamespaceAndPath("superbwarfare", "m_2_hb");
+    public static final Identifier MINIGUN_ID = Identifier.fromNamespaceAndPath("superbwarfare", "minigun");
+    public static final Identifier M_2_HB_ID = Identifier.fromNamespaceAndPath("superbwarfare", "m_2_hb");
 
-    public static final TagKey<Item> PISTOL = TagKey.create(Registries.ITEM, ResourceLocation.parse("superbwarfare:animated/pistol"));
-    public static final TagKey<Item> SHOOTGUN = TagKey.create(Registries.ITEM, ResourceLocation.parse("superbwarfare:animated/shootgun"));
-    public static final TagKey<Item> SMG = TagKey.create(Registries.ITEM, ResourceLocation.parse("superbwarfare:animated/smg"));
-    public static final TagKey<Item> SNIPER = TagKey.create(Registries.ITEM, ResourceLocation.parse("superbwarfare:animated/sniper"));
-    public static final TagKey<Item> RPG = TagKey.create(Registries.ITEM, ResourceLocation.parse("superbwarfare:animated/rpg"));
+    public static final TagKey<Item> PISTOL = TagKey.create(Registries.ITEM, Identifier.parse("superbwarfare:animated/pistol"));
+    public static final TagKey<Item> SHOOTGUN = TagKey.create(Registries.ITEM, Identifier.parse("superbwarfare:animated/shootgun"));
+    public static final TagKey<Item> SMG = TagKey.create(Registries.ITEM, Identifier.parse("superbwarfare:animated/smg"));
+    public static final TagKey<Item> SNIPER = TagKey.create(Registries.ITEM, Identifier.parse("superbwarfare:animated/sniper"));
+    public static final TagKey<Item> RPG = TagKey.create(Registries.ITEM, Identifier.parse("superbwarfare:animated/rpg"));
 
     private static final String MOD_ID = "superbwarfare";
     private static boolean INSTALLED = false;
@@ -73,7 +73,7 @@ public class SWarfareCompat {
     }
 
     @Nullable
-    public static ResourceLocation getGunId(ItemStack stack) {
+    public static Identifier getGunId(ItemStack stack) {
         if (INSTALLED) {
             return BuiltInRegistries.ITEM.getKey(stack.getItem());
         }

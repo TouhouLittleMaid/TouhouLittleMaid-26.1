@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
@@ -25,7 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang3.StringUtils;
@@ -40,9 +40,9 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     public static final Button.OnPress NO_PRESS = (b) -> {
     };
 
-    private static final ResourceLocation BG = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_select.png");
-    private static final ResourceLocation SIDE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_select_side.png");
-    private static final ResourceLocation EMPTY_ICON = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/empty_model_pack_icon.png");
+    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_select.png");
+    private static final Identifier SIDE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_select_side.png");
+    private static final Identifier EMPTY_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/empty_model_pack_icon.png");
 
     private static final SimpleTexture EMPTY_ICON_TEXTURE = new SimpleTexture(EMPTY_ICON);
 
@@ -87,7 +87,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
      * @param mouseX  鼠标 x 坐标
      * @param mouseY  鼠标 Y 坐标
      */
-    protected abstract void drawLeftEntity(GuiGraphics graphics, int middleX, int middleY, float mouseX, float mouseY);
+    protected abstract void drawLeftEntity(GuiGraphicsExtractor graphics, int middleX, int middleY, float mouseX, float mouseY);
 
     /**
      * 绘制右侧示例实体
@@ -96,7 +96,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
      * @param posY      实体所在的 y 坐标
      * @param modelItem 该实体应该对应的模型数据
      */
-    protected abstract void drawRightEntity(GuiGraphics graphics, int posX, int posY, E modelItem);
+    protected abstract void drawRightEntity(GuiGraphicsExtractor graphics, int posX, int posY, E modelItem);
 
     /**
      * 打开详情界面
@@ -330,7 +330,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.renderBlurredBackground(partialTicks);
 
         graphics.pose().translate(0, 0, -100);
@@ -365,13 +365,13 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
         drawTooltips(graphics, mouseX, mouseY, middleX, middleY);
     }
 
-    private void drawButton(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    private void drawButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         for (Renderable button : this.renderables) {
             button.render(graphics, mouseX, mouseY, partialTicks);
         }
     }
 
-    private void drawScrollSide(GuiGraphics graphics, int middleX, int middleY) {
+    private void drawScrollSide(GuiGraphicsExtractor graphics, int middleX, int middleY) {
         if (canScrollCurrentList()) {
             graphics.blit(SIDE, middleX - 256 / 2 + 254,
                     middleY - 61 + (int) (127 * getCurrentScrollPosition()),
@@ -383,12 +383,12 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
         }
     }
 
-    private void drawTabIcon(GuiGraphics graphics, int middleX, int middleY) {
+    private void drawTabIcon(GuiGraphicsExtractor graphics, int middleX, int middleY) {
         // 模型包的分栏按钮图标
         int size = guiNumber.getTabSize(getPackIndex());
         for (int index = 0; index < size; index++) {
             CustomModelPack<E> pack = modelPackList.get(guiNumber.tabToPackIndex(index, getPageIndex()));
-            ResourceLocation icon = pack.getIcon();
+            Identifier icon = pack.getIcon();
             if (icon != null) {
                 AbstractTexture iconTexture = Minecraft.getInstance().getTextureManager().getTexture(icon, EMPTY_ICON_TEXTURE);
                 if (EMPTY_ICON_TEXTURE.equals(iconTexture)) {
@@ -417,7 +417,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
         return (int) System.currentTimeMillis() / 50;
     }
 
-    private void checkIconAnimation(CustomModelPack<E> pack, ResourceLocation icon) {
+    private void checkIconAnimation(CustomModelPack<E> pack, Identifier icon) {
         AbstractTexture iconText = getMinecraft().getTextureManager().getTexture(icon);
         if (iconText instanceof SizeTexture sizeTexture) {
             int width = sizeTexture.getWidth();
@@ -436,7 +436,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     /**
      * 绘制所有的模型实体图案
      */
-    private void drawEntity(GuiGraphics graphics, int middleX, int middleY) {
+    private void drawEntity(GuiGraphicsExtractor graphics, int middleX, int middleY) {
         // 绘制包信息或搜索模式提示
         if (!isSearchMode) {
             // 获取当前包索引得到的模型列表
@@ -480,7 +480,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     /**
      * 绘制包的文本信息
      */
-    private void drawPackInfoText(GuiGraphics graphics, CustomModelPack<E> pack, int middleX, int middleY) {
+    private void drawPackInfoText(GuiGraphicsExtractor graphics, CustomModelPack<E> pack, int middleX, int middleY) {
         int offsetY = -80;
         int sideMiddleX = (middleX - 256 / 2) / 2;
 
@@ -535,7 +535,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
      * 用遍历方式绘制文本提示，因为绝大多数情况下是空循环体（可能就涉及几个简单的 int 运算）<br>
      * 应该不会存在性能问题<br>
      */
-    private void drawTooltips(GuiGraphics graphics, int mouseX, int mouseY, int middleX, int middleY) {
+    private void drawTooltips(GuiGraphicsExtractor graphics, int mouseX, int mouseY, int middleX, int middleY) {
         // 使用过滤后的列表
         List<E> displayList = getDisplayModelList();
 

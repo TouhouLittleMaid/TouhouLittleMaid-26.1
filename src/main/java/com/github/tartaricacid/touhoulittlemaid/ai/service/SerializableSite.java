@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * 站点序列化接口，用于站点配置的读取与保存，还有站点配置的网络通信
@@ -48,7 +48,7 @@ public interface SerializableSite<T extends Site> {
     /**
      * 工具方法，通过站点 ID 获取一个默认图标地址
      */
-    static ResourceLocation defaultIcon(String id) {
-        return ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/ai_chat/%s.png".formatted(id));
+    static Identifier defaultIcon(String id) {
+        return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/ai_chat/%s.png".formatted(id));
     }
 }

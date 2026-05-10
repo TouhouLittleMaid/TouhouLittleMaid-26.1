@@ -17,7 +17,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.ai.OpenAIConfigP
 import com.google.common.collect.Lists;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
@@ -192,7 +192,7 @@ public class AIChatScreen extends Screen {
 
         // 验证结果，并向服务端发送确认信息
         this.ensureValidSelections();
-        PacketDistributor.sendToServer(new SaveMaidAIDataPackage(this.maid.getId(), this.manager));
+        ClientPacketDistributor.sendToServer(new SaveMaidAIDataPackage(this.maid.getId(), this.manager));
 
         // 关闭下拉框
         this.openPopup = null;
@@ -363,7 +363,7 @@ public class AIChatScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (this.input != null) {
             int x = this.input.getX();
             int y = this.input.getY();
@@ -400,7 +400,7 @@ public class AIChatScreen extends Screen {
         }
     }
 
-    private void renderSelectionSummaries(GuiGraphics graphics) {
+    private void renderSelectionSummaries(GuiGraphicsExtractor graphics) {
         int left = this.input.getX() - 6;
         int right = this.input.getX() + this.input.getInnerWidth() + 6;
         int summaryY = this.input.getY() + 16;
@@ -442,7 +442,7 @@ public class AIChatScreen extends Screen {
         graphics.pose().popPose();
     }
 
-    private void renderTokenUsage(GuiGraphics graphics) {
+    private void renderTokenUsage(GuiGraphicsExtractor graphics) {
         int left = this.input.getX() - 6;
         int right = this.input.getX() + this.input.getInnerWidth() + 6;
         int tokenY = this.input.getY() - 14;
@@ -592,14 +592,14 @@ public class AIChatScreen extends Screen {
         LocalPlayer player = this.getMinecraft().player;
         if (StringUtils.isNotBlank(value) && player != null) {
             ChatClientInfo clientInfo = ChatClientInfo.fromMaid(this.maid);
-            PacketDistributor.sendToServer(new SendUserChatPackage(this.maid.getId(), value, clientInfo));
+            ClientPacketDistributor.sendToServer(new SendUserChatPackage(this.maid.getId(), value, clientInfo));
             String format = "<%s> %s".formatted(player.getScoreboardName(), value);
             player.sendSystemMessage(Component.literal(format).withStyle(ChatFormatting.GRAY));
         }
         this.onClose();
     }
 
-    private void renderPopup(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderPopup(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (this.popupGeometry == null || this.popupGeometry.entries().isEmpty()) {
             return;
         }
@@ -652,7 +652,7 @@ public class AIChatScreen extends Screen {
         }
     }
 
-    private void drawPopupText(GuiGraphics graphics, String text, int x, int y, int maxWidth, int color) {
+    private void drawPopupText(GuiGraphicsExtractor graphics, String text, int x, int y, int maxWidth, int color) {
         graphics.drawString(this.font, this.trimToWidth(text, maxWidth), x, y, color, false);
     }
 

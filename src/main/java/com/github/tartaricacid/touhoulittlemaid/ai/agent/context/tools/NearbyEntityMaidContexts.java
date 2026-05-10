@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.GameContextRegi
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Lists;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -51,7 +51,7 @@ public final class NearbyEntityMaidContexts {
                     .sorted(Comparator.comparingDouble(e -> e.distanceToSqr(maid)))
                     .limit(MAX_ENTITIES)
                     .forEach(entity -> {
-                        ResourceLocation type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                        Identifier type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
                         int id = entity.getId();
                         float distToMaid = maid.distanceTo(entity);
 

@@ -20,7 +20,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -102,7 +102,7 @@ public class ItemChair extends Item {
                     world.playSound(null, chair.getX(), chair.getY(), chair.getZ(), SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
                 }
                 stack.shrink(1);
-                return InteractionResult.sidedSuccess(world.isClientSide);
+                return InteractionResult.sidedSuccess(world.isClientSide());
             }
         }
         return InteractionResult.FAIL;
@@ -114,7 +114,7 @@ public class ItemChair extends Item {
             if (stack.get(DataComponents.CUSTOM_NAME) != null) {
                 e.setCustomName(stack.get(DataComponents.CUSTOM_NAME));
             }
-        }, pos, MobSpawnType.SPAWN_EGG, true, true);
+        }, pos, EntitySpawnReason.SPAWN_EGG, true, true);
         if (chair != null) {
             addExtraData(player, stack, chair, rotation);
         }

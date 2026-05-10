@@ -11,14 +11,14 @@ public interface IBackpackContainerScreen {
     default BaubleButton getBaubleButton(EntityMaid maid, int leftPos, int topPos) {
         return new BaubleButton(leftPos, topPos, false, btn -> {
             OpenMaidGuiPackage message = new OpenMaidGuiPackage(maid.getId(), TabIndex.BAUBLE);
-            PacketDistributor.sendToServer(message);
+            ClientPacketDistributor.sendToServer(message);
         });
     }
 
     default CuriosButton getCuriosButton(EntityMaid maid, int leftPos, int topPos) {
         return new CuriosButton(leftPos, topPos, false, btn -> {
             OpenMaidGuiPackage message = new OpenMaidGuiPackage(maid.getId(), TabIndex.CURIOS);
-            PacketDistributor.sendToServer(message);
+            ClientPacketDistributor.sendToServer(message);
         });
     }
 }

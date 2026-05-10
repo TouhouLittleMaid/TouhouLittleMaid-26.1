@@ -4,7 +4,7 @@ import com.github.tartaricacid.simplebedrockmodel.SimpleBedrockModel;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.AbstractBedrockEntityModel;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -16,10 +16,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class BedrockEntityModelSet<T extends AbstractBedrockEntityModel<? extends Entity>> extends SimplePreparableReloadListener<Void> {
-    private Map<ResourceLocation, T> models = ImmutableMap.of();
-    private Map<ResourceLocation, Function<InputStream, T>> knowLocations = Maps.newHashMap();
+    private Map<Identifier, T> models = ImmutableMap.of();
+    private Map<Identifier, Function<InputStream, T>> knowLocations = Maps.newHashMap();
 
-    void addModel(ResourceLocation location, Function<InputStream, T> function) {
+    void addModel(Identifier location, Function<InputStream, T> function) {
         this.knowLocations.put(location, function);
     }
 
@@ -33,7 +33,7 @@ public class BedrockEntityModelSet<T extends AbstractBedrockEntityModel<? extend
         this.models = Maps.newHashMap();
         this.knowLocations.keySet().forEach(location -> {
             // 将 ID 转换成实际模型文件路径，默认是 <namespace>:models/<path>.json
-            ResourceLocation path = ResourceLocation.fromNamespaceAndPath(location.getNamespace(), "models/" + location.getPath() + ".json");
+            Identifier path = Identifier.fromNamespaceAndPath(location.getNamespace(), "models/" + location.getPath() + ".json");
             Function<InputStream, T> modelFunction = knowLocations.get(location);
             manager.getResource(path).ifPresentOrElse(model -> {
                 SimpleBedrockModel.LOGGER.info("Loading bedrock model file: {}", path);
@@ -52,7 +52,7 @@ public class BedrockEntityModelSet<T extends AbstractBedrockEntityModel<? extend
         this.models = ImmutableMap.copyOf(models);
     }
 
-    Map<ResourceLocation, ? extends AbstractBedrockEntityModel<? extends Entity>> getModels() {
+    Map<Identifier, ? extends AbstractBedrockEntityModel<? extends Entity>> getModels() {
         return models;
     }
 }

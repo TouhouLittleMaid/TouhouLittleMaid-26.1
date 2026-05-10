@@ -15,7 +15,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
@@ -40,11 +40,11 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class TaskFeedAnimal implements IAttackTask {
-    public static final ResourceLocation UID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "feed_animal");
+    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "feed_animal");
     private static final int MAX_STOP_ATTACK_DISTANCE = 8;
 
     @Override
-    public ResourceLocation getUid() {
+    public Identifier getUid() {
         return UID;
     }
 
@@ -78,7 +78,7 @@ public class TaskFeedAnimal implements IAttackTask {
 
     private Optional<? extends LivingEntity> findFirstValidAttackTarget(EntityMaid maid) {
         long animalCount = this.getEntities(maid)
-                .find(e -> maid.isWithinRestriction(e.blockPosition()))
+                .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
                 .filter(e -> e instanceof Animal).count();
 
@@ -87,7 +87,7 @@ public class TaskFeedAnimal implements IAttackTask {
         }
 
         return this.getEntities(maid)
-                .find(e -> maid.isWithinRestriction(e.blockPosition()))
+                .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
                 .filter(e -> e instanceof Animal)
                 .filter(e -> ((Animal) e).getAge() == 0)

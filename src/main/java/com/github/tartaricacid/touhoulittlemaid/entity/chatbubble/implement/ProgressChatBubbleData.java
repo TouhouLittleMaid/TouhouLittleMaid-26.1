@@ -7,15 +7,15 @@ import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleDat
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class ProgressChatBubbleData implements IChatBubbleData {
-    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "progress");
+    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "progress");
 
     private final int existTick;
-    private final ResourceLocation bg;
+    private final Identifier bg;
     private final int priority;
     private final Component text;
     private final int barBackgroundColor;
@@ -26,7 +26,7 @@ public class ProgressChatBubbleData implements IChatBubbleData {
     @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
-    private ProgressChatBubbleData(int existTick, ResourceLocation bg, int priority, Component text, int barBackgroundColor,
+    private ProgressChatBubbleData(int existTick, Identifier bg, int priority, Component text, int barBackgroundColor,
                                    int barForegroundColor, double progress, boolean alignCenter) {
         this.existTick = existTick;
         this.bg = bg;
@@ -38,7 +38,7 @@ public class ProgressChatBubbleData implements IChatBubbleData {
         this.alignCenter = alignCenter;
     }
 
-    public static ProgressChatBubbleData create(int existTick, ResourceLocation bg, int priority, Component text,
+    public static ProgressChatBubbleData create(int existTick, Identifier bg, int priority, Component text,
                                                 int barBackgroundColor, int barForegroundColor, double progress,
                                                 boolean alignCenter) {
         return new ProgressChatBubbleData(existTick, bg, priority, text, barBackgroundColor, barForegroundColor,
@@ -56,7 +56,7 @@ public class ProgressChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ID;
     }
 

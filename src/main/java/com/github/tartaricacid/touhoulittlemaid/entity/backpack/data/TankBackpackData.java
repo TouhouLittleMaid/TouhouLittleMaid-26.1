@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.MaidFluidUtil;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
@@ -50,7 +50,7 @@ public class TankBackpackData extends SimpleContainer implements IBackpackData {
 
     @Override
     public void setItem(int index, ItemStack stack) {
-        if (!this.maid.level.isClientSide) {
+        if (!this.maid.level.isClientSide()) {
             CombinedInvWrapper availableInv = this.maid.getAvailableInv(false);
             if (index == INPUT_INDEX) {
                 MaidFluidUtil.bucketToTank(stack, tank, availableInv);
@@ -59,7 +59,7 @@ public class TankBackpackData extends SimpleContainer implements IBackpackData {
                 MaidFluidUtil.tankToBucket(stack, tank, availableInv);
             }
             this.tankFluidCount = tank.getFluidAmount();
-            ResourceLocation key = BuiltInRegistries.FLUID.getKey(tank.getFluid().getFluid());
+            Identifier key = BuiltInRegistries.FLUID.getKey(tank.getFluid().getFluid());
             maid.setBackpackFluid(key.toString());
         }
         super.setItem(index, stack);
@@ -98,7 +98,7 @@ public class TankBackpackData extends SimpleContainer implements IBackpackData {
     public void loadTank(CompoundTag nbt, EntityMaid maid) {
         tank.readFromNBT(this.maid.registryAccess(), nbt);
         this.tankFluidCount = tank.getFluidAmount();
-        ResourceLocation key = BuiltInRegistries.FLUID.getKey(tank.getFluid().getFluid());
+        Identifier key = BuiltInRegistries.FLUID.getKey(tank.getFluid().getFluid());
         maid.setBackpackFluid(key.toString());
     }
 }

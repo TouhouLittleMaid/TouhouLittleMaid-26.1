@@ -5,13 +5,13 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.VanillaConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ExperienceOrbRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ExperienceOrb;
 import org.joml.Matrix3f;
@@ -19,8 +19,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class ReplaceExperienceOrbRenderer extends EntityRenderer<ExperienceOrb> {
-    private static final ResourceLocation POINT_ITEM_TEXTURE = ResourceLocation.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/point_item.png");
-    private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(POINT_ITEM_TEXTURE);
+    private static final Identifier POINT_ITEM_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/point_item.png");
+    private static final RenderTypes RENDER_TYPE = RenderTypes.entityCutoutNoCull(POINT_ITEM_TEXTURE);
     private final ExperienceOrbRenderer vanillaRender;
 
     public ReplaceExperienceOrbRenderer(EntityRendererProvider.Context context) {
@@ -70,7 +70,7 @@ public class ReplaceExperienceOrbRenderer extends EntityRenderer<ExperienceOrb> 
         super.render(orb, pEntityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
-    public ResourceLocation getTextureLocation(ExperienceOrb pEntity) {
+    public Identifier getTextureLocation(ExperienceOrb pEntity) {
         return POINT_ITEM_TEXTURE;
     }
 }

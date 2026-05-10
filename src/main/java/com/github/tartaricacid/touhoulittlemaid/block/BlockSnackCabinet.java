@@ -11,7 +11,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,7 +28,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty; import net.minecraft.core.Direction;
+
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -39,7 +40,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class BlockSnackCabinet extends BaseEntityBlock {
     public static final MapCodec<BlockSnackCabinet> CODEC = simpleCodec((properties) -> new BlockSnackCabinet());
-    public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final IntegerProperty TYPE = IntegerProperty.create("type", 0, 2);
 
     public static final int TYPE_NONE = 0;
@@ -73,23 +74,23 @@ public class BlockSnackCabinet extends BaseEntityBlock {
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos,
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos,
                                            Player player, InteractionHand hand, BlockHitResult hit) {
         // 如果是手持方块物品并点击上方，那么不打开界面，方便放置方块
         Direction direction = hit.getDirection();
         if (direction == Direction.UP && heldItem.getItem() instanceof BlockItem) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
         // 否则打开界面
-        if (level.isClientSide) {
-            return ItemInteractionResult.SUCCESS;
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
         } else {
             MenuProvider provider = this.getMenuProvider(state, level, pos);
             if (provider != null) {
                 player.openMenu(provider);
             }
-            return ItemInteractionResult.CONSUME;
+            return InteractionResult.CONSUME;
         }
     }
 

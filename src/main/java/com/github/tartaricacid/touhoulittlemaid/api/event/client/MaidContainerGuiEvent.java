@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.api.event.client;
 
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.neoforged.bus.api.Event;
 
@@ -81,13 +81,13 @@ public abstract class MaidContainerGuiEvent extends Event {
      * 按钮本体会自动添加进渲染，无需手动渲染。故此事件仅用于额外渲染
      */
     public static class Render extends MaidContainerGuiEvent {
-        private final GuiGraphics graphics;
+        private final GuiGraphicsExtractor graphics;
         private final int mouseX;
         private final int mouseY;
         private final float partialTicks;
 
         public Render(AbstractMaidContainerGui<?> gui, int leftPos, int topPos, Map<String, AbstractWidget> buttons,
-                      GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                      GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
             super(gui, leftPos, topPos, buttons);
             this.graphics = graphics;
             this.mouseX = mouseX;
@@ -95,7 +95,7 @@ public abstract class MaidContainerGuiEvent extends Event {
             this.partialTicks = partialTicks;
         }
 
-        public GuiGraphics getGraphics() {
+        public GuiGraphicsExtractor getGraphics() {
             return graphics;
         }
 
@@ -116,13 +116,13 @@ public abstract class MaidContainerGuiEvent extends Event {
      * 在最后触发，主要用于渲染文本提示
      */
     public static class Tooltip extends MaidContainerGuiEvent {
-        private final GuiGraphics graphics;
+        private final GuiGraphicsExtractor graphics;
         private final int mouseX;
         private final int mouseY;
         private final float partialTicks;
 
         public Tooltip(AbstractMaidContainerGui<?> gui, int leftPos, int topPos, Map<String, AbstractWidget> buttons,
-                       GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                       GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
             super(gui, leftPos, topPos, buttons);
             this.graphics = graphics;
             this.mouseX = mouseX;
@@ -130,7 +130,7 @@ public abstract class MaidContainerGuiEvent extends Event {
             this.partialTicks = partialTicks;
         }
 
-        public GuiGraphics getGraphics() {
+        public GuiGraphicsExtractor getGraphics() {
             return graphics;
         }
 

@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ServantBellSetPackage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -48,7 +48,7 @@ public class ServantBellSetScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int middleX = this.width / 2;
         int middleY = this.height / 2;
         super.render(graphics, mouseX, mouseY, partialTicks);
@@ -79,7 +79,7 @@ public class ServantBellSetScreen extends Screen {
 
     private void sendDoneMessage(Button button) {
         if (StringUtils.isNotBlank(textField.getValue())) {
-            PacketDistributor.sendToServer(new ServantBellSetPackage(this.maidId, textField.getValue()));
+            ClientPacketDistributor.sendToServer(new ServantBellSetPackage(this.maidId, textField.getValue()));
         }
         this.onClose();
     }

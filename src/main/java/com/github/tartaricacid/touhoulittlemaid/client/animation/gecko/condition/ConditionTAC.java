@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.conditio
 
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunCommonUtil;
 import com.google.common.collect.Lists;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,7 +13,7 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil
 public class ConditionTAC {
     private static final String EMPTY = "";
     private final List<String> nameTest = Lists.newArrayList();
-    private final List<ResourceLocation> idTest = Lists.newArrayList();
+    private final List<Identifier> idTest = Lists.newArrayList();
 
     public void addTest(String name) {
         if (!name.startsWith("tac:") || !name.contains("$")) {
@@ -26,7 +26,7 @@ public class ConditionTAC {
         String itemId = split[1];
         if (isValidResourceLocation(itemId)) {
             nameTest.add(name);
-            idTest.add(ResourceLocation.parse(itemId));
+            idTest.add(Identifier.parse(itemId));
         }
     }
 
@@ -34,7 +34,7 @@ public class ConditionTAC {
         if (itemInHand.isEmpty()) {
             return EMPTY;
         }
-        ResourceLocation gunId = GunCommonUtil.getGunId(itemInHand);
+        Identifier gunId = GunCommonUtil.getGunId(itemInHand);
         if (gunId == null) {
             return EMPTY;
         }

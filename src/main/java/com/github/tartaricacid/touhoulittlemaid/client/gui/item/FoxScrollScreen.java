@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatCol
 import com.github.tartaricacid.touhoulittlemaid.network.message.FoxScrollPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetScrollPackage;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -63,7 +63,7 @@ public class FoxScrollScreen extends Screen {
                 if (i < scrollData.size()) {
                     FoxScrollPackage.FoxScrollData info = scrollData.get(i);
                     this.addRenderableWidget(new FlatColorButton(leftPos + 400 - 90, offsetIn + 11, 60, 20, Component.translatable("gui.touhou_little_maid.fox_scroll.track"),
-                            b -> PacketDistributor.sendToServer(new SetScrollPackage(this.selectDim, info.pos()))));
+                            b -> ClientPacketDistributor.sendToServer(new SetScrollPackage(this.selectDim, info.pos()))));
                     offsetIn = offsetIn + 42;
                 }
             }
@@ -88,7 +88,7 @@ public class FoxScrollScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void render(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         this.renderBackground(graphics, pMouseX, pMouseY, pPartialTick);
         if (this.data.isEmpty()) {
             int x = this.width / 2;
@@ -102,7 +102,7 @@ public class FoxScrollScreen extends Screen {
         }
     }
 
-    private void renderMain(GuiGraphics graphics) {
+    private void renderMain(GuiGraphicsExtractor graphics) {
         if (StringUtils.isNotBlank(this.selectDim) && this.data.containsKey(this.selectDim)) {
             List<FoxScrollPackage.FoxScrollData> scrollData = this.data.get(this.selectDim);
             boolean inSameDim = this.selectDim.equals(this.getPlayerDimension());
