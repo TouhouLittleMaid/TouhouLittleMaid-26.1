@@ -1,0 +1,148 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.github.tartaricacid.Upgrade
+recipeList:
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.resources.ResourceLocation
+      newFullyQualifiedTypeName: net.minecraft.resources.Identifier
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.client.gui.GuiGraphics
+      newFullyQualifiedTypeName: net.minecraft.client.gui.GuiGraphicsExtractor
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.client.renderer.RenderType
+      newFullyQualifiedTypeName: net.minecraft.client.renderer.rendertype.RenderTypes
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.client.renderer.LightTexture
+      newFullyQualifiedTypeName: net.minecraft.util.LightCoordsUtil
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent
+      newFullyQualifiedTypeName: net.neoforged.neoforge.client.event.AddClientReloadListenersEvent
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent
+      newFullyQualifiedTypeName: net.neoforged.neoforge.client.event.AddClientReloadListenersEvent
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.InteractionResultHolder
+      newFullyQualifiedTypeName: net.minecraft.world.InteractionResult
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.Util
+      newFullyQualifiedTypeName: net.minecraft.util.Util
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.entity.projectile.Arrow
+      newFullyQualifiedTypeName: net.minecraft.world.entity.projectile.arrow.Arrow
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.entity.projectile.SpectralArrow
+      newFullyQualifiedTypeName: net.minecraft.world.entity.projectile.arrow.SpectralArrow
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.entity.projectile.AbstractArrow
+      newFullyQualifiedTypeName: net.minecraft.world.entity.projectile.arrow.AbstractArrow
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.entity.projectile.ThrownTrident
+      newFullyQualifiedTypeName: net.minecraft.world.entity.projectile.arrow.ThrownTrident
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.entity.vehicle.Boat
+      newFullyQualifiedTypeName: net.minecraft.world.entity.vehicle.boat.Boat
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.client.gui.LayeredDraw.Layer
+      newFullyQualifiedTypeName: net.neoforged.neoforge.client.gui.GuiLayer
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.entity.MobSpawnType
+      newFullyQualifiedTypeName: net.minecraft.world.entity.EntitySpawnReason
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.ItemInteractionResult
+      newFullyQualifiedTypeName: net.minecraft.world.InteractionResult
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: net.minecraft.world.item.UseAnim
+      newFullyQualifiedTypeName: net.minecraft.world.item.ItemUseAnimation
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: javax.annotation.ParametersAreNonnullByDefault
+      newFullyQualifiedTypeName: org.jspecify.annotations.NullMarked
+
+  - org.openrewrite.java.ChangePackage:
+      oldPackageName: net.minecraft.advancements.critereon
+      newPackageName: net.minecraft.advancements.criterion
+      recursive: true
+
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.minecraft.sounds.SoundEvent getLocation()
+      newMethodName: location
+
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.minecraft.sounds.SoundEvent getLocation()
+      newMethodName: location
+
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid hasRestriction()
+      newMethodName: hasHome
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid clearRestriction()
+      newMethodName: clearHome
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid getRestrictRadius()
+      newMethodName: getHomeRadius
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid getRestrictCenter()
+      newMethodName: getHomePosition
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid restrictTo(net.minecraft.core.BlockPos,int)
+      newMethodName: setHomeTo
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid isWithinRestriction(*)
+      newMethodName: isWithinHome
+
+  - org.openrewrite.text.FindAndReplace:
+      find: import net\.minecraft\.world\.level\.block\.state\.properties\.EnumProperty<Direction>;
+      replace: >
+        import net.minecraft.world.level.block.state.properties.EnumProperty;
+        import net.minecraft.core.Direction;
+      regex: true
+
+  - org.openrewrite.text.FindAndReplace:
+      find: \bDirectionProperty\b
+      replace: EnumProperty<Direction>
+      regex: true
+
+  # 替换 .isClientSide() 为 .isClientSide()
+  - org.openrewrite.text.FindAndReplace:
+      find: \.isClientSide()\b(?!\()
+      replace: .isClientSide()
+      regex: true
+
+  # 替换 .getRandom() 为 .getRandom()
+  - org.openrewrite.text.FindAndReplace:
+      find: \.getRandom()\b(?!\()
+      replace: .getRandom()
+      regex: true
+
+  # 修正上面的错误替换
+  - org.openrewrite.text.FindAndReplace:
+      find: import java.util.Random;
+      replace: import java.util.Random;
+      regex: false
+
+  - org.openrewrite.text.FindAndReplace:
+      find: '@ParametersAreNonnullByDefault\s+@MethodsReturnNonnullByDefault'
+      replace: '@NullMarked'
+      regex: true
+
+  # 处理它是第一个参数，且后面跟着逗号的情况 (处理 MOD 和 GAME)
+  - org.openrewrite.text.FindAndReplace:
+      find: bus\s*=\s*EventBusSubscriber\.Bus\.(MOD|GAME)\s*,\s*
+      replace: ''
+      regex: true
+
+  # 处理它是最后一个参数，且前面有逗号的情况
+  - org.openrewrite.text.FindAndReplace:
+      find: \s*,\s*bus\s*=\s*EventBusSubscriber\.Bus\.(MOD|GAME)
+      replace: ''
+      regex: true
+
+  # 处理它是唯一参数，没有逗号的情况
+  - org.openrewrite.text.FindAndReplace:
+      find: \s*bus\s*=\s*EventBusSubscriber\.Bus\.(MOD|GAME)
+      replace: ''
+      regex: true
+
+  - org.openrewrite.text.FindAndReplace:
+      find: '\bPacketDistributor\.sendToServer\b'
+      replace: 'ClientPacketDistributor.sendToServer'
+      regex: true
