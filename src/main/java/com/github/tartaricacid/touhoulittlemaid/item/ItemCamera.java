@@ -25,7 +25,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.List;
 import java.util.Objects;
@@ -78,7 +77,7 @@ public class ItemCamera extends Item {
         NeoForge.EVENT_BUS.post(event);
 
         photo.set(InitDataComponent.MAID_INFO, CustomData.of(maidTag));
-        ItemHandlerHelper.giveItemToPlayer(playerIn, photo);
+        playerIn.getInventory().placeItemBackInInventory(photo);
     }
 
     private void spawnMaidPhoto(Level worldIn, EntityMaid maid, Player playerIn) {

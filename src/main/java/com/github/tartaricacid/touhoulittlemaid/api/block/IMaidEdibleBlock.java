@@ -2,10 +2,10 @@ package com.github.tartaricacid.touhoulittlemaid.api.block;
 
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -19,7 +19,6 @@ import org.jetbrains.annotations.ApiStatus;
  *     <li>世界中已存在的方块食物的食用逻辑</li>
  *     <li>从物品堆放置为方块食物的逻辑（可选）</li>
  * </ul>
- *
  */
 @ApiStatus.AvailableSince("1.4.7")
 public interface IMaidEdibleBlock {
@@ -117,8 +116,8 @@ public interface IMaidEdibleBlock {
      * @return 若放置成功返回 {@code true}，女仆将播放挥动手臂的动画；否则返回 {@code false}
      */
     default boolean placeAsFood(EntityMaid maid, BlockPos pos, ItemStack stack, int slotIndex) {
-        CombinedInvWrapper availableInv = maid.getAvailableInv(true);
-        ItemStack stackExtra = availableInv.extractItem(slotIndex, 1, false);
+        var availableInv = maid.getAvailableInv(true);
+        ItemStack stackExtra = ItemsUtil.extractItem(availableInv, slotIndex, 1, false, null);
         if (stackExtra.isEmpty()) {
             return false;
         }

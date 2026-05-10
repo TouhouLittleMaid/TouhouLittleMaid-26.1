@@ -26,7 +26,9 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -50,25 +52,26 @@ public class ItemPicnicBasket extends BlockItem implements MenuProvider {
         super(block, (new Properties()).stacksTo(1));
     }
 
-    public static ItemStackHandler getContainer(ItemStack stack) {
-        ItemStackHandler handler = new ItemStackHandler(PICNIC_BASKET_SIZE);
+    public static ItemStacksResourceHandler getContainer(ItemStack stack) {
+        var handler = new ItemStacksResourceHandler(PICNIC_BASKET_SIZE);
         if (stack.getItem() == InitItems.PICNIC_BASKET.get()) {
             ItemContainerContents container = stack.get(DataComponents.CONTAINER);
             if (container != null) {
                 assert container.getSlots() <= PICNIC_BASKET_SIZE;
                 for (int i = 0; i < container.getSlots(); i++) {
-                    handler.setStackInSlot(i, container.getStackInSlot(i));
+                    ItemStack itemStack = container.getStackInSlot(i);
+                    handler.set(i, ItemResource.of(itemStack), itemStack.getCount());
                 }
             }
         }
         return handler;
     }
 
-    public static void setContainer(ItemStack stack, ItemStackHandler itemStackHandler) {
+    public static void setContainer(ItemStack stack, ItemStacksResourceHandler itemStackHandler) {
         if (stack.getItem() == InitItems.PICNIC_BASKET.get()) {
             NonNullList<ItemStack> items = NonNullList.withSize(PICNIC_BASKET_SIZE, ItemStack.EMPTY);
-            for (int i = 0; i < itemStackHandler.getSlots(); i++) {
-                items.set(i, itemStackHandler.getStackInSlot(i));
+            for (int i = 0; i < itemStackHandler.size(); i++) {
+                items.set(i, ItemUtil.getStack(itemStackHandler, i));
             }
             ItemContainerContents container = ItemContainerContents.fromItems(items);
             stack.set(DataComponents.CONTAINER, container);
@@ -86,7 +89,7 @@ public class ItemPicnicBasket extends BlockItem implements MenuProvider {
 
     @Override
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-        ItemStackHandler container = getContainer(stack);
+        var container = getContainer(stack);
         return Optional.of(new ItemContainerTooltip(container));
     }
 

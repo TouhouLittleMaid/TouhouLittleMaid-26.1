@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import javax.annotation.Nullable;
 
@@ -30,7 +31,7 @@ public class TileEntityAltar extends BlockEntity {
     private static final String DIRECTION = "Direction";
     private static final String STORAGE_BLOCK_LIST = "StorageBlockList";
     private static final String CAN_PLACE_ITEM_POS_LIST = "CanPlaceItemPosList";
-    public final ItemStackHandler handler = new AltarItemHandler();
+    public final ItemStacksResourceHandler handler = new AltarItemHandler();
     private boolean isRender = false;
     private boolean canPlaceItem = false;
     private BlockState storageState = Blocks.AIR.defaultBlockState();

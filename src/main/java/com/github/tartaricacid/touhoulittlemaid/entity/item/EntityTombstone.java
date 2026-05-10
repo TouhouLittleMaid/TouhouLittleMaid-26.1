@@ -1,14 +1,15 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -18,8 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class EntityTombstone extends Entity {
     private static final String MAID_NAME_TAG = "MaidName";
     private static final EntityDataAccessor<Component> MAID_NAME = SynchedEntityData.defineId(EntityTombstone.class, EntityDataSerializers.COMPONENT);
     // 考虑其他模组会添加额外的存储内容，加之饰品模组拓展了数量，故将墓碑存储上限修改为 256 组
-    private final ItemStackHandler items = new ItemStackHandler(256);
+    private final ItemStacksResourceHandler items = new ItemStacksResourceHandler(256);
     private UUID ownerId = Util.NIL_UUID;
 
     public EntityTombstone(EntityType<?> entityTypeIn, Level worldIn) {
@@ -49,7 +49,7 @@ public class EntityTombstone extends Entity {
     }
 
     public void insertItem(ItemStack item) {
-        ItemHandlerHelper.insertItemStacked(this.items, item, false);
+        ItemsUtil.insertItemStacked(this.items, item, false, null);
     }
 
     @Override
@@ -64,16 +64,16 @@ public class EntityTombstone extends Entity {
 
         // NTR 工具可以收回墓碑
         if (player.getUUID().equals(this.ownerId) || ntrItem.test(itemInHand)) {
+            var stacks = this.items.copyToList();
             // 第一步：预检查所有物品是否能被玩家容纳（不实际提取物品）
             // 如果玩家按下了 Shift 键，则强制取出
             if (!player.isSecondaryUseActive()) {
-                for (int i = 0; i < this.items.getSlots(); i++) {
-                    ItemStack stack = this.items.getStackInSlot(i);
+                for (ItemStack stack : stacks) {
                     if (stack.isEmpty() || canItemInsert(player, stack)) {
                         continue;
                     }
                     // 一旦发现有物品不能插入，立即中断检查
-                    if (!player.level.isClientSide) {
+                    if (!player.level.isClientSide()) {
                         player.sendSystemMessage(Component.translatable("message.touhou_little_maid.tombstone.player_inventory_full.1"));
                         player.sendSystemMessage(Component.translatable("message.touhou_little_maid.tombstone.player_inventory_full.2"));
                     }
@@ -82,11 +82,11 @@ public class EntityTombstone extends Entity {
             }
 
             // 第二步：确认可以处理后，才实际提取并给予物品
-            for (int i = 0; i < this.items.getSlots(); i++) {
-                int size = this.items.getSlotLimit(i);
-                ItemStack extractItem = this.items.extractItem(i, size, false);
+            for (int i = 0; i < stacks.size(); i++) {
+                int size = this.items.getCapacityAsInt(i, this.items.getResource(i));
+                ItemStack extractItem = ItemsUtil.extractItem(this.items, i, size, false, null);
                 if (!extractItem.isEmpty()) {
-                    ItemHandlerHelper.giveItemToPlayer(player, extractItem);
+                    player.getInventory().placeItemBackInInventory(extractItem);
                 }
             }
 
@@ -208,7 +208,7 @@ public class EntityTombstone extends Entity {
         return this.entityData.get(MAID_NAME);
     }
 
-    public ItemStackHandler getItems() {
+    public ItemStacksResourceHandler getItems() {
         return items;
     }
 }

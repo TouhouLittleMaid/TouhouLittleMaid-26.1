@@ -24,7 +24,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -66,20 +67,20 @@ public class ItemWirelessIO extends Item implements MenuProvider {
         return false;
     }
 
-    public static ItemStackHandler getFilterList(HolderLookup.Provider provider, ItemStack stack) {
+    public static ItemStacksResourceHandler getFilterList(HolderLookup.Provider provider, ItemStack stack) {
         WirelessIOHandler handler = new WirelessIOHandler(FILTER_LIST_SIZE);
         if (stack.getItem() == InitItems.WIRELESS_IO.get()) {
             CompoundTag tag = stack.get(FILTER_LIST_TAG);
             if (tag != null) {
-                handler.deserializeNBT(provider, tag);
+                handler.deserialize(provider, tag);
             }
         }
         return handler;
     }
 
-    public static void setFilterList(HolderLookup.Provider provider, ItemStack stack, ItemStackHandler itemStackHandler) {
+    public static void setFilterList(HolderLookup.Provider provider, ItemStack stack, ItemStacksResourceHandler itemStackHandler) {
         if (stack.getItem() == InitItems.WIRELESS_IO.get()) {
-            stack.set(FILTER_LIST_TAG, itemStackHandler.serializeNBT(provider));
+            stack.set(FILTER_LIST_TAG, itemStackHandler.serialize(provider);
         }
     }
 
@@ -184,13 +185,13 @@ public class ItemWirelessIO extends Item implements MenuProvider {
         return new WirelessIOContainer(id, inventory, player.getMainHandItem());
     }
 
-    private static class WirelessIOHandler extends ItemStackHandler {
+    private static class WirelessIOHandler extends ItemStacksResourceHandler {
         private WirelessIOHandler(int size) {
             super(size);
         }
 
         @Override
-        public int getSlotLimit(int slot) {
+        protected int getCapacity(int index, ItemResource resource) {
             return 1;
         }
     }

@@ -42,7 +42,7 @@ public class FurnaceBackpack extends IMaidBackpack {
         IBackpackData backpackData = maid.getBackpackData();
         if (backpackData instanceof FurnaceBackpackData furnaceBackpackData) {
             InvWrapper inv = new InvWrapper(furnaceBackpackData);
-            ItemsUtil.dropEntityItems(maid, inv);
+            ItemsUtil.dropEntityItems(maid, inv, null);
         }
         dropRelativeItems(stack, maid);
     }

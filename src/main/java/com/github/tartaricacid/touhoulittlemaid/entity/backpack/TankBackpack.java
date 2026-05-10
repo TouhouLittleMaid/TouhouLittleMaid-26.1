@@ -58,7 +58,7 @@ public class TankBackpack extends IMaidBackpack {
         IBackpackData backpackData = maid.getBackpackData();
         if (backpackData instanceof TankBackpackData tankBackpackData) {
             InvWrapper inv = new InvWrapper(tankBackpackData);
-            ItemsUtil.dropEntityItems(maid, inv);
+            ItemsUtil.dropEntityItems(maid, inv, null);
         }
         dropRelativeItems(stack, maid);
     }

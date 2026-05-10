@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitRecipes;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
+import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.PosListData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -46,7 +47,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -211,9 +212,9 @@ public class BlockAltar extends Block implements EntityBlock {
 
     private void takeOutItem(Level world, TileEntityAltar altar, Player player) {
         if (altar.isCanPlaceItem()) {
-            if (!altar.handler.getStackInSlot(0).isEmpty()) {
-                ItemStack extractItem = altar.handler.extractItem(0, 1, false);
-                ItemHandlerHelper.giveItemToPlayer(player, extractItem);
+            if (!ItemUtil.getStack(altar.handler, 0).isEmpty()) {
+                ItemStack extractItem = ItemsUtil.extractItem(altar.handler, 0, 1, false, null);
+                player.getInventory().placeItemBackInInventory(extractItem);
                 world.playSound(null, altar.getBlockPos(), SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, 1, 1);
                 altarCraft(world, altar, player);
             }
@@ -221,8 +222,8 @@ public class BlockAltar extends Block implements EntityBlock {
     }
 
     private void takeInOrCraft(Level world, TileEntityAltar altar, Player playerIn) {
-        if (altar.isCanPlaceItem() && altar.handler.getStackInSlot(0).isEmpty()) {
-            altar.handler.setStackInSlot(0, playerIn.getMainHandItem().copyWithCount(1));
+        if (altar.isCanPlaceItem() && ItemUtil.getStack(altar.handler, 0).isEmpty()) {
+            ItemsUtil.setStackInSlot(altar.handler, 0, playerIn.getMainHandItem().copyWithCount(1));
             if (!playerIn.isCreative()) {
                 playerIn.getMainHandItem().shrink(1);
             }
