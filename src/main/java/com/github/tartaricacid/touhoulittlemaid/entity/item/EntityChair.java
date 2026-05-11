@@ -1,18 +1,18 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoChairEntity;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.ChairConfig;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemChair;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenChairGuiPackage;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import com.mojang.serialization.Codec;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -25,17 +25,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,12 +44,13 @@ public class EntityChair extends AbstractEntityFromItem {
     public static final EntityType<EntityChair> TYPE = EntityType.Builder.<EntityChair>of(EntityChair::new, MobCategory.MISC)
             .sized(0.875f, 0.5f)
             .clientTrackingRange(10)
-            .build("chair");
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "chair")));
 
     private static final EntityDataAccessor<String> MODEL_ID = SynchedEntityData.defineId(EntityChair.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Float> MOUNTED_HEIGHT = SynchedEntityData.defineId(EntityChair.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> TAMEABLE_CAN_RIDE = SynchedEntityData.defineId(EntityChair.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID = SynchedEntityData.defineId(EntityChair.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> OWNER = SynchedEntityData.defineId(EntityBroom.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
+
 
     private static final String DEFAULT_MODEL_ID = "touhou_little_maid:cushion";
 
@@ -80,7 +80,7 @@ public class EntityChair extends AbstractEntityFromItem {
         builder.define(MODEL_ID, DEFAULT_MODEL_ID);
         builder.define(MOUNTED_HEIGHT, 0f);
         builder.define(TAMEABLE_CAN_RIDE, true);
-        builder.define(OWNER_UUID, Optional.empty());
+        builder.define(OWNER, Optional.empty());
     }
 
     @Override
@@ -106,7 +106,7 @@ public class EntityChair extends AbstractEntityFromItem {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (player.isShiftKeyDown()) {
             if (player.getItemInHand(hand).interactLivingEntity(player, this, hand).consumesAction()) {
                 return InteractionResult.SUCCESS;
@@ -122,16 +122,16 @@ public class EntityChair extends AbstractEntityFromItem {
         return InteractionResult.SUCCESS;
     }
 
-    @Nonnull
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public AABB getBoundingBoxForCulling() {
-        BedrockModel<EntityChair> model = CustomPackLoader.CHAIR_MODELS.getModel(getModelId()).orElse(null);
-        if (model == null) {
-            return super.getBoundingBoxForCulling();
-        }
-        return model.getRenderBoundingBox().move(position());
-    }
+    //FIXME 实体CULLING控制从这个方法出了
+//    @Nonnull
+//    @Override
+//    public AABB getBoundingBoxForCulling() {
+//        BedrockModel<EntityChair> model = CustomPackLoader.CHAIR_MODELS.getModel(getModelId()).orElse(null);
+//        if (model == null) {
+//            return super.getBoundingBoxForCulling();
+//        }
+//        return model.getRenderBoundingBox().move(position());
+//    }
 
     @Override
     protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float partialTick) {
@@ -157,29 +157,21 @@ public class EntityChair extends AbstractEntityFromItem {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains(MODEL_ID_TAG_NAME, Tag.TAG_STRING)) {
-            setModelId(compound.getString(MODEL_ID_TAG_NAME));
-        }
-        if (compound.contains(MOUNTED_HEIGHT_TAG_NAME, Tag.TAG_FLOAT)) {
-            setMountedHeight(compound.getFloat(MOUNTED_HEIGHT_TAG_NAME));
-        }
-        if (compound.contains(TAMEABLE_CAN_RIDE_TAG_NAME, Tag.TAG_BYTE)) {
-            setTameableCanRide(compound.getBoolean(TAMEABLE_CAN_RIDE_TAG_NAME));
-        }
-        if (compound.contains(OWNER_UUID_TAG_NAME)) {
-            setOwnerUUID(NbtUtils.loadUUID(Objects.requireNonNull(compound.get(OWNER_UUID_TAG_NAME))));
-        }
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        input.read(MODEL_ID_TAG_NAME, Codec.STRING).ifPresent(this::setModelId);
+        input.read(MOUNTED_HEIGHT_TAG_NAME, Codec.FLOAT).ifPresent(this::setMountedHeight);
+        input.read(TAMEABLE_CAN_RIDE_TAG_NAME, Codec.BOOL).ifPresent(this::setTameableCanRide);
+        input.read(OWNER_UUID_TAG_NAME, UUIDUtil.CODEC).ifPresent(this::setOwnerUUID);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putString(MODEL_ID_TAG_NAME, getModelId());
-        compound.putFloat(MOUNTED_HEIGHT_TAG_NAME, getMountedHeight());
-        compound.putBoolean(TAMEABLE_CAN_RIDE_TAG_NAME, isTameableCanRide());
-        this.getOwnerUUID().ifPresent(uuid -> compound.putUUID(OWNER_UUID_TAG_NAME, uuid));
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.store(MODEL_ID_TAG_NAME, Codec.STRING, getModelId());
+        output.store(MOUNTED_HEIGHT_TAG_NAME, Codec.FLOAT, getMountedHeight());
+        output.store(TAMEABLE_CAN_RIDE_TAG_NAME, Codec.BOOL, isTameableCanRide());
+        output.storeNullable(OWNER_UUID_TAG_NAME, UUIDUtil.CODEC, getOwnerUUID().orElse(null));
     }
 
     @Nullable
@@ -218,11 +210,11 @@ public class EntityChair extends AbstractEntityFromItem {
     }
 
     public Optional<UUID> getOwnerUUID() {
-        return this.entityData.get(OWNER_UUID);
+        return this.entityData.get(OWNER).map(EntityReference::getUUID);
     }
 
     public void setOwnerUUID(@Nullable UUID uuid) {
-        this.entityData.set(OWNER_UUID, Optional.ofNullable(uuid));
+        this.entityData.set(OWNER, Optional.ofNullable(uuid).map(EntityReference::of));
     }
 
     public void setOwner(@Nullable Player player) {

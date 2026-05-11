@@ -50,7 +50,7 @@ public class AltarRecipeSerializer implements RecipeSerializer<AltarRecipe> {
         ingredients.replaceAll((ingredient) -> Ingredient.CONTENTS_STREAM_CODEC.decode(byteBuf));
         float power = byteBuf.readFloat();
         ItemStack result = ItemStack.STREAM_CODEC.decode(byteBuf);
-        Identifier entityType = byteBuf.readResourceLocation();
+        Identifier entityType = byteBuf.readIdentifier();
         String langKey = byteBuf.readUtf();
         return new AltarRecipe(group, category, ingredients, power, result, entityType, langKey);
     }
@@ -64,7 +64,7 @@ public class AltarRecipeSerializer implements RecipeSerializer<AltarRecipe> {
         }
         friendlyByteBuf.writeFloat(altarRecipe.getPower());
         ItemStack.STREAM_CODEC.encode(friendlyByteBuf, altarRecipe.getResult());
-        friendlyByteBuf.writeResourceLocation(altarRecipe.getEntityType());
+        friendlyByteBuf.writeIdentifier(altarRecipe.getEntityType());
         friendlyByteBuf.writeUtf(altarRecipe.getLangKey());
     }
 

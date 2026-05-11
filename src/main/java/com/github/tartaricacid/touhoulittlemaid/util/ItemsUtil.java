@@ -25,6 +25,7 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -305,11 +306,15 @@ public final class ItemsUtil {
     }
 
 
-    public static void storeContainer(Container container, String key, ValueOutput valueOutput) {
+    public static void saveContainer(Container container, String key, ValueOutput valueOutput) {
         valueOutput.store(key, ItemStack.OPTIONAL_CODEC.listOf(), containerToItemList(container));
     }
 
     public static void loadContainer(Container container, String key, ValueInput valueInput) {
         valueInput.read("container", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(l -> fillContainerByItemList(container, l));
+    }
+
+    public static ItemStacksResourceHandler createDummyHandler(List<ItemStack> stack) {
+        return new ItemStacksResourceHandler(NonNullList.copyOf(stack));
     }
 }

@@ -1,21 +1,27 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -30,7 +36,8 @@ public class EntityBox extends Entity {
     private static final EntityDataAccessor<Integer> OPEN_STAGE = SynchedEntityData.defineId(EntityBox.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> TEXTURE_INDEX = SynchedEntityData.defineId(EntityBox.class, EntityDataSerializers.INT);
     public static final EntityType<EntityBox> TYPE = EntityType.Builder.<EntityBox>of(EntityBox::new, MobCategory.MISC)
-            .sized(2.0f, 2.0f).clientTrackingRange(10).build("box");
+            .sized(2.0f, 2.0f).clientTrackingRange(10)
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "box")));
     private static final String STAGE_TAG = "OpenStage";
     private static final String TEXTURE_TAG = "TextureIndex";
 
@@ -67,19 +74,24 @@ public class EntityBox extends Entity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource damageSource, float v) {
+        return false;
+    }
+
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         this.addStageChange();
         if (this.getOpenStage() == SECOND_STAGE) {
             this.playSound(InitSounds.BOX_OPEN.get(), 3.0f, 1.0f);
-            return InteractionResult.sidedSuccess(level().isClientSide());
+            return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
         }
         if (this.getOpenStage() == THIRD_STAGE) {
             this.thirdStageTimeStamp = System.currentTimeMillis();
             this.playSound(InitSounds.BOX_OPEN.get(), 3.0f, 1.0f);
-            return InteractionResult.sidedSuccess(level().isClientSide());
+            return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
         }
         this.playSound(InitSounds.BOX_OPEN.get(), 3.0f, 2.0f);
-        return InteractionResult.sidedSuccess(level().isClientSide());
+        return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
     }
 
     @Override
@@ -89,24 +101,20 @@ public class EntityBox extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.contains(STAGE_TAG)) {
-            setOpenStage(compound.getInt(STAGE_TAG));
-        }
-        if (compound.contains(TEXTURE_TAG)) {
-            setTextureIndex(compound.getInt(TEXTURE_TAG));
-        }
+    protected void readAdditionalSaveData(ValueInput input) {
+        input.read(STAGE_TAG, Codec.INT).ifPresent(this::setOpenStage);
+        input.read(TEXTURE_TAG, Codec.INT).ifPresent(this::setTextureIndex);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void addAdditionalSaveData(ValueOutput compound) {
         compound.putInt(STAGE_TAG, getOpenStage());
         compound.putInt(TEXTURE_TAG, getTextureIndex());
     }
 
     @Override
-    public boolean canBeCollidedWith() {
-        return this.isAlive();
+    public boolean canBeCollidedWith(Entity entity) {
+        return isAlive();
     }
 
     @Override
@@ -136,26 +144,24 @@ public class EntityBox extends Entity {
 
     private void addStageChange() {
         this.setOpenStage(this.getOpenStage() + 1);
-        if (this.getOpenStage() > THIRD_STAGE) {
-            this.kill();
+        if (this.getOpenStage() > THIRD_STAGE && this.level instanceof ServerLevel serverLevel) {
+            this.kill(serverLevel);
         }
     }
 
     @Override
-    public void kill() {
-        if (this.level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY() + 0.25, this.getZ(),
-                    20, 1, 1, 1, 0.2);
-            ResourceKey<LootTable> table = this.getType().getDefaultLootTable();
+    public void kill(ServerLevel serverLevel) {
+        serverLevel.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY() + 0.25, this.getZ(),
+                20, 1, 1, 1, 0.2);
+        this.getType().getDefaultLootTable().ifPresent(table -> {
             LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(table);
             LootParams.Builder builder = new LootParams.Builder(serverLevel)
                     .withParameter(LootContextParams.THIS_ENTITY, this)
                     .withParameter(LootContextParams.ORIGIN, this.position())
                     .withParameter(LootContextParams.DAMAGE_SOURCE, damageSources().genericKill());
             LootParams params = builder.create(LootContextParamSets.ENTITY);
-            lootTable.getRandomItems(params, 0, this::spawnAtLocation);
-        }
-        super.kill();
+            lootTable.getRandomItems(params, 0, (i) -> this.spawnAtLocation(serverLevel, i));
+        });
     }
 
     private void applyInvisibilityEffect(TamableAnimal tameable) {

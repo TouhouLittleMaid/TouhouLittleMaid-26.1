@@ -78,14 +78,14 @@ public class ProgressChatBubbleData implements IChatBubbleData {
         @Override
         public IChatBubbleData readFromBuff(FriendlyByteBuf buf) {
             // 往客户端同步的数据里，不需要同步 existTick 和 priority，这两个数据仅在服务端有效
-            return new ProgressChatBubbleData(DEFAULT_EXIST_TICK, buf.readResourceLocation(), DEFAULT_PRIORITY, buf.readJsonWithCodec(ComponentSerialization.CODEC),
+            return new ProgressChatBubbleData(DEFAULT_EXIST_TICK, buf.readIdentifier(), DEFAULT_PRIORITY, buf.readLenientJsonWithCodec(ComponentSerialization.CODEC),
                     buf.readInt(), buf.readInt(), buf.readDouble(), buf.readBoolean());
         }
 
         @Override
         public void writeToBuff(FriendlyByteBuf buf, IChatBubbleData data) {
             ProgressChatBubbleData textChat = (ProgressChatBubbleData) data;
-            buf.writeResourceLocation(textChat.bg);
+            buf.writeIdentifier(textChat.bg);
             buf.writeJsonWithCodec(ComponentSerialization.CODEC, textChat.text);
             buf.writeInt(textChat.barBackgroundColor);
             buf.writeInt(textChat.barForegroundColor);

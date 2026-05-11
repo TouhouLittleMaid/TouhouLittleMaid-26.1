@@ -1,31 +1,31 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Optional;
 
 public class EntitySit extends Entity {
     public static final EntityType<EntitySit> TYPE = EntityType.Builder.<EntitySit>of(EntitySit::new, MobCategory.MISC)
             .sized(0.5f, 0.1f)
             .clientTrackingRange(10)
             .ridingOffset(-0.25F)
-            .build("sit");
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "sit")));
     private static final EntityDataAccessor<String> SIT_TYPE = SynchedEntityData.defineId(EntitySit.class, EntityDataSerializers.STRING);
     private int passengerTick = 0;
     private BlockPos associatedBlockPos = BlockPos.ZERO;
@@ -47,22 +47,15 @@ public class EntitySit extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.contains("SitJoyType", Tag.TAG_STRING)) {
-            this.setJoyType(tag.getString("SitJoyType"));
-        }
-        if (tag.contains("AssociatedBlockPos", Tag.TAG_INT_ARRAY)) {
-            Optional<BlockPos> blockPosOptional = NbtUtils.readBlockPos(tag, "AssociatedBlockPos");
-            blockPosOptional.ifPresent(blockPos -> this.associatedBlockPos = blockPos);
-        }
+    protected void readAdditionalSaveData(ValueInput input) {
+        input.getString("SitJoyType").ifPresent(this::setJoyType);
+        input.read("AssociatedBlockPos", BlockPos.CODEC).ifPresent(blockPos -> this.associatedBlockPos = blockPos);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        if (StringUtils.isNotBlank(this.getJoyType())) {
-            tag.putString("SitJoyType", this.getJoyType());
-        }
-        tag.put("AssociatedBlockPos", NbtUtils.writeBlockPos(this.associatedBlockPos));
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putString("SitJoyType", this.getJoyType());
+        output.store("AssociatedBlockPos", BlockPos.CODEC, this.associatedBlockPos);
     }
 
     @Override
@@ -133,7 +126,7 @@ public class EntitySit extends Entity {
     }
 
     @Override
-    public boolean hurt(DamageSource pSource, float pAmount) {
+    public boolean hurtServer(ServerLevel level, DamageSource pSource, float pAmount) {
         return false;
     }
 

@@ -77,14 +77,14 @@ public class TextChatBubbleData implements IChatBubbleData {
         @Override
         public IChatBubbleData readFromBuff(FriendlyByteBuf buf) {
             // 往客户端同步的数据里，不需要同步 existTick 和 priority，这两个数据仅在服务端有效
-            return new TextChatBubbleData(DEFAULT_EXIST_TICK, buf.readJsonWithCodec(ComponentSerialization.CODEC), buf.readResourceLocation());
+            return new TextChatBubbleData(DEFAULT_EXIST_TICK, buf.readLenientJsonWithCodec(ComponentSerialization.CODEC), buf.readIdentifier());
         }
 
         @Override
         public void writeToBuff(FriendlyByteBuf buf, IChatBubbleData data) {
             TextChatBubbleData textChat = (TextChatBubbleData) data;
             buf.writeJsonWithCodec(ComponentSerialization.CODEC, textChat.text);
-            buf.writeResourceLocation(textChat.bg);
+            buf.writeIdentifier(textChat.bg);
         }
     }
 }

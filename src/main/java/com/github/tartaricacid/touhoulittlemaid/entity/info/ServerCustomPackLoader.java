@@ -36,6 +36,7 @@ import java.util.zip.ZipFile;
 import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 
 public final class ServerCustomPackLoader {
+    //FIXME ??
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
             .create();

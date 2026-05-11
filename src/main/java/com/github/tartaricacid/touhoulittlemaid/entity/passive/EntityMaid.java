@@ -258,7 +258,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     /**
      * 开辟空间给任务存储使用,也便于附属模组存储数据
      */
-    private static final EntityDataAccessor<CompoundTag> TASK_DATA_SYNC = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.COMPOUND_TAG);
+    private static final EntityDataAccessor<MaidTaskDataMaps> TASK_DATA_SYNC = SynchedEntityData.defineId(EntityMaid.class, MaidTaskDataMaps.SERIALIZER_INSTANCE);
     private static final String TASK_TAG = "MaidTask";
     private static final String STRUCK_BY_LIGHTNING_TAG = "StruckByLightning";
     private static final String INVULNERABLE_TAG = "Invulnerable";
@@ -434,7 +434,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         builder.define(BACKPACK_TYPE, EmptyBackpack.ID.toString());
         builder.define(BACKPACK_ITEM_SHOW, ItemStack.EMPTY);
         builder.define(BACKPACK_FLUID, StringUtils.EMPTY);
-        builder.define(TASK_DATA_SYNC, new CompoundTag());
+        builder.define(TASK_DATA_SYNC, new MaidTaskDataMaps());
 
         builder.define(DATA_IS_AIMING, false);
 
@@ -452,9 +452,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
-        if (this.level.isClientSide() && TASK_DATA_SYNC.equals(key)) {
-            this.taskDataMaps.readFromServer(this.getSyncTaskData());
-        }
     }
 
     /**
@@ -2130,6 +2127,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return this.isHomeModeEnable();
     }
 
+
+
     public BlockPos getBrainSearchPos() {
         if (this.hasHome()) {
             return this.getHomePosition();
@@ -2700,12 +2699,16 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return navigationManager;
     }
 
+
+    public @Nullable UUID getOwnerUUID() {
+        EntityReference<LivingEntity> ownerReference = getOwnerReference();
+        return ownerReference == null ? null : ownerReference.getUUID();
+    }
     /**
      * 参考自 <a href="https://github.com/Snownee/Companion/blob/1.20-forge/src/main/java/snownee/companion/Hooks.java#L313-L322">Snownee's Companion</a>
      * <p>
      * 更加高效的 owner 寻找方式
      */
-    @Override
     @Nullable
     public LivingEntity getOwner() {
         UUID uuid = this.getOwnerUUID();

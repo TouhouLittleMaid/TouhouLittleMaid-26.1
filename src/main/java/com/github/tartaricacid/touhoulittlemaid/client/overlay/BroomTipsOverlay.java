@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.overlay;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -38,11 +39,11 @@ public class BroomTipsOverlay implements GuiLayer {
             Component tip = Component.translatable("message.touhou_little_maid.broom.unable_fly");
             List<FormattedCharSequence> split = minecraft.font.split(tip, 150);
             int offset = (screenHeight / 2 - 5) - split.size() * 10;
-            guiGraphics.blit(BG, screenWidth / 2 - 8, offset - 2, 48, 16, 16, 16);
+            GuiTools.blit(guiGraphics,BG, screenWidth / 2 - 8, offset - 2, 48, 16, 16, 16);
             offset += 18;
             for (FormattedCharSequence sequence : split) {
                 int width = minecraft.font.width(sequence);
-                guiGraphics.drawString(minecraft.font, sequence, (screenWidth - width) / 2, offset, 0xFFFFFF);
+                guiGraphics.text(minecraft.font, sequence, (screenWidth - width) / 2, offset, 0xFFFFFFFF);
                 offset += 10;
             }
         }
