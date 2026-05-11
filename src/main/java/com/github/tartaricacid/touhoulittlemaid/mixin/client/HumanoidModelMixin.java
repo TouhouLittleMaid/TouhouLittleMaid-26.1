@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+// FIXME
 @Mixin(HumanoidModel.class)
 public class HumanoidModelMixin<T extends LivingEntity> {
     @Shadow

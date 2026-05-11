@@ -36,7 +36,7 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public List<String> getMixins() {
-        if (InvTweaksCompat.isInstalled() && FMLEnvironment.dist == Dist.CLIENT) {
+        if (InvTweaksCompat.isInstalled() && FMLEnvironment.getDist() == Dist.CLIENT) {
             return Lists.newArrayList("client.compat.InvTweaksMixin");
         } else {
             return null;

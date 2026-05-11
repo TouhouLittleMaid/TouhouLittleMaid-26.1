@@ -8,9 +8,12 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(value = AbstractArrow.class)
 public interface ArrowAccessor {
-    @Accessor("inGround")
+    @Invoker("isInGround")
     boolean tlmInGround();
 
     @Invoker("getPickupItem")
     ItemStack getTlmPickupItem();
+
+    @Accessor("baseDamage")
+    double getTlmBaseDamage();
 }
