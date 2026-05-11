@@ -19,7 +19,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.jetbrains.annotations.NotNull;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
@@ -87,7 +86,7 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
             SchedulePos schedulePos = maid.getSchedulePos();
             if (schedulePos.isConfigured()) {
                 Identifier dimension = schedulePos.getDimension();
-                if (!dimension.equals(maid.level.dimension().location())) {
+                if (!dimension.equals(maid.level.dimension().identifier())) {
                     CheckSchedulePosPacket tips = new CheckSchedulePosPacket("message.touhou_little_maid.check_schedule_pos.dimension");
                     PacketDistributor.sendToPlayer(sender, tips);
                     return;
@@ -107,7 +106,7 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
     }
 
     @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
+    public Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

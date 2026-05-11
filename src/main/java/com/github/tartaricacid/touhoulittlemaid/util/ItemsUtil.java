@@ -26,7 +26,6 @@ import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -38,8 +37,8 @@ public final class ItemsUtil {
     /**
      * 直接设置对应槽位的物品堆
      */
-    public static void setStackInSlot(ResourceHandler<@NotNull ItemResource> itemHandler, int slot, ItemStack stack) {
-        if (itemHandler instanceof StacksResourceHandler<?, @NotNull ItemResource> stacksResourceHandler) {
+    public static void setStackInSlot(ResourceHandler<ItemResource> itemHandler, int slot, ItemStack stack) {
+        if (itemHandler instanceof StacksResourceHandler<?, ItemResource> stacksResourceHandler) {
             stacksResourceHandler.set(slot, ItemResource.of(stack), stack.getCount());
         } else {
             extractItem(itemHandler, slot, itemHandler.getAmountAsInt(slot), false, null);
@@ -50,7 +49,7 @@ public final class ItemsUtil {
     /**
      * 旧版ItemHandlerHelper#insertItemStacked的新实现
      */
-    public static ItemStack insertItemStacked(ResourceHandler<@NotNull ItemResource> itemHandler, ItemStack stack, boolean simulate, @Nullable TransactionContext parent) {
+    public static ItemStack insertItemStacked(ResourceHandler<ItemResource> itemHandler, ItemStack stack, boolean simulate, @Nullable TransactionContext parent) {
         if (stack.isEmpty()) {
             return ItemStack.EMPTY;
         }

@@ -51,7 +51,7 @@ public class MaidSoundInstanceAtPos extends AbstractSoundInstance implements ICu
     public SoundBuffer getSoundBuffer() {
         SoundCache soundCache = CustomSoundLoader.getSoundCache(id);
         if (soundCache != null) {
-            return soundCache.getBuffer(location);
+            return soundCache.getBuffer(identifier);
         }
         return null;
     }
