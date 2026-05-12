@@ -1,8 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.monster;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityPowerPoint;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 
 public interface IHasPowerPoint {
     /**
@@ -18,8 +19,7 @@ public interface IHasPowerPoint {
      * @param entity 掉落该 P 点的实体
      */
     default void dropPowerPoint(LivingEntity entity) {
-        // 需要考虑 doMobLoot 规则
-        if (!entity.level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
+        if (entity.level() instanceof ServerLevel level && !level.getGameRules().get(GameRules.MOB_DROPS)) {
             return;
         }
         int dropTime = 20;

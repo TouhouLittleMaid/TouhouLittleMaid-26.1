@@ -8,7 +8,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -20,6 +19,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -27,8 +27,10 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.*;
 
@@ -69,9 +71,10 @@ public class ItemWirelessIO extends Item implements MenuProvider {
     public static ItemStacksResourceHandler getFilterList(HolderLookup.Provider provider, ItemStack stack) {
         WirelessIOHandler handler = new WirelessIOHandler(FILTER_LIST_SIZE);
         if (stack.getItem() == InitItems.WIRELESS_IO.get()) {
-            CompoundTag tag = stack.get(FILTER_LIST_TAG);
-            if (tag != null) {
-                handler.deserialize(provider, tag);
+            List<ItemStack> itemStackList = stack.get(FILTER_LIST_TAG);
+            if (itemStackList != null) {
+                for (int i = 0; i < itemStackList.size() && i < FILTER_LIST_SIZE; i++)
+                    handler.set(i, ItemResource.of(itemStackList.get(i)), 1);
             }
         }
         return handler;
@@ -79,7 +82,12 @@ public class ItemWirelessIO extends Item implements MenuProvider {
 
     public static void setFilterList(HolderLookup.Provider provider, ItemStack stack, ItemStacksResourceHandler itemStackHandler) {
         if (stack.getItem() == InitItems.WIRELESS_IO.get()) {
-            stack.set(FILTER_LIST_TAG, itemStackHandler.serialize(provider);
+            List<ItemStack> itemStackList = new ArrayList<>();
+            for (int i = 0; i < itemStackHandler.size(); i++) {
+                ItemStack itemStack = itemStackHandler.getResource(i).toStack();
+                itemStackList.add(itemStack);
+            }
+            stack.set(FILTER_LIST_TAG, itemStackList);
         }
     }
 
@@ -133,23 +141,23 @@ public class ItemWirelessIO extends Item implements MenuProvider {
             if (type.canOpenByPlayer(te, player)) {
                 ItemStack stack = player.getMainHandItem();
                 setBindingPos(stack, pos);
-                return InteractionResult.sidedSuccess(worldIn.isClientSide());
+                return worldIn.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
             }
         }
         return super.useOn(context);
     }
 
     @Override
-    public InteractionResult<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (handIn == InteractionHand.MAIN_HAND && playerIn instanceof ServerPlayer) {
             playerIn.openMenu(this, buffer -> ItemStack.STREAM_CODEC.encode(buffer, playerIn.getMainHandItem()));
-            return InteractionResult.success(playerIn.getMainHandItem());
+            return worldIn.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
         }
         return super.use(worldIn, playerIn, handIn);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag tooltipFlag) {
         boolean maidToChest = isMaidToChest(stack);
         boolean isBlacklist = isBlacklist(stack);
         BlockPos pos = getBindingPos(stack);
@@ -165,12 +173,12 @@ public class ItemWirelessIO extends Item implements MenuProvider {
                         pos.getX(), pos.getY(), pos.getZ()) :
                 I18n.get("tooltips.touhou_little_maid.wireless_io.binding_pos.none");
 
-        tooltip.add(Component.literal(TOOLTIPS_PREFIX + ioModeText));
-        tooltip.add(Component.literal(TOOLTIPS_PREFIX + filterModeText));
-        tooltip.add(Component.literal(TOOLTIPS_PREFIX + hasPos));
-        tooltip.add(Component.literal(" "));
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.wireless_io.usage.1").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.wireless_io.usage.2").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.literal(TOOLTIPS_PREFIX + ioModeText));
+        builder.accept(Component.literal(TOOLTIPS_PREFIX + filterModeText));
+        builder.accept(Component.literal(TOOLTIPS_PREFIX + hasPos));
+        builder.accept(Component.literal(" "));
+        builder.accept(Component.translatable("tooltips.touhou_little_maid.wireless_io.usage.1").withStyle(ChatFormatting.GRAY));
+        builder.accept(Component.translatable("tooltips.touhou_little_maid.wireless_io.usage.2").withStyle(ChatFormatting.GRAY));
     }
 
     @Override

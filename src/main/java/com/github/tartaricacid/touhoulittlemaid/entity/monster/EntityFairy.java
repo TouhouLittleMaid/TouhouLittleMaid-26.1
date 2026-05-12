@@ -8,14 +8,15 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.DanmakuShoot;
 import com.github.tartaricacid.touhoulittlemaid.init.InitPoi;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
@@ -39,6 +40,8 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 
@@ -46,7 +49,7 @@ import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operati
 
 public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnimal, IHasPowerPoint {
     public static final EntityType<EntityFairy> TYPE = EntityType.Builder.<EntityFairy>of(EntityFairy::new, MobCategory.MONSTER)
-            .sized(0.6f, 1.5f).clientTrackingRange(10).build("fairy");
+            .sized(0.6f, 1.5f).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "fairy")));
 
     private static final Identifier SPEED_MODIFIER_BABY_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "baby");
     private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_ID, 0.2, ADD_MULTIPLIED_BASE);
@@ -132,7 +135,7 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
     }
 
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source) {
+    public boolean causeFallDamage(double distance, float damageMultiplier, DamageSource source) {
         return false;
     }
 
@@ -165,7 +168,6 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
         FlyingPathNavigation navigator = new FlyingPathNavigation(this, worldIn);
         navigator.setCanOpenDoors(false);
         navigator.setCanFloat(true);
-        navigator.setCanPassDoors(true);
         return navigator;
     }
 
@@ -187,21 +189,17 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putInt(FAIRY_TYPE_TAG_NAME, getFairyTypeOrdinal());
-        compound.putBoolean(BABY_TAG_NAME, this.isBaby());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.store(FAIRY_TYPE_TAG_NAME, Codec.INT, getFairyTypeOrdinal());
+        output.store(BABY_TAG_NAME, Codec.BOOL, this.isBaby());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        if (compound.contains(FAIRY_TYPE_TAG_NAME, Tag.TAG_INT)) {
-            setFairyTypeOrdinal(compound.getInt(FAIRY_TYPE_TAG_NAME));
-        }
-        if (compound.contains(BABY_TAG_NAME, Tag.TAG_BYTE)) {
-            this.setBaby(compound.getBoolean(BABY_TAG_NAME));
-        }
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        input.read(FAIRY_TYPE_TAG_NAME, Codec.INT).ifPresent(this::setFairyTypeOrdinal);
+        input.read(BABY_TAG_NAME, Codec.BOOL).ifPresent(this::setBaby);
     }
 
     public int getFairyTypeOrdinal() {

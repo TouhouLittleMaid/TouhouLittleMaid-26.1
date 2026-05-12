@@ -3,8 +3,9 @@ package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import static com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid.GAME_SKILL;
 import static com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid.GAME_STATUE;
@@ -25,14 +26,12 @@ public class MaidGameRecordManager {
         builder.define(GAME_STATUE, (byte) 0);
     }
 
-    void addAdditionalSaveData(CompoundTag compound) {
-        compound.put(GAME_SKILL_TAG, getGameSkill());
+    void addAdditionalSaveData(ValueOutput output) {
+        output.store(GAME_SKILL_TAG, CompoundTag.CODEC, getGameSkill());
     }
 
-    void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.contains(GAME_SKILL_TAG, Tag.TAG_COMPOUND)) {
-            setGameSkill(compound.getCompound(GAME_SKILL_TAG));
-        }
+    void readAdditionalSaveData(ValueInput input) {
+        input.read(GAME_SKILL_TAG, CompoundTag.CODEC).ifPresent(this::setGameSkill);
     }
 
     void tick() {
@@ -59,19 +58,13 @@ public class MaidGameRecordManager {
 
     public int getGomokuWinCount() {
         CompoundTag gameSkill = this.getGameSkill();
-        if (gameSkill.contains(GOMOKU, Tag.TAG_INT)) {
-            return gameSkill.getInt(GOMOKU);
-        }
-        return 0;
+        return gameSkill.getInt(GOMOKU).orElse(0);
     }
 
     public void increaseGomokuWinCount() {
         CompoundTag gameSkill = this.getGameSkill();
-        if (gameSkill.contains(GOMOKU, Tag.TAG_INT)) {
-            gameSkill.putInt(GOMOKU, gameSkill.getInt(GOMOKU) + 1);
-        } else {
-            gameSkill.putInt(GOMOKU, 1);
-        }
+        int count = gameSkill.getInt(GOMOKU).orElse(0);
+        gameSkill.putInt(GOMOKU, count + 1);
         this.setGameSkill(gameSkill);
     }
 

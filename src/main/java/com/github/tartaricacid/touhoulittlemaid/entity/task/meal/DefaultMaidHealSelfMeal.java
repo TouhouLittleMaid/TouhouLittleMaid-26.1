@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.event.MaidMealRegConfigEvent;
 import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +16,7 @@ public class DefaultMaidHealSelfMeal implements IMaidMeal {
     private static final int MAX_PROBABILITY = 5;
 
     public static boolean isHealMeal(ItemStack stack) {
-        return stack.getFoodProperties(null) != null
+        return stack.has(DataComponents.FOOD)
                && !IMaidMeal.isBlockList(stack, MaidConfig.MAID_HEAL_MEALS_BLOCK_LIST.get())
                && !IMaidMeal.isBlockList(stack, MaidMealRegConfigEvent.HEAL_MEAL_REGEX);
     }
@@ -27,7 +28,7 @@ public class DefaultMaidHealSelfMeal implements IMaidMeal {
 
     @Override
     public void onMaidEat(EntityMaid maid, ItemStack stack, InteractionHand hand) {
-        FoodProperties foodProperties = stack.getFoodProperties(maid);
+        FoodProperties foodProperties = stack.get(DataComponents.FOOD);
         if (foodProperties != null) {
             // 调用饰品
             maid.getMaidBauble().fireEvent((b, s) -> {

@@ -8,9 +8,9 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -19,12 +19,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.EffectCures;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.ClearAllStatusEffectsConsumeEffect;
+import net.minecraft.world.item.consume_effects.ConsumeEffect;
+import net.minecraft.world.item.consume_effects.RemoveStatusEffectsConsumeEffect;
 
 import javax.annotation.Nullable;
 import java.util.List;
+
+//FIXME EffectCures API removed, need to find replacement for milk cure check
 
 public class TaskFeedOwner implements IFeedTask {
     public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "feed");
@@ -39,22 +44,38 @@ public class TaskFeedOwner implements IFeedTask {
         return Items.COOKED_BEEF.getDefaultInstance();
     }
 
+    private boolean canRemoveEffect(List<ConsumeEffect> consumeEffects, MobEffectInstance effect) {
+        for (ConsumeEffect consumeEffect : consumeEffects) {
+            if (consumeEffect instanceof RemoveStatusEffectsConsumeEffect(var effects)) {
+                if (effects.contains(effect.getEffect()))
+                    return true;
+            } else if (consumeEffect instanceof ClearAllStatusEffectsConsumeEffect c) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean isFood(ItemStack stack, Player owner) {
+        Consumable consumable = stack.get(DataComponents.CONSUMABLE);
+        List<ConsumeEffect> el = consumable.onConsumeEffects();
         if (stack.getItem() == Items.MILK_BUCKET) {
             for (MobEffectInstance effect : owner.getActiveEffects()) {
-                if (isHarmfulEffect(effect) && effect.getDuration() > 60 && effect.getCures().contains(EffectCures.MILK)) {
+                if (isHarmfulEffect(effect) && effect.getDuration() > 60 && canRemoveEffect(el, effect)) {
                     return true;
                 }
             }
             return false;
         }
-        if (stack.getItem().getFoodProperties(stack, owner) != null) {
-            FoodProperties food = stack.getItem().getFoodProperties(stack, owner);
-            if (food != null) {
-                return food.effects().isEmpty() ||
-                       food.effects().stream().noneMatch(effect -> isHarmfulEffect(effect.effect()));
-            }
+        if (stack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+            if (el
+                    .stream()
+                    .noneMatch(t ->
+                            t instanceof ApplyStatusEffectsConsumeEffect a &&
+                                    a.effects().stream().anyMatch(this::isHarmfulEffect)
+                    ))
+                return true;
         }
         return false;
     }
@@ -78,12 +99,13 @@ public class TaskFeedOwner implements IFeedTask {
             }
         }
 
-        if (stack.getItem().getFoodProperties(stack, owner) != null) {
+        //FIXME getFoodProperties API changed
+        if (stack.has(net.minecraft.core.component.DataComponents.FOOD)) {
             FoodData foodData = owner.getFoodData();
             if (!foodData.needsFood()) {
                 return Priority.LOWEST;
             }
-            FoodProperties food = stack.getItem().getFoodProperties(stack, owner);
+            FoodProperties food = stack.get(net.minecraft.core.component.DataComponents.FOOD);
             int heal = 0;
             if (food != null) {
                 heal = food.nutrition();
@@ -101,10 +123,11 @@ public class TaskFeedOwner implements IFeedTask {
 
     @Override
     public ItemStack feed(ItemStack stack, Player owner) {
-        if (stack.getUseAnimation() == ItemUseAnimation.DRINK) {
-            owner.level.playSound(null, owner, stack.getDrinkingSound(), SoundSource.NEUTRAL,
-                    0.5f, owner.level.getRandom().nextFloat() * 0.1f + 0.9f);
-        }
+        //FIXME getUseAnimation and getDrinkingSound API changed
+        //if (stack.getUseAnimation() == ItemUseAnimation.DRINK) {
+        //    owner.level.playSound(null, owner, stack.getDrinkingSound(), SoundSource.NEUTRAL,
+        //            0.5f, owner.level.getRandom().nextFloat() * 0.1f + 0.9f);
+        //}
         return stack.getItem().finishUsingItem(stack, owner.level, owner);
     }
 
