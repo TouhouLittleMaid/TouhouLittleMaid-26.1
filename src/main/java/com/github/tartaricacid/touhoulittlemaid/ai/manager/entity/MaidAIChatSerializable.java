@@ -2,6 +2,8 @@ package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class MaidAIChatSerializable {
     public static final String NO_TTS_SITE = "__none__";
@@ -57,34 +59,26 @@ public class MaidAIChatSerializable {
         customSetting = data.customSetting;
     }
 
-    public CompoundTag readFromTag(CompoundTag tag) {
-        if (tag.contains("MaidAIChat")) {
-            CompoundTag data = tag.getCompound("MaidAIChat");
-            llmSite = data.getString("LLMSite");
-            llmModel = data.getString("LLMModel");
-            ttsSite = data.getString("TTSSiteName");
-            ttsModel = data.getString("TTSModel");
-            ttsLanguage = data.getString("TTSLanguage");
-            chatLanguage = data.getString("ChatLanguage");
-            ownerName = data.getString("OwnerName");
-            customSetting = data.getString("CustomSetting");
-        }
-        return tag;
+    public void loadValue(ValueInput input) {
+        ValueInput inputChild = input.childOrEmpty("MaidAIChat");
+        llmSite = inputChild.getStringOr("LLMSite", "");
+        llmModel = inputChild.getStringOr("LLMModel", "");
+        ttsSite = inputChild.getStringOr("TTSSiteName", "");
+        ttsModel = inputChild.getStringOr("TTSModel", "");
+        ttsLanguage = inputChild.getStringOr("TTSLanguage", "");
+        chatLanguage = inputChild.getStringOr("ChatLanguage", "");
+        ownerName = inputChild.getStringOr("OwnerName", "");
+        customSetting = inputChild.getStringOr("CustomSetting", "");
     }
-
-    public CompoundTag writeToTag(CompoundTag tag) {
-        CompoundTag data = new CompoundTag();
-        {
-            data.putString("LLMSite", llmSite);
-            data.putString("LLMModel", llmModel);
-            data.putString("TTSSiteName", ttsSite);
-            data.putString("TTSModel", ttsModel);
-            data.putString("TTSLanguage", ttsLanguage);
-            data.putString("ChatLanguage", chatLanguage);
-            data.putString("OwnerName", ownerName);
-            data.putString("CustomSetting", customSetting);
-        }
-        tag.put("MaidAIChat", data);
-        return tag;
+    public void saveValue(ValueOutput output) {
+        ValueOutput outputChild = output.child("MaidAIChat");
+        outputChild.putString("LLMSite", llmSite);
+        outputChild.putString("LLMModel", llmModel);
+        outputChild.putString("TTSSiteName", ttsSite);
+        outputChild.putString("TTSModel", ttsModel);
+        outputChild.putString("TTSLanguage", ttsLanguage);
+        outputChild.putString("ChatLanguage", chatLanguage);
+        outputChild.putString("OwnerName", ownerName);
+        outputChild.putString("CustomSetting", customSetting);
     }
 }

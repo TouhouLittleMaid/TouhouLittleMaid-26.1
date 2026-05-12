@@ -11,6 +11,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.data.MaidTaskDataMaps;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidGameRecordManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityDanmaku;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityThrowPowerPoint;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
@@ -104,6 +105,7 @@ public final class InitEntities {
     public static Supplier<EntityDataSerializer<?>> MAID_CHAT_BUBBLE_DATA_SERIALIZERS = DATA_SERIALIZERS.register("maid_chat_bubble", () -> ChatBubbleRegister.INSTANCE);
     public static Supplier<EntityDataSerializer<?>> MAID_TASK_DATA_SERIALIZERS = DATA_SERIALIZERS.register("maid_task_data", () -> MaidTaskDataMaps.SERIALIZER_INSTANCE);
     public static Supplier<EntityDataSerializer<?>> OPTIONAL_UUID_SERIALIZERS = DATA_SERIALIZERS.register("optional_uuid", () -> SERIALIZER_OPTIONAL_UUID);
+    public static Supplier<EntityDataSerializer<?>> MAID_GAME_WIN_COUNTS = DATA_SERIALIZERS.register("maid_game_win_counts", () -> MaidGameRecordManager.WIN_COUNT_SERIALIZER);
 
 
     @SubscribeEvent
