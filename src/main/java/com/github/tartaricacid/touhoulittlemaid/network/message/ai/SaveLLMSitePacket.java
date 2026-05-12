@@ -143,7 +143,7 @@ public record SaveLLMSitePacket(Action action, @Nullable String siteId, boolean 
     }
 
     @SuppressWarnings("unchecked")
-    private static SerializableSite<LLMSite> getSerializer(String apiType) {
+    private static @Nullable SerializableSite<LLMSite> getSerializer(String apiType) {
         SerializableSite<? extends Site> serializer = SerializerRegister.getSerializer(ServiceType.LLM, apiType);
         if (serializer == null) {
             return null;

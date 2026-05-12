@@ -115,7 +115,7 @@ public record SaveTTSSitePacket(Action action, @Nullable String siteId, boolean 
     }
 
     @SuppressWarnings("unchecked")
-    private static SerializableSite<TTSSite> getSerializer(String apiType) {
+    private static @Nullable SerializableSite<TTSSite> getSerializer(String apiType) {
         SerializableSite<? extends Site> serializer = SerializerRegister.getSerializer(ServiceType.TTS, apiType);
         if (serializer == null) {
             return null;

@@ -7,7 +7,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +15,6 @@ import java.util.Collections;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
-@SuppressWarnings("InstantiationOfUtilityClass")
 public record OpenAIConfigPacket() implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<OpenAIConfigPacket> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("open_ai_config"));
     public static final StreamCodec<ByteBuf, OpenAIConfigPacket> STREAM_CODEC = StreamCodec.of(
