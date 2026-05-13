@@ -53,7 +53,7 @@ public class ServantBellSetScreen extends Screen {
         int middleX = this.width / 2;
         int middleY = this.height / 2;
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
-        textField.render(graphics, mouseX, mouseY, partialTicks);
+        textField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         if (textField.getValue().isEmpty()) {
             graphics.text(font, Component.translatable("gui.touhou_little_maid.servant_bell.edit_box").withStyle(ChatFormatting.ITALIC), middleX - 94, middleY - 20, ChatFormatting.DARK_GRAY.getColor(), false);
         }

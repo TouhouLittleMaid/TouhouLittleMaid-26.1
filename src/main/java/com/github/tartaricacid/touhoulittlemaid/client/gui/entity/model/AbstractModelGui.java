@@ -370,7 +370,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
 
     private void drawButton(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         for (Renderable button : this.renderables) {
-            button.render(graphics, mouseX, mouseY, partialTicks);
+            button.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
     }
 

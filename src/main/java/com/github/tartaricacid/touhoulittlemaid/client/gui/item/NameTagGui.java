@@ -57,9 +57,9 @@ public class NameTagGui extends Screen {
         int middleX = this.width / 2;
         int middleY = this.height / 2;
         this.extractBackground(graphics, mouseX, mouseY, partialTicks);
-        textField.render(graphics, mouseX, mouseY, partialTicks);
+        textField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
         if (!alwaysShow) {
             graphics.blitSprite(CANCEL_SPRITE, middleX + 82, middleY - 26, 18, 18);

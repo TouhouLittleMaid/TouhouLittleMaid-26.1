@@ -561,7 +561,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void drawMaidCharacter(GuiGraphicsExtractor graphics, int x, int y) {
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 leftPos + 6,
                 topPos + 12,

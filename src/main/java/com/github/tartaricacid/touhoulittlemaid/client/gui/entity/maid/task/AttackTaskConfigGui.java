@@ -148,7 +148,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
 
     @Override
     protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        this.inputField.render(graphics, mouseX, mouseY, partialTicks);
+        this.inputField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         MutableComponent pageText = Component.literal(String.format("%d/%d", this.page + 1, (this.attackGroupsKey.size() - 1) / 7 + 1));
         graphics.drawCenteredString(font, pageText, leftPos + 228, topPos + 57, 0xFFFFFF);

@@ -188,7 +188,7 @@ public class HistoryAIChatScreen extends Screen {
             graphics.pose().pushPose();
             graphics.pose().translate(0, scroll, 0);
             for (Renderable renderable : this.historyWidgets) {
-                renderable.render(graphics, mouseX, mouseY, partialTicks);
+                renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
             }
             graphics.pose().popPose();
             graphics.disableScissor();

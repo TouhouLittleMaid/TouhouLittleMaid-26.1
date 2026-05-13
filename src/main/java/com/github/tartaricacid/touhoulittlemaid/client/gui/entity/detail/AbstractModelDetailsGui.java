@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -117,7 +118,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
         this.fillGradient(graphics, TOP_STATUS_BAR_SIZE, 0xfe282c34);
         graphics.text(font, getTitle(), 6, 4, 0xffaaaaaa);
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
     }
 
@@ -137,7 +138,10 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        int button = event.button();
+        double mouseX = event.x();
+        double mouseY = event.y();
         boolean isInWidthRange = 132 < mouseX && mouseX < width - 1;
         boolean isInHeightRange = 15 < mouseY && mouseY < height - 16;
         boolean isInRange = isInWidthRange && isInHeightRange;
@@ -206,6 +210,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
         zp.mul(yp);
         poseStack.mulPose(zp);
 
+        graphics.submitPictureInPictureRenderState();
         Lighting.setupForEntityInInventory();
         EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
         xp.conjugate();

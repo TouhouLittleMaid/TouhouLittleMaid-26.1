@@ -41,7 +41,7 @@ public class CheckSchedulePosGui extends Screen {
             startY += font.lineHeight + 3;
         }
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
     }
 }

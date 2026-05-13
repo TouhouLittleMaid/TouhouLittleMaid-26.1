@@ -375,7 +375,7 @@ public class AIChatScreen extends Screen {
             String value = this.input.getValue();
 
             graphics.fill(x - 8, y - 8, x + w + 8, y + h - 6, 0xBF090909);
-            this.input.render(graphics, mouseX, mouseY, partialTicks);
+            this.input.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
             if (StringUtils.isEmpty(value)) {
                 MutableComponent text = Component.translatable("ai.touhou_little_maid.chat.input.tip")
@@ -388,7 +388,7 @@ public class AIChatScreen extends Screen {
         this.renderTokenUsage(graphics);
 
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
 
         if (this.openPopup != null) {
