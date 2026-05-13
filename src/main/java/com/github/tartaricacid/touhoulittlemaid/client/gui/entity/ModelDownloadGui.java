@@ -185,14 +185,11 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         this.renderBase(graphics);
         this.renderSearchBox(graphics, mouseX, mouseY, pPartialTick);
         this.renderPageNumber(graphics);
-        for (Renderable renderable : this.renderables) {
-            renderable.extractRenderState(graphics, mouseX, mouseY, pPartialTick);
-        }
+        super.extractRenderState(graphics, mouseX, mouseY, pPartialTick);
         this.renderBaseButtons(graphics);
         this.renderPackHandleButtons(graphics);
         this.renderNoDataTips(graphics);

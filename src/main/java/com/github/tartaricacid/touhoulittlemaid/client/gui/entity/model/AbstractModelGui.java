@@ -332,14 +332,11 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         // 中心点
         int middleX = this.width / 2 + 50;
         int middleY = this.height / 2;
-
-        // 绘制灰色默认背景
-        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
 
         // 绘制 GUI 背景
         GuiTools.blit(graphics, BG, middleX - 256 / 2, middleY - 80, 0, 0, 256, 180);

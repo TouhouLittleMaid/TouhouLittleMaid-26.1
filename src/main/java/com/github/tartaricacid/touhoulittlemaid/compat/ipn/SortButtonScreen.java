@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.ipn;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModList;
@@ -11,7 +12,7 @@ public class SortButtonScreen {
 
     public static void renderBackground(GuiGraphicsExtractor graphics, int x, int y) {
         if (ModList.get().isLoaded(IPN_ID)) {
-            graphics.blit(SIDE, x, y, 0, 73, 17, 48);
+            GuiTools.blit(graphics, SIDE, x, y, 0, 73, 17, 48);
         }
     }
 }

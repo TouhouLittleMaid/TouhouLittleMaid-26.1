@@ -156,8 +156,8 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
     }
 
     @Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractContents(graphics, mouseX, mouseY, a);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
         GuiTools.blit(graphics, BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
 
