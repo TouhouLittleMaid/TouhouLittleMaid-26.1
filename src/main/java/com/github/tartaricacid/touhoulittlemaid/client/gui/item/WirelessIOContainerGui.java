@@ -6,15 +6,14 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.Wireles
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.other.WirelessIOContainer;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemWirelessIO;
 import com.github.tartaricacid.touhoulittlemaid.network.message.WirelessIOGuiPackage;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.anti_ad.mc.ipn.api.IPNIgnore;
 
 @IPNIgnore
@@ -38,14 +37,14 @@ public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOCo
                 (x, y) -> {
                     isMaidToChest = !isMaidToChest;
                     ClientPacketDistributor.sendToServer(new WirelessIOGuiPackage(isMaidToChest, isBlacklist));
-                }, (m, x, y) -> m.renderTooltip(font, Component.translatable("gui.touhou_little_maid.wireless_io.io_mode"), x, y));
+                }, (m, x, y) -> m.setTooltipForNextFrame(font, Component.translatable("gui.touhou_little_maid.wireless_io.io_mode"), x, y));
 
         ioModeToggle.initTextureValues(194, 32, -18, 18, MAIN);
         WirelessIOButton filterModeToggle = new WirelessIOButton(leftPos + 136, topPos + 26, 16, 16, isBlacklist,
                 (x, y) -> {
                     isBlacklist = !isBlacklist;
                     ClientPacketDistributor.sendToServer(new WirelessIOGuiPackage(isMaidToChest, isBlacklist));
-                }, (m, x, y) -> m.renderTooltip(font, Component.translatable("gui.touhou_little_maid.wireless_io.filter_mode"), x, y));
+                }, (m, x, y) -> m.setTooltipForNextFrame(font, Component.translatable("gui.touhou_little_maid.wireless_io.filter_mode"), x, y));
         filterModeToggle.initTextureValues(176, 0, 16, 16, MAIN);
 
         TouhouImageButton configButton = new TouhouImageButton(leftPos + 136, topPos + 44, 16, 16, 208, 0, 16,
@@ -66,11 +65,9 @@ public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOCo
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractTransparentBackground(graphics);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, MAIN);
-        graphics.blit(MAIN, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        GuiTools.blit(graphics, MAIN, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         if (isBlacklist) {
-            graphics.blit(MAIN, leftPos + 61, topPos + 15, 0, 166, 54, 55);
+            GuiTools.blit(graphics, MAIN, leftPos + 61, topPos + 15, 0, 166, 54, 55);
         }
     }
 

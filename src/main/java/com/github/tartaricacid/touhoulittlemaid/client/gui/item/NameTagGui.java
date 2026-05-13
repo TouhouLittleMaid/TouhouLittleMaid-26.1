@@ -2,16 +2,16 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.item;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendNameTagPackage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
 public class NameTagGui extends Screen {
@@ -62,12 +62,12 @@ public class NameTagGui extends Screen {
             renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
         if (!alwaysShow) {
-            graphics.blitSprite(CANCEL_SPRITE, middleX + 82, middleY - 26, 18, 18);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CANCEL_SPRITE, middleX + 82, middleY - 26, 18, 18);
         } else {
-            graphics.blitSprite(CONFIRM_SPRITE, middleX + 82, middleY - 26, 18, 18);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, CONFIRM_SPRITE, middleX + 82, middleY - 26, 18, 18);
         }
         if (alwaysShowButton.isHovered()) {
-            graphics.renderTooltip(font, Component.translatable("gui.touhou_little_maid.tag.always_show"), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font, Component.translatable("gui.touhou_little_maid.tag.always_show"), mouseX, mouseY);
         }
     }
 

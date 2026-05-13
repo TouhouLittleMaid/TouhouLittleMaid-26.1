@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsTTSSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveTTSSitePacket;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -13,6 +14,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class TTSSiteButton extends Button {
@@ -44,14 +46,12 @@ public class TTSSiteButton extends Button {
 
         this.renderString(graphics, Minecraft.getInstance().font, 0xF3EFE0);
 
-        RenderSystem.enableBlend();
         // 站点图标（左侧）
-        graphics.blit(this.site.icon(), this.getX() + 6, this.getY() + 4, 0, 0, 16, 16, 16, 16);
+        GuiTools.blit(graphics,this.site.icon(), this.getX() + 6, this.getY() + 4, 0, 0, 16, 16, 16, 16);
         // 启用按钮（右侧）
-        graphics.blit(MISC, this.getX() + this.width - 46, this.getY() + 4, this.site.enabled() ? 16 : 0, 0, 16, 16);
+        GuiTools.blit(graphics,MISC, this.getX() + this.width - 46, this.getY() + 4, this.site.enabled() ? 16 : 0, 0, 16, 16);
         // 编辑按钮（最右侧）
-        graphics.blit(MISC, this.getX() + this.width - 24, this.getY() + 4, 16, 16, 16, 16);
-        RenderSystem.disableBlend();
+        GuiTools.blit(graphics,MISC, this.getX() + this.width - 24, this.getY() + 4, 16, 16, 16, 16);
     }
 
     @Override
@@ -71,7 +71,6 @@ public class TTSSiteButton extends Button {
         }
     }
 
-    @Override
     public void renderString(GuiGraphicsExtractor graphics, Font font, int color) {
         graphics.text(font, this.getMessage(), this.getX() + 28, this.getY() + (this.height - 8) / 2,
                 this.site.enabled() ? 0xFF999999 : 0xFF444444, false);
