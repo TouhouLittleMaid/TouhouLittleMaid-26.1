@@ -58,14 +58,14 @@ public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOCo
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(graphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        this.extractTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderTransparentBackground(graphics);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractTransparentBackground(graphics);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, MAIN);
         graphics.blit(MAIN, leftPos, topPos, 0, 0, imageWidth, imageHeight);
@@ -75,6 +75,6 @@ public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOCo
     }
 
     @Override
-    protected void renderLabels(GuiGraphicsExtractor graphics, int x, int y) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
     }
 }

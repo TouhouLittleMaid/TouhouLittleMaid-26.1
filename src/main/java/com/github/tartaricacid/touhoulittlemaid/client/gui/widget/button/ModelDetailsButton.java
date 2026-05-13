@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -22,13 +23,13 @@ public class ModelDetailsButton extends TouhouStateSwitchButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTicks);
         graphics.text(Minecraft.getInstance().font, name, this.getX() + 14, this.getY() + 2, 0xffffffff, false);
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.isStateTriggered = !this.isStateTriggered;
         onClick.accept(this.isStateTriggered);
     }

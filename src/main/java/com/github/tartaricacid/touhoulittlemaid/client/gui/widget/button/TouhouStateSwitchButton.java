@@ -40,7 +40,7 @@ public class TouhouStateSwitchButton extends AbstractWidget {
         this.defaultButtonNarrationText(pNarrationElementOutput);
     }
 
-    public void renderWidget(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         RenderSystem.disableDepthTest();
         int i = this.xTexStart;
         int j = this.yTexStart;

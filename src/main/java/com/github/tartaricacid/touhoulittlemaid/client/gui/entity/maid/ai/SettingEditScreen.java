@@ -147,10 +147,10 @@ public class SettingEditScreen extends Screen {
     }
 
     @Override
-    public void resize(Minecraft mc, int pWidth, int pHeight) {
+    public void resize(int pWidth, int pHeight) {
         String ownerNameValue = this.ownerName.getValue();
         String customSettingValue = this.customSetting.getValue();
-        super.resize(mc, pWidth, pHeight);
+        super.resize(pWidth, pHeight);
         this.ownerName.setValue(ownerNameValue);
         this.customSetting.setValue(customSettingValue);
     }
@@ -161,8 +161,8 @@ public class SettingEditScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         graphics.text(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.owner_name"),
                 ownerName.getX() + 2, ownerName.getY() - 12, 0xFFFFFF);
         graphics.text(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.custom_setting"),

@@ -1,5 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
+import net.minecraft.client.input.MouseButtonEvent;
+
 import java.util.List;
 
 public class WirelessIOSlotButton extends TouhouStateSwitchButton {
@@ -13,7 +15,7 @@ public class WirelessIOSlotButton extends TouhouStateSwitchButton {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.isStateTriggered = !this.isStateTriggered;
         this.config.set(this.index, this.isStateTriggered);
     }

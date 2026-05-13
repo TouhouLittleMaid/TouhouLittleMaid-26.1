@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -41,17 +42,17 @@ public class ServantBellSetScreen extends Screen {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String value = this.textField.getValue();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
         this.textField.setValue(value);
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int middleX = this.width / 2;
         int middleY = this.height / 2;
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         textField.render(graphics, mouseX, mouseY, partialTicks);
         if (textField.getValue().isEmpty()) {
             graphics.text(font, Component.translatable("gui.touhou_little_maid.servant_bell.edit_box").withStyle(ChatFormatting.ITALIC), middleX - 94, middleY - 20, ChatFormatting.DARK_GRAY.getColor(), false);
@@ -60,12 +61,12 @@ public class ServantBellSetScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.textField.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (this.textField.mouseClicked(event, doubleClick)) {
             this.setFocused(this.textField);
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

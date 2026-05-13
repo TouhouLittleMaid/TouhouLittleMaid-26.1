@@ -106,7 +106,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (minecraft == null) {
             return;
         }
@@ -123,12 +123,9 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
 
     private void renderViewBg(GuiGraphicsExtractor graphics) {
         this.fillGradient(graphics, BACKGROUND_SIZE, 0xfe17191d, -999);
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, -900);
         graphics.text(font, Component.translatable("gui.touhou_little_maid.skin_details.left_mouse"), (int) SIDE_MENU_SIZE.w + 4, (int) TOP_STATUS_BAR_SIZE.h + 4, 0xffaaaaaa, false);
         graphics.text(font, Component.translatable("gui.touhou_little_maid.skin_details.right_mouse"), (int) SIDE_MENU_SIZE.w + 4, (int) TOP_STATUS_BAR_SIZE.h + 14, 0xffaaaaaa, false);
         graphics.text(font, Component.translatable("gui.touhou_little_maid.skin_details.mouse_wheel"), (int) SIDE_MENU_SIZE.w + 4, (int) TOP_STATUS_BAR_SIZE.h + 24, 0xffaaaaaa, false);
-        graphics.pose().popPose();
     }
 
     private void renderBottomStatueBar(GuiGraphicsExtractor graphics) {

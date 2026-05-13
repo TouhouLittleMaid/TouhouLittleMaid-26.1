@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -45,17 +46,17 @@ public class NameTagGui extends Screen {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String value = this.textField.getValue();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
         this.textField.setValue(value);
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int middleX = this.width / 2;
         int middleY = this.height / 2;
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
+        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
         textField.render(graphics, mouseX, mouseY, partialTicks);
         for (Renderable renderable : this.renderables) {
             renderable.render(graphics, mouseX, mouseY, partialTicks);
@@ -71,12 +72,12 @@ public class NameTagGui extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.textField.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (this.textField.mouseClicked(event, doubleClick)) {
             this.setFocused(this.textField);
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

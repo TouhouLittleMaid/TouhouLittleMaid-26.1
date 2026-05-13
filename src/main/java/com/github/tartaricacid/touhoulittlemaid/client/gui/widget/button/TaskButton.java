@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
@@ -57,17 +58,17 @@ public class TaskButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         // 禁用声音
         if (!enable) {
             return false;
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
     @SuppressWarnings("all")
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
         int i = this.yTexStart;
         if (this.isHoveredOrFocused()) {

@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -33,15 +34,15 @@ public class BeaconEffectButton extends TouhouStateSwitchButton {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.isStateTriggered = !this.isStateTriggered;
         ClientPacketDistributor.sendToServer(new SetBeaconPotionPackage(pos, isStateTriggered ? potionIndex : -1));
         this.onClick.accept(this.isStateTriggered);
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTicks);
         graphics.blit(this.getX() + 2, this.getY() + 2, 0, 18, 18, this.sprite);
     }
 

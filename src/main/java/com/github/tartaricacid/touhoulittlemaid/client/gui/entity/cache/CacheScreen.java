@@ -59,8 +59,8 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         if (modelInfos.isEmpty()) {
             stopWatch.stop();

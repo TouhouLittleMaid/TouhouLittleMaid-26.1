@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -22,7 +23,7 @@ public class MonsterListButton extends Button {
     }
 
     @Override
-    protected void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
         RenderSystem.enableDepthTest();
         if (deleteClick(mouseX, mouseY)) {
@@ -37,7 +38,9 @@ public class MonsterListButton extends Button {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (deleteClick(mouseX, mouseY)) {
             this.parents.removeMonsterType(this.entityId);
         } else if (leftClick(mouseX, mouseY)) {

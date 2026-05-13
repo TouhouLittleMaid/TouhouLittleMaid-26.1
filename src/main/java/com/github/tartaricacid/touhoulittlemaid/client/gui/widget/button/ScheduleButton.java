@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -34,7 +35,7 @@ public class ScheduleButton<T extends AbstractMaidContainer> extends Button {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         int index = mode.ordinal() + 1;
         int length = MaidSchedule.values().length;
         this.mode = MaidSchedule.values()[index % length];
@@ -42,7 +43,7 @@ public class ScheduleButton<T extends AbstractMaidContainer> extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.enableDepthTest();
         graphics.blit(BUTTON, this.getX(), this.getY(), 82, 43 + 14 * mode.ordinal(), this.width, this.height, 256, 256);
     }

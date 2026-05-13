@@ -95,7 +95,7 @@ public class WirelessIOConfigSlotGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBg(graphics, mouseX, mouseY, partialTicks);
         for (Renderable renderable : this.renderables) {
             renderable.render(graphics, mouseX, mouseY, partialTicks);
@@ -103,7 +103,7 @@ public class WirelessIOConfigSlotGui extends Screen {
     }
 
     private void renderBg(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        this.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
         guiGraphics.blit(SLOT, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 }

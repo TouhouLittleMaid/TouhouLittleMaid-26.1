@@ -47,13 +47,10 @@ public class OptifineScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         graphics.drawCenteredString(this.font, this.title, this.width / 2, 30, 16777215);
         this.message.renderCentered(graphics, this.width / 2, 70);
-        for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
-        }
     }
 
     @Override

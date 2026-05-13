@@ -27,7 +27,7 @@ public class PackInfoButton extends FlatColorButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         // 背景色
         if (isSelect) {

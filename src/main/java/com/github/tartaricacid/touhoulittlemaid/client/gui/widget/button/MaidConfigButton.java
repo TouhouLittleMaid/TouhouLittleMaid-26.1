@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
@@ -33,7 +34,7 @@ public class MaidConfigButton extends Button {
     }
 
     @Override
-    protected void renderWidget(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
         RenderSystem.enableDepthTest();
         if (this.isHovered) {
@@ -69,7 +70,7 @@ public class MaidConfigButton extends Button {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         if (leftClicked) {
             leftPress.onPress(this);
         } else {

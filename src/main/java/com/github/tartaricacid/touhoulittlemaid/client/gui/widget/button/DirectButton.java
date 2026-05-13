@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 
@@ -18,7 +19,7 @@ public class DirectButton extends Button {
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         this.direction = Direction.from2DDataValue((direction.get2DDataValue() + 1) % 4);
         this.onPress.onPress(this);
     }

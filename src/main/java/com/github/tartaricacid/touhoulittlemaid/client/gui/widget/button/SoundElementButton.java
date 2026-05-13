@@ -23,7 +23,7 @@ public class SoundElementButton extends FlatColorButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         if (otherColor) {
             graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x5f_9e9e9e, 0x5f_9e9e9e);

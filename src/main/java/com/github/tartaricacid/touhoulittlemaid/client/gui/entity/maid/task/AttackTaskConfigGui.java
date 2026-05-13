@@ -13,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -139,9 +140,9 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String value = this.inputField.getValue();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
         this.inputField.setValue(value);
     }
 
@@ -155,17 +156,17 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractContents(graphics, mouseX, mouseY, a);
         graphics.blit(BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE && this.getMinecraft().player != null) {
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == GLFW.GLFW_KEY_ESCAPE && this.getMinecraft().player != null) {
             this.getMinecraft().player.closeContainer();
         }
-        return this.inputField.keyPressed(keyCode, scanCode, modifiers) || this.inputField.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
+        return this.inputField.keyPressed(event) || this.inputField.canConsumeInput() || super.keyPressed(event);
     }
 
     @Override

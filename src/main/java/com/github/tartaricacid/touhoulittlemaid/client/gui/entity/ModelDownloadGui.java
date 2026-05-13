@@ -17,6 +17,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
@@ -182,7 +185,7 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         super.renderBlurredBackground(pPartialTick);
         this.renderBase(graphics);
         this.renderSearchBox(graphics, mouseX, mouseY, pPartialTick);
@@ -243,30 +246,30 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String value = this.textField.getValue();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
         this.textField.setValue(value);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.textField.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (this.textField.mouseClicked(event, doubleClick)) {
             this.setFocused(this.textField);
             return true;
         } else if (this.textField.isFocused()) {
             this.textField.setFocused(false);
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         if (textField == null) {
             return false;
         }
         String perText = this.textField.getValue();
-        if (this.textField.charTyped(codePoint, modifiers)) {
+        if (this.textField.charTyped(event)) {
             if (!Objects.equals(perText, this.textField.getValue())) {
                 this.currentPage = 0;
                 this.init();
@@ -277,20 +280,20 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean hasKeyCode = InputConstants.getKey(keyCode, scanCode).getNumericKeyValue().isPresent();
+    public boolean keyPressed(KeyEvent event) {
+        boolean hasKeyCode = InputConstants.getKey(event.key(), event.scancode()).getNumericKeyValue().isPresent();
         String preText = this.textField.getValue();
         if (hasKeyCode) {
             return true;
         }
-        if (this.textField.keyPressed(keyCode, scanCode, modifiers)) {
+        if (this.textField.keyPressed(event)) {
             if (!Objects.equals(preText, this.textField.getValue())) {
                 this.currentPage = 0;
                 this.init();
             }
             return true;
         } else {
-            return this.textField.isFocused() && this.textField.isVisible() && keyCode != 256 || super.keyPressed(keyCode, scanCode, modifiers);
+            return this.textField.isFocused() && this.textField.isVisible() && event.key() != 256 || super.keyPressed(event);
         }
     }
 

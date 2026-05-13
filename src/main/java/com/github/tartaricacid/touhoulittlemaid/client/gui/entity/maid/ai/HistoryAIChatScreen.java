@@ -171,8 +171,8 @@ public class HistoryAIChatScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         graphics.drawCenteredString(font, HISTORY_TITLE, posX + 210, 8, 0xFFFFFF);
         this.renderSummaryPanel(graphics);

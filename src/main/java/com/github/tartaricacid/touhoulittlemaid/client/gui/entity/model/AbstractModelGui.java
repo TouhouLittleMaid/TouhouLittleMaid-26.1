@@ -12,6 +12,9 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
@@ -330,7 +333,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.renderBlurredBackground(partialTicks);
 
         graphics.pose().translate(0, 0, -100);
@@ -340,7 +343,7 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
         int middleY = this.height / 2;
 
         // 绘制灰色默认背景
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
+        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
 
         // 绘制 GUI 背景
         graphics.blit(BG, middleX - 256 / 2, middleY - 80, 0, 0, 256, 180);
@@ -651,35 +654,35 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         // 处理搜索框的点击事件
-        if (this.searchBox != null && this.searchBox.mouseClicked(mouseX, mouseY, button)) {
+        if (this.searchBox != null && this.searchBox.mouseClicked(event, doubleClick)) {
             this.setFocused(this.searchBox);
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         // 处理搜索框的键盘输入
         if (this.searchBox != null && this.searchBox.isFocused()) {
-            if (this.searchBox.keyPressed(keyCode, scanCode, modifiers)) {
+            if (this.searchBox.keyPressed(event)) {
                 return true;
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         // 处理搜索框的字符输入
         if (this.searchBox != null && this.searchBox.isFocused()) {
-            if (this.searchBox.charTyped(codePoint, modifiers)) {
+            if (this.searchBox.charTyped(event)) {
                 return true;
             }
         }
-        return super.charTyped(codePoint, modifiers);
+        return super.charTyped(event);
     }
 
     /**

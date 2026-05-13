@@ -45,8 +45,8 @@ public class CraftingTableBackpackContainerScreen extends AbstractMaidContainerG
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractContents(graphics, mouseX, mouseY, a);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, BACKPACK);
         graphics.blit(BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);

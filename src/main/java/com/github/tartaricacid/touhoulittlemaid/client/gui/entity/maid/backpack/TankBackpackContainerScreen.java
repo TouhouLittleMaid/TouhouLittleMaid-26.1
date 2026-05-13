@@ -50,8 +50,8 @@ public class TankBackpackContainerScreen extends AbstractMaidContainerGui<TankBa
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractContents(graphics, mouseX, mouseY, a);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, BACKPACK);
         graphics.blit(BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
@@ -62,15 +62,15 @@ public class TankBackpackContainerScreen extends AbstractMaidContainerGui<TankBa
         RenderSystem.disableBlend();
         graphics.blit(BACKPACK, leftPos + 197, topPos + 104, 165, 0, 34, 50);
 
-        boolean xInRange = leftPos + 196 <= x && x <= leftPos + 196 + 29;
-        boolean yInRange = topPos + 108 <= y && y <= topPos + 108 + 50;
+        boolean xInRange = leftPos + 196 <= mouseX && mouseX <= leftPos + 196 + 29;
+        boolean yInRange = topPos + 108 <= mouseY && mouseY <= topPos + 108 + 50;
         if (xInRange && yInRange) {
             MutableComponent fluidInfo = Component.translatable("tooltips.touhou_little_maid.tank_backpack.fluid",
                     MaidFluidRender.getFluidName(maid.getBackpackFluid(), this.menu.getFluidCount()),
                     this.menu.getFluidCount()).withStyle(ChatFormatting.GRAY);
             MutableComponent capacityInfo = Component.translatable("tooltips.touhou_little_maid.tank_backpack.capacity", TankBackpackData.CAPACITY)
                     .withStyle(ChatFormatting.GRAY);
-            graphics.renderComponentTooltip(font, Lists.newArrayList(fluidInfo, capacityInfo), x, y);
+            graphics.renderComponentTooltip(font, Lists.newArrayList(fluidInfo, capacityInfo), mouseX, mouseY);
         }
     }
 }

@@ -25,8 +25,8 @@ public class DefaultMaidTaskConfigGui extends MaidTaskConfigGui<TaskConfigContai
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractContents(graphics, mouseX, mouseY, a);
         graphics.blit(BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
 

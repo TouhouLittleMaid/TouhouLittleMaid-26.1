@@ -27,7 +27,7 @@ public class MaidSideTabButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.enableDepthTest();
         if (!this.active) {
             graphics.blit(SIDE, this.getX() + 2, this.getY(), 209, top, this.width, this.height, 256, 256);

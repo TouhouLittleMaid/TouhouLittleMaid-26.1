@@ -66,7 +66,7 @@ public class HistoryChatWidget extends AbstractWidget {
     }
 
     @Override
-    protected void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.setColor(1, 1, 1, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();

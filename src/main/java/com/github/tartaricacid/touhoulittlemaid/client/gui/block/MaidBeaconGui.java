@@ -12,6 +12,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -120,13 +121,13 @@ public class MaidBeaconGui extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        InputConstants.Key mouseKey = InputConstants.getKey(keyCode, scanCode);
+    public boolean keyPressed(KeyEvent event) {
+        InputConstants.Key mouseKey = InputConstants.getKey(event.key(), event.scancode());
         if (this.minecraft != null && this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey)) {
             this.onClose();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     private void renderPlayerPower(GuiGraphicsExtractor graphics) {

@@ -79,7 +79,7 @@ public class ItemWirelessIO extends Item implements MenuProvider {
 
     public static void setFilterList(HolderLookup.Provider provider, ItemStack stack, ItemStacksResourceHandler itemStackHandler) {
         if (stack.getItem() == InitItems.WIRELESS_IO.get()) {
-            stack.set(FILTER_LIST_TAG, itemStackHandler.serialize(provider);
+            stack.set(FILTER_LIST_TAG, itemStackHandler.serialize(provider));
         }
     }
 

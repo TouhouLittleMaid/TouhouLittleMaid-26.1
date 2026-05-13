@@ -30,6 +30,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
@@ -159,14 +160,14 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     @Override
     @SuppressWarnings("all")
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         // fixme: https://github.com/TartaricAcid/TouhouLittleMaid/issues/416
         // 临时修复，应该采用更好的办法！
         if (this.maid == null) {
             return;
         }
         this.drawModInfo(graphics);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         drawModInfo(graphics);
         this.drawEffectInfo(graphics);
         this.drawCurrentTaskText(graphics);
@@ -174,7 +175,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         NeoForge.EVENT_BUS.post(new MaidContainerGuiEvent.Render(this, leftPos, topPos,
                 this.eventAddButtons, graphics, mouseX, mouseY, partialTicks));
         // 确保 Tooltip 是最后渲染的
-        this.renderTooltip(graphics, mouseX, mouseY);
+        this.extractTooltip(graphics, mouseX, mouseY);
         NeoForge.EVENT_BUS.post(new MaidContainerGuiEvent.Tooltip(this, leftPos, topPos,
                 this.eventAddButtons, graphics, mouseX, mouseY, partialTicks));
     }
@@ -232,19 +233,19 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         graphics.blit(BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         SortButtonScreen.renderBackground(graphics, leftPos + 249, topPos + 166);
-        this.drawMaidCharacter(graphics, x, y);
+        this.drawMaidCharacter(graphics, mouseX, mouseY);
         this.drawBaseInfoGui(graphics);
         this.drawTaskListBg(graphics);
-        this.drawSideTabGui(graphics, partialTicks, x, y);
+        this.drawSideTabGui(graphics, a, mouseX, mouseY);
     }
 
     @Override
-    protected void renderTooltip(GuiGraphicsExtractor graphics, int x, int y) {
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int x, int y) {
         graphics.pose().pushPose();
-        super.renderTooltip(graphics, x, y);
+        super.extractTooltip(graphics, x, y);
         renderTransTooltip(home, graphics, x, y, "gui.touhou_little_maid.button.home");
         renderTransTooltip(pick, graphics, x, y, "gui.touhou_little_maid.button.pickup");
         renderTransTooltip(ride, graphics, x, y, "gui.touhou_little_maid.button.maid_riding_set");
@@ -271,7 +272,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     @Override
-    protected void renderLabels(GuiGraphicsExtractor graphics, int x, int y) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
         this.drawTaskPageCount(graphics);
     }
 
@@ -445,7 +446,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void addRideButton() {
         ride = new TouhouStateSwitchButton(leftPos + 51, topPos + 206, 20, 20, maid.isRideable()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
                 ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.isHomeModeEnable(), maid.isPickup(), isStateTriggered, maid.getSchedule()));
             }
@@ -457,7 +458,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void addPickButton() {
         pick = new TouhouStateSwitchButton(leftPos + 30, topPos + 206, 20, 20, maid.isPickup()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
                 ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.isHomeModeEnable(), isStateTriggered, maid.isRideable(), maid.getSchedule()));
             }
@@ -469,7 +470,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void addHomeButton() {
         home = new TouhouStateSwitchButton(leftPos + 9, topPos + 206, 20, 20, maid.isHomeModeEnable()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
                 ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), isStateTriggered, maid.isPickup(), maid.isRideable(), maid.getSchedule()));
             }

@@ -28,7 +28,7 @@ public class BaubleButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
         this.renderTexture(guiGraphics, BAUBLE_BUTTON, this.getX(), this.getY(),
                 this.uStart, this.vStart, 0, this.getWidth(), this.getHeight(),
                 256, 256);
