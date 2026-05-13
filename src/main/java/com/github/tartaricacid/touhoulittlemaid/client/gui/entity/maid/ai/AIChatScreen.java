@@ -27,6 +27,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -380,7 +381,7 @@ public class AIChatScreen extends Screen {
             if (StringUtils.isEmpty(value)) {
                 MutableComponent text = Component.translatable("ai.touhou_little_maid.chat.input.tip")
                         .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
-                graphics.drawCenteredString(this.font, text, x + w / 2, y + (h - 22) / 2, 0xFFFFFF);
+                graphics.centeredText(this.font, text, x + w / 2, y + (h - 22) / 2, 0xFFFFFF);
             }
         }
 
@@ -410,8 +411,8 @@ public class AIChatScreen extends Screen {
         int halfWidth = (right - left) / 2;
         float scale = 0.5f;
 
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 1.0f);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale);
 
         int scaledLeft = Math.round(left / scale);
         int scaledRight = Math.round(right / scale);
@@ -442,7 +443,7 @@ public class AIChatScreen extends Screen {
         int rightX = scaledRight - this.font.width(trimmedRight);
         graphics.text(this.font, trimmedRight, rightX, scaledY, 0xFFADADAD);
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     private void renderTokenUsage(GuiGraphicsExtractor graphics) {
@@ -461,12 +462,12 @@ public class AIChatScreen extends Screen {
             text = "Token: %s / %s (%.1f%%)".formatted(currentStr, maxStr, percent);
         }
 
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 1.0f);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale);
         int scaledX = Math.round((left + right) / 2.0f / scale) - this.font.width(text) / 2;
         int scaledY = Math.round(tokenY / scale);
         graphics.text(this.font, text, scaledX, scaledY, 0xFFADADAD, false);
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     private static String formatTokenCount(int count) {

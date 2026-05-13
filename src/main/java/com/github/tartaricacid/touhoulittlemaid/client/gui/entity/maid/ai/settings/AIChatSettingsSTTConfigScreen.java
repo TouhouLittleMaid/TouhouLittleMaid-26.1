@@ -131,8 +131,8 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         MutableComponent enable = Component.translatable("config.touhou_little_maid.global_ai.stt_enable");
         graphics.text(this.font, enable, this.enableBtn.getX() + 2, this.enableBtn.getY() - 12, LABEL_COLOR, false);
@@ -160,7 +160,7 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
 
         graphics.text(this.font, box.getMessage(), x + 2, y - 12, LABEL_COLOR, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
-        box.render(graphics, mouseX, mouseY, partialTick);
+        box.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     private String normalizeMicrophone(String current) {

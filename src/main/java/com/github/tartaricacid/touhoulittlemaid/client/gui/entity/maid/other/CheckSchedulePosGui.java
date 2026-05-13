@@ -37,7 +37,7 @@ public class CheckSchedulePosGui extends Screen {
         List<FormattedCharSequence> split = font.split(tips, 300);
         int startY = middleY - 10 - split.size() * (font.lineHeight + 3);
         for (FormattedCharSequence text : split) {
-            graphics.drawCenteredString(font, text, middleX, startY, 0xFFFFFF);
+            graphics.centeredText(font, text, middleX, startY, 0xFFFFFF);
             startY += font.lineHeight + 3;
         }
         for (Renderable renderable : this.renderables) {

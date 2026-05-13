@@ -17,18 +17,23 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.core.ClientAsset;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.world.entity.player.PlayerSkin;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class HistoryAIChatScreen extends Screen {
@@ -174,23 +179,23 @@ public class HistoryAIChatScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
-        graphics.drawCenteredString(font, HISTORY_TITLE, posX + 210, 8, 0xFFFFFF);
+        graphics.centeredText(font, HISTORY_TITLE, posX + 210, 8, 0xFFFFFF);
         this.renderSummaryPanel(graphics);
 
         if (this.historyWidgets.isEmpty()) {
             List<FormattedCharSequence> split = font.split(HISTORY_EMPTY, 150);
             for (int i = 0; i < split.size(); i++) {
                 int height = i * font.lineHeight;
-                graphics.drawCenteredString(font, split.get(i), posX, this.historyTop + 15 + height, 0xff5555);
+                graphics.centeredText(font, split.get(i), posX, this.historyTop + 15 + height, 0xff5555);
             }
         } else {
             graphics.enableScissor(posX - 128, this.historyTop, posX + 128, this.historyBottom);
-            graphics.pose().pushPose();
-            graphics.pose().translate(0, scroll, 0);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(0f, (float) scroll);
             for (Renderable renderable : this.historyWidgets) {
                 renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
             }
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
             graphics.disableScissor();
         }
     }
@@ -299,7 +304,7 @@ public class HistoryAIChatScreen extends Screen {
         graphics.fill(left, this.summaryTop, right, this.summaryTop + 1, 0x66FFFFFF);
         graphics.fill(left, this.summaryBottom - 1, right, this.summaryBottom, 0x66FFFFFF);
 
-        graphics.drawCenteredString(font, SUMMARY_TITLE, left + SUMMARY_WIDTH / 2, this.summaryTop + 6, 0xFFFFFF);
+        graphics.centeredText(font, SUMMARY_TITLE, left + SUMMARY_WIDTH / 2, this.summaryTop + 6, 0xFFFFFF);
 
         // 依据窗口大小，调整 summary 的显示内容
         if (this.linesCache == null) {
@@ -308,8 +313,8 @@ public class HistoryAIChatScreen extends Screen {
         }
 
         // 渲染缩放字符大小的 summary
-        graphics.pose().pushPose();
-        graphics.pose().scale(SUMMARY_TEXT_SCALE, SUMMARY_TEXT_SCALE, 1);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(SUMMARY_TEXT_SCALE, SUMMARY_TEXT_SCALE);
 
         int color = StringUtils.isBlank(this.summaryText) ? 0x999999 : 0xDDDDDD;
         float x = (left + 6) / SUMMARY_TEXT_SCALE;
@@ -318,7 +323,7 @@ public class HistoryAIChatScreen extends Screen {
             graphics.text(font, this.linesCache.get(i), (int) x, (int) (y + i * font.lineHeight), color, false);
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     private int getSummaryPanelHeight() {
@@ -393,6 +398,11 @@ public class HistoryAIChatScreen extends Screen {
         if (player == null) {
             return DefaultPlayerSkin.getDefaultTexture();
         }
-        return mc.getSkinManager().getInsecureSkin(player.getGameProfile()).texture();
+        CompletableFuture<Optional<PlayerSkin>> completableFuture = mc.getSkinManager().get(player.getGameProfile());
+        try {
+            return completableFuture.get().map(PlayerSkin::body).map(ClientAsset.Texture::texturePath).orElse(DefaultPlayerSkin.getDefaultTexture());
+        } catch (InterruptedException | ExecutionException e) {
+            return DefaultPlayerSkin.getDefaultTexture();
+        }
     }
 }

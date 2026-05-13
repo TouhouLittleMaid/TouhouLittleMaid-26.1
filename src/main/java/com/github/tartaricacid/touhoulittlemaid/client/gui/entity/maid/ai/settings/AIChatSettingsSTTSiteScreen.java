@@ -53,8 +53,8 @@ public class AIChatSettingsSTTSiteScreen extends AIChatSettingsHubScreen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         this.renderListScrollbar(graphics, this.state.sttSites.size(), this.getVisibleListCount(ROW_HEIGHT));
     }
 

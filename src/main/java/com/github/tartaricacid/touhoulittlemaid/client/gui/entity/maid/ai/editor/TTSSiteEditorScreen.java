@@ -21,6 +21,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -167,7 +168,7 @@ public class TTSSiteEditorScreen extends Screen {
         box.active = field.editable;
         box.setValue(field.value);
         if (field.secret) {
-            box.setFormatter((text, pos) -> FormattedCharSequence.forward("·".repeat(text.length()), Style.EMPTY));
+            box.addFormatter((text, pos) -> FormattedCharSequence.forward("·".repeat(text.length()), Style.EMPTY));
         }
         this.addWidget(box);
         field.box = box;
@@ -218,12 +219,12 @@ public class TTSSiteEditorScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        this.extractBackground(graphics, mouseX, mouseY, partialTick);
         graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
 
         // 居中标题
-        graphics.drawCenteredString(this.font, ttsEditorTitle(this.siteDisplayName),
+        graphics.centeredText(this.font, ttsEditorTitle(this.siteDisplayName),
                 this.startX + BASE_WIDTH / 2, this.startY + 4, 0xFFF3EFE0);
 
         // 固定字段
@@ -237,14 +238,14 @@ public class TTSSiteEditorScreen extends Screen {
         }
 
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTick);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTick);
         }
 
         // 保存提示
         if (System.currentTimeMillis() - this.tipTimestamp < 2000) {
             int x = this.startX + BASE_WIDTH - 155;
             int y = this.startY + BASE_HEIGHT - 35;
-            graphics.drawCenteredString(this.font, this.statusMessage, x, y, 0xFFADADAD);
+            graphics.centeredText(this.font, this.statusMessage, x, y, 0xFFADADAD);
         }
     }
 
@@ -260,7 +261,7 @@ public class TTSSiteEditorScreen extends Screen {
 
         graphics.text(this.font, box.getMessage(), x + 2, y - 12, LABEL_COLOR, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
-        box.render(graphics, mouseX, mouseY, partialTick);
+        box.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     private void renderModelArea(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
@@ -290,8 +291,8 @@ public class TTSSiteEditorScreen extends Screen {
                         0xAA111111
                 );
 
-                row.idBox.render(graphics, mouseX, mouseY, partialTick);
-                row.nameBox.render(graphics, mouseX, mouseY, partialTick);
+                row.idBox.extractRenderState(graphics, mouseX, mouseY, partialTick);
+                row.nameBox.extractRenderState(graphics, mouseX, mouseY, partialTick);
             }
         }
         graphics.disableScissor();

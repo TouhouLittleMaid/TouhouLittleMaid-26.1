@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.TaskCon
 import com.github.tartaricacid.touhoulittlemaid.network.message.RefreshMaidBrainPackage;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public abstract class MaidTaskConfigGui<T extends TaskConfigContainer> extends AbstractMaidContainerGui<T> {

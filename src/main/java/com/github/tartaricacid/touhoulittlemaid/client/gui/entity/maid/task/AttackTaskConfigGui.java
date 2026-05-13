@@ -8,8 +8,8 @@ import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTaskData;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.TaskConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetAttackListPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.google.common.collect.Lists;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -21,7 +21,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.anti_ad.mc.ipn.api.IPNButton;
 import org.anti_ad.mc.ipn.api.IPNGuiHint;
 import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
@@ -110,7 +110,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
                 return;
             }
             Identifier id = attackGroupsKey.get(index);
-            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(id);
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(id).get().value();
             Component name = type.getDescription();
             int yOffset = startTop + 31 + 13 * i;
             this.addRenderableWidget(new MonsterListButton(name, startLeft - 1, yOffset, id, this));
@@ -151,14 +151,14 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
         this.inputField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         MutableComponent pageText = Component.literal(String.format("%d/%d", this.page + 1, (this.attackGroupsKey.size() - 1) / 7 + 1));
-        graphics.drawCenteredString(font, pageText, leftPos + 228, topPos + 57, 0xFFFFFF);
-        graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.monster_type.title"), leftPos + 147, topPos + 57, 0xFFFFFF);
+        graphics.centeredText(font, pageText, leftPos + 228, topPos + 57, 0xFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.monster_type.title"), leftPos + 147, topPos + 57, 0xFFFFFF);
     }
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractContents(graphics, mouseX, mouseY, a);
-        graphics.blit(BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
+        GuiTools.blit(graphics, BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
 
     @Override

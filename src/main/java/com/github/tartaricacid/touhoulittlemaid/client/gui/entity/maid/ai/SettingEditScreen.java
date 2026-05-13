@@ -12,18 +12,19 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveMaidAIDataPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
@@ -76,10 +77,12 @@ public class SettingEditScreen extends Screen {
         this.ownerName.setMaxLength(128);
         this.ownerName.setResponder(s -> manager.ownerName = s);
 
-        this.customSetting = this.addRenderableWidget(new MultiLineEditBox(font,
-                posX, 70, boxWidth, this.height - 100,
-                Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.edit_custom_setting.edit"),
-                Component.literal("Custom Setting Box")));
+
+        this.customSetting = MultiLineEditBox.builder()
+                .setX(posX)
+                .setY(70)
+                .setPlaceholder(Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.edit_custom_setting.edit"))
+                .build(font, boxWidth, this.height - 100, Component.literal("Custom Setting Box"));
         this.customSetting.setValue(manager.customSetting);
         this.customSetting.setCharacterLimit(4096);
         this.customSetting.setValueListener(s -> manager.customSetting = s);
@@ -156,8 +159,8 @@ public class SettingEditScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(double x, double y, int button) {
-        return super.mouseReleased(x, y, button) || this.customSetting.mouseReleased(x, y, button);
+    public boolean mouseReleased(MouseButtonEvent event) {
+        return super.mouseReleased(event) || this.customSetting.mouseReleased(event);
     }
 
     @Override
@@ -174,7 +177,7 @@ public class SettingEditScreen extends Screen {
             double value = (double) (time) / MAX_TIP_TIME * Math.PI;
             int alpha = (int) (Math.sin(value) * 0xFF);
             alpha = Mth.clamp(alpha, 15, 240);
-            graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.edit_custom_setting.saved"),
+            graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.edit_custom_setting.saved"),
                     customSetting.getX() + customSetting.getWidth() + 73, customSetting.getY() - 12, (alpha << 24) + 0xFF1111);
         }
     }
@@ -193,7 +196,7 @@ public class SettingEditScreen extends Screen {
         EntityMaid maid;
         try {
             maid = (EntityMaid) EntityCacheUtil.ENTITY_CACHE.get(EntityMaid.TYPE, () -> {
-                Entity e = EntityMaid.TYPE.create(world);
+                Entity e = EntityMaid.TYPE.create(world, EntitySpawnReason.COMMAND);
                 return Objects.requireNonNullElseGet(e, () -> new EntityMaid(world));
             });
         } catch (ExecutionException | ClassCastException e) {
@@ -210,7 +213,7 @@ public class SettingEditScreen extends Screen {
         // 女仆换皮肤界面需要指定 YSM 渲染为空
         maid.setIsYsmModel(false);
         float renderItemScale = modelInfo.getRenderItemScale();
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 posX - 45,
                 posY - 45,

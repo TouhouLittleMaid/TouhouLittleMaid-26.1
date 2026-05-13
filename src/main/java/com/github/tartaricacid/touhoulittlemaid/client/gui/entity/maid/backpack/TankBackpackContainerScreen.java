@@ -7,15 +7,15 @@ import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.data.TankBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.TankBackpackContainer;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.github.tartaricacid.touhoulittlemaid.util.MaidFluidRender;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import org.anti_ad.mc.ipn.api.IPNButton;
 import org.anti_ad.mc.ipn.api.IPNGuiHint;
@@ -32,9 +32,7 @@ public class TankBackpackContainerScreen extends AbstractMaidContainerGui<TankBa
     private final EntityMaid maid;
 
     public TankBackpackContainerScreen(TankBackpackContainer container, Inventory inv, Component titleIn) {
-        super(container, inv, titleIn);
-        this.imageHeight = 256;
-        this.imageWidth = 256;
+        super(container, inv, titleIn, 256, 256);
         this.maid = menu.getMaid();
     }
 
@@ -49,18 +47,12 @@ public class TankBackpackContainerScreen extends AbstractMaidContainerGui<TankBa
         }
     }
 
-    @Override
-    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractContents(graphics, mouseX, mouseY, a);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, BACKPACK);
-        graphics.blit(BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, pPartialTick);
+        GuiTools.blit(graphics, BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
 
-        RenderSystem.enableBlend();
         MaidFluidRender.drawFluid(graphics, leftPos + 200, topPos + 108, 29, 50, maid.getBackpackFluid(), this.menu.getFluidCount(), TankBackpackData.CAPACITY);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
-        graphics.blit(BACKPACK, leftPos + 197, topPos + 104, 165, 0, 34, 50);
+        GuiTools.blit(graphics, BACKPACK, leftPos + 197, topPos + 104, 165, 0, 34, 50);
 
         boolean xInRange = leftPos + 196 <= mouseX && mouseX <= leftPos + 196 + 29;
         boolean yInRange = topPos + 108 <= mouseY && mouseY <= topPos + 108 + 50;
@@ -70,7 +62,10 @@ public class TankBackpackContainerScreen extends AbstractMaidContainerGui<TankBa
                     this.menu.getFluidCount()).withStyle(ChatFormatting.GRAY);
             MutableComponent capacityInfo = Component.translatable("tooltips.touhou_little_maid.tank_backpack.capacity", TankBackpackData.CAPACITY)
                     .withStyle(ChatFormatting.GRAY);
-            graphics.renderComponentTooltip(font, Lists.newArrayList(fluidInfo, capacityInfo), mouseX, mouseY);
+            graphics.text(font, FormattedCharSequence.fromList(Lists.newArrayList(
+                    fluidInfo.getVisualOrderText(),
+                    capacityInfo.getVisualOrderText()
+            )), mouseX, mouseY, 0xffffffff);
         }
     }
 }

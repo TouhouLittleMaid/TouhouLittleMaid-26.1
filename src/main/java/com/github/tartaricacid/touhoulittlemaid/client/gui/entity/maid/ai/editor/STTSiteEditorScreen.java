@@ -105,19 +105,19 @@ public class STTSiteEditorScreen extends Screen {
         box.active = field.editable;
         box.setValue(field.value);
         if (field.secret) {
-            box.setFormatter((text, pos) -> FormattedCharSequence.forward("·".repeat(text.length()), Style.EMPTY));
+            box.addFormatter((text, pos) -> FormattedCharSequence.forward("·".repeat(text.length()), Style.EMPTY));
         }
         this.addWidget(box);
         field.box = box;
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        this.extractBackground(graphics, mouseX, mouseY, partialTick);
         graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
 
         // 居中标题
-        graphics.drawCenteredString(this.font, sttEditorTitle(this.siteDisplayName),
+        graphics.centeredText(this.font, sttEditorTitle(this.siteDisplayName),
                 this.startX + BASE_WIDTH / 2, this.startY + 4, 0xFFF3EFE0);
 
         // 文本框
@@ -126,14 +126,14 @@ public class STTSiteEditorScreen extends Screen {
         }
 
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTick);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTick);
         }
 
         // 警告信息
         if (System.currentTimeMillis() - this.tipTimestamp < 2000) {
             int x = this.startX + BASE_WIDTH - 155;
             int y = this.startY + BASE_HEIGHT - 35;
-            graphics.drawCenteredString(this.font, this.statusMessage, x, y, 0xFFFF7777);
+            graphics.centeredText(this.font, this.statusMessage, x, y, 0xFFFF7777);
         }
     }
 
@@ -149,7 +149,7 @@ public class STTSiteEditorScreen extends Screen {
 
         graphics.text(this.font, box.getMessage(), x + 2, y - 12, 0xFF777777, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
-        box.render(graphics, mouseX, mouseY, partialTick);
+        box.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.MaidTab
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.TabIndex;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ToggleTabPackage;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public class MaidTabs<T extends AbstractMaidContainer> {

@@ -7,11 +7,13 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidConfigManager
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.PickType;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.config.MaidConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.MaidSubConfigPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.anti_ad.mc.ipn.api.IPNButton;
 import org.anti_ad.mc.ipn.api.IPNGuiHint;
@@ -35,7 +37,7 @@ public class MaidConfigContainerGui extends AbstractMaidContainerGui<MaidConfigC
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractContents(graphics, mouseX, mouseY, a);
-        graphics.blit(ICON, leftPos + 80, topPos + 28, 0, 0, imageWidth, imageHeight);
+        GuiTools.blit(graphics,ICON, leftPos + 80, topPos + 28, 0, 0, imageWidth, imageHeight);
     }
 
     @Override
@@ -144,6 +146,6 @@ public class MaidConfigContainerGui extends AbstractMaidContainerGui<MaidConfigC
 
     @Override
     protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.button.maid_config"), leftPos + 167, topPos + 41, 0xFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.button.maid_config"), leftPos + 167, topPos + 41, 0xFFFFFF);
     }
 }

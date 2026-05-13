@@ -17,6 +17,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -218,7 +219,7 @@ public class LLMSiteEditorScreen extends Screen {
             if (row.nameBox != null) {
                 int rowLeft = (int) this.modelArea.x;
                 graphics.fill(rowLeft, rowY - 4, rowLeft + row.nameBox.getInnerWidth(), rowY + 20 - 4, 0xAA111111);
-                row.nameBox.render(graphics, mouseX, mouseY, partialTick);
+                row.nameBox.extractRenderState(graphics, mouseX, mouseY, partialTick);
             }
         }
         graphics.disableScissor();
