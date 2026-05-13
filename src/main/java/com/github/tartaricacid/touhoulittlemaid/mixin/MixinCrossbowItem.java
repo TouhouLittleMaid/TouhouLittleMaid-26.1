@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.mixin;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.mixin.accessor.ArrowAccessor;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +30,7 @@ public class MixinCrossbowItem {
                     attackValue = attackDamage.getBaseValue();
                 }
                 float multiplier = (float) (attackValue / 2.0f);
-                arrow.setBaseDamage(arrow.getBaseDamage() * multiplier);
+                arrow.setBaseDamage(((ArrowAccessor) arrow).getTlmBaseDamage() * multiplier);
             }
             this.shootCrossbowProjectile(shooter, target, projectile, 1.6F);
             ci.cancel();

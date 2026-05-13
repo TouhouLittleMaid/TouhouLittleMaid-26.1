@@ -1,36 +1,22 @@
 package com.github.tartaricacid.touhoulittlemaid.mixin;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
-import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.message.PlayMaidSoundAtPosPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.VariantHolder;
-import net.minecraft.world.entity.animal.FlyingAnimal;
-import net.minecraft.world.entity.animal.Parrot;
-import net.minecraft.world.entity.animal.ShoulderRidingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.level.Level;
-import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
-import static net.minecraft.world.entity.animal.Parrot.getPitch;
+import static net.minecraft.world.entity.animal.parrot.Parrot.getPitch;
 
 @Mixin(Parrot.class)
 public abstract class ParrotMixin {
@@ -51,7 +37,7 @@ public abstract class ParrotMixin {
                 NetworkHandler.sendToNearby(parrot, new PlayMaidSoundAtPosPackage(
                         soundevent.location(), maid.getSoundPackId(),
                         parrot.getX(), parrot.getY(), parrot.getZ(),
-                        0.7F, getPitch(level.random)
+                        0.7F, getPitch(level.getRandom())
                 ), 16);
             }
             cir.setReturnValue(true);

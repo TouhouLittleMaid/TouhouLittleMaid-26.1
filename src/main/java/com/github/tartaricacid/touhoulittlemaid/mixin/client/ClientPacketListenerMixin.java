@@ -27,7 +27,7 @@ public class ClientPacketListenerMixin {
     private void tlmHandleSetEntityPassengersPacket(ClientboundSetPassengersPacket packet, CallbackInfo ci) {
         Minecraft minecraft = Minecraft.getInstance();
         ClientPacketListener listener = (ClientPacketListener) (Object) this;
-        PacketUtils.ensureRunningOnSameThread(packet, listener, minecraft);
+        PacketUtils.ensureRunningOnSameThread(packet, listener, minecraft.packetProcessor());
         Entity vehicleEntity = this.level.getEntity(packet.getVehicle());
         LocalPlayer player = minecraft.player;
         if (!(vehicleEntity instanceof EntityBroom) || player == null) {
@@ -40,13 +40,13 @@ public class ClientPacketListenerMixin {
             if (passengerEntity == null) {
                 continue;
             }
-            passengerEntity.startRiding(vehicleEntity, true);
+            passengerEntity.startRiding(vehicleEntity, true, true);
             if (passengerEntity != player || playerWasPassenger) {
                 continue;
             }
             Component mountMessage = Component.translatable("mount.onboard", DismountBroomKey.DISMOUNT_KEY.getTranslatedKeyMessage());
             minecraft.gui.setOverlayMessage(mountMessage, false);
-            minecraft.getNarrator().sayNow(mountMessage);
+            minecraft.getNarrator().saySystemNow(mountMessage);
         }
         ci.cancel();
     }

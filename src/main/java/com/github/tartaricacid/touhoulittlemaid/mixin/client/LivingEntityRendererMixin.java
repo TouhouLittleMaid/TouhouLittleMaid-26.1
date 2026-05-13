@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+// FIXME
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin extends EntityRenderer<LivingEntity> implements LivingEntityRendererAccessor {
     protected LivingEntityRendererMixin(EntityRendererProvider.Context pContext) {

@@ -2,18 +2,17 @@ package com.github.tartaricacid.touhoulittlemaid.mixin;
 
 import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.server.ImmersiveMelodiesServerCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 /**
  * 修复与 Immersive Melodies 模组的兼容性问题
@@ -28,9 +27,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(value = Mob.class, priority = 999)
 public class MobInteractMixin {
-    @Shadow
-    @Final
-    private NonNullList<ItemStack> handItems;
 
     @SuppressWarnings("all")
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
@@ -45,7 +41,8 @@ public class MobInteractMixin {
             return;
         }
         // 仅在手上有乐器时，才执行 mixin 过的逻辑，尽可能减少对原版交互逻辑的影响
-        for (ItemStack handItem : this.handItems) {
+        var handItems = List.of(maid.getMainHandItem(), maid.getOffhandItem());
+        for (ItemStack handItem : handItems) {
             if (ImmersiveMelodiesServerCompat.isInstrumentItem(handItem)) {
                 InteractionResult result = maid.mobInteract(player, hand);
                 if (result.consumesAction()) {
