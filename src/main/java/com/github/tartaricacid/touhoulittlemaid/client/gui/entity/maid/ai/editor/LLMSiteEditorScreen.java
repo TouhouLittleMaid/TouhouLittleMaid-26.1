@@ -189,7 +189,7 @@ public class LLMSiteEditorScreen extends Screen {
         int width = box.getInnerWidth() + 12;
         int height = box.getHeight() + 3;
 
-        graphics.drawString(this.font, box.getMessage(), x + 2, y - 10, LABEL_COLOR, false);
+        graphics.text(this.font, box.getMessage(), x + 2, y - 10, LABEL_COLOR, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
         box.render(graphics, mouseX, mouseY, partialTick);
     }
@@ -199,7 +199,7 @@ public class LLMSiteEditorScreen extends Screen {
         int top = (int) this.modelArea.y;
 
         // 标题
-        graphics.drawString(this.font, MODELS_NAME, left + 2, top - 12, LABEL_COLOR);
+        graphics.text(this.font, MODELS_NAME, left + 2, top - 12, LABEL_COLOR);
 
         // 确定滚动起始值
         int visibleCount = this.getVisibleModelCount();

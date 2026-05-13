@@ -121,9 +121,9 @@ public class FoxScrollScreen extends Screen {
                     }
                     Component posText = Component.translatable("gui.touhou_little_maid.fox_scroll.position", pos.toShortString());
                     graphics.fill(leftPos + 152, offsetIn, leftPos + 400 - 22, offsetIn + 40, 0xef58626b);
-                    graphics.drawString(font, info.name(), leftPos + 160, offsetIn + 4, ChatFormatting.GOLD.getColor());
-                    graphics.drawString(font, posText, leftPos + 160, offsetIn + 16, ChatFormatting.GRAY.getColor(), false);
-                    graphics.drawString(font, distanceText, leftPos + 160, offsetIn + 28, ChatFormatting.GRAY.getColor(), false);
+                    graphics.text(font, info.name(), leftPos + 160, offsetIn + 4, ChatFormatting.GOLD.getColor());
+                    graphics.text(font, posText, leftPos + 160, offsetIn + 16, ChatFormatting.GRAY.getColor(), false);
+                    graphics.text(font, distanceText, leftPos + 160, offsetIn + 28, ChatFormatting.GRAY.getColor(), false);
                     offsetIn = offsetIn + 42;
                 }
             }

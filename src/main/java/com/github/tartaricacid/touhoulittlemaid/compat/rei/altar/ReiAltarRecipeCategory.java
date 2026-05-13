@@ -75,11 +75,11 @@ public class ReiAltarRecipeCategory implements DisplayCategory<ReiAltarRecipeDis
 
         widgets.add(Widgets.createTexturedWidget(POWER_ICON, startX + 72, startY + 38, 32, 0, 16, 16, 64, 64));
         widgets.add(Widgets.withTranslate(Widgets.createDrawableWidget((guiGraphics, mouseX, mouseY, v) -> {
-            guiGraphics.drawString(font, result, 0, 0, darkGray, false);
+            guiGraphics.text(font, result, 0, 0, darkGray, false);
         }), startX + (int) ((bounds.getWidth() - font.width(result)) / 2.0f), startY + 85, 0));
 
         widgets.add(Widgets.withTranslate(Widgets.createDrawableWidget((guiGraphics, mouseX, mouseY, v) -> {
-            guiGraphics.drawString(font, String.format("×%.2f", display.getPowerCost()), 0, 0, darkGray, false);
+            guiGraphics.text(font, String.format("×%.2f", display.getPowerCost()), 0, 0, darkGray, false);
         }), startX + 65, startY + 55, 0));
 
         return widgets;

@@ -42,7 +42,7 @@ public class BroomTipsOverlay implements GuiLayer {
             offset += 18;
             for (FormattedCharSequence sequence : split) {
                 int width = minecraft.font.width(sequence);
-                guiGraphics.drawString(minecraft.font, sequence, (screenWidth - width) / 2, offset, 0xFFFFFF);
+                guiGraphics.text(minecraft.font, sequence, (screenWidth - width) / 2, offset, 0xFFFFFF);
                 offset += 10;
             }
         }

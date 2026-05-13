@@ -49,7 +49,7 @@ public final class TipsHelper {
             graphics.blit(BUTTON, startX, yOffset, 10, 128, last, 20);
             graphics.blit(BUTTON, xOffset + textWidth - 10, yOffset, 30, 128, 10, 20);
             graphics.blit(BUTTON, xOffset + textWidth - 20, yOffset - 2, 42, 128, 16, 16);
-            graphics.drawString(font, text, xOffset + 5, yOffset + 4, 0XFFFF55, false);
+            graphics.text(font, text, xOffset + 5, yOffset + 4, 0XFFFF55, false);
         }
 
         if (size == 2) {
@@ -67,8 +67,8 @@ public final class TipsHelper {
             graphics.blit(BUTTON, startX, yOffset, 10, 149, last, 30);
             graphics.blit(BUTTON, xOffset + textWidth - 10, yOffset, 30, 149, 10, 30);
             graphics.blit(BUTTON, xOffset + textWidth - 20, yOffset + 5, 42, 128, 16, 16);
-            graphics.drawString(font, split.get(0), xOffset + 5, yOffset + 4, 0XFFFF55, false);
-            graphics.drawString(font, split.get(1), xOffset + 5, yOffset + 14, 0XFFFF55, false);
+            graphics.text(font, split.get(0), xOffset + 5, yOffset + 4, 0XFFFF55, false);
+            graphics.text(font, split.get(1), xOffset + 5, yOffset + 14, 0XFFFF55, false);
         }
 
         if (size >= 3) {
@@ -86,9 +86,9 @@ public final class TipsHelper {
             graphics.blit(BUTTON, startX, yOffset, 10, 180, last, 40);
             graphics.blit(BUTTON, xOffset + textWidth - 10, yOffset, 30, 180, 10, 40);
             graphics.blit(BUTTON, xOffset + textWidth - 20, yOffset + 10, 42, 128, 16, 16);
-            graphics.drawString(font, split.get(0), xOffset + 5, yOffset + 4, 0XFFFF55, false);
-            graphics.drawString(font, split.get(1), xOffset + 5, yOffset + 14, 0XFFFF55, false);
-            graphics.drawString(font, split.get(2), xOffset + 5, yOffset + 24, 0XFFFF55, false);
+            graphics.text(font, split.get(0), xOffset + 5, yOffset + 4, 0XFFFF55, false);
+            graphics.text(font, split.get(1), xOffset + 5, yOffset + 14, 0XFFFF55, false);
+            graphics.text(font, split.get(2), xOffset + 5, yOffset + 24, 0XFFFF55, false);
         }
 
         graphics.pose().popPose();

@@ -213,7 +213,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
                     duration = StringUtil.formatTickDuration(effect.duration(), 20);
                 }
                 text = text.append(CommonComponents.SPACE).append(duration);
-                graphics.drawString(font, text, leftPos - font.width(text) - 3, topPos + yOffset + 5, getPotionColor(effect.category()));
+                graphics.text(font, text, leftPos - font.width(text) - 3, topPos + yOffset + 5, getPotionColor(effect.category()));
                 yOffset += 10;
             }
         }
@@ -486,7 +486,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void drawTaskPageCount(GuiGraphicsExtractor graphics) {
         if (TASK_LIST_OPEN) {
             String text = String.format("%d/%d", TASK_PAGE + 1, (notHiddenTasks.size() - 1) / TASK_COUNT_PER_PAGE + 1);
-            graphics.drawString(font, text, -48, 12, 0x333333, false);
+            graphics.text(font, text, -48, 12, 0x333333, false);
         }
     }
 
@@ -495,7 +495,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         graphics.renderItem(task.getIcon(), leftPos + 6, topPos + 161);
         List<FormattedCharSequence> splitTexts = font.split(task.getName(), 42);
         if (!splitTexts.isEmpty()) {
-            graphics.drawString(font, splitTexts.getFirst(), leftPos + 28, topPos + 165, 0x333333, false);
+            graphics.text(font, splitTexts.getFirst(), leftPos + 28, topPos + 165, 0x333333, false);
         }
     }
 
@@ -625,7 +625,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         String text = formatScale((long) value);
         graphics.pose().pushPose();
         graphics.pose().scale(0.5f, 0.5f, 1);
-        graphics.drawString(font, text, posX * 2, posY * 2 + font.lineHeight / 2, ChatFormatting.DARK_GRAY.getColor(), false);
+        graphics.text(font, text, posX * 2, posY * 2 + font.lineHeight / 2, ChatFormatting.DARK_GRAY.getColor(), false);
         graphics.pose().popPose();
     }
 

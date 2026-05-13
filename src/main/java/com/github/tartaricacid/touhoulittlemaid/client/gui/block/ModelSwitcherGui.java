@@ -162,7 +162,7 @@ public class ModelSwitcherGui extends Screen {
             return;
         }
         this.renderBackground(graphics, pMouseX, pMouseY, pPartialTick);
-        graphics.blit(BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        GuiTools.blit(graphics,BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         if (bindUuid != null) {
             graphics.drawCenteredString(font, bindUuid.toString(), leftPos + 128, topPos - 10, 0xffffff);
         } else {

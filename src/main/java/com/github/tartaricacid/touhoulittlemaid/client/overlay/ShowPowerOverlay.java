@@ -35,6 +35,6 @@ public class ShowPowerOverlay implements GuiLayer {
         }
         guiGraphics.renderItem(POWER_POINT, 5, 5);
         PowerAttachment cap = player.getData(InitDataAttachment.POWER_NUM);
-        guiGraphics.drawString(font, String.format("%s×%.2f", ChatFormatting.BOLD, cap.get()), 20, 10, 0xffffff);
+        guiGraphics.text(font, String.format("%s×%.2f", ChatFormatting.BOLD, cap.get()), 20, 10, 0xffffff);
     }
 }

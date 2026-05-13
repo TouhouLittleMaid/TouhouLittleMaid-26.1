@@ -315,7 +315,7 @@ public class HistoryAIChatScreen extends Screen {
         float x = (left + 6) / SUMMARY_TEXT_SCALE;
         float y = (this.summaryTop + 22) / SUMMARY_TEXT_SCALE;
         for (int i = 0; i < this.linesCache.size(); i++) {
-            graphics.drawString(font, this.linesCache.get(i), (int) x, (int) (y + i * font.lineHeight), color, false);
+            graphics.text(font, this.linesCache.get(i), (int) x, (int) (y + i * font.lineHeight), color, false);
         }
 
         graphics.pose().popPose();

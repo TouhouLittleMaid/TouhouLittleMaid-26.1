@@ -88,8 +88,8 @@ public class MaidAIChatConfigButton extends Button {
 
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 1);
-        graphics.drawString(font, leftText, leftTextX, leftTextY, 0x444444, false);
-        graphics.drawString(font, rightText, rightTextX, rightTextY, 0x55ff55, false);
+        graphics.text(font, leftText, leftTextX, leftTextY, 0x444444, false);
+        graphics.text(font, rightText, rightTextX, rightTextY, 0x55ff55, false);
         graphics.pose().popPose();
     }
 

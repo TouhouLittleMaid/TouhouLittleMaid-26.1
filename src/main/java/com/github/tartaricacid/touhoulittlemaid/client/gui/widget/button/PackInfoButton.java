@@ -94,11 +94,11 @@ public class PackInfoButton extends FlatColorButton {
         int startY = this.getY() + 4;
 
         MutableComponent packName = Component.translatable(info.getName());
-        graphics.drawString(font, packName, startX, startY, ChatFormatting.WHITE.getColor());
-        graphics.drawString(font, getI18nFormatFileVersion(info.getVersion()), startX + 5 + font.width(packName), startY, ChatFormatting.GREEN.getColor());
-        graphics.drawString(font, getI18nFormatFileSize(info.getFormatFileSize()), startX, startY + 10, ChatFormatting.GOLD.getColor());
-        graphics.drawString(font, getI18nFormatAuthor(info.getAuthor()), startX, startY + 20, ChatFormatting.AQUA.getColor());
-        graphics.drawString(font, getI18nFormatFileTime(info.getFormatData()), startX, startY + 30, ChatFormatting.GRAY.getColor());
+        graphics.text(font, packName, startX, startY, ChatFormatting.WHITE.getColor());
+        graphics.text(font, getI18nFormatFileVersion(info.getVersion()), startX + 5 + font.width(packName), startY, ChatFormatting.GREEN.getColor());
+        graphics.text(font, getI18nFormatFileSize(info.getFormatFileSize()), startX, startY + 10, ChatFormatting.GOLD.getColor());
+        graphics.text(font, getI18nFormatAuthor(info.getAuthor()), startX, startY + 20, ChatFormatting.AQUA.getColor());
+        graphics.text(font, getI18nFormatFileTime(info.getFormatData()), startX, startY + 30, ChatFormatting.GRAY.getColor());
     }
 
     private String getI18nFormatFileVersion(String version) {

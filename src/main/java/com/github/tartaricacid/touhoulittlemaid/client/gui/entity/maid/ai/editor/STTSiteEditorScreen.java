@@ -147,7 +147,7 @@ public class STTSiteEditorScreen extends Screen {
         int width = box.getWidth() + 12;
         int height = box.getHeight() + 3;
 
-        graphics.drawString(this.font, box.getMessage(), x + 2, y - 12, 0xFF777777, false);
+        graphics.text(this.font, box.getMessage(), x + 2, y - 12, 0xFF777777, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
         box.render(graphics, mouseX, mouseY, partialTick);
     }

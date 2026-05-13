@@ -211,7 +211,7 @@ public class ModelDownloadGui extends Screen {
     private void renderPageNumber(GuiGraphicsExtractor graphics) {
         int maxPage = (this.showInfos.size() - 1) / 4;
         String pageInfo = String.format("%d/%d", currentPage + 1, maxPage + 1);
-        graphics.drawString(font, pageInfo, x + 134 - font.width(pageInfo) / 2, y + 227 - font.lineHeight / 2, 0xF3EFE0);
+        graphics.text(font, pageInfo, x + 134 - font.width(pageInfo) / 2, y + 227 - font.lineHeight / 2, 0xF3EFE0);
     }
 
     private void renderPackHandleButtons(GuiGraphicsExtractor graphics) {
@@ -228,11 +228,11 @@ public class ModelDownloadGui extends Screen {
     }
 
     private void renderSearchBox(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
-        graphics.drawString(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search"), x + 274, y + 102, 0xffffff);
+        graphics.text(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search"), x + 274, y + 102, 0xffffff);
         graphics.drawWordWrap(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search_key"), x + 274, y + 115, 146, ChatFormatting.GRAY.getColor());
         textField.render(graphics, pMouseX, pMouseY, pPartialTick);
         if (textField.getValue().isEmpty() && !textField.isFocused()) {
-            graphics.drawString(font, Component.translatable("gui.touhou_little_maid.resources_download.search").withStyle(ChatFormatting.ITALIC), x + 277, y + 83, 0x777777);
+            graphics.text(font, Component.translatable("gui.touhou_little_maid.resources_download.search").withStyle(ChatFormatting.ITALIC), x + 277, y + 83, 0x777777);
         }
     }
 

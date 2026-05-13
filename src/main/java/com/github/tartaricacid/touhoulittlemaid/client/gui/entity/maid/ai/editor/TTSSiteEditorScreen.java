@@ -258,7 +258,7 @@ public class TTSSiteEditorScreen extends Screen {
         int width = box.getWidth() + 12;
         int height = box.getHeight() + 3;
 
-        graphics.drawString(this.font, box.getMessage(), x + 2, y - 12, LABEL_COLOR, false);
+        graphics.text(this.font, box.getMessage(), x + 2, y - 12, LABEL_COLOR, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
         box.render(graphics, mouseX, mouseY, partialTick);
     }
@@ -268,7 +268,7 @@ public class TTSSiteEditorScreen extends Screen {
         int top = (int) this.modelArea.y;
 
         // 主标题
-        graphics.drawString(this.font, this.layout.modelsTitle(), left + 2, top - 14, LABEL_COLOR, false);
+        graphics.text(this.font, this.layout.modelsTitle(), left + 2, top - 14, LABEL_COLOR, false);
 
         int visibleCount = this.getVisibleModelCount();
         int startIndex = this.modelScrollOffset;

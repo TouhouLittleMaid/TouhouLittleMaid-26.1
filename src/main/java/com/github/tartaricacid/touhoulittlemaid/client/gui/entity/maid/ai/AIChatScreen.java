@@ -421,7 +421,7 @@ public class AIChatScreen extends Screen {
         );
         MutableComponent llmSummary = Component.translatable("ai.touhou_little_maid.chat.summary.llm", llmModelSummary);
         String trimmedLeft = this.trimToWidth(llmSummary.getString(), scaledHalfWidth);
-        graphics.drawString(this.font, trimmedLeft, scaledLeft, scaledY, 0xFFADADAD);
+        graphics.text(this.font, trimmedLeft, scaledLeft, scaledY, 0xFFADADAD);
 
         String ttsModelSummary;
         if (MaidAIChatSerializable.isNoTTSSite(this.manager.ttsSite)) {
@@ -437,7 +437,7 @@ public class AIChatScreen extends Screen {
                 ttsModelSummary, SupportLanguage.getLanguageName(this.manager.ttsLanguage));
         String trimmedRight = this.trimToWidth(ttsSummary.getString(), scaledHalfWidth);
         int rightX = scaledRight - this.font.width(trimmedRight);
-        graphics.drawString(this.font, trimmedRight, rightX, scaledY, 0xFFADADAD);
+        graphics.text(this.font, trimmedRight, rightX, scaledY, 0xFFADADAD);
 
         graphics.pose().popPose();
     }
@@ -462,7 +462,7 @@ public class AIChatScreen extends Screen {
         graphics.pose().scale(scale, scale, 1.0f);
         int scaledX = Math.round((left + right) / 2.0f / scale) - this.font.width(text) / 2;
         int scaledY = Math.round(tokenY / scale);
-        graphics.drawString(this.font, text, scaledX, scaledY, 0xFFADADAD, false);
+        graphics.text(this.font, text, scaledX, scaledY, 0xFFADADAD, false);
         graphics.pose().popPose();
     }
 
@@ -653,7 +653,7 @@ public class AIChatScreen extends Screen {
     }
 
     private void drawPopupText(GuiGraphicsExtractor graphics, String text, int x, int y, int maxWidth, int color) {
-        graphics.drawString(this.font, this.trimToWidth(text, maxWidth), x, y, color, false);
+        graphics.text(this.font, this.trimToWidth(text, maxWidth), x, y, color, false);
     }
 
     private boolean tryClickPopup(double mouseX, double mouseY) {

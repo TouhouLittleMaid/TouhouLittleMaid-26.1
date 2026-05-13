@@ -8,6 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.SetBeaconOverflo
 import com.github.tartaricacid.touhoulittlemaid.network.message.StorageAndTakePowerPackage;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon.BeaconEffect;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -20,7 +21,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.text.DecimalFormat;
 
@@ -90,21 +91,21 @@ public class MaidBeaconGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        graphics.blit(BG, leftPos, topPos + 2, 0, 0, 142, 111);
-        graphics.blit(BG, leftPos + 118, topPos + 1, 44, 111, 154, 15);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        GuiTools.blit(graphics, BG, leftPos, topPos + 2, 0, 0, 142, 111);
+        GuiTools.blit(graphics,BG, leftPos + 118, topPos + 1, 44, 111, 154, 15);
 
-        graphics.blit(BG, leftPos + 224, topPos + 44, 44, 126, 12, 12);
-        graphics.blit(BG, leftPos + 224, topPos + 58, 44, 138, 12, 12);
+        GuiTools.blit(graphics,BG, leftPos + 224, topPos + 44, 44, 126, 12, 12);
+        GuiTools.blit(graphics,BG, leftPos + 224, topPos + 58, 44, 138, 12, 12);
 
-        graphics.blit(BG, leftPos + 146, topPos + 46, 58, 128, 74, 9);
-        graphics.blit(BG, leftPos + 146, topPos + 59, 58, 128, 74, 9);
+        GuiTools.blit(graphics,BG, leftPos + 146, topPos + 46, 58, 128, 74, 9);
+        GuiTools.blit(graphics,BG, leftPos + 146, topPos + 59, 58, 128, 74, 9);
         float percent = beacon.getStoragePower() / beacon.getMaxStorage();
-        graphics.blit(BG, leftPos + 146, topPos + 48, 58, 138, (int) (74 * percent), 5);
+        GuiTools.blit(graphics,BG, leftPos + 146, topPos + 48, 58, 138, (int) (74 * percent), 5);
 
         this.renderPlayerPower(graphics);
-        graphics.drawString(font, DECIMAL_FORMAT.format(beacon.getStoragePower()), leftPos + 240, topPos + 46, 0xffffff);
+        graphics.text(font, DECIMAL_FORMAT.format(beacon.getStoragePower()), leftPos + 240, topPos + 46, 0xffffff);
         if (potionIndex == -1) {
             this.drawCenteredString(graphics, font, I18n.get("gui.touhou_little_maid.maid_beacon.cost_power", DECIMAL_FORMAT.format(0)), leftPos + 195, topPos + 5, ChatFormatting.DARK_GRAY.getColor());
         } else {
@@ -133,8 +134,8 @@ public class MaidBeaconGui extends Screen {
         if (player != null) {
             PowerAttachment power = player.getData(InitDataAttachment.POWER_NUM);
             float percent = power.get() / PowerAttachment.MAX_POWER;
-            graphics.blit(BG, leftPos + 146, topPos + 61, 58, 143, (int) (74 * percent), 5);
-            graphics.drawString(font, DECIMAL_FORMAT.format(power.get()), leftPos + 240, topPos + 60, 0xffffff);
+            GuiTools.blit(graphics,BG, leftPos + 146, topPos + 61, 58, 143, (int) (74 * percent), 5);
+            graphics.text(font, DECIMAL_FORMAT.format(power.get()), leftPos + 240, topPos + 60, 0xffffff);
         }
     }
 
@@ -144,10 +145,10 @@ public class MaidBeaconGui extends Screen {
     }
 
     private void drawCenteredString(GuiGraphicsExtractor graphics, Font font, String text, int pX, int pY, int color) {
-        graphics.drawString(font, text, pX - font.width(text) / 2, pY, color, false);
+        graphics.text(font, text, pX - font.width(text) / 2, pY, color, false);
     }
 
     private void drawCenteredString(GuiGraphicsExtractor graphics, Font font, Component text, int pX, int pY, int color) {
-        graphics.drawString(font, text, pX - font.width(text) / 2, pY, color, false);
+        graphics.text(font, text, pX - font.width(text) / 2, pY, color, false);
     }
 }

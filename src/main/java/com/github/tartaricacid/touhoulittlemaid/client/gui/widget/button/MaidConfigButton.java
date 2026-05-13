@@ -41,7 +41,7 @@ public class MaidConfigButton extends Button {
         } else {
             graphics.blit(ICON, this.getX(), this.getY(), 63, 128, this.width, this.height, 256, 256);
         }
-        graphics.drawString(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
+        graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
         drawCenteredStringWithoutShadow(graphics, mc.font, this.value, this.getX() + 142, this.getY() + 3, ChatFormatting.GREEN.getColor());
     }
 
@@ -79,7 +79,7 @@ public class MaidConfigButton extends Button {
 
     public void drawCenteredStringWithoutShadow(GuiGraphicsExtractor graphics, Font pFont, Component pText, int pX, int pY, int pColor) {
         FormattedCharSequence formattedcharsequence = pText.getVisualOrderText();
-        graphics.drawString(pFont, formattedcharsequence, pX - pFont.width(formattedcharsequence) / 2, pY, pColor, false);
+        graphics.text(pFont, formattedcharsequence, pX - pFont.width(formattedcharsequence) / 2, pY, pColor, false);
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -134,13 +134,13 @@ public class HistoryChatWidget extends AbstractWidget {
         graphics.pose().pushPose();
         graphics.pose().scale(scale, scale, 0);
         if (isLeft) {
-            graphics.drawString(font, this.time.getVisualOrderText(),
+            graphics.text(font, this.time.getVisualOrderText(),
                     (this.getX() + 2) / scale,
                     (this.getY() - 5) / scale,
                     0x999999, false);
         } else {
             float width = font.width(this.time) * scale;
-            graphics.drawString(font, this.time.getVisualOrderText(),
+            graphics.text(font, this.time.getVisualOrderText(),
                     (this.getX() + this.getWidth() - width - 2) / scale,
                     (this.getY() - 5) / scale,
                     0x999999, false);

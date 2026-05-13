@@ -49,7 +49,7 @@ public class ClientItemContainerTooltip implements ClientTooltipComponent {
     @Override
     public void renderImage(Font font, int pX, int pY, GuiGraphicsExtractor guiGraphics) {
         if (emptyTip != null) {
-            guiGraphics.drawString(font, emptyTip, pX, pY, ChatFormatting.GRAY.getColor());
+            guiGraphics.text(font, emptyTip, pX, pY, ChatFormatting.GRAY.getColor());
         } else {
             int i = 0;
             for (ItemStack stack : this.items) {

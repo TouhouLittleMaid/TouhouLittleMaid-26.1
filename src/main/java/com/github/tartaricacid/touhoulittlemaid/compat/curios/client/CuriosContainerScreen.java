@@ -109,11 +109,11 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
         if (this.maxPages > 0) {
             MutableComponent page = Component.literal("%d/%d".formatted(this.page + 1, maxPages + 1));
             int width = font.width(page);
-            graphics.drawString(font, page, (leftPos + 197) - width / 2, topPos + 150, 0x555555, false);
+            graphics.text(font, page, (leftPos + 197) - width / 2, topPos + 150, 0x555555, false);
         } else {
             MutableComponent name = Component.translatable("curios.name");
             int width = font.width(name);
-            graphics.drawString(font, name, (leftPos + 197) - width / 2, topPos + 150, 0x555555, false);
+            graphics.text(font, name, (leftPos + 197) - width / 2, topPos + 150, 0x555555, false);
         }
     }
 

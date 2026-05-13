@@ -140,7 +140,7 @@ public class MaidTipsOverlay implements GuiLayer {
             guiGraphics.blit(ICON, screenWidth / 2 + 42, offset - 4, 16, 16, 16, 16, 16, 16);
             offset += 18;
             for (FormattedCharSequence sequence : split) {
-                guiGraphics.drawString(minecraft.font, sequence, screenWidth / 2 + 32, offset, 0xFFFFFF);
+                guiGraphics.text(minecraft.font, sequence, screenWidth / 2 + 32, offset, 0xFFFFFF);
                 offset += 10;
             }
         }

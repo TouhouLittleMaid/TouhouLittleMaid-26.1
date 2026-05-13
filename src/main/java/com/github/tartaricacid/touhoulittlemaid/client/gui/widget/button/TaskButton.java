@@ -81,7 +81,7 @@ public class TaskButton extends Button implements ITooltipButton {
             graphics.blit(this.resourceLocation, this.getX() + 72, this.getY(), (float) 93, (float) 68, 7, 19, this.textureWidth, this.textureHeight);
         }
         graphics.renderItem(task.getIcon(), this.getX() + 2, this.getY() + 2);
-        graphics.drawString(minecraft.font, task.getName(), this.getX() + 23, this.getY() + 6, 0x333333, false);
+        graphics.text(minecraft.font, task.getName(), this.getX() + 23, this.getY() + 6, 0x333333, false);
     }
 
     @Override

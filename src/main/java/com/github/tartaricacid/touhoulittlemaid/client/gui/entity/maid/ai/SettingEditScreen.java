@@ -163,9 +163,9 @@ public class SettingEditScreen extends Screen {
     @Override
     public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
-        graphics.drawString(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.owner_name"),
+        graphics.text(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.owner_name"),
                 ownerName.getX() + 2, ownerName.getY() - 12, 0xFFFFFF);
-        graphics.drawString(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.custom_setting"),
+        graphics.text(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.custom_setting"),
                 customSetting.getX() + 2, customSetting.getY() - 12, 0xFFFFFF);
         drawMaid(graphics, customSetting.getX() + customSetting.getWidth() + 73, customSetting.getY() + 96, maid);
 

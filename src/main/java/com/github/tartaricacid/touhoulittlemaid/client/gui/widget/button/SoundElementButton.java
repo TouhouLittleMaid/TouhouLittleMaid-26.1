@@ -42,11 +42,11 @@ public class SoundElementButton extends FlatColorButton {
 
     @Override
     public void renderString(GuiGraphicsExtractor graphics, Font font, int pColor) {
-        graphics.drawString(font, "▷", this.getX() + 5, this.getY() + (this.height - 8) / 2, 0xe0e0e0);
-        graphics.drawString(font, this.getMessage(), this.getX() + 15, this.getY() + (this.height - 8) / 2, 0xfafafa);
+        graphics.text(font, "▷", this.getX() + 5, this.getY() + (this.height - 8) / 2, 0xe0e0e0);
+        graphics.text(font, this.getMessage(), this.getX() + 15, this.getY() + (this.height - 8) / 2, 0xfafafa);
         String countText = soundCount + "♫";
         int countTextWidth = font.width(countText);
-        graphics.drawString(font, countText, this.getX() + this.getWidth() - countTextWidth - 5, this.getY() + (this.height - 8) / 2, 0xCCCCCC);
+        graphics.text(font, countText, this.getX() + this.getWidth() - countTextWidth - 5, this.getY() + (this.height - 8) / 2, 0xCCCCCC);
     }
 
     public Identifier getSoundEvent() {

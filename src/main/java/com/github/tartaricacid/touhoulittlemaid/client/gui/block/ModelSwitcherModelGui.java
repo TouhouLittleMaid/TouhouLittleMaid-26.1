@@ -63,7 +63,7 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
         var allTextures = Minecraft.getInstance().getTextureManager().byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
-            graphics.blit(cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
+            GuiTools.blit(graphics,cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
         } else {
             drawEntity(graphics, posX, posY, modelItem);
         }

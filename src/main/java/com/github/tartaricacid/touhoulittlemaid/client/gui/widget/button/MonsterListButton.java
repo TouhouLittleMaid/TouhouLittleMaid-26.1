@@ -32,7 +32,7 @@ public class MonsterListButton extends Button {
         } else {
             graphics.blit(ICON, this.getX(), this.getY(), 0, 137, this.width, this.height, 256, 256);
         }
-        graphics.drawString(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
+        graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
         graphics.drawCenteredString(mc.font, this.parents.getAttackGroups().get(entityId).getComponent(), this.getX() + 142, this.getY() + 3, 0xFFFFFF);
     }
 

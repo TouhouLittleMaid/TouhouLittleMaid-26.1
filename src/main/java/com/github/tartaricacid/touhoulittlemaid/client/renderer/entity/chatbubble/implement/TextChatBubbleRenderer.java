@@ -62,7 +62,7 @@ public class TextChatBubbleRenderer implements IChatBubbleRenderer {
     public void render(EntityMaidRenderer renderer, EntityGraphics graphics) {
         int y = 0;
         for (FormattedCharSequence sequence : this.split) {
-            graphics.drawString(font, sequence, 0, y, 0x000000, false);
+            graphics.text(font, sequence, 0, y, 0x000000, false);
             y += font.lineHeight;
         }
     }

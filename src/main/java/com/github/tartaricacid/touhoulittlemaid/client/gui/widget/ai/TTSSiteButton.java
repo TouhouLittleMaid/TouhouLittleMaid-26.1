@@ -71,7 +71,7 @@ public class TTSSiteButton extends Button {
 
     @Override
     public void renderString(GuiGraphicsExtractor graphics, Font font, int color) {
-        graphics.drawString(font, this.getMessage(), this.getX() + 28, this.getY() + (this.height - 8) / 2,
+        graphics.text(font, this.getMessage(), this.getX() + 28, this.getY() + (this.height - 8) / 2,
                 this.site.enabled() ? 0xFF999999 : 0xFF444444, false);
     }
 }
