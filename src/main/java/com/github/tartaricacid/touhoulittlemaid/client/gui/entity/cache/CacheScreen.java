@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -50,7 +51,7 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
         }
         T entity;
         try {
-            entity = (T) EntityCacheUtil.ENTITY_CACHE.get(entityType, () -> entityType.create(world));
+            entity = (T) EntityCacheUtil.ENTITY_CACHE.get(entityType, () -> entityType.create(world, EntitySpawnReason.COMMAND));
         } catch (ExecutionException | ClassCastException e) {
             e.fillInStackTrace();
             return;
@@ -70,20 +71,16 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
             return;
         }
 
-        // 每帧尝试缓存 5 个
-        graphics.pose().pushPose();
         for (int i = 0; i < 5; i++) {
             if (modelInfos.isEmpty()) {
                 return;
             }
-            graphics.pose().translate(0, 0, 200);
             doCacheIcon(graphics);
         }
-        graphics.pose().popPose();
 
         int finishSize = totalCount - modelInfos.size();
-        graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.cache_screen.progress", finishSize, totalCount), this.width / 2, this.height - 42, 0xFFFFFF);
-        graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.cache_screen.desc"), this.width / 2, this.height - 30, 0xFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.cache_screen.progress", finishSize, totalCount), this.width / 2, this.height - 42, 0xFFFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.cache_screen.desc"), this.width / 2, this.height - 30, 0xFFFFFFFF);
     }
 
     protected void doCacheIcon(GuiGraphicsExtractor graphics) {

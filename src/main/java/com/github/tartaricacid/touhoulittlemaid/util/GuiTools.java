@@ -24,22 +24,22 @@ public final class GuiTools {
         topSliceHeight = Math.min(topSliceHeight, height / 2);
         bottomSliceHeight = Math.min(bottomSliceHeight, height / 2);
         if (width == uWidth && height == vHeight) {
-            blit(graphics,atlasLocation, x, y, textureX, textureY, width, height);
+            blit(graphics, atlasLocation, x, y, textureX, textureY, width, height);
         } else if (height == vHeight) {
-            blit(graphics,atlasLocation, x, y, textureX, textureY, leftSliceWidth, height);
+            blit(graphics, atlasLocation, x, y, textureX, textureY, leftSliceWidth, height);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, height, textureX + leftSliceWidth, textureY, uWidth - rightSliceWidth - leftSliceWidth, vHeight);
-            blit(graphics,atlasLocation, x + width - rightSliceWidth, y, textureX + uWidth - rightSliceWidth, textureY, rightSliceWidth, height);
+            blit(graphics, atlasLocation, x + width - rightSliceWidth, y, textureX + uWidth - rightSliceWidth, textureY, rightSliceWidth, height);
         } else if (width == uWidth) {
-            blit(graphics,atlasLocation, x, y, textureX, textureY, width, topSliceHeight);
+            blit(graphics, atlasLocation, x, y, textureX, textureY, width, topSliceHeight);
             blitRepeating(graphics, atlasLocation, x, y + topSliceHeight, width, height - bottomSliceHeight - topSliceHeight, textureX, textureY + topSliceHeight, uWidth, vHeight - bottomSliceHeight - topSliceHeight);
-            blit(graphics,atlasLocation, x, y + height - bottomSliceHeight, textureX, textureY + vHeight - bottomSliceHeight, width, bottomSliceHeight);
+            blit(graphics, atlasLocation, x, y + height - bottomSliceHeight, textureX, textureY + vHeight - bottomSliceHeight, width, bottomSliceHeight);
         } else {
-            blit(graphics,atlasLocation, x, y, textureX, textureY, leftSliceWidth, topSliceHeight);
+            blit(graphics, atlasLocation, x, y, textureX, textureY, leftSliceWidth, topSliceHeight);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, topSliceHeight, textureX + leftSliceWidth, textureY, uWidth - rightSliceWidth - leftSliceWidth, topSliceHeight);
-            blit(graphics,atlasLocation, x + width - rightSliceWidth, y, textureX + uWidth - rightSliceWidth, textureY, rightSliceWidth, topSliceHeight);
-            blit(graphics,atlasLocation, x, y + height - bottomSliceHeight, textureX, textureY + vHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
+            blit(graphics, atlasLocation, x + width - rightSliceWidth, y, textureX + uWidth - rightSliceWidth, textureY, rightSliceWidth, topSliceHeight);
+            blit(graphics, atlasLocation, x, y + height - bottomSliceHeight, textureX, textureY + vHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y + height - bottomSliceHeight, width - rightSliceWidth - leftSliceWidth, bottomSliceHeight, textureX + leftSliceWidth, textureY + vHeight - bottomSliceHeight, uWidth - rightSliceWidth - leftSliceWidth, bottomSliceHeight);
-            blit(graphics,atlasLocation, x + width - rightSliceWidth, y + height - bottomSliceHeight, textureX + uWidth - rightSliceWidth, textureY + vHeight - bottomSliceHeight, rightSliceWidth, bottomSliceHeight);
+            blit(graphics, atlasLocation, x + width - rightSliceWidth, y + height - bottomSliceHeight, textureX + uWidth - rightSliceWidth, textureY + vHeight - bottomSliceHeight, rightSliceWidth, bottomSliceHeight);
             blitRepeating(graphics, atlasLocation, x, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, textureX, textureY + topSliceHeight, leftSliceWidth, vHeight - bottomSliceHeight - topSliceHeight);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y + topSliceHeight, width - rightSliceWidth - leftSliceWidth, height - bottomSliceHeight - topSliceHeight, textureX + leftSliceWidth, textureY + topSliceHeight, uWidth - rightSliceWidth - leftSliceWidth, vHeight - bottomSliceHeight - topSliceHeight);
             blitRepeating(graphics, atlasLocation, x + width - rightSliceWidth, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, textureX + uWidth - rightSliceWidth, textureY + topSliceHeight, rightSliceWidth, vHeight - bottomSliceHeight - topSliceHeight);
@@ -61,7 +61,7 @@ public final class GuiTools {
             for (IntIterator heightIterator = slices(height, sourceHeight); heightIterator.hasNext(); drawY += sliceHeight) {
                 sliceHeight = heightIterator.nextInt();
                 int vPad = (sourceHeight - sliceHeight) / 2;
-                blit(graphics,atlasLocation, drawX, drawY, uOffset + uPad, vOffset + vPad, sliceWidth, sliceHeight, textureWidth, textureHeight);
+                blit(graphics, atlasLocation, drawX, drawY, uOffset + uPad, vOffset + vPad, sliceWidth, sliceHeight, textureWidth, textureHeight);
             }
         }
     }
@@ -77,10 +77,15 @@ public final class GuiTools {
     }
 
     public static void blit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int imageWidth, int imageHeight) {
+        blit(graphics, atlasLocation, x, y, width, height, uOffset, vOffset, width, height, imageWidth, imageHeight);
+    }
+
+    public static void blit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int uWidth, int vHeight, int imageWidth, int imageHeight) {
         float u0 = (float) uOffset / imageWidth;
-        float u1 = (float) (uOffset + width) / imageWidth;
+        float u1 = (float) (uOffset + uWidth) / imageWidth;
         float v0 = (float) vOffset / imageHeight;
-        float v1 = (float) (vOffset + height) / imageHeight;
+        float v1 = (float) (vOffset + vHeight) / imageHeight;
         graphics.blit(atlasLocation, x, y, x + width, x + height, u0, u1, v0, v1);
     }
+
 }
