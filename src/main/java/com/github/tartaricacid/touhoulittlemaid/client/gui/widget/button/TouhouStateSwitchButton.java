@@ -36,10 +36,12 @@ public class TouhouStateSwitchButton extends AbstractWidget {
         return this.isStateTriggered;
     }
 
+    @Override
     public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
         this.defaultButtonNarrationText(pNarrationElementOutput);
     }
 
+    @Override
     public void extractWidgetRenderState(GuiGraphicsExtractor pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         int i = this.xTexStart;
         int j = this.yTexStart;

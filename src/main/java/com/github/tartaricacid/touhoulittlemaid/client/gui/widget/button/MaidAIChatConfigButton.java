@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
@@ -47,22 +48,19 @@ public class MaidAIChatConfigButton extends Button {
         this.value = value;
     }
 
-    protected boolean clicked(double mouseX, double mouseY) {
-        if (!this.active || !this.visible) {
-            return false;
-        }
+    @Override
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         boolean leftClickX = (this.getX() + 62) <= mouseX && mouseX <= (this.getX() + 72);
         boolean rightClickX = (this.getX() + 154) <= mouseX && mouseX <= (this.getX() + 164);
         boolean clickY = this.getY() <= mouseY && mouseY <= (this.getY() + this.getHeight());
         if (leftClickX && clickY) {
             leftClicked = true;
-            return true;
-        }
-        if (rightClickX && clickY) {
+        } else if (rightClickX && clickY) {
             leftClicked = false;
-            return true;
         }
-        return false;
+        super.onClick(event, doubleClick);
     }
 
     @Override

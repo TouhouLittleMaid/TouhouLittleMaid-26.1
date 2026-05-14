@@ -104,7 +104,7 @@ public class WirelessIOConfigSlotGui extends Screen {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
+        super.extractBackground(guiGraphics, mouseX, mouseY, partialTicks);
         GuiTools.blit(guiGraphics, SLOT, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
 }
