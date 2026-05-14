@@ -50,6 +50,9 @@ public class MaidAIChatConfigButton extends Button {
 
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        if (!this.active || !this.visible) {
+            return;
+        }
         double mouseX = event.x();
         double mouseY = event.y();
         boolean leftClickX = (this.getX() + 62) <= mouseX && mouseX <= (this.getX() + 72);

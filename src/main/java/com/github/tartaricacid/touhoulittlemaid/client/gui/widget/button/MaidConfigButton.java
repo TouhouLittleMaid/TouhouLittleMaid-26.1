@@ -52,6 +52,9 @@ public class MaidConfigButton extends Button {
 
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        if (!this.active || !this.visible) {
+            return;
+        }
         double mouseX = event.x();
         double mouseY = event.y();
         boolean leftClickX = (this.getX() + 120) <= mouseX && mouseX <= (this.getX() + 130);
