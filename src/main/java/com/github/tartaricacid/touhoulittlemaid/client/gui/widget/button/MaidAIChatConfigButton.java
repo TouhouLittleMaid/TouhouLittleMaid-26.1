@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -35,11 +35,10 @@ public class MaidAIChatConfigButton extends Button {
     @Override
     protected void extractContents(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
-        RenderSystem.enableDepthTest();
         if (this.isHovered) {
-            graphics.blit(ICON, this.getX(), this.getY(), 6, 150, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 6, 150, this.width, this.height, 256, 256);
         } else {
-            graphics.blit(ICON, this.getX(), this.getY(), 6, 137, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 6, 137, this.width, this.height, 256, 256);
         }
         drawButtonText(graphics, mc.font);
     }
@@ -48,7 +47,6 @@ public class MaidAIChatConfigButton extends Button {
         this.value = value;
     }
 
-    @Override
     protected boolean clicked(double mouseX, double mouseY) {
         if (!this.active || !this.visible) {
             return false;
@@ -87,11 +85,11 @@ public class MaidAIChatConfigButton extends Button {
         float rightTextX = (this.getX() + 113 - font.width(rightText) * scale / 2f) / scale;
         float rightTextY = (this.getY() + 4) / scale;
 
-        graphics.pose().pushPose();
-        graphics.pose().scale(scale, scale, 1);
-        graphics.text(font, leftText, leftTextX, leftTextY, 0x444444, false);
-        graphics.text(font, rightText, rightTextX, rightTextY, 0x55ff55, false);
-        graphics.pose().popPose();
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale, scale);
+        graphics.text(font, leftText, (int) leftTextX, (int) leftTextY, 0x444444, false);
+        graphics.text(font, rightText, (int) rightTextX, (int) rightTextY, 0x55ff55, false);
+        graphics.pose().popMatrix();
     }
 
     @OnlyIn(Dist.CLIENT)

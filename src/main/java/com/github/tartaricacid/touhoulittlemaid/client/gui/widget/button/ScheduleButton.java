@@ -6,8 +6,8 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidSchedule;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.MaidConfigPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.InputWithModifiers;
@@ -16,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.schedule.Activity;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -45,12 +44,11 @@ public class ScheduleButton<T extends AbstractMaidContainer> extends Button {
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.enableDepthTest();
-        graphics.blit(BUTTON, this.getX(), this.getY(), 82, 43 + 14 * mode.ordinal(), this.width, this.height, 256, 256);
+        GuiTools.blit(graphics, BUTTON, this.getX(), this.getY(), this.width, this.height, 82, 43 + 14 * mode.ordinal(), this.width, this.height, 256, 256);
     }
 
     public List<Component> getTooltips() {
-        int time = (int) (maid.level().getDayTime() % 24000L);
+        int time = (int) (maid.level().getGameTime() % 24000L);
         int hour = (time / 1000 + 6) % 24;
         int minute = (time % 1000) * 60 / 1000;
         Activity activity = maid.getScheduleDetail();

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.CommonComponents;
@@ -50,7 +50,6 @@ public class TouhouImageButton extends Button {
             i = pVOffset + p_283472_;
         }
 
-        RenderSystem.enableDepthTest();
-        pGuiGraphics.blit(pTexture, pX, pY, (float) pUOffset, (float) i, pWidth, pHeight, pTextureWidth, pTextureHeight);
+        GuiTools.blit(pGuiGraphics, pTexture, pX, pY, pWidth, pHeight, pUOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);
     }
 }

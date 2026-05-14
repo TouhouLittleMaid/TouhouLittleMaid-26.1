@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task.AttackTaskConfigGui;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -25,16 +25,15 @@ public class MonsterListButton extends Button {
     @Override
     protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
-        RenderSystem.enableDepthTest();
         if (deleteClick(mouseX, mouseY)) {
-            graphics.blit(ICON, this.getX(), this.getY(), 0, 163, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 163, this.width, this.height, 256, 256);
         } else if (leftClick(mouseX, mouseY) || rightClick(mouseX, mouseY)) {
-            graphics.blit(ICON, this.getX(), this.getY(), 0, 150, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 150, this.width, this.height, 256, 256);
         } else {
-            graphics.blit(ICON, this.getX(), this.getY(), 0, 137, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 137, this.width, this.height, 256, 256);
         }
         graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
-        graphics.drawCenteredString(mc.font, this.parents.getAttackGroups().get(entityId).getComponent(), this.getX() + 142, this.getY() + 3, 0xFFFFFF);
+        graphics.centeredText(mc.font, this.parents.getAttackGroups().get(entityId).getComponent(), this.getX() + 142, this.getY() + 3, 0xFFFFFF);
     }
 
     @Override

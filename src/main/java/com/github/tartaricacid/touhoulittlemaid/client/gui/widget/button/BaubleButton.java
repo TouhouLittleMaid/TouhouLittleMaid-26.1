@@ -3,7 +3,6 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -41,7 +40,7 @@ public class BaubleButton extends Button implements ITooltipButton {
 
     @Override
     public void renderTooltip(GuiGraphicsExtractor graphics, Minecraft mc, int mouseX, int mouseY) {
-        graphics.renderTooltip(mc.font, this.tooltip, mouseX, mouseY);
+        graphics.setTooltipForNextFrame(mc.font, this.tooltip, mouseX, mouseY);
     }
 
     public void renderTexture(GuiGraphicsExtractor pGuiGraphics, Identifier pTexture, int pX, int pY, int uOffset,
@@ -53,7 +52,6 @@ public class BaubleButton extends Button implements ITooltipButton {
             i = vOffset + yDiff;
         }
 
-        RenderSystem.enableDepthTest();
-        pGuiGraphics.blit(pTexture, pX, pY, (float) uOffset, (float) i, pWidth, pHeight, pTextureWidth, pTextureHeight);
+        pGuiGraphics.blit(pTexture, pX, pY, uOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);
     }
 }

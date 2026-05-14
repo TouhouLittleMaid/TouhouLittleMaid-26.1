@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -14,6 +14,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @OnlyIn(Dist.CLIENT)
@@ -74,14 +75,12 @@ public class TaskButton extends Button implements ITooltipButton {
         if (this.isHoveredOrFocused()) {
             i += this.yDiffTex;
         }
-        RenderSystem.enableDepthTest();
-        graphics.blit(this.resourceLocation, this.getX(), this.getY(), (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
+        GuiTools.blit(graphics, this.resourceLocation, this.getX(), this.getY(), this.width, this.height, this.xTexStart, i, this.width, this.height, this.textureWidth, this.textureHeight);
         if (!enable) {
-            // 不知为啥设定渲染高度是19，但渲染出来的是20...
             graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80000000);
-            graphics.blit(this.resourceLocation, this.getX() + 72, this.getY(), (float) 93, (float) 68, 7, 19, this.textureWidth, this.textureHeight);
+            GuiTools.blit(graphics, this.resourceLocation, this.getX() + 72, this.getY(), 7, 19, 93, 68, 7, 19, this.textureWidth, this.textureHeight);
         }
-        graphics.renderItem(task.getIcon(), this.getX() + 2, this.getY() + 2);
+        graphics.item(task.getIcon(), this.getX() + 2, this.getY() + 2);
         graphics.text(minecraft.font, task.getName(), this.getX() + 23, this.getY() + 6, 0x333333, false);
     }
 
@@ -93,7 +92,7 @@ public class TaskButton extends Button implements ITooltipButton {
     @Override
     public void renderTooltip(GuiGraphicsExtractor graphics, Minecraft mc, int mouseX, int mouseY) {
         if (!this.tooltips.isEmpty()) {
-            graphics.renderComponentTooltip(mc.font, this.tooltips, mouseX, mouseY);
+            graphics.setTooltipForNextFrame(mc.font, this.tooltips, Optional.empty(), mouseX, mouseY);
         }
     }
 }

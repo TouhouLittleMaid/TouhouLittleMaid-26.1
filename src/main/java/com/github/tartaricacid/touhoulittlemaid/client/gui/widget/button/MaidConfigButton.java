@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -36,11 +36,10 @@ public class MaidConfigButton extends Button {
     @Override
     protected void extractContents(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
-        RenderSystem.enableDepthTest();
         if (this.isHovered) {
-            graphics.blit(ICON, this.getX(), this.getY(), 63, 141, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 63, 141, this.width, this.height, 256, 256);
         } else {
-            graphics.blit(ICON, this.getX(), this.getY(), 63, 128, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 63, 128, this.width, this.height, 256, 256);
         }
         graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
         drawCenteredStringWithoutShadow(graphics, mc.font, this.value, this.getX() + 142, this.getY() + 3, ChatFormatting.GREEN.getColor());
@@ -50,7 +49,6 @@ public class MaidConfigButton extends Button {
         this.value = value;
     }
 
-    @Override
     protected boolean clicked(double mouseX, double mouseY) {
         if (!this.active || !this.visible) {
             return false;
