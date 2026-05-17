@@ -4,6 +4,7 @@ import com.mojang.math.Divisor;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
@@ -24,22 +25,22 @@ public final class GuiTools {
         topSliceHeight = Math.min(topSliceHeight, height / 2);
         bottomSliceHeight = Math.min(bottomSliceHeight, height / 2);
         if (width == uWidth && height == vHeight) {
-            graphics.blit(atlasLocation, x, y, textureX, textureY, width, height);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, (float) textureX, (float) textureY, width, height, 256, 256);
         } else if (height == vHeight) {
-            graphics.blit(atlasLocation, x, y, textureX, textureY, leftSliceWidth, height);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, (float) textureX, (float) textureY, leftSliceWidth, height, 256, 256);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, height, textureX + leftSliceWidth, textureY, uWidth - rightSliceWidth - leftSliceWidth, vHeight);
-            graphics.blit(atlasLocation, x + width - rightSliceWidth, y, textureX + uWidth - rightSliceWidth, textureY, rightSliceWidth, height);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x + width - rightSliceWidth, y, (float) (textureX + uWidth - rightSliceWidth), (float) textureY, rightSliceWidth, height, 256, 256);
         } else if (width == uWidth) {
-            graphics.blit(atlasLocation, x, y, textureX, textureY, width, topSliceHeight);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, (float) textureX, (float) textureY, width, topSliceHeight, 256, 256);
             blitRepeating(graphics, atlasLocation, x, y + topSliceHeight, width, height - bottomSliceHeight - topSliceHeight, textureX, textureY + topSliceHeight, uWidth, vHeight - bottomSliceHeight - topSliceHeight);
-            graphics.blit(atlasLocation, x, y + height - bottomSliceHeight, textureX, textureY + vHeight - bottomSliceHeight, width, bottomSliceHeight);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y + height - bottomSliceHeight, (float) textureX, (float) (textureY + vHeight - bottomSliceHeight), width, bottomSliceHeight, 256, 256);
         } else {
-            graphics.blit(atlasLocation, x, y, textureX, textureY, leftSliceWidth, topSliceHeight);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, (float) textureX, (float) textureY, leftSliceWidth, topSliceHeight, 256, 256);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, topSliceHeight, textureX + leftSliceWidth, textureY, uWidth - rightSliceWidth - leftSliceWidth, topSliceHeight);
-            graphics.blit(atlasLocation, x + width - rightSliceWidth, y, textureX + uWidth - rightSliceWidth, textureY, rightSliceWidth, topSliceHeight);
-            graphics.blit(atlasLocation, x, y + height - bottomSliceHeight, textureX, textureY + vHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x + width - rightSliceWidth, y, (float) (textureX + uWidth - rightSliceWidth), (float) textureY, rightSliceWidth, topSliceHeight, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y + height - bottomSliceHeight, (float) textureX, (float) (textureY + vHeight - bottomSliceHeight), leftSliceWidth, bottomSliceHeight, 256, 256);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y + height - bottomSliceHeight, width - rightSliceWidth - leftSliceWidth, bottomSliceHeight, textureX + leftSliceWidth, textureY + vHeight - bottomSliceHeight, uWidth - rightSliceWidth - leftSliceWidth, bottomSliceHeight);
-            graphics.blit(atlasLocation, x + width - rightSliceWidth, y + height - bottomSliceHeight, textureX + uWidth - rightSliceWidth, textureY + vHeight - bottomSliceHeight, rightSliceWidth, bottomSliceHeight);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x + width - rightSliceWidth, y + height - bottomSliceHeight, (float) (textureX + uWidth - rightSliceWidth), (float) (textureY + vHeight - bottomSliceHeight), rightSliceWidth, bottomSliceHeight, 256, 256);
             blitRepeating(graphics, atlasLocation, x, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, textureX, textureY + topSliceHeight, leftSliceWidth, vHeight - bottomSliceHeight - topSliceHeight);
             blitRepeating(graphics, atlasLocation, x + leftSliceWidth, y + topSliceHeight, width - rightSliceWidth - leftSliceWidth, height - bottomSliceHeight - topSliceHeight, textureX + leftSliceWidth, textureY + topSliceHeight, uWidth - rightSliceWidth - leftSliceWidth, vHeight - bottomSliceHeight - topSliceHeight);
             blitRepeating(graphics, atlasLocation, x + width - rightSliceWidth, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, textureX + uWidth - rightSliceWidth, textureY + topSliceHeight, rightSliceWidth, vHeight - bottomSliceHeight - topSliceHeight);
@@ -61,7 +62,7 @@ public final class GuiTools {
             for (IntIterator heightIterator = slices(height, sourceHeight); heightIterator.hasNext(); drawY += sliceHeight) {
                 sliceHeight = heightIterator.nextInt();
                 int vPad = (sourceHeight - sliceHeight) / 2;
-                graphics.blit(atlasLocation, drawX, drawY, uOffset + uPad, vOffset + vPad, sliceWidth, sliceHeight, textureWidth, textureHeight);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, drawX, drawY, (float) (uOffset + uPad), (float) (vOffset + vPad), sliceWidth, sliceHeight, textureWidth, textureHeight);
             }
         }
     }

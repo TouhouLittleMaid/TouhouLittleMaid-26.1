@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import org.lwjgl.system.MemoryUtil;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Refer: https://github.com/CyclopsMC/IconExporter/
  * MIT license: https://github.com/CyclopsMC/IconExporter/blob/master-1.21/LICENSE.txt
@@ -19,26 +21,33 @@ public final class IconCache {
      */
     public static final int BACKGROUND_COLOR_SHIFTED = 0xFF_00_FF_00;
 
-    public static NativeImage exportImageFromScreenshot(int scaleImage, int backgroundColor) {
+    /**
+     * 返回 CompletableFuture 而不在方法内 join，否则会死锁
+     */
+    public static CompletableFuture<NativeImage> exportImageFromScreenshot(int scaleImage, int backgroundColor) {
+        Minecraft mc = Minecraft.getInstance();
+        CompletableFuture<NativeImage> done = new CompletableFuture<>();
         // 尝试全屏截图
-        NativeImage imageFull = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
-        // 从全屏截图中获取我们需要的那部分
-        NativeImage image = getSubImage(imageFull, scaleImage, scaleImage);
-        // 关闭全屏截图的缓存
-        imageFull.close();
+        Screenshot.takeScreenshot(mc.getMainRenderTarget(), imageFull -> {
+            // 从全屏截图中获取我们需要的那部分
+            NativeImage image = getSubImage(imageFull, scaleImage, scaleImage);
+            // 关闭全屏截图的缓存
+            imageFull.close();
 
-        // 将背景颜色转换为透明像素
-        for (int cx = 0; cx < image.getWidth(); cx++) {
-            for (int cy = 0; cy < image.getHeight(); cy++) {
-                int color = image.getPixelRGBA(cx, cy);
-                // 如果颜色等于背景色，那么直接设置为透明像素
-                if (color == backgroundColor) {
-                    image.setPixelRGBA(cx, cy, 0x00_00_00_00);
+            // 将背景颜色转换为透明像素
+            for (int cx = 0; cx < image.getWidth(); cx++) {
+                for (int cy = 0; cy < image.getHeight(); cy++) {
+                    int color = image.getPixel(cx, cy);
+                    // 如果颜色等于背景色，那么直接设置为透明像素
+                    if (color == backgroundColor) {
+                        image.setPixel(cx, cy, 0);
+                    }
                 }
             }
-        }
 
-        return image;
+            done.complete(image);
+        });
+        return done;
     }
 
     private static NativeImage getSubImage(NativeImage image, int width, int height) {
