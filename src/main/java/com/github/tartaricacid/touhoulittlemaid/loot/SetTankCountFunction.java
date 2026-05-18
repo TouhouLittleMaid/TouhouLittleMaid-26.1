@@ -2,24 +2,25 @@ package com.github.tartaricacid.touhoulittlemaid.loot;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.data.TankBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
-import com.github.tartaricacid.touhoulittlemaid.init.InitLootModifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
 import java.util.List;
 
@@ -42,8 +43,8 @@ public class SetTankCountFunction extends LootItemConditionalFunction {
     }
 
     @Override
-    public LootItemFunctionType<? extends LootItemConditionalFunction> getType() {
-        return InitLootModifier.SET_TANK_COUNT_FUNCTION.get();
+    public MapCodec<? extends LootItemConditionalFunction> codec() {
+        return CODEC;
     }
 
     @Override
@@ -52,10 +53,15 @@ public class SetTankCountFunction extends LootItemConditionalFunction {
         if (tags == null) {
             tags = new CompoundTag();
         }
-        FluidTank tank = new FluidTank(TankBackpackData.CAPACITY);
-        FluidStack fluidStack = new FluidStack(BuiltInRegistries.FLUID.get(this.fluidId), count);
-        tank.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
-        tank.writeToNBT(context.getLevel().registryAccess(), tags);
+        Fluid fluid = BuiltInRegistries.FLUID.getValue(this.fluidId);
+        if (fluid == null || fluid.isSame(Fluids.EMPTY)) {
+            stack.set(InitDataComponent.TANK_BACKPACK_TAG, tags);
+            return stack;
+        }
+        FluidStacksResourceHandler tank = new FluidStacksResourceHandler(1, TankBackpackData.CAPACITY);
+        FluidStack fluidStack = new FluidStack(fluid, this.count);
+        tank.set(0, FluidResource.of(fluidStack), this.count);
+        tags.store("Fluid", FluidStack.CODEC, context.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE), FluidUtil.getStack(tank, 0));
         stack.set(InitDataComponent.TANK_BACKPACK_TAG, tags);
         return stack;
     }

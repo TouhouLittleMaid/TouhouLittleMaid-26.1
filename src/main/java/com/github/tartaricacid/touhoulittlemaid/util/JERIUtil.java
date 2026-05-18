@@ -2,9 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.util;
 
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.init.InitRecipes;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemEntityPlaceholder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -15,22 +13,19 @@ import java.util.List;
 
 public final class JERIUtil {
     public static void recipeWarpHolder(List<RecipeHolder<AltarRecipe>> altarRecipes, AltarRecipeMaker maker) {
-        for (RecipeHolder<AltarRecipe> altarRecipeHolder : altarRecipes) {
-            AltarRecipe altarRecipe = altarRecipeHolder.value();
-            recipeMaker(maker, altarRecipe);
+        for (RecipeHolder<AltarRecipe> holder : altarRecipes) {
+            recipeMaker(maker, holder.id().identifier(), holder.value());
         }
     }
 
-    public static void recipeWarp(List<AltarRecipe> altarRecipes, AltarRecipeMaker maker) {
-        for (AltarRecipe altarRecipeHolder : altarRecipes) {
-            recipeMaker(maker, altarRecipeHolder);
+    public static void recipeWarp(List<RecipeHolder<AltarRecipe>> altarRecipes, AltarRecipeMaker maker) {
+        for (RecipeHolder<AltarRecipe> holder : altarRecipes) {
+            recipeMaker(maker, holder.id().identifier(), holder.value());
         }
     }
 
-    private static void recipeMaker(AltarRecipeMaker maker, AltarRecipe altarRecipe) {
-        Minecraft.getInstance().level.getRecipeManager().getAllRecipesFor(InitRecipes.ALTAR_CRAFTING.get());
-        Identifier recipeId = altarRecipe.getId();
-        ItemStack output = altarRecipe.getResultItem(Minecraft.getInstance().level.registryAccess());
+    private static void recipeMaker(AltarRecipeMaker maker, Identifier recipeId, AltarRecipe altarRecipe) {
+        ItemStack output = altarRecipe.getResult();
         if (!altarRecipe.isItemCraft()) {
             output = InitItems.ENTITY_PLACEHOLDER.get().getDefaultInstance();
             ItemEntityPlaceholder.setRecipeId(output, altarRecipe.getRecipeString());

@@ -24,9 +24,10 @@ public final class RenderHelper {
         Camera camera = minecraft.gameRenderer.getMainCamera();
         if (camera.isInitialized()) {
             Font font = minecraft.font;
-            double viewX = camera.getPosition().x;
-            double viewY = camera.getPosition().y;
-            double viewZ = camera.getPosition().z;
+            var camPos = camera.position();
+            double viewX = camPos.x;
+            double viewY = camPos.y;
+            double viewZ = camPos.z;
             poseStack.pushPose();
             poseStack.translate((float) (x - viewX), (float) (y - viewY) + 0.07F, (float) (z - viewZ));
             poseStack.mulPose((new Matrix4f()).rotation(camera.rotation()));

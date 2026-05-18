@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 
@@ -18,8 +19,9 @@ public final class SoundUtil {
         Level world = maid.level();
         RandomSource rand = maid.getRandom();
         BlockPos pos = maid.blockPosition();
-        long dayTime = world.getDayTime();
+        long dayTime = world.getDefaultClockTime();
         Biome biome = world.getBiome(pos).value();
+        int seaLevel = world.getSeaLevel();
 
         // 差不多早上 6:00 - 9:00
         if (rand.nextFloat() < probability && MORNING_START < dayTime && dayTime < MORNING_END) {
@@ -29,16 +31,16 @@ public final class SoundUtil {
         if (rand.nextFloat() < probability && EVENING_START < dayTime && dayTime < EVENING_END) {
             return InitSounds.MAID_NIGHT.get();
         }
-        if (rand.nextFloat() < probability && world.isRaining() && isRainBiome(biome, pos)) {
+        if (rand.nextFloat() < probability && world.isRaining() && isRainBiome(world, biome, pos, seaLevel)) {
             return InitSounds.MAID_RAIN.get();
         }
-        if (rand.nextFloat() < probability && world.isRaining() && isSnowyBiome(biome, pos)) {
+        if (rand.nextFloat() < probability && world.isRaining() && isSnowyBiome(biome, pos, seaLevel)) {
             return InitSounds.MAID_SNOW.get();
         }
-        if (rand.nextFloat() < probability && biome.coldEnoughToSnow(pos)) {
+        if (rand.nextFloat() < probability && biome.coldEnoughToSnow(pos, seaLevel)) {
             return InitSounds.MAID_COLD.get();
         }
-        if (rand.nextFloat() < probability && shouldSnowGolemBurn(biome, pos)) {
+        if (rand.nextFloat() < probability && snowGolemMeltsHere(world, pos)) {
             return InitSounds.MAID_HOT.get();
         }
         return fallback;
@@ -52,15 +54,15 @@ public final class SoundUtil {
         return fallback;
     }
 
-    public static boolean isRainBiome(Biome biome, BlockPos pos) {
-        return biome.getPrecipitationAt(pos) == Biome.Precipitation.RAIN && !shouldSnowGolemBurn(biome, pos);
+    public static boolean isRainBiome(Level world, Biome biome, BlockPos pos, int seaLevel) {
+        return biome.getPrecipitationAt(pos, seaLevel) == Biome.Precipitation.RAIN && !snowGolemMeltsHere(world, pos);
     }
 
-    public static boolean isSnowyBiome(Biome biome, BlockPos pos) {
-        return biome.getPrecipitationAt(pos) == Biome.Precipitation.SNOW;
+    public static boolean isSnowyBiome(Biome biome, BlockPos pos, int seaLevel) {
+        return biome.getPrecipitationAt(pos, seaLevel) == Biome.Precipitation.SNOW;
     }
 
-    private static boolean shouldSnowGolemBurn(Biome biome, BlockPos pos) {
-        return biome.getTemperature(pos) > 1.0F;
+    private static boolean snowGolemMeltsHere(Level world, BlockPos pos) {
+        return world.environmentAttributes().getValue(EnvironmentAttributes.SNOW_GOLEM_MELTS, pos);
     }
 }

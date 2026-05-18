@@ -3,7 +3,6 @@ package com.github.tartaricacid.touhoulittlemaid.loot;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.datapack.BoardStateData;
 import com.github.tartaricacid.touhoulittlemaid.datapack.pojo.BoardStateRecord;
-import com.github.tartaricacid.touhoulittlemaid.init.InitLootModifier;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemBoardState;
 import com.github.tartaricacid.touhoulittlemaid.util.WeightedPicker;
 import com.google.common.collect.Lists;
@@ -15,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.List;
@@ -52,6 +50,11 @@ public class RandomBoardStateFunction extends LootItemConditionalFunction {
     }
 
     @Override
+    public MapCodec<? extends LootItemConditionalFunction> codec() {
+        return CODEC;
+    }
+
+    @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
         List<BoardStateRecord> records = BoardStateData.getRecordsByItem(stack);
         if (records.isEmpty()) {
@@ -71,11 +74,6 @@ public class RandomBoardStateFunction extends LootItemConditionalFunction {
         BoardStateRecord.Display display = selected.display();
         ItemBoardState.setState(stack, selected.data(), display.description(), display.author());
         return stack;
-    }
-
-    @Override
-    public LootItemFunctionType<? extends LootItemConditionalFunction> getType() {
-        return InitLootModifier.BOARD_STATE_RANDOMLY.get();
     }
 
     public static class Builder extends LootItemConditionalFunction.Builder<RandomBoardStateFunction.Builder> {

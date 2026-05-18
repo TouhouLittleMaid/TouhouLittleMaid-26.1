@@ -15,66 +15,64 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class AltarRecipeSerializer implements RecipeSerializer<AltarRecipe> {
+public class AltarRecipeSerializer {
     public static final MapCodec<AltarRecipe> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
-                    Codec.STRING.optionalFieldOf("group", StringUtils.EMPTY).forGetter(AltarRecipe::getGroup),
-                    CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(AltarRecipe::getCategory),
+                    Codec.STRING.optionalFieldOf("group", StringUtils.EMPTY).forGetter(AltarRecipe::group),
+                    CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(AltarRecipe::category),
                     Ingredient.CODEC.listOf().fieldOf("ingredients").flatXmap(AltarRecipeSerializer::checkIngredients, DataResult::success).forGetter(AltarRecipe::getIngredients),
                     Codec.FLOAT.fieldOf("power").forGetter(AltarRecipe::getPower),
-                    ItemStack.STRICT_CODEC.fieldOf("result").forGetter(AltarRecipe::getResult),
+                    ItemStack.CODEC.fieldOf("result").forGetter(AltarRecipe::getResult),
                     Identifier.CODEC.fieldOf("entity").forGetter(AltarRecipe::getEntityType),
                     Codec.STRING.optionalFieldOf("lang", StringUtils.EMPTY).forGetter(AltarRecipe::getLangKey)
             ).apply(instance, AltarRecipe::new)
     );
 
+    public static final StreamCodec<RegistryFriendlyByteBuf, AltarRecipe> STREAM_CODEC = StreamCodec.of(AltarRecipeSerializer::toNetwork, AltarRecipeSerializer::fromNetwork);
+
+    public static final RecipeSerializer<AltarRecipe> SERIALIZER = new RecipeSerializer<>(CODEC, STREAM_CODEC);
+
     @NotNull
     private static DataResult<NonNullList<Ingredient>> checkIngredients(List<Ingredient> ingredientList) {
-        Ingredient[] aingredient = ingredientList.toArray(Ingredient[]::new);
-        if (aingredient.length == 0) {
+        int n = ingredientList.size();
+        if (n == 0) {
             return DataResult.error(() -> "No ingredients for shapeless recipe");
-        } else {
-            if (aingredient.length > 6) {
-                return DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: 6");
-            }
-            return DataResult.success(NonNullList.of(Ingredient.EMPTY, aingredient));
         }
+        if (n > 6) {
+            return DataResult.error(() -> "Too many ingredients for shapeless recipe. The maximum is: 6");
+        }
+        return DataResult.success(NonNullList.copyOf(ingredientList));
     }
 
-    private AltarRecipe fromNetwork(RegistryFriendlyByteBuf byteBuf) {
+    private static AltarRecipe fromNetwork(RegistryFriendlyByteBuf byteBuf) {
         String group = byteBuf.readUtf();
         CraftingBookCategory category = byteBuf.readEnum(CraftingBookCategory.class);
-        NonNullList<Ingredient> ingredients = NonNullList.withSize(byteBuf.readVarInt(), Ingredient.EMPTY);
-        ingredients.replaceAll((ingredient) -> Ingredient.CONTENTS_STREAM_CODEC.decode(byteBuf));
+        int size = byteBuf.readVarInt();
+        List<Ingredient> decoded = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            decoded.add(Ingredient.CONTENTS_STREAM_CODEC.decode(byteBuf));
+        }
+        NonNullList<Ingredient> ingredients = NonNullList.copyOf(decoded);
         float power = byteBuf.readFloat();
         ItemStack result = ItemStack.STREAM_CODEC.decode(byteBuf);
-        Identifier entityType = byteBuf.readIdentifier();
+        Identifier entityType = Identifier.STREAM_CODEC.decode(byteBuf);
         String langKey = byteBuf.readUtf();
         return new AltarRecipe(group, category, ingredients, power, result, entityType, langKey);
     }
 
-    private void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, AltarRecipe altarRecipe) {
-        friendlyByteBuf.writeUtf(altarRecipe.getGroup());
-        friendlyByteBuf.writeEnum(altarRecipe.getCategory());
+    private static void toNetwork(RegistryFriendlyByteBuf friendlyByteBuf, AltarRecipe altarRecipe) {
+        friendlyByteBuf.writeUtf(altarRecipe.group());
+        friendlyByteBuf.writeEnum(altarRecipe.category());
         friendlyByteBuf.writeVarInt(altarRecipe.getIngredients().size());
         for (Ingredient ingredient : altarRecipe.getIngredients()) {
             Ingredient.CONTENTS_STREAM_CODEC.encode(friendlyByteBuf, ingredient);
         }
         friendlyByteBuf.writeFloat(altarRecipe.getPower());
         ItemStack.STREAM_CODEC.encode(friendlyByteBuf, altarRecipe.getResult());
-        friendlyByteBuf.writeIdentifier(altarRecipe.getEntityType());
+        Identifier.STREAM_CODEC.encode(friendlyByteBuf, altarRecipe.getEntityType());
         friendlyByteBuf.writeUtf(altarRecipe.getLangKey());
-    }
-
-    @Override
-    public MapCodec<AltarRecipe> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public StreamCodec<RegistryFriendlyByteBuf, AltarRecipe> streamCodec() {
-        return StreamCodec.of(this::toNetwork, this::fromNetwork);
     }
 }

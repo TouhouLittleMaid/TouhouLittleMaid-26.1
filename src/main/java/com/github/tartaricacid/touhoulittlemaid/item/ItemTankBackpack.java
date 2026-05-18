@@ -7,17 +7,18 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.TANK_BACKPACK_TAG;
 
@@ -29,7 +30,12 @@ public class ItemTankBackpack extends ItemMaidBackpack {
             tags = new CompoundTag();
             backpack.set(InitDataComponent.TANK_BACKPACK_TAG, tags);
         }
-        data.getTank().writeToNBT(provider, tags);
+        FluidStack fluidStack = FluidUtil.getStack(data.getTank(), 0);
+        if (fluidStack.isEmpty()) {
+            tags.remove("Fluid");
+        } else {
+            tags.store("Fluid", FluidStack.CODEC, provider.createSerializationContext(NbtOps.INSTANCE), fluidStack);
+        }
         return backpack;
     }
 
@@ -43,31 +49,26 @@ public class ItemTankBackpack extends ItemMaidBackpack {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
         CompoundTag nbt = stack.get(TANK_BACKPACK_TAG);
-        if (nbt != null) {
-            CompoundTag compound = nbt.getCompound("Fluid");
-            if (compound.isEmpty() || worldIn == null) {
-                return;
-            }
-            HolderLookup.Provider registries = worldIn.registries();
-            if (registries == null) {
-                return;
-            }
-
-            MutableComponent fluidInfo;
-            Optional<FluidStack> fluid = FluidStack.parse(registries, compound);
-            if (fluid.isEmpty()) {
-                return;
-            }
-            FluidStack fluidStack = fluid.get();
-            if (fluidStack.getFluid() == Fluids.EMPTY || fluidStack.getAmount() == 0) {
-                fluidInfo = Component.translatable("tooltips.touhou_little_maid.tank_backpack.empty_fluid").withStyle(ChatFormatting.GRAY);
-            } else {
-                fluidInfo = Component.translatable("tooltips.touhou_little_maid.tank_backpack.fluid",
-                        fluidStack.getFluid().getFluidType().getDescription(), fluidStack.getAmount()).withStyle(ChatFormatting.GRAY);
-            }
-            tooltip.add(fluidInfo);
+        if (nbt == null) {
+            return;
         }
+        Optional<CompoundTag> fluidCompound = nbt.getCompound("Fluid");
+        if (fluidCompound.isEmpty() || fluidCompound.get().isEmpty()) {
+            return;
+        }
+        HolderLookup.Provider registries = context.registries();
+        if (registries == null) {
+            return;
+        }
+        FluidStack.CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), fluidCompound.get()).result().ifPresent(fluidStack -> {
+            if (fluidStack.getFluid() == Fluids.EMPTY || fluidStack.getAmount() == 0) {
+                tooltip.accept(Component.translatable("tooltips.touhou_little_maid.tank_backpack.empty_fluid").withStyle(ChatFormatting.GRAY));
+            } else {
+                tooltip.accept(Component.translatable("tooltips.touhou_little_maid.tank_backpack.fluid",
+                        fluidStack.getFluid().getFluidType().getDescription(), fluidStack.getAmount()).withStyle(ChatFormatting.GRAY));
+            }
+        });
     }
 }

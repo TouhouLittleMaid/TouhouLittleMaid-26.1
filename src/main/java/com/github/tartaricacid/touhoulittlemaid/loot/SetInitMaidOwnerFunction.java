@@ -2,7 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.loot;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.init.InitLootModifier;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemSmartSlab;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
@@ -30,6 +28,11 @@ public class SetInitMaidOwnerFunction extends LootItemConditionalFunction {
         super(predicates);
     }
 
+    @Override
+    public MapCodec<? extends LootItemConditionalFunction> codec() {
+        return CODEC;
+    }
+
     public static SetInitMaidOwnerFunction.Builder create() {
         return new SetInitMaidOwnerFunction.Builder();
     }
@@ -37,18 +40,13 @@ public class SetInitMaidOwnerFunction extends LootItemConditionalFunction {
     @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
         if (stack.is(InitItems.SMART_SLAB_INIT.get())) {
-            Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
+            Entity entity = context.getOptionalParameter(LootContextParams.THIS_ENTITY);
             if (entity instanceof Player player) {
                 UUID uuid = player.getUUID();
                 ItemSmartSlab.setInitMaidOwner(stack, uuid);
             }
         }
         return stack;
-    }
-
-    @Override
-    public LootItemFunctionType<? extends LootItemConditionalFunction> getType() {
-        return InitLootModifier.SET_INIT_MAID_OWNER_FUNCTION.get();
     }
 
     public static class Builder extends LootItemConditionalFunction.Builder<SetInitMaidOwnerFunction.Builder> {

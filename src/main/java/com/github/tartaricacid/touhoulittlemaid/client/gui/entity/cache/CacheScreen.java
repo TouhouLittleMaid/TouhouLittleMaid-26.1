@@ -5,7 +5,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.CacheIco
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.IModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IconCache;
-import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -94,11 +93,11 @@ public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends S
 
             graphics.fill(0, 0, scaleModified, scaleModified + 2, IconCache.BACKGROUND_COLOR);
             this.drawEntity(graphics, 0, 0, modelInfo, scaleModified);
-            NativeImage nativeImage = IconCache.exportImageFromScreenshot(256, IconCache.BACKGROUND_COLOR_SHIFTED);
-
-            Identifier modelId = modelInfo.getModelId();
-            CacheIconTexture cacheIconTexture = new CacheIconTexture(modelId, nativeImage);
-            Minecraft.getInstance().getTextureManager().register(modelInfo.getCacheIconId(), cacheIconTexture);
+            IconCache.exportImageFromScreenshot(256, IconCache.BACKGROUND_COLOR_SHIFTED).thenAccept(nativeImage -> {
+                Identifier modelId = modelInfo.getModelId();
+                CacheIconTexture cacheIconTexture = new CacheIconTexture(modelId, nativeImage);
+                Minecraft.getInstance().getTextureManager().register(modelInfo.getCacheIconId(), cacheIconTexture);
+            });
         }
     }
 
