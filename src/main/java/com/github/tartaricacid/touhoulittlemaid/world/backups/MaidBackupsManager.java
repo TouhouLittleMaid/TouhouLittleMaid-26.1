@@ -4,18 +4,25 @@ import com.github.tartaricacid.touhoulittlemaid.config.ServerConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtAccounter;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +34,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 
 /**
  * 女仆数据备份管理器
@@ -51,6 +56,7 @@ import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
  * @author TartaricAcid
  */
 public final class MaidBackupsManager {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String BACKUPS_FOLDER_NAME = "maid_backups";
     private static final String INDEX_FILE_NAME = "index.dat";
     private static final String BACKUP_FILE_EXTENSION = ".dat";
@@ -76,10 +82,11 @@ public final class MaidBackupsManager {
      * @param maid   要备份的女仆实体
      */
     public static void save(@NotNull MinecraftServer server, @NotNull EntityMaid maid) {
-        UUID ownerId = maid.getOwnerUUID();
-        if (ownerId == null) {
+        EntityReference<LivingEntity> ownerReference = maid.getOwnerReference();
+        if (ownerReference == null) {
             return;
         }
+        UUID ownerId = ownerReference.getUUID();
 
         ServerLevel overWorld = server.getLevel(Level.OVERWORLD);
         if (overWorld == null) {
@@ -102,10 +109,7 @@ public final class MaidBackupsManager {
      */
     public static CompoundTag getMaidIndex(ServerPlayer player) {
         UUID ownerId = player.getUUID();
-        MinecraftServer server = player.getServer();
-        if (server == null) {
-            return new CompoundTag();
-        }
+        MinecraftServer server = player.level().getServer();
         ServerLevel overWorld = server.getLevel(Level.OVERWORLD);
         if (overWorld == null) {
             LOGGER.error("Cannot access overworld for maid index retrieval: {}", ownerId);
@@ -127,7 +131,8 @@ public final class MaidBackupsManager {
             Path saveFolder = buildBackupFolderPath(maid, overWorld, ownerId);
             String saveFileName = generateBackupFileName();
 
-            CompoundTag entityData = new CompoundTag();
+            ProblemReporter.PathElement pathElement = maid.problemPath();
+            TagValueOutput entityData = TagValueOutput.createWithContext(new ProblemReporter.ScopedCollector(pathElement, LOGGER), maid.registryAccess());
             boolean saveResult = maid.saveAsPassenger(entityData);
 
             if (!saveResult) {
@@ -135,8 +140,8 @@ public final class MaidBackupsManager {
                 return null;
             }
 
-            CompoundTag indexData = createIndexData(maid);
-            return new BackupData(saveFolder, saveFileName, entityData, indexData, maid.getStringUUID());
+            TagValueOutput indexDataOutput = createIndexData(maid);
+            return new BackupData(saveFolder, saveFileName, entityData, indexDataOutput, maid.getStringUUID());
 
         } catch (Exception e) {
             LOGGER.error("Error creating backup data for maid: {}", maid.getStringUUID(), e);
@@ -148,33 +153,43 @@ public final class MaidBackupsManager {
      * 创建索引数据
      */
     @NotNull
-    private static CompoundTag createIndexData(@NotNull EntityMaid maid) {
-        CompoundTag indexData = new CompoundTag();
-        indexData.putString("Name", Component.Serializer.toJson(maid.getName(), maid.level.registryAccess()));
-        indexData.putString("Dimension", maid.level.dimension().location().toString());
-        indexData.put("Pos", NbtUtils.writeBlockPos(maid.blockPosition()));
-        indexData.putLong("Timestamp", System.currentTimeMillis());
-        return indexData;
+    private static TagValueOutput createIndexData(@NotNull EntityMaid maid) {
+        IndexData indexData = new IndexData(
+                maid.getName(),
+                maid.blockPosition(),
+                maid.level.dimension().identifier().toString(),
+                System.currentTimeMillis()
+        );
+
+        CompoundTag indexTag = IndexData.CODEC.encodeStart(NbtOps.INSTANCE, indexData)
+                .resultOrPartial(LOGGER::error)
+                .map(tag -> (CompoundTag)tag)
+                .orElse(new CompoundTag());
+        ProblemReporter.ScopedCollector problemReporter = new ProblemReporter.ScopedCollector(maid.problemPath(), LOGGER);
+        TagValueOutput tagValueOutput = TagValueOutput.createWithContext(problemReporter, maid.registryAccess());
+        tagValueOutput.store(indexTag);
+
+        return tagValueOutput;
     }
 
     public static Map<UUID, IndexData> getMaidIndexMap(ServerPlayer player) {
         CompoundTag indexTag = getMaidIndex(player);
         Map<UUID, IndexData> map = Maps.newHashMap();
-        for (String s : indexTag.getAllKeys()) {
-            CompoundTag maidTag = indexTag.getCompound(s);
+
+        for (String s : indexTag.keySet()) {
             UUID maidUuid = UUID.fromString(s);
-            Component name = Component.Serializer.fromJson(maidTag.getString("Name"), player.level.registryAccess());
-            BlockPos pos = NbtUtils.readBlockPos(maidTag, "Pos").orElse(BlockPos.ZERO);
-            String dimension = maidTag.getString("Dimension");
-            long timestamp = maidTag.getLong("Timestamp");
-            map.put(maidUuid, new IndexData(name, pos, dimension, timestamp));
+            CompoundTag maidTag = indexTag.getCompoundOrEmpty(s);
+            IndexData indexData = IndexData.CODEC.parse(NbtOps.INSTANCE, maidTag)
+                    .resultOrPartial(LOGGER::error)
+                    .orElse(new IndexData(Component.empty(), BlockPos.ZERO, "minecraft:unknown", -1L));
+            map.put(maidUuid, indexData);
         }
         return map;
     }
 
     public static List<String> getMaidBackupFiles(ServerPlayer player, UUID maidUuid) {
         List<String> backupFiles = Lists.newArrayList();
-        Path folderPath = player.serverLevel().getDataStorage().dataFolder.toPath()
+        Path folderPath = player.level().getDataStorage().dataFolder.toPath()
                 .resolve(BACKUPS_FOLDER_NAME)
                 .resolve(player.getUUID().toString())
                 .resolve(maidUuid.toString());
@@ -193,7 +208,7 @@ public final class MaidBackupsManager {
     }
 
     public static CompoundTag getMaidBackFile(ServerPlayer player, UUID maidUuid, String fileName) {
-        Path filePath = player.serverLevel().getDataStorage().dataFolder.toPath()
+        Path filePath = player.level().getDataStorage().dataFolder.toPath()
                 .resolve(BACKUPS_FOLDER_NAME)
                 .resolve(player.getUUID().toString())
                 .resolve(maidUuid.toString())
@@ -271,7 +286,12 @@ public final class MaidBackupsManager {
 
         try {
             CompoundTag allIndexData = loadExistingIndexData(indexFile);
-            allIndexData.put(backupData.saveFolder.getFileName().toString(), backupData.indexData);
+
+            CompoundTag indexDataTag = new CompoundTag();
+            backupData.indexDataOutput().store(indexDataTag);
+
+            allIndexData.put(backupData.saveFolder.getFileName().toString(), indexDataTag);
+
 
             NbtIo.writeCompressed(allIndexData, indexFile.toPath());
             return true;
@@ -306,8 +326,10 @@ public final class MaidBackupsManager {
         File backupFile = backupData.saveFolder.resolve(backupData.saveFileName).toFile();
 
         try {
-            NbtUtils.addCurrentDataVersion(backupData.entityData);
-            NbtIo.writeCompressed(backupData.entityData, backupFile.toPath());
+            NbtUtils.addCurrentDataVersion(backupData.entityDataOutput());
+            CompoundTag compoundTag = new CompoundTag();
+            backupData.entityDataOutput().store(compoundTag);
+            NbtIo.writeCompressed(compoundTag, backupFile.toPath());
 
             // 删除旧备份
             removeOldBackups(backupData.saveFolder, ServerConfig.MAID_BACKUP_MAX_COUNT.get());
@@ -362,6 +384,12 @@ public final class MaidBackupsManager {
             BlockPos pos,
             String dimension,
             long timestamp) {
+        public static final Codec<IndexData> CODEC = RecordCodecBuilder.create(ins -> ins.group(
+                ComponentSerialization.CODEC.fieldOf("Name").forGetter(IndexData::name),
+                BlockPos.CODEC.fieldOf("Pos").forGetter(IndexData::pos),
+                Codec.STRING.fieldOf("Dimension").forGetter(IndexData::dimension),
+                Codec.LONG.fieldOf("Timestamp").forGetter(IndexData::timestamp)
+        ).apply(ins, IndexData::new));
     }
 
     /**
@@ -370,8 +398,8 @@ public final class MaidBackupsManager {
     private record BackupData(
             Path saveFolder,
             String saveFileName,
-            CompoundTag entityData,
-            CompoundTag indexData,
+            ValueOutput entityDataOutput,
+            ValueOutput indexDataOutput,
             String maidUuid) {
     }
 }

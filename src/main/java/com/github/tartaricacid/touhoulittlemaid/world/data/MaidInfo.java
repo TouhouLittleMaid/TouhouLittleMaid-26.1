@@ -1,48 +1,31 @@
 package com.github.tartaricacid.touhoulittlemaid.world.data;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 
 import java.util.UUID;
 
-public final class MaidInfo {
-    private final String dimension;
-    private final BlockPos chunkPos;
-    private final UUID ownerId;
-    private final UUID entityId;
-    private final long timestamp;
-    private final Component name;
+public record MaidInfo(String dimension, BlockPos chunkPos, UUID ownerId, UUID entityId, long timestamp,
+                       Component name) {
+    public static final Codec<MaidInfo> CODEC = RecordCodecBuilder.create(ins -> ins.group(
+            Codec.STRING.fieldOf("Dimension").forGetter(o -> o.dimension),
+            BlockPos.CODEC.fieldOf("ChunkPos").forGetter(o -> o.chunkPos),
+            UUIDUtil.CODEC.fieldOf("OwnerId").forGetter(o -> o.ownerId),
+            UUIDUtil.CODEC.fieldOf("MaidId").forGetter(o -> o.entityId),
+            Codec.LONG.fieldOf("Timestamp").forGetter(o -> o.timestamp),
+            ComponentSerialization.CODEC.fieldOf("Name").forGetter(o -> o.name)
+    ).apply(ins, MaidInfo::new));
+    public static final Codec<MaidInfo> TOMBSHSTONE_CODEC = RecordCodecBuilder.create(ins -> ins.group(
+            Codec.STRING.fieldOf("Dimension").forGetter(o -> o.dimension),
+            BlockPos.CODEC.fieldOf("ChunkPos").forGetter(o -> o.chunkPos),
+            UUIDUtil.CODEC.fieldOf("OwnerId").forGetter(o -> o.ownerId),
+            UUIDUtil.CODEC.fieldOf("TombstoneId").forGetter(o -> o.entityId),
+            Codec.LONG.fieldOf("Timestamp").forGetter(o -> o.timestamp),
+            ComponentSerialization.CODEC.fieldOf("Name").forGetter(o -> o.name)
+    ).apply(ins, MaidInfo::new));
 
-    public MaidInfo(String dimension, BlockPos chunkPos, UUID ownerId, UUID entityId, long timestamp, Component name) {
-        this.dimension = dimension;
-        this.chunkPos = chunkPos;
-        this.ownerId = ownerId;
-        this.entityId = entityId;
-        this.timestamp = timestamp;
-        this.name = name;
-    }
-
-    public String getDimension() {
-        return dimension;
-    }
-
-    public BlockPos getChunkPos() {
-        return chunkPos;
-    }
-
-    public UUID getOwnerId() {
-        return ownerId;
-    }
-
-    public UUID getEntityId() {
-        return entityId;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public Component getName() {
-        return name;
-    }
 }
