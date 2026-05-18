@@ -1,12 +1,14 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
@@ -33,15 +35,14 @@ public class MaidConfigButton extends Button {
     }
 
     @Override
-    protected void renderWidget(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    protected void extractContents(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
-        RenderSystem.enableDepthTest();
         if (this.isHovered) {
-            graphics.blit(ICON, this.getX(), this.getY(), 63, 141, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 63, 141, this.width, this.height, 256, 256);
         } else {
-            graphics.blit(ICON, this.getX(), this.getY(), 63, 128, this.width, this.height, 256, 256);
+            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 63, 128, this.width, this.height, 256, 256);
         }
-        graphics.drawString(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
+        graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
         drawCenteredStringWithoutShadow(graphics, mc.font, this.value, this.getX() + 142, this.getY() + 3, ChatFormatting.GREEN.getColor());
     }
 
@@ -50,26 +51,25 @@ public class MaidConfigButton extends Button {
     }
 
     @Override
-    protected boolean clicked(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         if (!this.active || !this.visible) {
-            return false;
+            return;
         }
+        double mouseX = event.x();
+        double mouseY = event.y();
         boolean leftClickX = (this.getX() + 120) <= mouseX && mouseX <= (this.getX() + 130);
         boolean rightClickX = (this.getX() + 154) <= mouseX && mouseX <= (this.getX() + 164);
         boolean clickY = this.getY() <= mouseY && mouseY <= (this.getY() + this.getHeight());
         if (leftClickX && clickY) {
             leftClicked = true;
-            return true;
-        }
-        if (rightClickX && clickY) {
+        } else if (rightClickX && clickY) {
             leftClicked = false;
-            return true;
         }
-        return false;
+        super.onClick(event, doubleClick);
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
         if (leftClicked) {
             leftPress.onPress(this);
         } else {
@@ -79,7 +79,7 @@ public class MaidConfigButton extends Button {
 
     public void drawCenteredStringWithoutShadow(GuiGraphicsExtractor graphics, Font pFont, Component pText, int pX, int pY, int pColor) {
         FormattedCharSequence formattedcharsequence = pText.getVisualOrderText();
-        graphics.drawString(pFont, formattedcharsequence, pX - pFont.width(formattedcharsequence) / 2, pY, pColor, false);
+        graphics.text(pFont, formattedcharsequence, pX - pFont.width(formattedcharsequence) / 2, pY, pColor, false);
     }
 
     @OnlyIn(Dist.CLIENT)

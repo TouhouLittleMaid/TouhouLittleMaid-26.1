@@ -32,16 +32,16 @@ public class CheckSchedulePosGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        extractBackground(graphics, mouseX, mouseY, partialTicks);
         List<FormattedCharSequence> split = font.split(tips, 300);
         int startY = middleY - 10 - split.size() * (font.lineHeight + 3);
         for (FormattedCharSequence text : split) {
-            graphics.drawCenteredString(font, text, middleX, startY, 0xFFFFFF);
+            graphics.centeredText(font, text, middleX, startY, 0xFFFFFF);
             startY += font.lineHeight + 3;
         }
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
     }
 }

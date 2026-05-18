@@ -21,6 +21,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.MaidConfigPackag
 import com.github.tartaricacid.touhoulittlemaid.network.message.MaidTaskPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.RequestEffectPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -31,6 +32,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
@@ -42,16 +44,13 @@ import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.GuiTools.NO_ACTION;
@@ -96,10 +95,13 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     private int counterTime = 0;
 
+
     public AbstractMaidContainerGui(T screenContainer, Inventory inv, Component titleIn) {
-        super(screenContainer, inv, titleIn);
-        this.imageHeight = 256;
-        this.imageWidth = 256;
+        this(screenContainer, inv, titleIn, 256, 256);
+    }
+
+    public AbstractMaidContainerGui(T screenContainer, Inventory inv, Component titleIn, int imageWidth, int imageHeight) {
+        super(screenContainer, inv, titleIn, imageWidth, imageHeight);
         this.maid = menu.getMaid();
         this.task = menu.getMaid().getTask();
         this.notHiddenTasks = TaskManager.getNotHiddenTaskList(this.maid);
@@ -159,14 +161,14 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     @Override
     @SuppressWarnings("all")
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         // fixme: https://github.com/TartaricAcid/TouhouLittleMaid/issues/416
         // 临时修复，应该采用更好的办法！
         if (this.maid == null) {
             return;
         }
         this.drawModInfo(graphics);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         drawModInfo(graphics);
         this.drawEffectInfo(graphics);
         this.drawCurrentTaskText(graphics);
@@ -174,7 +176,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         NeoForge.EVENT_BUS.post(new MaidContainerGuiEvent.Render(this, leftPos, topPos,
                 this.eventAddButtons, graphics, mouseX, mouseY, partialTicks));
         // 确保 Tooltip 是最后渲染的
-        this.renderTooltip(graphics, mouseX, mouseY);
+        this.extractTooltip(graphics, mouseX, mouseY);
         NeoForge.EVENT_BUS.post(new MaidContainerGuiEvent.Tooltip(this, leftPos, topPos,
                 this.eventAddButtons, graphics, mouseX, mouseY, partialTicks));
     }
@@ -186,10 +188,10 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     // 增加一些额外信息，通过截图就能方便作者检查错误
     @SuppressWarnings("all")
     private void drawModInfo(GuiGraphicsExtractor graphics) {
-        String minecraftVersion = SharedConstants.getCurrentVersion().getName();
+        String minecraftVersion = SharedConstants.getCurrentVersion().name();
         String modVersion = ModList.get().getModFileById(TouhouLittleMaid.MOD_ID).versionString();
         String debugInfo = String.format("%s-%s", minecraftVersion, modVersion);
-        graphics.drawCenteredString(font, debugInfo, leftPos + 80 / 2, topPos - 4, ChatFormatting.GRAY.getColor());
+        graphics.centeredText(font, debugInfo, leftPos + 80 / 2, topPos - 4, ChatFormatting.GRAY.getColor());
     }
 
     @SuppressWarnings("all")
@@ -213,7 +215,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
                     duration = StringUtil.formatTickDuration(effect.duration(), 20);
                 }
                 text = text.append(CommonComponents.SPACE).append(duration);
-                graphics.drawString(font, text, leftPos - font.width(text) - 3, topPos + yOffset + 5, getPotionColor(effect.category()));
+                graphics.text(font, text, leftPos - font.width(text) - 3, topPos + yOffset + 5, getPotionColor(effect.category()));
                 yOffset += 10;
             }
         }
@@ -232,19 +234,19 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        graphics.blit(BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        GuiTools.blit(graphics, BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         SortButtonScreen.renderBackground(graphics, leftPos + 249, topPos + 166);
-        this.drawMaidCharacter(graphics, x, y);
+        this.drawMaidCharacter(graphics, mouseX, mouseY);
         this.drawBaseInfoGui(graphics);
         this.drawTaskListBg(graphics);
-        this.drawSideTabGui(graphics, partialTicks, x, y);
+        this.drawSideTabGui(graphics, a, mouseX, mouseY);
     }
 
     @Override
-    protected void renderTooltip(GuiGraphicsExtractor graphics, int x, int y) {
-        graphics.pose().pushPose();
-        super.renderTooltip(graphics, x, y);
+    protected void extractTooltip(GuiGraphicsExtractor graphics, int x, int y) {
+        graphics.pose().pushMatrix();
+        super.extractTooltip(graphics, x, y);
         renderTransTooltip(home, graphics, x, y, "gui.touhou_little_maid.button.home");
         renderTransTooltip(pick, graphics, x, y, "gui.touhou_little_maid.button.pickup");
         renderTransTooltip(ride, graphics, x, y, "gui.touhou_little_maid.button.maid_riding_set");
@@ -263,7 +265,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         renderScheduleInfo(graphics, x, y);
         renderTaskButtonInfo(graphics, x, y);
         modelDownload.renderExtraTips(graphics);
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     // 渲染额外的 Tooltip
@@ -271,7 +273,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     @Override
-    protected void renderLabels(GuiGraphicsExtractor graphics, int x, int y) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
         this.drawTaskPageCount(graphics);
     }
 
@@ -445,7 +447,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void addRideButton() {
         ride = new TouhouStateSwitchButton(leftPos + 51, topPos + 206, 20, 20, maid.isRideable()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
                 ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.isHomeModeEnable(), maid.isPickup(), isStateTriggered, maid.getSchedule()));
             }
@@ -457,7 +459,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void addPickButton() {
         pick = new TouhouStateSwitchButton(leftPos + 30, topPos + 206, 20, 20, maid.isPickup()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
                 ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.isHomeModeEnable(), isStateTriggered, maid.isRideable(), maid.getSchedule()));
             }
@@ -469,7 +471,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void addHomeButton() {
         home = new TouhouStateSwitchButton(leftPos + 9, topPos + 206, 20, 20, maid.isHomeModeEnable()) {
             @Override
-            public void onClick(double mouseX, double mouseY) {
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
                 ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), isStateTriggered, maid.isPickup(), maid.isRideable(), maid.getSchedule()));
             }
@@ -486,16 +488,16 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void drawTaskPageCount(GuiGraphicsExtractor graphics) {
         if (TASK_LIST_OPEN) {
             String text = String.format("%d/%d", TASK_PAGE + 1, (notHiddenTasks.size() - 1) / TASK_COUNT_PER_PAGE + 1);
-            graphics.drawString(font, text, -48, 12, 0x333333, false);
+            graphics.text(font, text, -48, 12, 0x333333, false);
         }
     }
 
     private void drawCurrentTaskText(GuiGraphicsExtractor graphics) {
         IMaidTask task = maid.getTask();
-        graphics.renderItem(task.getIcon(), leftPos + 6, topPos + 161);
+        graphics.item(task.getIcon(), leftPos + 6, topPos + 161);
         List<FormattedCharSequence> splitTexts = font.split(task.getName(), 42);
         if (!splitTexts.isEmpty()) {
-            graphics.drawString(font, splitTexts.getFirst(), leftPos + 28, topPos + 165, 0x333333, false);
+            graphics.text(font, splitTexts.getFirst(), leftPos + 28, topPos + 165, 0x333333, false);
         }
     }
 
@@ -540,13 +542,13 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
                             .append(": ").withStyle(ChatFormatting.AQUA))
                     .append(Component.translatable("tooltips.touhou_little_maid.info.game_skill.gomoku", maid.getGameRecordManager().getGomokuWinCount(), MaidGomokuAI.getRank(maid))));
 
-            graphics.renderComponentTooltip(font, list, mouseX, mouseY);
+            graphics.text(font, FormattedCharSequence.fromList(list.stream().map(Component::getVisualOrderText).toList()), mouseX, mouseY, 0xFFFFFFFF);
         }
     }
 
     private void renderScheduleInfo(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
         if (scheduleButton.isHovered()) {
-            graphics.renderComponentTooltip(font, scheduleButton.getTooltips(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(font, scheduleButton.getTooltips(), Optional.empty(), mouseX, mouseY);
         }
     }
 
@@ -560,7 +562,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void drawMaidCharacter(GuiGraphicsExtractor graphics, int x, int y) {
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 leftPos + 6,
                 topPos + 12,
@@ -576,57 +578,57 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void drawTaskListBg(GuiGraphicsExtractor graphics) {
         if (TASK_LIST_OPEN) {
             Rect2i taskListArea = getTaskListArea();
-            graphics.blit(TASK, taskListArea.getX(), taskListArea.getY(), 0, 0, taskListArea.getWidth(), taskListArea.getHeight());
+            GuiTools.blit(graphics, TASK, taskListArea.getX(), taskListArea.getY(), 0, 0, taskListArea.getWidth(), taskListArea.getHeight());
         }
     }
 
     @SuppressWarnings("all")
     private void drawBaseInfoGui(GuiGraphicsExtractor graphics) {
-        graphics.pose().translate(0, 0, 200);
+        graphics.pose().translate(0, 0);
         {
-            graphics.blit(SIDE, leftPos + 53, topPos + 113, 0, 0, 9, 9);
-            graphics.blit(SIDE, leftPos + 5, topPos + 113, 0, 9, 47, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 113, 0, 0, 9, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 113, 0, 9, 47, 9);
             double hp = maid.getHealth() / maid.getMaxHealth();
-            graphics.blit(SIDE, leftPos + 7, topPos + 115, 2, 18, (int) (43 * hp), 5);
+            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 115, 2, 18, (int) (43 * hp), 5);
             drawNumberScale(graphics, maid.getHealth(), leftPos + 63, topPos + 114);
         }
         {
-            graphics.blit(SIDE, leftPos + 53, topPos + 124, 9, 0, 9, 9);
-            graphics.blit(SIDE, leftPos + 5, topPos + 124, 0, 9, 47, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 124, 9, 0, 9, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 124, 0, 9, 47, 9);
             double armor = Math.min(maid.getAttributeValue(Attributes.ARMOR) / 20, 1.0);
-            graphics.blit(SIDE, leftPos + 7, topPos + 126, 2, 23, (int) (43 * armor), 5);
+            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 126, 2, 23, (int) (43 * armor), 5);
             drawNumberScale(graphics, maid.getArmorValue(), leftPos + 63, topPos + 125);
         }
         {
-            graphics.blit(SIDE, leftPos + 53, topPos + 135, 18, 0, 9, 9);
-            graphics.blit(SIDE, leftPos + 5, topPos + 135, 0, 9, 47, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 135, 18, 0, 9, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 135, 0, 9, 47, 9);
 
             int exp = maid.getExperience();
             int count = exp / 120;
             double percent = (exp % 120) / 120.0;
-            graphics.blit(SIDE, leftPos + 7, topPos + 137, 2, 28, (int) (43 * percent), 5);
+            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 137, 2, 28, (int) (43 * percent), 5);
             drawNumberScale(graphics, count, leftPos + 63, topPos + 136);
         }
         {
-            graphics.blit(SIDE, leftPos + 53, topPos + 146, 27, 0, 9, 9);
-            graphics.blit(SIDE, leftPos + 5, topPos + 146, 0, 9, 47, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 146, 27, 0, 9, 9);
+            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 146, 0, 9, 47, 9);
             FavorabilityManager manager = maid.getFavorabilityManager();
             double percent = manager.getLevelPercent();
-            graphics.blit(SIDE, leftPos + 7, topPos + 148, 2, 33, (int) (43 * percent), 5);
+            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 148, 2, 33, (int) (43 * percent), 5);
             drawNumberScale(graphics, manager.getLevel(), leftPos + 63, topPos + 147);
         }
 
-        graphics.blit(SIDE, leftPos + 94, topPos + 7, 107, 0, 149, 21);
-        graphics.blit(SIDE, leftPos + 6, topPos + 178, 0, 47, 67, 25);
+        GuiTools.blit(graphics, SIDE, leftPos + 94, topPos + 7, 107, 0, 149, 21);
+        GuiTools.blit(graphics, SIDE, leftPos + 6, topPos + 178, 0, 47, 67, 25);
     }
 
     @SuppressWarnings("all")
     private void drawNumberScale(GuiGraphicsExtractor graphics, double value, int posX, int posY) {
         String text = formatScale((long) value);
-        graphics.pose().pushPose();
-        graphics.pose().scale(0.5f, 0.5f, 1);
-        graphics.drawString(font, text, posX * 2, posY * 2 + font.lineHeight / 2, ChatFormatting.DARK_GRAY.getColor(), false);
-        graphics.pose().popPose();
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(0.5f, 0.5f);
+        graphics.text(font, text, posX * 2, posY * 2 + font.lineHeight / 2, ChatFormatting.DARK_GRAY.getColor(), false);
+        graphics.pose().popMatrix();
     }
 
 
@@ -720,16 +722,16 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     private void renderTransTooltip(TouhouImageButton button, GuiGraphicsExtractor graphics, int x, int y, String key) {
         if (button.isHovered()) {
-            graphics.renderComponentTooltip(font, Collections.singletonList(Component.translatable(key)), x, y);
+            graphics.setTooltipForNextFrame(font, Collections.singletonList(Component.translatable(key)), Optional.empty(), x, y);
         }
     }
 
     private void renderTransTooltip(TouhouStateSwitchButton button, GuiGraphicsExtractor graphics, int x, int y, String key) {
         if (button.isHovered()) {
-            graphics.renderComponentTooltip(font, Lists.newArrayList(
+            graphics.setTooltipForNextFrame(font, Lists.newArrayList(
                     Component.translatable(key + "." + button.isStateTriggered()),
                     Component.translatable(key + ".desc")
-            ), x, y);
+            ), Optional.empty(), x, y);
         }
     }
 
@@ -745,6 +747,6 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     // 绘制侧边栏底部贴图
     private void drawSideTabGui(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        graphics.blit(SIDE, leftPos + 251 + 5, topPos + 28 + 9, 235, 107, 21, 50);
+        GuiTools.blit(graphics, SIDE, leftPos + 251 + 5, topPos + 28 + 9, 235, 107, 21, 50);
     }
 }

@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadStatus;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.google.common.collect.Lists;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -27,7 +28,7 @@ public class PackInfoButton extends FlatColorButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         // 背景色
         if (isSelect) {
@@ -45,7 +46,7 @@ public class PackInfoButton extends FlatColorButton {
 
         // 绘制需要更新的提示
         if (info.getStatus() == DownloadStatus.NEED_UPDATE) {
-            graphics.blit(BG, this.getX() + 240, this.getY() + 15, 48, 16, 16, 16);
+            GuiTools.blit(graphics, BG, this.getX() + 240, this.getY() + 15, 16, 16, 48, 16);
         }
 
         // 悬浮或者选中时，显示为蓝色
@@ -59,22 +60,22 @@ public class PackInfoButton extends FlatColorButton {
         // 显示成女仆、坐垫或者声音图标
         int count = info.getTypeCount();
         if (count == 3) {
-            graphics.blit(BG, this.getX() + 7, this.getY() + 7, 0, 96, 32, 32);
+            GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 0, 96);
         } else if (count == 2) {
             if (!info.hasType(DownloadInfo.TypeEnum.MAID)) {
-                graphics.blit(BG, this.getX() + 7, this.getY() + 7, 64, 64, 32, 32);
+                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 64, 64);
             } else if (!info.hasType(DownloadInfo.TypeEnum.CHAIR)) {
-                graphics.blit(BG, this.getX() + 7, this.getY() + 7, 32, 64, 32, 32);
+                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 32, 64);
             } else {
-                graphics.blit(BG, this.getX() + 7, this.getY() + 7, 0, 64, 32, 32);
+                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 0, 64);
             }
         } else {
             if (info.hasType(DownloadInfo.TypeEnum.MAID)) {
-                graphics.blit(BG, this.getX() + 7, this.getY() + 7, 0, 32, 32, 32);
+                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 0, 32);
             } else if (info.hasType(DownloadInfo.TypeEnum.CHAIR)) {
-                graphics.blit(BG, this.getX() + 7, this.getY() + 7, 32, 32, 32, 32);
+                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 32, 32);
             } else {
-                graphics.blit(BG, this.getX() + 7, this.getY() + 7, 64, 32, 32, 32);
+                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 64, 32);
             }
         }
 
@@ -94,11 +95,11 @@ public class PackInfoButton extends FlatColorButton {
         int startY = this.getY() + 4;
 
         MutableComponent packName = Component.translatable(info.getName());
-        graphics.drawString(font, packName, startX, startY, ChatFormatting.WHITE.getColor());
-        graphics.drawString(font, getI18nFormatFileVersion(info.getVersion()), startX + 5 + font.width(packName), startY, ChatFormatting.GREEN.getColor());
-        graphics.drawString(font, getI18nFormatFileSize(info.getFormatFileSize()), startX, startY + 10, ChatFormatting.GOLD.getColor());
-        graphics.drawString(font, getI18nFormatAuthor(info.getAuthor()), startX, startY + 20, ChatFormatting.AQUA.getColor());
-        graphics.drawString(font, getI18nFormatFileTime(info.getFormatData()), startX, startY + 30, ChatFormatting.GRAY.getColor());
+        graphics.text(font, packName, startX, startY, ChatFormatting.WHITE.getColor());
+        graphics.text(font, getI18nFormatFileVersion(info.getVersion()), startX + 5 + font.width(packName), startY, ChatFormatting.GREEN.getColor());
+        graphics.text(font, getI18nFormatFileSize(info.getFormatFileSize()), startX, startY + 10, ChatFormatting.GOLD.getColor());
+        graphics.text(font, getI18nFormatAuthor(info.getAuthor()), startX, startY + 20, ChatFormatting.AQUA.getColor());
+        graphics.text(font, getI18nFormatFileTime(info.getFormatData()), startX, startY + 30, ChatFormatting.GRAY.getColor());
     }
 
     private String getI18nFormatFileVersion(String version) {

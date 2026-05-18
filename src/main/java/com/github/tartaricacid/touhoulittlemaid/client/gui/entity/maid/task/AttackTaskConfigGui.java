@@ -8,11 +8,12 @@ import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTaskData;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.TaskConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetAttackListPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.google.common.collect.Lists;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -20,7 +21,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.anti_ad.mc.ipn.api.IPNButton;
 import org.anti_ad.mc.ipn.api.IPNGuiHint;
 import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
@@ -109,7 +110,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
                 return;
             }
             Identifier id = attackGroupsKey.get(index);
-            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(id);
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(id).get().value();
             Component name = type.getDescription();
             int yOffset = startTop + 31 + 13 * i;
             this.addRenderableWidget(new MonsterListButton(name, startLeft - 1, yOffset, id, this));
@@ -139,33 +140,33 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String value = this.inputField.getValue();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
         this.inputField.setValue(value);
     }
 
     @Override
     protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        this.inputField.render(graphics, mouseX, mouseY, partialTicks);
+        this.inputField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         MutableComponent pageText = Component.literal(String.format("%d/%d", this.page + 1, (this.attackGroupsKey.size() - 1) / 7 + 1));
-        graphics.drawCenteredString(font, pageText, leftPos + 228, topPos + 57, 0xFFFFFF);
-        graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.monster_type.title"), leftPos + 147, topPos + 57, 0xFFFFFF);
+        graphics.centeredText(font, pageText, leftPos + 228, topPos + 57, 0xFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.monster_type.title"), leftPos + 147, topPos + 57, 0xFFFFFF);
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
-        graphics.blit(BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
+        GuiTools.blit(graphics, BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE && this.getMinecraft().player != null) {
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == GLFW.GLFW_KEY_ESCAPE && this.getMinecraft().player != null) {
             this.getMinecraft().player.closeContainer();
         }
-        return this.inputField.keyPressed(keyCode, scanCode, modifiers) || this.inputField.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
+        return this.inputField.keyPressed(event) || this.inputField.canConsumeInput() || super.keyPressed(event);
     }
 
     @Override

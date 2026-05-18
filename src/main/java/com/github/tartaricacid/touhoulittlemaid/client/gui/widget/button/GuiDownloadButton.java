@@ -2,6 +2,8 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadStatus;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphicsExtractor.HoveredTextEffects;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -30,5 +32,11 @@ public class GuiDownloadButton extends Button {
             default -> text = Component.translatable("gui.touhou_little_maid.resources_download.not_download");
         }
         return text;
+    }
+
+    @Override
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        this.extractDefaultSprite(graphics);
+        this.extractDefaultLabel(graphics.textRendererForWidget(this, HoveredTextEffects.NONE));
     }
 }

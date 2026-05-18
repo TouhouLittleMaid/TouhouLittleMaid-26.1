@@ -83,7 +83,7 @@ public final class CacheIconManager {
             maid.setIsYsmModel(false);
             int half = scaleModified / 2;
             int yOffset = scaleModified * 6 / 5;
-            InventoryScreen.renderEntityInInventoryFollowsMouse(
+            InventoryScreen.extractEntityInInventoryFollowsMouse(
                     graphics,
                     posX,
                     posY - 3,
@@ -103,7 +103,7 @@ public final class CacheIconManager {
 
             int half = scaleModified / 2;
             int yOffset = scaleModified * 3 / 2;
-            InventoryScreen.renderEntityInInventoryFollowsMouse(
+            InventoryScreen.extractEntityInInventoryFollowsMouse(
                     graphics,
                     posX,
                     posY,

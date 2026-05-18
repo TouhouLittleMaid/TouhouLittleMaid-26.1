@@ -131,20 +131,20 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         MutableComponent enable = Component.translatable("config.touhou_little_maid.global_ai.stt_enable");
-        graphics.drawString(this.font, enable, this.enableBtn.getX() + 2, this.enableBtn.getY() - 12, LABEL_COLOR, false);
+        graphics.text(this.font, enable, this.enableBtn.getX() + 2, this.enableBtn.getY() - 12, LABEL_COLOR, false);
 
         MutableComponent type = Component.translatable("config.touhou_little_maid.global_ai.stt_type");
-        graphics.drawString(this.font, type, this.typeBtn.getX() + 2, this.typeBtn.getY() - 12, LABEL_COLOR, false);
+        graphics.text(this.font, type, this.typeBtn.getX() + 2, this.typeBtn.getY() - 12, LABEL_COLOR, false);
 
         MutableComponent microphone = Component.translatable("config.touhou_little_maid.global_ai.stt_microphone");
-        graphics.drawString(this.font, microphone, this.microphoneBtn.getX() + 2, this.microphoneBtn.getY() - 12, LABEL_COLOR, false);
+        graphics.text(this.font, microphone, this.microphoneBtn.getX() + 2, this.microphoneBtn.getY() - 12, LABEL_COLOR, false);
 
         MutableComponent distance = Component.translatable("config.touhou_little_maid.global_ai.maid_can_chat_distance");
-        graphics.drawString(this.font, distance, this.distanceSlider.getX() + 2, this.distanceSlider.getY() - 12, LABEL_COLOR, false);
+        graphics.text(this.font, distance, this.distanceSlider.getX() + 2, this.distanceSlider.getY() - 12, LABEL_COLOR, false);
 
         this.renderInputField(graphics, this.proxyInput, mouseX, mouseY, partialTick);
     }
@@ -158,9 +158,9 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
         int width = box.getInnerWidth() + 12;
         int height = box.getHeight() + 3;
 
-        graphics.drawString(this.font, box.getMessage(), x + 2, y - 12, LABEL_COLOR, false);
+        graphics.text(this.font, box.getMessage(), x + 2, y - 12, LABEL_COLOR, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
-        box.render(graphics, mouseX, mouseY, partialTick);
+        box.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     private String normalizeMicrophone(String current) {

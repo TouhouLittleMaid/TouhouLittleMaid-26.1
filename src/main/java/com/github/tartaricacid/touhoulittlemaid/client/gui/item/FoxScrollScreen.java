@@ -5,11 +5,10 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.FoxScrollPackage
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetScrollPackage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -88,18 +87,15 @@ public class FoxScrollScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
-        this.renderBackground(graphics, pMouseX, pMouseY, pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (this.data.isEmpty()) {
             int x = this.width / 2;
             int y = this.height / 2 - 5;
-            graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.fox_scroll.empty"), x, y, 0xFF0000);
+            graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.fox_scroll.empty"), x, y, 0xFF0000);
             return;
         }
         this.renderMain(graphics);
-        for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, pMouseX, pMouseY, pPartialTick);
-        }
+        super.extractRenderState(graphics, pMouseX, pMouseY, pPartialTick);
     }
 
     private void renderMain(GuiGraphicsExtractor graphics) {
@@ -121,15 +117,15 @@ public class FoxScrollScreen extends Screen {
                     }
                     Component posText = Component.translatable("gui.touhou_little_maid.fox_scroll.position", pos.toShortString());
                     graphics.fill(leftPos + 152, offsetIn, leftPos + 400 - 22, offsetIn + 40, 0xef58626b);
-                    graphics.drawString(font, info.name(), leftPos + 160, offsetIn + 4, ChatFormatting.GOLD.getColor());
-                    graphics.drawString(font, posText, leftPos + 160, offsetIn + 16, ChatFormatting.GRAY.getColor(), false);
-                    graphics.drawString(font, distanceText, leftPos + 160, offsetIn + 28, ChatFormatting.GRAY.getColor(), false);
+                    graphics.text(font, info.name(), leftPos + 160, offsetIn + 4, ChatFormatting.GOLD.getColor());
+                    graphics.text(font, posText, leftPos + 160, offsetIn + 16, ChatFormatting.GRAY.getColor(), false);
+                    graphics.text(font, distanceText, leftPos + 160, offsetIn + 28, ChatFormatting.GRAY.getColor(), false);
                     offsetIn = offsetIn + 42;
                 }
             }
             if (scrollData.size() > PER_PAGE_COUNT) {
                 String pageText = String.format("%d/%d", this.page + 1, (scrollData.size() - 1) / PER_PAGE_COUNT + 1);
-                graphics.drawCenteredString(font, pageText, leftPos + 400 - 8, topPos + 104 - 5, ChatFormatting.GRAY.getColor());
+                graphics.centeredText(font, pageText, leftPos + 400 - 8, topPos + 104 - 5, ChatFormatting.GRAY.getColor());
             }
         }
     }
@@ -149,7 +145,7 @@ public class FoxScrollScreen extends Screen {
     @Nullable
     private String getPlayerDimension() {
         if (this.getMinecraft().player != null) {
-            return this.getMinecraft().player.level.dimension().location().toString();
+            return this.getMinecraft().player.level.dimension().identifier().toString();
         }
         return null;
     }

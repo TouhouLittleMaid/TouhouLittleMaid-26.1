@@ -17,6 +17,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -117,7 +118,7 @@ public class LLMSiteEditorScreen extends Screen {
         // 秘钥，隐藏显示
         this.secretInput = this.addInput(left, this.startY + 65, contentWidth, SECRET_KEY_NAME, secretValue);
         // 将秘钥输入框的字符显示为 ·，但末尾两个字符正常显示
-        this.secretInput.setFormatter((text, pos) -> FormattedCharSequence.forward("·".repeat(text.length()), Style.EMPTY));
+        this.secretInput.addFormatter((text, pos) -> FormattedCharSequence.forward("·".repeat(text.length()), Style.EMPTY));
 
         // 模型列表
         this.modelArea = new Rectangle(left, this.startY + 104, contentWidth, BASE_HEIGHT - 103 - 34);
@@ -157,12 +158,12 @@ public class LLMSiteEditorScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
 
         // 居中标题
-        graphics.drawCenteredString(this.font, llmEditorTitle(this.siteDisplayName),
+        graphics.centeredText(this.font, llmEditorTitle(this.siteDisplayName),
                 this.startX + BASE_WIDTH / 2, this.startY + 4, 0xFFF3EFE0);
 
         this.renderInputField(graphics, this.siteIdInput, mouseX, mouseY, partialTick);
@@ -172,14 +173,14 @@ public class LLMSiteEditorScreen extends Screen {
         this.renderModelArea(graphics, mouseX, mouseY, partialTick);
 
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTick);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTick);
         }
 
         // 提示显示 2 秒
         if (System.currentTimeMillis() - this.tipTimestamp < 2000) {
             int x = this.startX + BASE_WIDTH - 155;
             int y = this.startY + BASE_HEIGHT - 35;
-            graphics.drawCenteredString(this.font, this.statusMessage, x, y, 0xFFFF7777);
+            graphics.centeredText(this.font, this.statusMessage, x, y, 0xFFFF7777);
         }
     }
 
@@ -189,9 +190,9 @@ public class LLMSiteEditorScreen extends Screen {
         int width = box.getInnerWidth() + 12;
         int height = box.getHeight() + 3;
 
-        graphics.drawString(this.font, box.getMessage(), x + 2, y - 10, LABEL_COLOR, false);
+        graphics.text(this.font, box.getMessage(), x + 2, y - 10, LABEL_COLOR, false);
         graphics.fill(x, y, x + width, y + height, 0xAA111111);
-        box.render(graphics, mouseX, mouseY, partialTick);
+        box.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     private void renderModelArea(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
@@ -199,7 +200,7 @@ public class LLMSiteEditorScreen extends Screen {
         int top = (int) this.modelArea.y;
 
         // 标题
-        graphics.drawString(this.font, MODELS_NAME, left + 2, top - 12, LABEL_COLOR);
+        graphics.text(this.font, MODELS_NAME, left + 2, top - 12, LABEL_COLOR);
 
         // 确定滚动起始值
         int visibleCount = this.getVisibleModelCount();
@@ -218,7 +219,7 @@ public class LLMSiteEditorScreen extends Screen {
             if (row.nameBox != null) {
                 int rowLeft = (int) this.modelArea.x;
                 graphics.fill(rowLeft, rowY - 4, rowLeft + row.nameBox.getInnerWidth(), rowY + 20 - 4, 0xAA111111);
-                row.nameBox.render(graphics, mouseX, mouseY, partialTick);
+                row.nameBox.extractRenderState(graphics, mouseX, mouseY, partialTick);
             }
         }
         graphics.disableScissor();

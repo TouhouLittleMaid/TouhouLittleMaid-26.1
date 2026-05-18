@@ -54,9 +54,9 @@ public class ProgressChatBubbleRenderer implements IChatBubbleRenderer {
         for (FormattedCharSequence sequence : this.split) {
             if (this.alignCenter) {
                 int distance = this.width - font.width(sequence);
-                graphics.drawString(font, sequence, distance / 2, y, 0x000000, false);
+                graphics.text(font, sequence, distance / 2, y, 0x000000, false);
             } else {
-                graphics.drawString(font, sequence, 0, y, 0x000000, false);
+                graphics.text(font, sequence, 0, y, 0x000000, false);
             }
             y += font.lineHeight;
         }

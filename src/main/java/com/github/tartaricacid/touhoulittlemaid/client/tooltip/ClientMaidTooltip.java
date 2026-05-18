@@ -92,10 +92,10 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
         if (StringUtils.isNotBlank(customName)) {
             customNameComponent = Component.Serializer.fromJson(customName, access);
             if (customNameComponent != null) {
-                guiGraphics.drawString(font, customNameComponent.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
+                guiGraphics.text(font, customNameComponent.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
             }
         } else {
-            guiGraphics.drawString(font, name.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
+            guiGraphics.text(font, name.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
         }
 
         int width = this.getWidth(font);

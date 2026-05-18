@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.BaubleB
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.CraftingTableBackpackContainer;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
@@ -27,9 +28,7 @@ public class CraftingTableBackpackContainerScreen extends AbstractMaidContainerG
     private final EntityMaid maid;
 
     public CraftingTableBackpackContainerScreen(CraftingTableBackpackContainer container, Inventory inv, Component titleIn) {
-        super(container, inv, titleIn);
-        this.imageHeight = 256;
-        this.imageWidth = 256;
+        super(container, inv, titleIn, 256, 256);
         this.maid = menu.getMaid();
     }
 
@@ -45,10 +44,8 @@ public class CraftingTableBackpackContainerScreen extends AbstractMaidContainerG
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, BACKPACK);
-        graphics.blit(BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, pPartialTick);
+        GuiTools.blit(graphics,BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
     }
 }

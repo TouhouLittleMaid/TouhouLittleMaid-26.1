@@ -17,6 +17,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
@@ -141,7 +142,7 @@ public abstract class AIChatSettingsHubScreen extends Screen {
     protected void renderInsufficientPermissions(GuiGraphicsExtractor graphics) {
         if (this.insufficientPermissions) {
             MutableComponent text = Component.translatable("ai.touhou_little_maid.chat.settings.hub.insufficient_permissions");
-            graphics.drawWordWrap(font, text, getContentX() + 20, getContentY() + 20, getContentWidth() - 60, 0xFFFF5555);
+            graphics.textWithWordWrap(font, text, getContentX() + 20, getContentY() + 20, getContentWidth() - 60, 0xFFFF5555);
         }
     }
 
@@ -228,9 +229,9 @@ public abstract class AIChatSettingsHubScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTick);
-        super.render(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override

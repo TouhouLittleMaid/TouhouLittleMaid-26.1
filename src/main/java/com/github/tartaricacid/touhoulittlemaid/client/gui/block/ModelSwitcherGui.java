@@ -10,11 +10,13 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelIn
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SaveSwitcherDataPackage;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityModelSwitcher;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -23,6 +25,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
@@ -145,32 +148,32 @@ public class ModelSwitcherGui extends Screen {
     }
 
     @Override
-    public void resize(Minecraft pMinecraft, int pWidth, int pHeight) {
+    public void resize(int pWidth, int pHeight) {
         String value = "";
         if (this.description != null) {
             value = this.description.getValue();
         }
-        super.resize(pMinecraft, pWidth, pHeight);
+        super.resize(pWidth, pHeight);
         if (this.description != null) {
             this.description.setValue(value);
         }
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         if (this.maid == null) {
             return;
         }
-        this.renderBackground(graphics, pMouseX, pMouseY, pPartialTick);
-        graphics.blit(BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        this.extractBackground(graphics, pMouseX, pMouseY, pPartialTick);
+        GuiTools.blit(graphics,BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         if (bindUuid != null) {
-            graphics.drawCenteredString(font, bindUuid.toString(), leftPos + 128, topPos - 10, 0xffffff);
+            graphics.centeredText(font, bindUuid.toString(), leftPos + 128, topPos - 10, 0xffffff);
         } else {
-            graphics.drawCenteredString(font, Component.translatable("gui.touhou_little_maid.model_switcher.uuid.empty"), leftPos + 128, topPos - 10, 0xffffff);
+            graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.model_switcher.uuid.empty"), leftPos + 128, topPos - 10, 0xffffff);
         }
-        graphics.drawCenteredString(font, String.format("%d/%d", page + 1, (infoList.size() - 1) / maxRow + 1), leftPos + 193, topPos + 12, 0xffffff);
+        graphics.centeredText(font, String.format("%d/%d", page + 1, (infoList.size() - 1) / maxRow + 1), leftPos + 193, topPos + 12, 0xffffff);
         if (this.description != null) {
-            InventoryScreen.renderEntityInInventoryFollowsMouse(
+            InventoryScreen.extractEntityInInventoryFollowsMouse(
                     graphics,
                     leftPos + 9,
                     topPos + 8,
@@ -181,10 +184,10 @@ public class ModelSwitcherGui extends Screen {
                     leftPos + 45,
                     topPos + 45,
                     maid);
-            this.description.render(graphics, pMouseX, pMouseY, pPartialTick);
+            this.description.extractRenderState(graphics, pMouseX, pMouseY, pPartialTick);
         }
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, pMouseX, pMouseY, pPartialTick);
+            renderable.extractRenderState(graphics, pMouseX, pMouseY, pPartialTick);
         }
         this.renderListButtonName(graphics);
     }
@@ -196,7 +199,7 @@ public class ModelSwitcherGui extends Screen {
             if (CustomPackLoader.MAID_MODELS.getInfo(modelId).isPresent()) {
                 MaidModelInfo info = CustomPackLoader.MAID_MODELS.getInfo(modelId).get();
                 MutableComponent component = Component.translatable(ParseI18n.getI18nKey(info.getName()));
-                graphics.drawCenteredString(font, component, leftPos + 193, startOffsetY, 0xffffff);
+                graphics.centeredText(font, component, leftPos + 193, startOffsetY, 0xffffff);
             }
             startOffsetY += 19;
         }
@@ -212,12 +215,12 @@ public class ModelSwitcherGui extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.description != null && this.description.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (this.description != null && this.description.mouseClicked(event, doubleClick)) {
             this.setFocused(this.description);
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

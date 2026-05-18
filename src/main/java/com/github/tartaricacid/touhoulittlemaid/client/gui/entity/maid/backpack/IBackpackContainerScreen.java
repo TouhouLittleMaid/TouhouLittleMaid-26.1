@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.curios.client.CuriosButto
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.TabIndex;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 public interface IBackpackContainerScreen {

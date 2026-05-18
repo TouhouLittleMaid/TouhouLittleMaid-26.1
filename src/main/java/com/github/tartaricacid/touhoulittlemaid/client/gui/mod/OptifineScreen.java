@@ -2,7 +2,9 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.mod;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.components.Renderable;
@@ -47,13 +49,11 @@ public class OptifineScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
-        graphics.drawCenteredString(this.font, this.title, this.width / 2, 30, 16777215);
-        this.message.renderCentered(graphics, this.width / 2, 70);
-        for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
-        }
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        graphics.centeredText(this.font, this.title, this.width / 2, 30, 16777215);
+        ActiveTextCollector textRenderer = graphics.textRenderer();
+        this.message.visitLines(TextAlignment.CENTER, this.width / 2, 100, 9, textRenderer);
     }
 
     @Override

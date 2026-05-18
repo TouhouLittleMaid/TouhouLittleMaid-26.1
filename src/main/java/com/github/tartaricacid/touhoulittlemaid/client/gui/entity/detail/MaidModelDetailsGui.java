@@ -6,13 +6,18 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelIn
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, MaidModelInfo> {
     private static final ItemStack MAIN_HAND_SWORD = Items.DIAMOND_SWORD.getDefaultInstance();
@@ -22,7 +27,7 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
     private volatile boolean isEnableWalk = false;
 
     public MaidModelDetailsGui(EntityMaid sourceEntity, MaidModelInfo modelInfo) {
-        super(sourceEntity, InitEntities.MAID.get().create(sourceEntity.level()), modelInfo);
+        super(sourceEntity, InitEntities.MAID.get().create(sourceEntity.level(), EntitySpawnReason.COMMAND), modelInfo);
         this.guiEntity.setModelId(modelInfo.getModelId().toString());
         this.guiEntity.setOnGround(true);
         this.guiEntity.yHeadRot = 0;
@@ -32,7 +37,7 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
 
     private void initChair() {
         if (Minecraft.getInstance().level != null) {
-            this.chair = InitEntities.CHAIR.get().create(Minecraft.getInstance().level);
+            this.chair = InitEntities.CHAIR.get().create(Minecraft.getInstance().level, EntitySpawnReason.COMMAND);
             if (this.chair != null) {
                 this.chair.setModelId("touhou_little_maid:low_stool");
             }
@@ -85,19 +90,26 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
         // For entity walk
         // Update walk speed
         float speed = isEnableWalk ? 0.5f : 0;
-        guiEntity.walkAnimation.update(speed, 0.4f);
+        //TODO PositionScale值确认
+        guiEntity.walkAnimation.update(speed, 0.4f, 1.0F);
     }
 
     @Override
-    protected void renderExtraEntity(EntityRenderDispatcher manager, PoseStack matrix, MultiBufferSource.BufferSource bufferIn) {
+    protected void renderExtraEntity(GuiGraphicsExtractor graphics, float scale, Quaternionf rot, Quaternionf xRot, int x0, int y0, int x1, int y1) {
         if (guiEntity.isPassenger() && chair != null) {
-            manager.render(chair, 0, -0.95, 0, 0, 1, matrix, bufferIn, 0xf000f0);
+            EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+            EntityRenderer<? super LivingEntity, ?> renderer = dispatcher.getRenderer(chair);
+            EntityRenderState renderState = renderer.createRenderState(chair, 1.0F);
+            renderState.shadowPieces.clear();
+            renderState.outlineColor = 0;
+            Vector3f translation = new Vector3f(posX, posY + renderState.boundingBoxHeight / 2.0F - 0.95F, 0);
+            graphics.entity(renderState, scale, translation, rot, xRot, x0, y0, x1, y1);
         }
     }
 
     private void applyRideButtonLogic(boolean isStateTriggered) {
         if (isStateTriggered && chair != null) {
-            guiEntity.startRiding(chair, true);
+            guiEntity.startRiding(chair, true, false);
         } else {
             guiEntity.removeVehicle();
         }

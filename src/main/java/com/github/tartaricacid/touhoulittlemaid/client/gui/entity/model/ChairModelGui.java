@@ -5,18 +5,19 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail.ChairMo
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ChairModelPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -35,7 +36,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
         float renderItemScale = CustomPackLoader.CHAIR_MODELS.getModelRenderItemScale(entity.getModelId());
         int centerX = (middleX - 256 / 2) / 2;
         int centerY = middleY + 80;
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 centerX - 68,
                 centerY - 100,
@@ -54,7 +55,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
         var allTextures = Minecraft.getInstance().getTextureManager().byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
-            graphics.blit(cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
+            GuiTools.blit(graphics, cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
         } else {
             drawEntity(graphics, posX, posY, modelItem);
         }
@@ -116,7 +117,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
         EntityChair chair;
         try {
             chair = (EntityChair) EntityCacheUtil.ENTITY_CACHE.get(EntityChair.TYPE, () -> {
-                Entity e = EntityChair.TYPE.create(world);
+                Entity e = EntityChair.TYPE.create(world, EntitySpawnReason.COMMAND);
                 if (e == null) {
                     return new EntityChair(world);
                 } else {
@@ -129,7 +130,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
         }
 
         chair.setModelId(modelItem.getModelId().toString());
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 posX - 18,
                 posY - 30,

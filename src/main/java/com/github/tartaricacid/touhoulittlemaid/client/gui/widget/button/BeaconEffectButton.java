@@ -6,17 +6,16 @@ import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.function.Consumer;
 
 public class BeaconEffectButton extends TouhouStateSwitchButton {
     private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_beacon.png");
-    private final TextureAtlasSprite sprite;
     private final Component tooltips;
     private final int potionIndex;
     private final BlockPos pos;
@@ -25,7 +24,6 @@ public class BeaconEffectButton extends TouhouStateSwitchButton {
     public BeaconEffectButton(TileEntityMaidBeacon.BeaconEffect effect, int xIn, int yIn, int potionIndex, TileEntityMaidBeacon beacon, Consumer<Boolean> onClick) {
         super(xIn, yIn, 22, 22, potionIndex == effect.ordinal());
         this.initTextureValues(0, 111, 22, 22, BG);
-        this.sprite = Minecraft.getInstance().getMobEffectTextures().get(effect.getEffect());
         this.tooltips = effect.getEffect().value().getDisplayName();
         this.potionIndex = effect.ordinal();
         this.pos = beacon.getBlockPos();
@@ -33,21 +31,20 @@ public class BeaconEffectButton extends TouhouStateSwitchButton {
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         this.isStateTriggered = !this.isStateTriggered;
         ClientPacketDistributor.sendToServer(new SetBeaconPotionPackage(pos, isStateTriggered ? potionIndex : -1));
         this.onClick.accept(this.isStateTriggered);
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTicks);
-        graphics.blit(this.getX() + 2, this.getY() + 2, 0, 18, 18, this.sprite);
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTicks);
     }
 
     public void renderToolTip(GuiGraphicsExtractor graphics, Screen screen, int pMouseX, int pMouseY) {
         if (this.isHovered) {
-            graphics.renderTooltip(screen.getMinecraft().font, tooltips, pMouseX, pMouseY);
+            graphics.setTooltipForNextFrame(screen.getMinecraft().font, tooltips, pMouseX, pMouseY);
         }
     }
 }

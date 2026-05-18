@@ -10,12 +10,12 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.PackInf
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -24,11 +24,14 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Util;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -79,7 +82,7 @@ public class ModelDownloadGui extends Screen {
         textField.setTextColor(0xF3EFE0);
         textField.setFocused(focus);
         textField.setValue(textCache);
-        textField.moveCursorToEnd(Screen.hasShiftDown());
+        textField.moveCursorToEnd(getMinecraft().hasShiftDown());
         this.addWidget(this.textField);
     }
 
@@ -182,14 +185,11 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
-        super.renderBlurredBackground(pPartialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         this.renderBase(graphics);
         this.renderSearchBox(graphics, mouseX, mouseY, pPartialTick);
         this.renderPageNumber(graphics);
-        for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, pPartialTick);
-        }
+        super.extractRenderState(graphics, mouseX, mouseY, pPartialTick);
         this.renderBaseButtons(graphics);
         this.renderPackHandleButtons(graphics);
         this.renderNoDataTips(graphics);
@@ -203,7 +203,7 @@ public class ModelDownloadGui extends Screen {
         List<FormattedCharSequence> split = font.split(Component.translatable("gui.touhou_little_maid.resources_download.fail"), 200);
         int yOffset = y + 100;
         for (FormattedCharSequence sequence : split) {
-            graphics.drawCenteredString(font, sequence, x + 134, yOffset, ChatFormatting.RED.getColor());
+            graphics.centeredText(font, sequence, x + 134, yOffset, ChatFormatting.RED.getColor());
             yOffset += 12;
         }
     }
@@ -211,28 +211,28 @@ public class ModelDownloadGui extends Screen {
     private void renderPageNumber(GuiGraphicsExtractor graphics) {
         int maxPage = (this.showInfos.size() - 1) / 4;
         String pageInfo = String.format("%d/%d", currentPage + 1, maxPage + 1);
-        graphics.drawString(font, pageInfo, x + 134 - font.width(pageInfo) / 2, y + 227 - font.lineHeight / 2, 0xF3EFE0);
+        graphics.text(font, pageInfo, x + 134 - font.width(pageInfo) / 2, y + 227 - font.lineHeight / 2, 0xF3EFE0);
     }
 
     private void renderPackHandleButtons(GuiGraphicsExtractor graphics) {
         if (0 <= this.selectIndex && this.selectIndex < this.showInfos.size()) {
             DownloadInfo info = this.showInfos.get(this.selectIndex);
-            graphics.drawCenteredString(font, Component.translatable(info.getName()), x + 345, y + 34, 0xffffff);
-            graphics.blit(BG, x + 400, y + 52, 0, 16, 16, 16);
-            graphics.blit(BG, x + 274, y + 52, 16, 16, 16, 16);
+            graphics.centeredText(font, Component.translatable(info.getName()), x + 345, y + 34, 0xffffff);
+            GuiTools.blit(graphics, BG, x + 400, y + 52, 0, 16, 16, 16);
+            GuiTools.blit(graphics, BG, x + 274, y + 52, 16, 16, 16, 16);
         }
     }
 
     private void renderBaseButtons(GuiGraphicsExtractor graphics) {
-        graphics.blit(BG, x + 402, y + 4, 32, 16, 16, 16);
+        GuiTools.blit(graphics, BG, x + 402, y + 4, 32, 16, 16, 16);
     }
 
     private void renderSearchBox(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
-        graphics.drawString(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search"), x + 274, y + 102, 0xffffff);
-        graphics.drawWordWrap(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search_key"), x + 274, y + 115, 146, ChatFormatting.GRAY.getColor());
-        textField.render(graphics, pMouseX, pMouseY, pPartialTick);
+        graphics.text(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search"), x + 274, y + 102, 0xffffff);
+        graphics.textWithWordWrap(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search_key"), x + 274, y + 115, 146, ChatFormatting.GRAY.getColor());
+        textField.extractRenderState(graphics, pMouseX, pMouseY, pPartialTick);
         if (textField.getValue().isEmpty() && !textField.isFocused()) {
-            graphics.drawString(font, Component.translatable("gui.touhou_little_maid.resources_download.search").withStyle(ChatFormatting.ITALIC), x + 277, y + 83, 0x777777);
+            graphics.text(font, Component.translatable("gui.touhou_little_maid.resources_download.search").withStyle(ChatFormatting.ITALIC), x + 277, y + 83, 0x777777);
         }
     }
 
@@ -243,30 +243,30 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         String value = this.textField.getValue();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
         this.textField.setValue(value);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.textField.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (this.textField.mouseClicked(event, doubleClick)) {
             this.setFocused(this.textField);
             return true;
         } else if (this.textField.isFocused()) {
             this.textField.setFocused(false);
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         if (textField == null) {
             return false;
         }
         String perText = this.textField.getValue();
-        if (this.textField.charTyped(codePoint, modifiers)) {
+        if (this.textField.charTyped(event)) {
             if (!Objects.equals(perText, this.textField.getValue())) {
                 this.currentPage = 0;
                 this.init();
@@ -277,20 +277,20 @@ public class ModelDownloadGui extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean hasKeyCode = InputConstants.getKey(keyCode, scanCode).getNumericKeyValue().isPresent();
+    public boolean keyPressed(KeyEvent event) {
+        boolean hasKeyCode = InputConstants.getKey(event).getNumericKeyValue().isPresent();
         String preText = this.textField.getValue();
         if (hasKeyCode) {
             return true;
         }
-        if (this.textField.keyPressed(keyCode, scanCode, modifiers)) {
+        if (this.textField.keyPressed(event)) {
             if (!Objects.equals(preText, this.textField.getValue())) {
                 this.currentPage = 0;
                 this.init();
             }
             return true;
         } else {
-            return this.textField.isFocused() && this.textField.isVisible() && keyCode != 256 || super.keyPressed(keyCode, scanCode, modifiers);
+            return this.textField.isFocused() && this.textField.isVisible() && event.key() != 256 || super.keyPressed(event);
         }
     }
 

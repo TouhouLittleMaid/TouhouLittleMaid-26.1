@@ -9,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.MaidModelPackage
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -16,8 +17,10 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,7 +45,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
         float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(entity.getModelId());
         int centerX = (middleX - 256 / 2) / 2;
         int yOffset = (int) (45 * (renderItemScale - 1));
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 centerX - 100,
                 middleY - 100,
@@ -61,7 +64,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
         var allTextures = Minecraft.getInstance().getTextureManager().byPath;
         if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
             int textureSize = 24;
-            graphics.blit(cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
+            GuiTools.blit(graphics, cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
         } else {
             drawEntity(graphics, posX, posY, modelItem);
         }
@@ -136,7 +139,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
         EntityMaid maid;
         try {
             maid = (EntityMaid) EntityCacheUtil.ENTITY_CACHE.get(EntityMaid.TYPE, () -> {
-                Entity e = EntityMaid.TYPE.create(world);
+                Entity e = EntityMaid.TYPE.create(world, EntitySpawnReason.COMMAND);
                 return Objects.requireNonNullElseGet(e, () -> new EntityMaid(world));
             });
         } catch (ExecutionException | ClassCastException e) {
@@ -152,7 +155,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
         }
         // 女仆换皮肤界面需要指定 YSM 渲染为空
         maid.setIsYsmModel(false);
-        InventoryScreen.renderEntityInInventoryFollowsMouse(
+        InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,
                 posX - 10,
                 posY - 32,
