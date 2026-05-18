@@ -2,17 +2,31 @@ package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
-import static com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid.GAME_SKILL;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid.GAME_STATUE;
+import static com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid.WIN_COUNTS;
 
 public class MaidGameRecordManager {
-    private static final String GAME_SKILL_TAG = "MaidGameSkillData";
+    private static final String WIN_COUNT_TAG = "MaidGameSkillData";
     private static final String GOMOKU = "Gomoku";
     private static final byte NONE = 0, WIN = 1, LOSE = 2;
+
+
+    public static final StreamCodec<FriendlyByteBuf, Map<String, Integer>> WIN_COUNT_STREAM_CODEC = ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.INT);
+    public static final Codec<Map<String, Integer>> WIN_COUNT_CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT);
+    public static final EntityDataSerializer<Map<String, Integer>> WIN_COUNT_SERIALIZER = EntityDataSerializer.forValueType(WIN_COUNT_STREAM_CODEC);
 
     private final EntityMaid maid;
 
@@ -20,20 +34,19 @@ public class MaidGameRecordManager {
         this.maid = maid;
     }
 
-    void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(GAME_SKILL, new CompoundTag());
+    void defineSyncedData(SynchedEntityData.Builder builder) {
+        builder.define(WIN_COUNTS, new HashMap<>());
         builder.define(GAME_STATUE, (byte) 0);
     }
 
-    void addAdditionalSaveData(CompoundTag compound) {
-        compound.put(GAME_SKILL_TAG, getGameSkill());
+    void addAdditionalSaveData(ValueOutput output) {
+        output.store(WIN_COUNT_TAG, WIN_COUNT_CODEC, getWinCounts());
     }
 
-    void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.contains(GAME_SKILL_TAG, Tag.TAG_COMPOUND)) {
-            setGameSkill(compound.getCompound(GAME_SKILL_TAG));
-        }
+    void readAdditionalSaveData(ValueInput input) {
+        input.read(WIN_COUNT_TAG, WIN_COUNT_CODEC).ifPresent(this::setWinCounts);
     }
+
 
     void tick() {
         if (!(this.maid.getVehicle() instanceof EntitySit) && getGameStatue() != NONE) {
@@ -41,12 +54,12 @@ public class MaidGameRecordManager {
         }
     }
 
-    private CompoundTag getGameSkill() {
-        return maid.getEntityData().get(GAME_SKILL);
+    public Map<String, Integer> getWinCounts() {
+        return maid.getEntityData().get(WIN_COUNTS);
     }
 
-    private void setGameSkill(CompoundTag gameSkill) {
-        maid.getEntityData().set(GAME_SKILL, gameSkill, true);
+    public void setWinCounts(Map<String, Integer> stringIntegerMap) {
+        maid.getEntityData().set(WIN_COUNTS, stringIntegerMap, true);
     }
 
     private byte getGameStatue() {
@@ -58,21 +71,13 @@ public class MaidGameRecordManager {
     }
 
     public int getGomokuWinCount() {
-        CompoundTag gameSkill = this.getGameSkill();
-        if (gameSkill.contains(GOMOKU, Tag.TAG_INT)) {
-            return gameSkill.getInt(GOMOKU);
-        }
-        return 0;
+        return getWinCounts().getOrDefault(GOMOKU, 0);
     }
 
     public void increaseGomokuWinCount() {
-        CompoundTag gameSkill = this.getGameSkill();
-        if (gameSkill.contains(GOMOKU, Tag.TAG_INT)) {
-            gameSkill.putInt(GOMOKU, gameSkill.getInt(GOMOKU) + 1);
-        } else {
-            gameSkill.putInt(GOMOKU, 1);
-        }
-        this.setGameSkill(gameSkill);
+        Map<String, Integer> winCounts = getWinCounts();
+        winCounts.put(GOMOKU, winCounts.getOrDefault(GOMOKU, 0) + 1);
+        this.setWinCounts(winCounts);
     }
 
     public boolean isWin() {

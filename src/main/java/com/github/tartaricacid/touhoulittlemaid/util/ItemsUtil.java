@@ -8,19 +8,24 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidInvWrapper
 import com.google.common.base.Preconditions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -34,6 +39,7 @@ import java.util.function.Predicate;
 public final class ItemsUtil {
     private ItemsUtil() {
     }
+
     /**
      * 直接设置对应槽位的物品堆
      */
@@ -281,5 +287,33 @@ public final class ItemsUtil {
 
         // 所有槽位都无法容纳测试物品
         return false;
+    }
+
+
+    public static NonNullList<ItemStack> containerToItemList(Container container) {
+        NonNullList<ItemStack> itemStack = NonNullList.create();
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            itemStack.add(container.getItem(i));
+        }
+        return itemStack;
+    }
+
+    public static void fillContainerByItemList(Container container, List<ItemStack> itemStack) {
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            container.setItem(i, itemStack.get(i));
+        }
+    }
+
+
+    public static void saveContainer(Container container, String key, ValueOutput valueOutput) {
+        valueOutput.store(key, ItemStack.OPTIONAL_CODEC.listOf(), containerToItemList(container));
+    }
+
+    public static void loadContainer(Container container, String key, ValueInput valueInput) {
+        valueInput.read("container", ItemStack.OPTIONAL_CODEC.listOf()).ifPresent(l -> fillContainerByItemList(container, l));
+    }
+
+    public static ItemStacksResourceHandler createDummyHandler(List<ItemStack> stack) {
+        return new ItemStacksResourceHandler(NonNullList.copyOf(stack));
     }
 }

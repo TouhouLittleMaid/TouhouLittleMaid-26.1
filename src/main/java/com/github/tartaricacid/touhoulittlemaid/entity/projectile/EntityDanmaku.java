@@ -1,10 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.projectile;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDamage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -12,6 +14,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -26,7 +29,7 @@ import net.minecraft.world.phys.EntityHitResult;
 
 public class EntityDanmaku extends ThrowableProjectile {
     public static final EntityType<EntityDanmaku> TYPE = EntityType.Builder.<EntityDanmaku>of(EntityDanmaku::new, MobCategory.MISC)
-            .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(10).noSave().build("danmaku");
+            .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(10).noSave().build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "danmaku")));
 
     private static final int MAX_TICKS_EXISTED = 200;
     private static final EntityDataAccessor<Integer> DANMAKU_TYPE = SynchedEntityData.defineId(EntityDanmaku.class, EntityDataSerializers.INT);
@@ -42,7 +45,8 @@ public class EntityDanmaku extends ThrowableProjectile {
     }
 
     public EntityDanmaku(Level worldIn, LivingEntity throwerIn) {
-        super(TYPE, throwerIn, worldIn);
+        super(TYPE, throwerIn.getX(), throwerIn.getEyeY() - 0.1, throwerIn.getZ(), worldIn);
+        this.setOwner(throwerIn);
     }
 
     public EntityDanmaku(Level worldIn, double x, double y, double z) {
@@ -50,10 +54,12 @@ public class EntityDanmaku extends ThrowableProjectile {
     }
 
     private static boolean hasSameOwner(TamableAnimal tameableA, TamableAnimal tameableB) {
-        if (tameableA.getOwnerUUID() == null) {
+        EntityReference<LivingEntity> refA = tameableA.getOwnerReference();
+        EntityReference<LivingEntity> refB = tameableB.getOwnerReference();
+        if (refA == null || refB == null) {
             return false;
         }
-        return tameableA.getOwnerUUID().equals(tameableB.getOwnerUUID());
+        return java.util.Objects.equals(refA.getUUID(), refB.getUUID());
     }
 
     @Override
@@ -104,7 +110,7 @@ public class EntityDanmaku extends ThrowableProjectile {
             hit.hurt(source, this.getDamage());
             if (this.impedingLevel > 0 && hit instanceof LivingEntity livingEntity) {
                 int duration = (20 + this.impedingLevel * 10) * 20;
-                livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, this.impedingLevel));
+                livingEntity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, duration, this.impedingLevel));
             }
             this.discard();
         }

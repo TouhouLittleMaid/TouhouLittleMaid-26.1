@@ -24,7 +24,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +43,7 @@ public class FurnaceBackpack extends IMaidBackpack {
     public void onTakeOff(ItemStack stack, Player player, EntityMaid maid) {
         IBackpackData backpackData = maid.getBackpackData();
         if (backpackData instanceof FurnaceBackpackData furnaceBackpackData) {
-            InvWrapper inv = new InvWrapper(furnaceBackpackData);
+            ResourceHandler<ItemResource> inv = VanillaContainerWrapper.of(furnaceBackpackData);
             ItemsUtil.dropEntityItems(maid, inv, null);
         }
         dropRelativeItems(stack, maid);
@@ -51,10 +53,8 @@ public class FurnaceBackpack extends IMaidBackpack {
     public void onSpawnTombstone(EntityMaid maid, EntityTombstone tombstone) {
         IBackpackData backpackData = maid.getBackpackData();
         if (backpackData instanceof FurnaceBackpackData furnaceBackpackData) {
-            InvWrapper inv = new InvWrapper(furnaceBackpackData);
-            for (int i = 0; i < inv.getSlots(); i++) {
-                int size = inv.getSlotLimit(i);
-                tombstone.insertItem(inv.extractItem(i, size, false));
+            for (int i = 0; i < furnaceBackpackData.getContainerSize(); i++) {
+                tombstone.insertItem(furnaceBackpackData.getItem(i).copy());
             }
         }
     }
@@ -97,7 +97,7 @@ public class FurnaceBackpack extends IMaidBackpack {
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
+    //FIXME 等待EntityMaidRenderState的实现
     public EntityModel<EntityMaid> getBackpackModel(EntityModelSet modelSet) {
         return BedrockModelLoader.getModel(FURNACE_BACKPACK);
     }

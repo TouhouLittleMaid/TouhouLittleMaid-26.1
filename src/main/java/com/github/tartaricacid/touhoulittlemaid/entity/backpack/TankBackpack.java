@@ -27,6 +27,9 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 
 import javax.annotation.Nullable;
 
@@ -57,7 +60,7 @@ public class TankBackpack extends IMaidBackpack {
     public void onTakeOff(ItemStack stack, Player player, EntityMaid maid) {
         IBackpackData backpackData = maid.getBackpackData();
         if (backpackData instanceof TankBackpackData tankBackpackData) {
-            InvWrapper inv = new InvWrapper(tankBackpackData);
+            ResourceHandler<ItemResource> inv = VanillaContainerWrapper.of(tankBackpackData);
             ItemsUtil.dropEntityItems(maid, inv, null);
         }
         dropRelativeItems(stack, maid);
@@ -76,10 +79,8 @@ public class TankBackpack extends IMaidBackpack {
     public void onSpawnTombstone(EntityMaid maid, EntityTombstone tombstone) {
         IBackpackData backpackData = maid.getBackpackData();
         if (backpackData instanceof TankBackpackData tankBackpackData) {
-            InvWrapper inv = new InvWrapper(tankBackpackData);
-            for (int i = 0; i < inv.getSlots(); i++) {
-                int size = inv.getSlotLimit(i);
-                tombstone.insertItem(inv.extractItem(i, size, false));
+            for (int i = 0; i < tankBackpackData.getContainerSize(); i++) {
+                tombstone.insertItem(tankBackpackData.getItem(i).copy());
             }
         }
     }
@@ -122,7 +123,7 @@ public class TankBackpack extends IMaidBackpack {
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
+    //FIXME 等待EntityMaidRenderState的实现
     public EntityModel<EntityMaid> getBackpackModel(EntityModelSet modelSet) {
         return BedrockModelLoader.getModel(TANK_BACKPACK);
     }

@@ -2,16 +2,16 @@ package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 
@@ -82,26 +82,23 @@ public final class SchedulePos {
         }
     }
 
-    public void save(CompoundTag compound) {
-        CompoundTag data = new CompoundTag();
-        data.put("Work", NbtUtils.writeBlockPos(this.workPos));
-        data.put("Idle", NbtUtils.writeBlockPos(this.idlePos));
-        data.put("Sleep", NbtUtils.writeBlockPos(this.sleepPos));
-        data.putString("Dimension", this.dimension.toString());
-        data.putBoolean("Configured", this.configured);
-        compound.put("MaidSchedulePos", data);
+    public void save(ValueOutput output) {
+        ValueOutput child = output.child("MaidSchedulePos");
+        child.store("Work", BlockPos.CODEC, this.workPos);
+        child.store("Idle", BlockPos.CODEC, this.idlePos);
+        child.store("Sleep", BlockPos.CODEC, this.sleepPos);
+        child.store("Dimension", Codec.STRING, this.dimension.toString());
+        child.store("Configured", Codec.BOOL, this.configured);
     }
 
-    public void load(CompoundTag compound, EntityMaid maid) {
-        if (compound.contains("MaidSchedulePos", Tag.TAG_COMPOUND)) {
-            CompoundTag data = compound.getCompound("MaidSchedulePos");
-            this.workPos = NbtUtils.readBlockPos(data, "Work").orElse(null);
-            this.idlePos = NbtUtils.readBlockPos(data, "Idle").orElse(null);
-            this.sleepPos = NbtUtils.readBlockPos(data, "Sleep").orElse(null);
-            this.dimension = Identifier.parse(data.getString("Dimension"));
-            this.configured = data.getBoolean("Configured");
-            this.restrictTo(maid);
-        }
+    public void load(ValueInput input, EntityMaid maid) {
+        ValueInput child = input.childOrEmpty("MaidSchedulePos");
+        child.read("Work", BlockPos.CODEC).ifPresent(pos -> this.workPos = pos);
+        child.read("Idle", BlockPos.CODEC).ifPresent(pos -> this.idlePos = pos);
+        child.read("Sleep", BlockPos.CODEC).ifPresent(pos -> this.sleepPos = pos);
+        child.read("Dimension", Codec.STRING).ifPresent(dim -> this.dimension = Identifier.parse(dim));
+        child.read("Configured", Codec.BOOL).ifPresent(cfg -> this.configured = cfg);
+        this.restrictTo(maid);
     }
 
     public void restrictTo(EntityMaid maid) {
@@ -150,7 +147,7 @@ public final class SchedulePos {
         this.idlePos = this.workPos;
         this.sleepPos = this.workPos;
         this.configured = false;
-        this.dimension = maid.level.dimension().location();
+        this.dimension = maid.level.dimension().identifier();
         this.restrictTo(maid);
     }
 
@@ -159,7 +156,7 @@ public final class SchedulePos {
             this.workPos = pos;
             this.idlePos = pos;
             this.sleepPos = pos;
-            this.dimension = maid.level.dimension().location();
+            this.dimension = maid.level.dimension().identifier();
         }
         this.restrictTo(maid);
     }

@@ -6,14 +6,28 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.data.TaskDataKey;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTaskData;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class TaskDataRegister {
-    private static final Map<Identifier, TaskDataKey<?>> MAPS = Maps.newHashMap();
+    private static final Map<Identifier, TaskDataRegKey<?>> CODEC_MAP = Maps.newHashMap();
+
+    public record TaskDataRegKey<T>(Identifier id, Codec<T> codec,
+                                    StreamCodec<RegistryFriendlyByteBuf, T> syncCodec) implements TaskDataKey<T> {
+    }
+
+    public static Optional<Codec> getCodec(Identifier key) {
+        return Optional.ofNullable(CODEC_MAP.get(key)).map(TaskDataRegKey::codec);
+    }
+
+    public static Optional<StreamCodec> getSyncCodec(Identifier key) {
+        return Optional.ofNullable(CODEC_MAP.get(key)).map(TaskDataRegKey::syncCodec);
+    }
 
     public static void init() {
         TaskDataRegister register = new TaskDataRegister();
@@ -25,57 +39,13 @@ public class TaskDataRegister {
         }
     }
 
-    @SuppressWarnings("all")
-    public static <T> TaskDataKey<T> getValue(Identifier key) {
-        return (TaskDataKey<T>) MAPS.get(key);
+    public <T> TaskDataRegKey<T> register(Identifier key, Codec<T> codec) {
+        return register(key, codec, ByteBufCodecs.fromCodecWithRegistries(codec));
     }
 
-    public <T> TaskDataKey<T> register(Identifier key, Codec<T> codec) {
-        return register(key, codec, codec);
-    }
-
-    public <T> TaskDataKey<T> register(Identifier key, Codec<T> saveCodec, Codec<T> syncCodec) {
-        TaskDataKey<T> value = new TaskDataKey<>() {
-            @Override
-            public Identifier getKey() {
-                return key;
-            }
-
-            @Override
-            public CompoundTag writeSaveData(T data) {
-                return saveCodec.encodeStart(NbtOps.INSTANCE, data)
-                        .resultOrPartial(TouhouLittleMaid.LOGGER::error)
-                        .map(tag -> (CompoundTag) tag)
-                        .orElse(new CompoundTag());
-            }
-
-            @Override
-            public T readSaveData(CompoundTag compound) {
-                return saveCodec.parse(NbtOps.INSTANCE, compound)
-                        .resultOrPartial(TouhouLittleMaid.LOGGER::error)
-                        .orElse(null);
-            }
-
-            @Override
-            public CompoundTag writeSyncData(T data) {
-                return syncCodec.encodeStart(NbtOps.INSTANCE, data)
-                        .resultOrPartial(TouhouLittleMaid.LOGGER::error)
-                        .map(tag -> (CompoundTag) tag)
-                        .orElse(new CompoundTag());
-            }
-
-            @Override
-            public T readSyncData(CompoundTag compound) {
-                return syncCodec.parse(NbtOps.INSTANCE, compound)
-                        .resultOrPartial(TouhouLittleMaid.LOGGER::error)
-                        .orElse(null);
-            }
-        };
-        return register(value);
-    }
-
-    public <T> TaskDataKey<T> register(TaskDataKey<T> value) {
-        MAPS.put(value.getKey(), value);
-        return value;
+    public <T> TaskDataRegKey<T> register(Identifier key, Codec<T> saveCodec, StreamCodec<RegistryFriendlyByteBuf, T> syncCodec) {
+        TaskDataRegKey<T> regKey = new TaskDataRegKey<>(key, saveCodec, syncCodec);
+        CODEC_MAP.put(key, regKey);
+        return regKey;
     }
 }

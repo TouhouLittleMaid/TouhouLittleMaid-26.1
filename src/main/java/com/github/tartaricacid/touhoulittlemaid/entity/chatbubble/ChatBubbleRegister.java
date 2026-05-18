@@ -30,7 +30,7 @@ public class ChatBubbleRegister {
                             IChatBubbleData bubbleData = data.get(key);
                             buf.writeLong(key);
                             Identifier id = bubbleData.id();
-                            buf.writeResourceLocation(id);
+                            buf.writeIdentifier(id);
                             ChatBubbleRegister.CODEC_MAP.get(id).writeToBuff(buf, bubbleData);
                         }
                         i++;
@@ -43,7 +43,7 @@ public class ChatBubbleRegister {
                     int size = buf.readVarInt();
                     for (int i = 0; i < size; i++) {
                         long key = buf.readLong();
-                        Identifier id = buf.readResourceLocation();
+                        Identifier id = buf.readIdentifier();
                         IChatBubbleData bubbleData = ChatBubbleRegister.CODEC_MAP.get(id).readFromBuff(buf);
                         map.put(key, bubbleData);
                     }

@@ -22,7 +22,8 @@ import java.util.Optional;
 public class BackpackManager {
     private static Map<Identifier, IMaidBackpack> BACKPACK_ID_MAP;
     private static Map<Item, IMaidBackpack> BACKPACK_ITEM_MAP;
-    @OnlyIn(Dist.CLIENT)
+
+    //FIXME 等待EntityMaidRenderState的实现
     private static Map<Identifier, Pair<EntityModel<EntityMaid>, Identifier>> BACKPACK_MODEL_MAP;
     private static IMaidBackpack EMPTY_BACKPACK;
 
@@ -76,11 +77,11 @@ public class BackpackManager {
 
     public static void addBackpackCooldown(Player player) {
         for (Item backpack : BACKPACK_ITEM_MAP.keySet()) {
-            player.getCooldowns().addCooldown(backpack, 20);
+            player.getCooldowns().addCooldown(backpack.getDefaultInstance(), 20);
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    //FIXME 等待EntityMaidRenderState的实现
     public static Optional<Pair<EntityModel<EntityMaid>, Identifier>> findBackpackModel(Identifier id) {
         Pair<EntityModel<EntityMaid>, Identifier> pair = BACKPACK_MODEL_MAP.get(id);
         if (pair == null) {

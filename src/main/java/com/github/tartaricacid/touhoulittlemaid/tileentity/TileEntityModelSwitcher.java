@@ -153,7 +153,7 @@ public class TileEntityModelSwitcher extends BlockEntity {
         }
 
         public static ModeInfo fromBuf(FriendlyByteBuf buf) {
-            return new ModeInfo(buf.readResourceLocation(), buf.readUtf(), Direction.from2DDataValue(buf.readVarInt()));
+            return new ModeInfo(buf.readIdentifier(), buf.readUtf(), Direction.from2DDataValue(buf.readVarInt()));
         }
 
         public Identifier getModelId() {
@@ -181,7 +181,7 @@ public class TileEntityModelSwitcher extends BlockEntity {
         }
 
         public void toBuf(FriendlyByteBuf buf) {
-            buf.writeResourceLocation(this.modelId);
+            buf.writeIdentifier(this.modelId);
             buf.writeUtf(this.text);
             buf.writeVarInt(this.direction.get2DDataValue());
         }

@@ -7,13 +7,14 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
 import com.google.common.collect.Maps;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import com.mojang.serialization.Codec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -320,19 +321,17 @@ public class FavorabilityManager {
         this.add(LEVEL_3_POINT);
     }
 
-    public void addAdditionalSaveData(CompoundTag compound) {
-        CompoundTag data = new CompoundTag();
-        this.counter.forEach((name, time) -> data.putInt(name, time.getTickCount()));
-        compound.put(TAG_NAME, data);
+    public void addAdditionalSaveData(ValueOutput output) {
+        ValueOutput child = output.child(TAG_NAME);
+        this.counter.forEach((name, time) -> child.store(name, Codec.INT, time.getTickCount()));
     }
 
-    public void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.contains(TAG_NAME, Tag.TAG_COMPOUND)) {
-            CompoundTag data = compound.getCompound(TAG_NAME);
-            for (String name : data.getAllKeys()) {
-                this.counter.put(name, new Time(data.getInt(name)));
+    public void readAdditionalSaveData(ValueInput value) {
+        value.child(TAG_NAME).ifPresent(d -> {
+            for (String name : d.keySet()) {
+                this.counter.put(name, new Time(d.getIntOr(name, 0)));
             }
-        }
+        });
     }
 
     public static class Time {

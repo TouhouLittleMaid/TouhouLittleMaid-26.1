@@ -86,25 +86,25 @@ public class WaitingChatBubbleData implements IChatBubbleData {
         @Override
         public IChatBubbleData readFromBuff(FriendlyByteBuf buf) {
             // 往客户端同步的数据里，不需要同步 existTick 和 priority，这两个数据仅在服务端有效
-            Identifier bg = buf.readResourceLocation();
-            Component text = buf.readJsonWithCodec(ComponentSerialization.CODEC);
+            Identifier bg = buf.readIdentifier();
+            Component text = buf.readLenientJsonWithCodec(ComponentSerialization.CODEC);
             Component secondaryText = null;
             if (buf.readBoolean()) {
-                secondaryText = buf.readJsonWithCodec(ComponentSerialization.CODEC);
+                secondaryText = buf.readLenientJsonWithCodec(ComponentSerialization.CODEC);
             }
-            return new WaitingChatBubbleData(DEFAULT_EXIST_TICK, bg, DEFAULT_PRIORITY, text, secondaryText, buf.readResourceLocation());
+            return new WaitingChatBubbleData(DEFAULT_EXIST_TICK, bg, DEFAULT_PRIORITY, text, secondaryText, buf.readIdentifier());
         }
 
         @Override
         public void writeToBuff(FriendlyByteBuf buf, IChatBubbleData data) {
             WaitingChatBubbleData textChat = (WaitingChatBubbleData) data;
-            buf.writeResourceLocation(textChat.bg);
+            buf.writeIdentifier(textChat.bg);
             buf.writeJsonWithCodec(ComponentSerialization.CODEC, textChat.text);
             buf.writeBoolean(textChat.secondaryText != null);
             if (textChat.secondaryText != null) {
                 buf.writeJsonWithCodec(ComponentSerialization.CODEC, textChat.secondaryText);
             }
-            buf.writeResourceLocation(textChat.icon);
+            buf.writeIdentifier(textChat.icon);
         }
     }
 }

@@ -2,12 +2,14 @@ package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import net.minecraft.nbt.CompoundTag;
+import com.mojang.serialization.Codec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Slime;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 
@@ -23,23 +25,20 @@ public final class MaidKillRecordManager {
     private int witherCount;
     private int enderDragonCount;
 
-    void addAdditionalSaveData(CompoundTag compound) {
-        CompoundTag killRecord = new CompoundTag();
-        killRecord.putInt(KILL_RECORD, totalCount);
-        killRecord.putInt(SLIME_COUNT, slimeCount);
-        killRecord.putInt(WITHER_COUNT, witherCount);
-        killRecord.putInt(ENDER_DRAGON_COUNT, enderDragonCount);
-        compound.put(KILL_RECORD, killRecord);
+    void addAdditionalSaveData(ValueOutput output) {
+        ValueOutput child = output.child(KILL_RECORD);
+        child.store(TOTAL_COUNT, Codec.INT, totalCount);
+        child.store(SLIME_COUNT, Codec.INT, slimeCount);
+        child.store(WITHER_COUNT, Codec.INT, witherCount);
+        child.store(ENDER_DRAGON_COUNT, Codec.INT, enderDragonCount);
     }
 
-    void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.contains(KILL_RECORD)) {
-            CompoundTag killRecord = compound.getCompound(KILL_RECORD);
-            totalCount = killRecord.getInt(TOTAL_COUNT);
-            slimeCount = killRecord.getInt(SLIME_COUNT);
-            witherCount = killRecord.getInt(WITHER_COUNT);
-            enderDragonCount = killRecord.getInt(ENDER_DRAGON_COUNT);
-        }
+    void readAdditionalSaveData(ValueInput input) {
+        ValueInput child = input.childOrEmpty(KILL_RECORD);
+        child.read(TOTAL_COUNT, Codec.INT).ifPresent(v -> totalCount = v);
+        child.read(SLIME_COUNT, Codec.INT).ifPresent(v -> slimeCount = v);
+        child.read(WITHER_COUNT, Codec.INT).ifPresent(v -> witherCount = v);
+        child.read(ENDER_DRAGON_COUNT, Codec.INT).ifPresent(v -> enderDragonCount = v);
     }
 
     public void onTargetDeath(EntityMaid maid, LivingEntity target) {

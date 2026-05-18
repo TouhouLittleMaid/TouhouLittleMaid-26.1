@@ -70,4 +70,16 @@ public final class GuiTools {
         int count = Mth.positiveCeilDiv(target, total);
         return new Divisor(target, count);
     }
+
+    public static void blit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset) {
+        blit(graphics, atlasLocation, x, y, width, height, uOffset, vOffset, 256, 256);
+    }
+
+    public static void blit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int imageWidth, int imageHeight) {
+        float u0 = (float) uOffset / imageWidth;
+        float u1 = (float) (uOffset + width) / imageWidth;
+        float v0 = (float) vOffset / imageHeight;
+        float v1 = (float) (vOffset + height) / imageHeight;
+        graphics.blit(atlasLocation, x, y, x + width, x + height, u0, u1, v0, v1);
+    }
 }

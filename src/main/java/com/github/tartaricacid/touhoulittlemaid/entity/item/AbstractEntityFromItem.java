@@ -8,10 +8,11 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.HitResult;
+import org.jspecify.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -51,10 +52,10 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
     protected abstract ItemStack getKilledStack();
 
     @Override
-    public boolean hurt(@Nonnull DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         if (!this.level().isClientSide() && !this.dead && this.isAlive()) {
             // 如果实体是无敌的
-            if (this.isInvulnerableTo(source)) {
+            if (this.isInvulnerableTo(level, source)) {
                 return false;
             }
             // 应用打掉的逻辑
@@ -78,14 +79,15 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
 
     private void killEntity() {
         this.discard();
-        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-            ItemStack itemstack = getKilledStack();
-            if (this.hasCustomName()) {
-                itemstack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
+        if (this.level() instanceof ServerLevel level)
+            if (level.getGameRules().get(GameRules.ENTITY_DROPS)) {
+                ItemStack itemstack = getKilledStack();
+                if (this.hasCustomName()) {
+                    itemstack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
+                }
+                this.spawnAtLocation(level, itemstack, 0.0F);
+                this.dropExtraItems();
             }
-            this.spawnAtLocation(itemstack, 0.0F);
-            this.dropExtraItems();
-        }
     }
 
     protected void dropExtraItems() {
@@ -108,7 +110,7 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
     }
 
     @Override
-    public void kill() {
+    public void kill(ServerLevel level) {
         this.remove(Entity.RemovalReason.KILLED);
         this.gameEvent(GameEvent.ENTITY_DIE);
     }
@@ -137,9 +139,8 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
         // 不允许被击退效果影响
     }
 
-    @Nonnull
     @Override
-    public ItemStack getPickedResult(HitResult target) {
+    public @Nullable ItemStack getPickResult() {
         return getKilledStack();
     }
 
@@ -150,10 +151,6 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
 
     // ------------ EntityLivingBase 要求实现的几个抽象方法，因为全用不上，故返回默认值 ----------- //
 
-    @Override
-    public Iterable<ItemStack> getArmorSlots() {
-        return Collections.emptyList();
-    }
 
     @Override
     public ItemStack getItemBySlot(EquipmentSlot slotIn) {

@@ -91,8 +91,8 @@ public class ImageChatBubbleData implements IChatBubbleData {
             int vOffset = buf.readVarInt();
             int textureWidth = buf.readVarInt();
             int textureHeight = buf.readVarInt();
-            Identifier bg = buf.readResourceLocation();
-            Identifier image = buf.readResourceLocation();
+            Identifier bg = buf.readIdentifier();
+            Identifier image = buf.readIdentifier();
             return new ImageChatBubbleData(DEFAULT_EXIST_TICK, bg, image, width, height,
                     uOffset, vOffset, textureWidth, textureHeight, DEFAULT_PRIORITY);
         }
@@ -106,8 +106,8 @@ public class ImageChatBubbleData implements IChatBubbleData {
             buf.writeVarInt(imageChat.vOffset);
             buf.writeVarInt(imageChat.textureWidth);
             buf.writeVarInt(imageChat.textureHeight);
-            buf.writeResourceLocation(imageChat.bg);
-            buf.writeResourceLocation(imageChat.image);
+            buf.writeIdentifier(imageChat.bg);
+            buf.writeIdentifier(imageChat.image);
         }
     }
 }

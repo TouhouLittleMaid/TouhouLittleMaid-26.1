@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.task.crop;
 
 import com.github.tartaricacid.touhoulittlemaid.api.task.ISpecialCropHandler;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -11,8 +12,9 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.NotNull;
 
 public class NetherWartCropHandler implements ISpecialCropHandler {
     @Override
@@ -25,10 +27,10 @@ public class NetherWartCropHandler implements ISpecialCropHandler {
         if (isDestroyMode) {
             maid.destroyBlock(cropPos);
         } else {
-            CombinedInvWrapper availableInv = maid.getAvailableInv(false);
+            CombinedResourceHandler<ItemResource> availableInv = maid.getAvailableInv(false);
 
             ItemStack dropItemStack = new ItemStack(Items.NETHER_WART);
-            ItemStack remindItemStack = ItemHandlerHelper.insertItemStacked(availableInv, dropItemStack, false);
+            ItemStack remindItemStack = ItemsUtil.insertItemStacked(availableInv, dropItemStack, false, null);
             if (!remindItemStack.isEmpty()) {
                 Block.popResource(maid.level, cropPos, remindItemStack);
             }
