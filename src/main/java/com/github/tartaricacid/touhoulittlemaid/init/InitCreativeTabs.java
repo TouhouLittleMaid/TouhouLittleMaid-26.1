@@ -106,7 +106,7 @@ public class InitCreativeTabs {
             .title(Component.translatable("item_group.touhou_little_maid.chair"))
             .icon(() -> InitItems.CHAIR.get().getDefaultInstance())
             .displayItems((par, output) -> {
-                if (FMLEnvironment.dist == Dist.CLIENT) {
+                if (FMLEnvironment.getDist() == Dist.CLIENT) {
                     ItemChair.fillItemCategory(output);
                 }
             }).build());
@@ -115,7 +115,7 @@ public class InitCreativeTabs {
             .title(Component.translatable("item_group.touhou_little_maid.garage_kit"))
             .icon(() -> InitItems.GARAGE_KIT.get().getDefaultInstance())
             .displayItems((par, output) -> {
-                if (FMLEnvironment.dist == Dist.CLIENT) {
+                if (FMLEnvironment.getDist() == Dist.CLIENT) {
                     BlockGarageKit.fillItemCategory(output);
                 }
             }).build());

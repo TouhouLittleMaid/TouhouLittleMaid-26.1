@@ -7,7 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -15,15 +14,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 
 import javax.annotation.Nullable;
 
 public class TileEntityAltar extends BlockEntity {
-    public static final BlockEntityType<TileEntityAltar> TYPE = BlockEntityType.Builder.of(TileEntityAltar::new, InitBlocks.ALTAR.get()).build(null);
     private static final String STORAGE_ITEM = "StorageItem";
     private static final String IS_RENDER = "IsRender";
     private static final String CAN_PLACE_ITEM = "CanPlaceItem";
@@ -31,7 +30,9 @@ public class TileEntityAltar extends BlockEntity {
     private static final String DIRECTION = "Direction";
     private static final String STORAGE_BLOCK_LIST = "StorageBlockList";
     private static final String CAN_PLACE_ITEM_POS_LIST = "CanPlaceItemPosList";
+
     public final ItemStacksResourceHandler handler = new AltarItemHandler();
+
     private boolean isRender = false;
     private boolean canPlaceItem = false;
     private BlockState storageState = Blocks.AIR.defaultBlockState();
@@ -40,7 +41,7 @@ public class TileEntityAltar extends BlockEntity {
     private Direction direction = Direction.SOUTH;
 
     public TileEntityAltar(BlockPos blockPos, BlockState blockState) {
-        super(TYPE, blockPos, blockState);
+        super(InitBlocks.ALTAR_TE.get(), blockPos, blockState);
     }
 
     public void setForgeData(BlockState storageState, boolean isRender, boolean canPlaceItem, Direction direction,
@@ -55,27 +56,27 @@ public class TileEntityAltar extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        getPersistentData().putBoolean(IS_RENDER, isRender);
-        getPersistentData().putBoolean(CAN_PLACE_ITEM, canPlaceItem);
-        getPersistentData().putInt(STORAGE_STATE_ID, Block.getId(storageState));
-        getPersistentData().put(STORAGE_ITEM, handler.serializeNBT(pRegistries));
-        getPersistentData().putString(DIRECTION, direction.getSerializedName());
-        getPersistentData().put(STORAGE_BLOCK_LIST, blockPosList.serialize());
-        getPersistentData().put(CAN_PLACE_ITEM_POS_LIST, canPlaceItemPosList.serialize());
-        super.saveAdditional(pTag, pRegistries);
+    public void saveAdditional(ValueOutput output) {
+        output.putBoolean(IS_RENDER, isRender);
+        output.putBoolean(CAN_PLACE_ITEM, canPlaceItem);
+        output.putInt(STORAGE_STATE_ID, Block.getId(storageState));
+        output.putChild(STORAGE_ITEM, handler);
+        output.store(DIRECTION, Direction.CODEC, direction);
+        output.putChild(STORAGE_BLOCK_LIST, blockPosList);
+        output.putChild(CAN_PLACE_ITEM_POS_LIST, canPlaceItemPosList);
+        super.saveAdditional(output);
     }
 
     @Override
-    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        isRender = getPersistentData().getBoolean(IS_RENDER);
-        canPlaceItem = getPersistentData().getBoolean(CAN_PLACE_ITEM);
-        storageState = Block.stateById(getPersistentData().getInt(STORAGE_STATE_ID));
-        handler.deserializeNBT(pRegistries, getPersistentData().getCompound(STORAGE_ITEM));
-        direction = Direction.byName(getPersistentData().getString(DIRECTION));
-        blockPosList.deserialize(getPersistentData().getList(STORAGE_BLOCK_LIST, Tag.TAG_INT_ARRAY));
-        canPlaceItemPosList.deserialize(getPersistentData().getList(CAN_PLACE_ITEM_POS_LIST, Tag.TAG_INT_ARRAY));
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        isRender = input.getBooleanOr(IS_RENDER, false);
+        canPlaceItem = input.getBooleanOr(CAN_PLACE_ITEM, false);
+        storageState = Block.stateById(input.getIntOr(STORAGE_STATE_ID, Block.getId(Blocks.AIR.defaultBlockState())));
+        input.readChild(STORAGE_ITEM, handler);
+        direction = input.read(DIRECTION, Direction.CODEC).orElse(Direction.SOUTH);
+        input.readChild(STORAGE_BLOCK_LIST, blockPosList);
+        input.readChild(CAN_PLACE_ITEM_POS_LIST, canPlaceItemPosList);
     }
 
     public BlockPos getWorldPosition() {
@@ -101,6 +102,14 @@ public class TileEntityAltar extends BlockEntity {
         }
     }
 
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        ItemStack stack = ItemUtil.getStack(handler, 0);
+        if (!stack.isEmpty() && this.level != null) {
+            Block.popResource(this.level, pos.offset(0, 1, 0), stack);
+        }
+    }
+
     public boolean isRender() {
         return isRender;
     }
@@ -123,7 +132,7 @@ public class TileEntityAltar extends BlockEntity {
 
     public ItemStack getStorageItem() {
         if (canPlaceItem) {
-            return handler.getStackInSlot(0);
+            return ItemUtil.getStack(handler, 0);
         }
         return ItemStack.EMPTY;
     }

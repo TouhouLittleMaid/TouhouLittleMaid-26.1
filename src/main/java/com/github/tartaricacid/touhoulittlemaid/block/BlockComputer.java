@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityComputer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -21,6 +22,15 @@ public class BlockComputer extends BlockJoy {
             Block.box(6, 3, 6, 10, 9, 10),
             Block.box(1, 9, 1, 15, 12, 15),
             Block.box(0, 12, 0, 16, 14, 16));
+    private static final MapCodec<BlockComputer> CODEC = simpleCodec(BlockComputer::new);
+
+    public BlockComputer(Properties properties) {
+        super(properties);
+    }
+
+    public BlockComputer(Identifier id) {
+        super(id);
+    }
 
     @Override
     protected Vec3 sitPosition() {
@@ -55,6 +65,6 @@ public class BlockComputer extends BlockJoy {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec((properties) -> new BlockComputer());
+        return CODEC;
     }
 }

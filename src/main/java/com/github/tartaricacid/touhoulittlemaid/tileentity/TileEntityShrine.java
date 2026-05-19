@@ -11,49 +11,51 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import javax.annotation.Nullable;
 
 public class TileEntityShrine extends BlockEntity {
-    public static final BlockEntityType<TileEntityShrine> TYPE = BlockEntityType.Builder.of(TileEntityShrine::new, InitBlocks.SHRINE.get()).build(null);
     private static final String STORAGE_ITEM = "StorageItem";
-    private final ItemStackHandler handler = new ItemStackHandler() {
+    private final ItemStacksResourceHandler handler = new ItemStacksResourceHandler(1) {
         @Override
-        protected void onContentsChanged(int slot) {
+        protected void onContentsChanged(int index, ItemStack previousContents) {
             // 当物品栏内容发生变化时，这个方法会被调用
             // 我们需要在这里调用 refresh() 来通知 Minecraft 该方块实体的数据已更新，需要保存并同步到客户端
             refresh();
         }
 
         @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return stack.getItem() == InitItems.FILM.get();
+        public boolean isValid(int index, ItemResource resource) {
+            return resource.is(InitItems.FILM.get());
         }
 
         @Override
-        public int getSlotLimit(int slot) {
+        protected int getCapacity(int index, ItemResource resource) {
             return 1;
         }
     };
 
     public TileEntityShrine(BlockPos pos, BlockState blockState) {
-        super(TYPE, pos, blockState);
+        super(InitBlocks.SHRINE_TE.get(), pos, blockState);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        getPersistentData().put(STORAGE_ITEM, handler.serializeNBT(pRegistries));
-        super.saveAdditional(pTag, pRegistries);
+    protected void saveAdditional(ValueOutput output) {
+        output.putChild(STORAGE_ITEM, handler);
+        super.saveAdditional(output);
     }
 
     @Override
-    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        handler.deserializeNBT(pRegistries, getPersistentData().getCompound(STORAGE_ITEM));
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        input.readChild(STORAGE_ITEM, handler);
     }
 
     @Override
@@ -76,22 +78,37 @@ public class TileEntityShrine extends BlockEntity {
     }
 
     public ItemStack getStorageItem() {
-        return handler.getStackInSlot(0);
+        return ItemUtil.getStack(handler, 0);
     }
 
     public void insertStorageItem(ItemStack stack) {
-        handler.insertItem(0, stack, false);
+        if (stack.isEmpty()) {
+            return;
+        }
+        try (Transaction tx = Transaction.openRoot()) {
+            handler.insert(ItemResource.of(stack), stack.count(), tx);
+            tx.commit();
+        }
     }
 
     public ItemStack extractStorageItem() {
-        return handler.extractItem(0, 1, false);
+        try (Transaction tx = Transaction.openRoot()) {
+            ItemResource resource = handler.getResource(0);
+            int extract = handler.extract(0, resource, 1, tx);
+            if (extract > 0) {
+                tx.commit();
+                return resource.toStack(extract);
+            } else {
+                return ItemStack.EMPTY;
+            }
+        }
     }
 
     public boolean isEmpty() {
-        return handler.getStackInSlot(0).isEmpty();
+        return handler.getResource(0).isEmpty();
     }
 
     public boolean canInsert(ItemStack stack) {
-        return handler.isItemValid(0, stack);
+        return handler.isValid(0, ItemResource.of(stack));
     }
 }

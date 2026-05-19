@@ -8,9 +8,10 @@
 package com.github.tartaricacid.touhoulittlemaid.api.game.gomoku;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * 棋子点位
@@ -64,18 +65,16 @@ public class Point {
         return type;
     }
 
-    public static CompoundTag toTag(Point point) {
-        CompoundTag tag = new CompoundTag();
-        tag.putInt("x", point.x);
-        tag.putInt("y", point.y);
-        tag.putInt("type", point.type);
-        return tag;
+    public static void toTag(Point point, ValueOutput output) {
+        output.putInt("x", point.x);
+        output.putInt("y", point.y);
+        output.putInt("type", point.type);
     }
 
-    public static Point fromTag(CompoundTag tag) {
-        int x = tag.getInt("x");
-        int y = tag.getInt("y");
-        int type = tag.getInt("type");
+    public static Point fromTag(ValueInput input) {
+        int x = input.getIntOr("x", 0);
+        int y = input.getIntOr("y", 0);
+        int type = input.getIntOr("type", 0);
         return new Point(x, y, type);
     }
 

@@ -184,7 +184,7 @@ public class AquacultureFishingHook extends MaidFishingHook implements IEntityWi
             rodDamage = currentDamage;
         }
         if (hook != Hooks.EMPTY && hook.getDurabilityChance() > 0) {
-            if (level.random.nextDouble() >= hook.getDurabilityChance()) {
+            if (level.getRandom().nextDouble() >= hook.getDurabilityChance()) {
                 rodItem.hurtAndBreak(rodDamage, maid, EquipmentSlot.MAINHAND);
             }
         } else {

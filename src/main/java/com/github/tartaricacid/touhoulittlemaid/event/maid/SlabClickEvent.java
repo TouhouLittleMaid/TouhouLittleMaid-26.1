@@ -28,7 +28,7 @@ public final class SlabClickEvent {
                 ItemSmartSlab.storeMaidData(output, maid);
                 maid.spawnExplosionParticle();
                 maid.discard();
-                maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, maid.level.random.nextFloat() * 0.1F + 0.9F);
+                maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, maid.level.getRandom().nextFloat() * 0.1F + 0.9F);
                 player.setItemInHand(InteractionHand.MAIN_HAND, output);
                 player.getCooldowns().addCooldown(maidSmartSlab, 20);
             }

@@ -7,17 +7,16 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGarageKit;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.client.particle.TerrainParticle;
+import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
@@ -29,85 +28,43 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
-import org.jetbrains.annotations.NotNull;
+import net.neoforged.neoforge.event.EventHooks;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.MODEL_ID_TAG_NAME;
 
 public class BlockGarageKit extends Block implements EntityBlock {
     public static final VoxelShape BLOCK_AABB = Block.box(4, 0, 4, 12, 16, 12);
-    public static final IClientBlockExtensions CLIENT_BLOCK_EXTENSIONS = FMLEnvironment.dist == Dist.CLIENT ? new IClientBlockExtensions() {
-        @Override
-        public boolean addHitEffects(BlockState state, Level world, HitResult target, ParticleEngine manager) {
-            if (target instanceof BlockHitResult blockTarget && world instanceof ClientLevel clientWorld) {
-                BlockPos pos = blockTarget.getBlockPos();
-                this.crack(clientWorld, pos, Blocks.CLAY.defaultBlockState(), blockTarget.getDirection());
-            }
-            return true;
-        }
 
-        @Override
-        public boolean addDestroyEffects(BlockState state, Level world, BlockPos pos, ParticleEngine manager) {
-            Minecraft.getInstance().particleEngine.destroy(pos, Blocks.CLAY.defaultBlockState());
-            return true;
-        }
-
-        @OnlyIn(Dist.CLIENT)
-        private void crack(ClientLevel world, BlockPos pos, BlockState state, Direction side) {
-            if (state.getRenderShape() != RenderShape.INVISIBLE) {
-                int posX = pos.getX();
-                int posY = pos.getY();
-                int posZ = pos.getZ();
-                AABB aabb = state.getShape(world, pos).bounds();
-                double x = posX + world.random.nextDouble() * (aabb.maxX - aabb.minX - 0.2) + 0.1 + aabb.minX;
-                double y = posY + world.random.nextDouble() * (aabb.maxY - aabb.minY - 0.2) + 0.1 + aabb.minY;
-                double z = posZ + world.random.nextDouble() * (aabb.maxZ - aabb.minZ - 0.2) + 0.1 + aabb.minZ;
-                if (side == Direction.DOWN) {
-                    y = posY + aabb.minY - 0.1;
-                }
-                if (side == Direction.UP) {
-                    y = posY + aabb.maxY + 0.1;
-                }
-                if (side == Direction.NORTH) {
-                    z = posZ + aabb.minZ - 0.1;
-                }
-                if (side == Direction.SOUTH) {
-                    z = posZ + aabb.maxZ + 0.1;
-                }
-                if (side == Direction.WEST) {
-                    x = posX + aabb.minX - 0.1;
-                }
-                if (side == Direction.EAST) {
-                    x = posX + aabb.maxX + 0.1;
-                }
-                TerrainParticle diggingParticle = new TerrainParticle(world, x, y, z, 0, 0, 0, state);
-                Minecraft.getInstance().particleEngine.add(diggingParticle.updateSprite(state, pos).setPower(0.2f).scale(0.6f));
-            }
-        }
-    } : null;
-
-    public BlockGarageKit() {
-        super(BlockBehaviour.Properties.of().sound(SoundType.MUD).strength(1, 2).noOcclusion());
+    public BlockGarageKit(Identifier id) {
+        super(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, id))
+                .sound(SoundType.MUD)
+                .strength(1, 2)
+                .noOcclusion());
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void fillItemCategory(CreativeModeTab.Output items) {
+        if (FMLEnvironment.getDist() != Dist.CLIENT) {
+            return;
+        }
         for (String modelId : CustomPackLoader.MAID_MODELS.getModelIdSet()) {
             ItemStack stack = new ItemStack(InitBlocks.GARAGE_KIT.get());
             CustomData customData = stack.get(InitDataComponent.MAID_INFO);
@@ -117,7 +74,8 @@ public class BlockGarageKit extends Block implements EntityBlock {
             } else {
                 data = customData.copyTag();
             }
-            data.putString(InitDataComponent.ENTITY_ID_TAG_NAME, Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get())).toString());
+            Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get());
+            data.putString(InitDataComponent.ENTITY_ID_TAG_NAME, key.toString());
             data.putString(MODEL_ID_TAG_NAME, modelId);
             // 创造模式物品栏数据需要强制指定 YSM 渲染为空
             data.putBoolean(EntityMaid.IS_YSM_MODEL_TAG, false);
@@ -133,15 +91,20 @@ public class BlockGarageKit extends Block implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock()) && !isMoving) {
-            popResource(worldIn, pos, getGarageKitFromWorld(worldIn, pos));
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        List<ItemStack> drops = Lists.newArrayList(super.getDrops(state, params));
+        BlockEntity parameter = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (parameter instanceof TileEntityGarageKit te) {
+            ItemStack stack = new ItemStack(InitBlocks.GARAGE_KIT.get());
+            stack.set(InitDataComponent.MAID_INFO, CustomData.of(te.getExtraData()));
+            drops.add(stack);
         }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
+        return drops;
     }
 
     @Override
-    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state,
+                            @Nullable LivingEntity placer, ItemStack stack) {
         this.getGarageKit(worldIn, pos).ifPresent(te -> {
             Direction facing = Direction.SOUTH;
             if (placer != null) {
@@ -152,35 +115,38 @@ public class BlockGarageKit extends Block implements EntityBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(@NotNull BlockState state, @NotNull HitResult target, @NotNull LevelReader world, @NotNull BlockPos pos, @NotNull Player player) {
-        return getGarageKitFromWorld(world, pos);
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state,
+                                       boolean includeData, Player player) {
+        return getGarageKitFromWorld(level, pos);
     }
 
     @Override
-    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos,
+                                       Player playerIn, InteractionHand hand, BlockHitResult hit) {
         ItemStack stack = playerIn.getItemInHand(hand);
         if (!(worldIn instanceof ServerLevel) || !(stack.getItem() instanceof SpawnEggItem)) {
-            return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS;
         }
         BlockEntity tile = worldIn.getBlockEntity(pos);
         if (!(tile instanceof TileEntityGarageKit garageKit)) {
-            return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS;
         }
-        EntityType<?> type = ((SpawnEggItem) stack.getItem()).getType(stack);
-        Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(type);
-        if (key == null) {
-            return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        EntityType<?> type = SpawnEggItem.getType(stack);
+        if (type == null) {
+            return InteractionResult.PASS;
         }
 
-        String id = key.toString();
+
+        String id = BuiltInRegistries.ENTITY_TYPE.getKey(type).toString();
         CompoundTag data = new CompoundTag();
         data.putString("id", id);
 
-        Entity entity = type.create(worldIn);
-        if (entity instanceof Mob mobEntity) {
-            mobEntity.finalizeSpawn((ServerLevel) worldIn, worldIn.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWN_EGG, null);
-            CustomData.of(data).loadInto(mobEntity);
-            mobEntity.addAdditionalSaveData(data);
+        Entity entity = type.create(worldIn, EntitySpawnReason.SPAWN_ITEM_USE);
+        if (entity instanceof Mob mobEntity && worldIn instanceof ServerLevel serverLevel) {
+            EventHooks.finalizeMobSpawn(mobEntity, serverLevel, serverLevel.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWN_ITEM_USE, null);
+            TagValueOutput context = TagValueOutput.createWithoutContext(ProblemReporter.DISCARDING);
+            mobEntity.saveWithoutId(context);
+            data.merge(context.buildResult());
         }
 
         garageKit.setData(garageKit.getFacing(), data);
@@ -199,22 +165,6 @@ public class BlockGarageKit extends Block implements EntityBlock {
             return Optional.of((TileEntityGarageKit) te);
         }
         return Optional.empty();
-    }
-
-    @Nullable
-    public EntityType<?> getType(@Nullable CompoundTag nbt) {
-        if (nbt != null && nbt.contains("EntityTag", Tag.TAG_COMPOUND)) {
-            CompoundTag compound = nbt.getCompound("EntityTag");
-            if (compound.contains("id", Tag.TAG_STRING)) {
-                return EntityType.byString(compound.getString("id")).orElse(null);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override

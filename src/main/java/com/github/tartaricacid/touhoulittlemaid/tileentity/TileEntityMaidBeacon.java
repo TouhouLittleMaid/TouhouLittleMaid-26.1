@@ -4,6 +4,8 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityPowerPoint;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
+import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBeacon;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -11,24 +13,26 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class TileEntityMaidBeacon extends BlockEntity {
-    public static final BlockEntityType<TileEntityMaidBeacon> TYPE = BlockEntityType.Builder.of(TileEntityMaidBeacon::new, InitBlocks.MAID_BEACON.get()).build(null);
     public static final String POTION_INDEX_TAG = "PotionIndex";
     public static final String STORAGE_POWER_TAG = "StoragePower";
     public static final String OVERFLOW_DELETE_TAG = "OverflowDelete";
@@ -37,7 +41,7 @@ public class TileEntityMaidBeacon extends BlockEntity {
     private boolean overflowDelete = false;
 
     public TileEntityMaidBeacon(BlockPos blockPos, BlockState blockState) {
-        super(TYPE, blockPos, blockState);
+        super(InitBlocks.MAID_BEACON_TE.get(), blockPos, blockState);
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, TileEntityMaidBeacon beacon) {
@@ -51,7 +55,8 @@ public class TileEntityMaidBeacon extends BlockEntity {
     }
 
     private void updateBeaconEffect(Level world, Holder<MobEffect> potion) {
-        List<EntityMaid> list = world.getEntitiesOfClass(EntityMaid.class, new AABB(getBlockPos()).inflate(8, 8, 8), LivingEntity::isAlive);
+        AABB inflate = new AABB(getBlockPos()).inflate(8, 8, 8);
+        List<EntityMaid> list = world.getEntitiesOfClass(EntityMaid.class, inflate, LivingEntity::isAlive);
         for (EntityMaid maid : list) {
             maid.addEffect(new MobEffectInstance(potion, 100, 1, true, true));
         }
@@ -59,7 +64,8 @@ public class TileEntityMaidBeacon extends BlockEntity {
 
     private void updateAbsorbPower(Level world) {
         int range = MiscConfig.SHRINE_LAMP_MAX_RANGE.get();
-        List<EntityPowerPoint> list = world.getEntitiesOfClass(EntityPowerPoint.class, new AABB(getBlockPos()).inflate(range, range, range), Entity::isAlive);
+        AABB inflate = new AABB(getBlockPos()).inflate(range, range, range);
+        List<EntityPowerPoint> list = world.getEntitiesOfClass(EntityPowerPoint.class, inflate, Entity::isAlive);
         for (EntityPowerPoint powerPoint : list) {
             float addNum = this.getStoragePower() + powerPoint.value / 100.0f;
             if (addNum <= this.getMaxStorage()) {
@@ -76,25 +82,25 @@ public class TileEntityMaidBeacon extends BlockEntity {
     }
 
     @Override
-    public void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        getPersistentData().putInt(POTION_INDEX_TAG, potionIndex);
-        getPersistentData().putFloat(STORAGE_POWER_TAG, storagePower);
-        getPersistentData().putBoolean(OVERFLOW_DELETE_TAG, overflowDelete);
-        super.saveAdditional(pTag, pRegistries);
+    public void saveAdditional(ValueOutput output) {
+        output.putInt(POTION_INDEX_TAG, potionIndex);
+        output.store(STORAGE_POWER_TAG, Codec.FLOAT, storagePower);
+        output.putBoolean(OVERFLOW_DELETE_TAG, overflowDelete);
+        super.saveAdditional(output);
     }
 
     @Override
-    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        potionIndex = getPersistentData().getInt(POTION_INDEX_TAG);
-        storagePower = getPersistentData().getFloat(STORAGE_POWER_TAG);
-        overflowDelete = getPersistentData().getBoolean(OVERFLOW_DELETE_TAG);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        potionIndex = input.getIntOr(POTION_INDEX_TAG, -1);
+        storagePower = input.read(STORAGE_POWER_TAG, Codec.FLOAT).orElse(0.0f);
+        overflowDelete = input.getBooleanOr(OVERFLOW_DELETE_TAG, false);
     }
 
     public void loadData(CompoundTag data) {
-        potionIndex = data.getInt(POTION_INDEX_TAG);
-        storagePower = data.getFloat(STORAGE_POWER_TAG);
-        overflowDelete = data.getBoolean(OVERFLOW_DELETE_TAG);
+        potionIndex = data.getInt(POTION_INDEX_TAG).orElse(-1);
+        storagePower = data.getFloat(STORAGE_POWER_TAG).orElse(0.0f);
+        overflowDelete = data.getBoolean(OVERFLOW_DELETE_TAG).orElse(false);
     }
 
     @Override
@@ -106,6 +112,14 @@ public class TileEntityMaidBeacon extends BlockEntity {
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (this.level instanceof ServerLevel serverLevel) {
+            ItemStack itemStack = ItemMaidBeacon.tileEntityToItemStack(serverLevel.registryAccess(), this);
+            Block.popResource(serverLevel, pos, itemStack);
+        }
     }
 
     public int getPotionIndex() {
@@ -153,10 +167,10 @@ public class TileEntityMaidBeacon extends BlockEntity {
 
     public enum BeaconEffect {
         // Effects
-        SPEED(MobEffects.MOVEMENT_SPEED),
+        SPEED(MobEffects.SPEED),
         FIRE_RESISTANCE(MobEffects.FIRE_RESISTANCE),
-        STRENGTH(MobEffects.DAMAGE_BOOST),
-        RESISTANCE(MobEffects.DAMAGE_RESISTANCE),
+        STRENGTH(MobEffects.STRENGTH),
+        RESISTANCE(MobEffects.RESISTANCE),
         REGENERATION(MobEffects.REGENERATION);
 
         private final Holder<MobEffect> effect;
@@ -173,6 +187,4 @@ public class TileEntityMaidBeacon extends BlockEntity {
             return effect;
         }
     }
-
-
 }

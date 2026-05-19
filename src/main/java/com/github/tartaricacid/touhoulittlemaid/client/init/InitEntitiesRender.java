@@ -10,7 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityDanmaku;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityThrowPowerPoint;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.*;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -41,20 +41,19 @@ public final class InitEntitiesRender {
         EntityRenderers.register(EntityType.MAGMA_CUBE, EntityMarisaYukkuriSlimeRender::new);
         EntityRenderers.register(EntityType.EXPERIENCE_ORB, ReplaceExperienceOrbRenderer::new);
 
-        BlockEntityRenderers.register(TileEntityAltar.TYPE, TileEntityAltarRenderer::new);
-        BlockEntityRenderers.register(TileEntityStatue.TYPE, TileEntityStatueRenderer::new);
-        BlockEntityRenderers.register(TileEntityGarageKit.TYPE, TileEntityGarageKitRenderer::new);
-        BlockEntityRenderers.register(TileEntityGomoku.TYPE, TileEntityGomokuRenderer::new);
-        BlockEntityRenderers.register(TileEntityCChess.TYPE, TileEntityCChessRenderer::new);
-        BlockEntityRenderers.register(TileEntityWChess.TYPE, TileEntityWChessRenderer::new);
-        BlockEntityRenderers.register(TileEntityKeyboard.TYPE, TileEntityKeyboardRenderer::new);
-        BlockEntityRenderers.register(TileEntityBookshelf.TYPE, TileEntityBookshelfRenderer::new);
-        BlockEntityRenderers.register(TileEntityComputer.TYPE, TileEntityComputerRenderer::new);
-        BlockEntityRenderers.register(TileEntityShrine.TYPE, TileEntityShrineRenderer::new);
-        BlockEntityRenderers.register(TileEntityShrine.TYPE, TileEntityShrineRenderer::new);
-        BlockEntityRenderers.register(TileEntityPicnicMat.TYPE, PicnicMatRender::new);
-        BlockEntityRenderers.register(TileEntityMaidBed.TYPE, TileEntityMaidBedRenderer::new);
-        BlockEntityRenderers.register(TileEntitySnackCabinet.TYPE, TileEntitySnackCabinetRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.ALTAR_TE.get(), TileEntityAltarRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.STATUE_TE.get(), TileEntityStatueRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.GARAGE_KIT_TE.get(), TileEntityGarageKitRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.GOMOKU_TE.get(), TileEntityGomokuRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.CCHESS_TE.get(), TileEntityCChessRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.WCHESS_TE.get(), TileEntityWChessRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.KEYBOARD_TE.get(), TileEntityKeyboardRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.BOOKSHELF_TE.get(), TileEntityBookshelfRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.COMPUTER_TE.get(), TileEntityComputerRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.SHRINE_TE.get(), TileEntityShrineRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.PICNIC_MAT_TE.get(), PicnicMatRender::new);
+        BlockEntityRenderers.register(InitBlocks.MAID_BED_TE.get(), TileEntityMaidBedRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.SNACK_CABINET_TE.get(), TileEntitySnackCabinetRenderer::new);
     }
 
     @SubscribeEvent

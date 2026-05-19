@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityBookshelf;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -16,6 +17,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockBookshelf extends BlockJoy {
     public static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 5, 15);
+    private static final MapCodec<BlockBookshelf> CODEC = simpleCodec(BlockBookshelf::new);
+
+    public BlockBookshelf(Identifier id) {
+        super(id);
+    }
+
+    public BlockBookshelf(Properties properties) {
+        super(properties);
+    }
 
     @Override
     protected Vec3 sitPosition() {
@@ -45,6 +55,6 @@ public class BlockBookshelf extends BlockJoy {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec((properties) -> new BlockBookshelf());
+        return CODEC;
     }
 }

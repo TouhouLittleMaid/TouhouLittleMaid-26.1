@@ -32,19 +32,48 @@ public final class InitBlocks {
     public static DeferredBlock<Block> SCARECROW = BLOCKS.register("scarecrow", BlockScarecrow::new);
     public static DeferredBlock<Block> SNACK_CABINET = BLOCKS.register("snack_cabinet", BlockSnackCabinet::new);
 
-    public static Supplier<BlockEntityType<TileEntityAltar>> ALTAR_TE = TILE_ENTITIES.register("altar", () -> TileEntityAltar.TYPE);
-    public static Supplier<BlockEntityType<TileEntityStatue>> STATUE_TE = TILE_ENTITIES.register("statue", () -> TileEntityStatue.TYPE);
-    public static Supplier<BlockEntityType<TileEntityGarageKit>> GARAGE_KIT_TE = TILE_ENTITIES.register("garage_kit", () -> TileEntityGarageKit.TYPE);
-    public static Supplier<BlockEntityType<TileEntityMaidBeacon>> MAID_BEACON_TE = TILE_ENTITIES.register("maid_beacon", () -> TileEntityMaidBeacon.TYPE);
-    public static Supplier<BlockEntityType<TileEntityModelSwitcher>> MODEL_SWITCHER_TE = TILE_ENTITIES.register("model_switcher", () -> TileEntityModelSwitcher.TYPE);
-    public static Supplier<BlockEntityType<TileEntityGomoku>> GOMOKU_TE = TILE_ENTITIES.register("gomoku", () -> TileEntityGomoku.TYPE);
-    public static Supplier<BlockEntityType<TileEntityCChess>> CCHESS_TE = TILE_ENTITIES.register("cchess", () -> TileEntityCChess.TYPE);
-    public static Supplier<BlockEntityType<TileEntityWChess>> WCHESS_TE = TILE_ENTITIES.register("wchess", () -> TileEntityWChess.TYPE);
-    public static Supplier<BlockEntityType<TileEntityKeyboard>> KEYBOARD_TE = TILE_ENTITIES.register("keyboard", () -> TileEntityKeyboard.TYPE);
-    public static Supplier<BlockEntityType<TileEntityBookshelf>> BOOKSHELF_TE = TILE_ENTITIES.register("bookshelf", () -> TileEntityBookshelf.TYPE);
-    public static Supplier<BlockEntityType<TileEntityComputer>> COMPUTER_TE = TILE_ENTITIES.register("computer", () -> TileEntityComputer.TYPE);
-    public static Supplier<BlockEntityType<TileEntityShrine>> SHRINE_TE = TILE_ENTITIES.register("shrine", () -> TileEntityShrine.TYPE);
-    public static Supplier<BlockEntityType<TileEntityPicnicMat>> PICNIC_MAT_TE = TILE_ENTITIES.register("picnic_mat", () -> TileEntityPicnicMat.TYPE);
-    public static Supplier<BlockEntityType<TileEntityMaidBed>> MAID_BED_TE = TILE_ENTITIES.register("maid_bed", () -> TileEntityMaidBed.TYPE);
-    public static Supplier<BlockEntityType<TileEntitySnackCabinet>> SNACK_CABINET_TE = TILE_ENTITIES.register("snack_cabinet", () -> TileEntitySnackCabinet.TYPE);
+    public static Supplier<BlockEntityType<TileEntityAltar>> ALTAR_TE = TILE_ENTITIES.register("altar",
+            () -> new BlockEntityType<>(TileEntityAltar::new, ALTAR.get()));
+
+    public static Supplier<BlockEntityType<TileEntityStatue>> STATUE_TE = TILE_ENTITIES.register("statue",
+            () -> new BlockEntityType<>(TileEntityStatue::new, STATUE.get()));
+
+    public static Supplier<BlockEntityType<TileEntityGarageKit>> GARAGE_KIT_TE = TILE_ENTITIES.register("garage_kit", () ->
+            new BlockEntityType<>(TileEntityGarageKit::new, GARAGE_KIT.get()));
+
+    public static Supplier<BlockEntityType<TileEntityMaidBeacon>> MAID_BEACON_TE = TILE_ENTITIES.register("maid_beacon",
+            () -> new BlockEntityType<>(TileEntityMaidBeacon::new, MAID_BEACON.get()));
+
+    public static Supplier<BlockEntityType<TileEntityModelSwitcher>> MODEL_SWITCHER_TE = TILE_ENTITIES.register("model_switcher",
+            () -> new BlockEntityType<>(TileEntityModelSwitcher::new, MODEL_SWITCHER.get()));
+
+    public static Supplier<BlockEntityType<TileEntityGomoku>> GOMOKU_TE = TILE_ENTITIES.register("gomoku",
+            () -> new BlockEntityType<>(TileEntityGomoku::new, GOMOKU.get()));
+
+    public static Supplier<BlockEntityType<TileEntityCChess>> CCHESS_TE = TILE_ENTITIES.register("cchess",
+            () -> new BlockEntityType<>(TileEntityCChess::new, CCHESS.get()));
+
+    public static Supplier<BlockEntityType<TileEntityWChess>> WCHESS_TE = TILE_ENTITIES.register("wchess",
+            () -> new BlockEntityType<>(TileEntityWChess::new, WCHESS.get()));
+
+    public static Supplier<BlockEntityType<TileEntityKeyboard>> KEYBOARD_TE = TILE_ENTITIES.register("keyboard",
+            () -> new BlockEntityType<>(TileEntityKeyboard::new, KEYBOARD.get()));
+
+    public static Supplier<BlockEntityType<TileEntityBookshelf>> BOOKSHELF_TE = TILE_ENTITIES.register("bookshelf",
+            () -> new BlockEntityType<>(TileEntityBookshelf::new, BOOKSHELF.get()));
+
+    public static Supplier<BlockEntityType<TileEntityComputer>> COMPUTER_TE = TILE_ENTITIES.register("computer",
+            () -> new BlockEntityType<>(TileEntityComputer::new, COMPUTER.get()));
+
+    public static Supplier<BlockEntityType<TileEntityShrine>> SHRINE_TE = TILE_ENTITIES.register("shrine",
+            () -> new BlockEntityType<>(TileEntityShrine::new, SHRINE.get()));
+
+    public static Supplier<BlockEntityType<TileEntityPicnicMat>> PICNIC_MAT_TE = TILE_ENTITIES.register("picnic_mat",
+            () -> new BlockEntityType<>(TileEntityPicnicMat::new, PICNIC_MAT.get()));
+
+    public static Supplier<BlockEntityType<TileEntityMaidBed>> MAID_BED_TE = TILE_ENTITIES.register("maid_bed",
+            () -> new BlockEntityType<>(TileEntityMaidBed::new, MAID_BED.get()));
+
+    public static Supplier<BlockEntityType<TileEntitySnackCabinet>> SNACK_CABINET_TE = TILE_ENTITIES.register("snack_cabinet",
+            () -> new BlockEntityType<>(TileEntitySnackCabinet::new, SNACK_CABINET.get()));
 }

@@ -7,7 +7,10 @@ import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityModelSwitch
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -25,8 +28,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.EnumProperty; import net.minecraft.core.Direction;
-
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
@@ -36,10 +39,19 @@ import java.util.UUID;
 
 public class BlockModelSwitcher extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+    private static final MapCodec<BlockModelSwitcher> CODEC = simpleCodec(BlockModelSwitcher::new);
 
-    public BlockModelSwitcher() {
-        super(BlockBehaviour.Properties.of().sound(SoundType.STONE).strength(50.0F, 1200.0F));
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    public BlockModelSwitcher(Identifier id) {
+        super(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, id))
+                .sound(SoundType.STONE)
+                .strength(50.0F, 1200.0F));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH));
+    }
+
+    public BlockModelSwitcher(Properties properties) {
+        super(properties);
     }
 
     @Override
@@ -68,16 +80,18 @@ public class BlockModelSwitcher extends BaseEntityBlock {
     }
 
     @Override
-    public void neighborChanged(BlockState pState, Level pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
-        if (pLevel.isClientSide()) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean isMoving) {
+        if (level.isClientSide()) {
             return;
         }
-        Direction direction = pState.getValue(FACING);
-        boolean leftSignal = pLevel.getSignal(pPos.offset(direction.getCounterClockWise().getNormal()), direction.getCounterClockWise()) > 0;
-        boolean rightSignal = pLevel.getSignal(pPos.offset(direction.getClockWise().getNormal()), direction.getClockWise()) > 0;
+        Direction direction = state.getValue(FACING);
+        Direction counterClockWise = direction.getCounterClockWise();
+        Direction clockWise = direction.getClockWise();
+        boolean leftSignal = level.getSignal(pos.offset(counterClockWise.getUnitVec3i()), counterClockWise) > 0;
+        boolean rightSignal = level.getSignal(pos.offset(clockWise.getUnitVec3i()), clockWise) > 0;
         boolean hasSignal = leftSignal || rightSignal;
-        BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-        if (blockEntity instanceof TileEntityModelSwitcher switcher && pLevel instanceof ServerLevel) {
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof TileEntityModelSwitcher switcher && level instanceof ServerLevel serverLevel) {
             if (switcher.isPowered() != hasSignal) {
                 switcher.setPowered(!switcher.isPowered());
                 if (!switcher.isPowered()) {
@@ -89,7 +103,6 @@ public class BlockModelSwitcher extends BaseEntityBlock {
                 }
                 int index = calculateIndex(leftSignal, switcher.getInfoList().size(), switcher.getIndex());
                 switcher.setIndex(index);
-                ServerLevel serverLevel = (ServerLevel) pLevel;
                 Entity entity = serverLevel.getEntity(uuid);
                 if (entity instanceof EntityMaid && entity.isAlive()) {
                     this.setMaidData(switcher, (EntityMaid) entity);
@@ -135,12 +148,13 @@ public class BlockModelSwitcher extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack stack, BlockState state, Level worldIn, BlockPos pos,
+                                       Player player, InteractionHand handIn, BlockHitResult hit) {
         if (worldIn.getBlockEntity(pos) instanceof TileEntityModelSwitcher) {
             if (!worldIn.isClientSide() && player instanceof ServerPlayer serverPlayer) {
                 PacketDistributor.sendToPlayer(serverPlayer, new OpenSwitcherGuiPackage(pos));
             }
-            return InteractionResult.sidedSuccess(worldIn.isClientSide());
+            return InteractionResult.SUCCESS;
         }
         return super.useItemOn(stack, state, worldIn, pos, player, handIn, hit);
     }
@@ -155,24 +169,8 @@ public class BlockModelSwitcher extends BaseEntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock()) && !isMoving) {
-            BlockEntity te = worldIn.getBlockEntity(pos);
-            if (te instanceof TileEntityModelSwitcher) {
-                popResource(worldIn, pos, ItemModelSwitcher.tileEntityToItemStack(worldIn.registryAccess(), (TileEntityModelSwitcher) te));
-            }
-        }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
-    }
-
-    @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec((properties) -> new BlockModelSwitcher());
-    }
-
-    @Override
-    public RenderShape getRenderShape(BlockState pState) {
-        return RenderShape.MODEL;
+        return CODEC;
     }
 
     @Override

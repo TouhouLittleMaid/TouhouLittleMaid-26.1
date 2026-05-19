@@ -6,7 +6,11 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -15,7 +19,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -42,20 +47,33 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
     protected static final VoxelShape UPPER_AABB_SOUTH = VoxelShapeUtils.rotateHorizontal(UPPER_AABB_NORTH, Direction.SOUTH);
     protected static final VoxelShape UPPER_AABB_EAST = VoxelShapeUtils.rotateHorizontal(UPPER_AABB_NORTH, Direction.EAST);
     protected static final VoxelShape UPPER_AABB_WEST = VoxelShapeUtils.rotateHorizontal(UPPER_AABB_NORTH, Direction.WEST);
+    private static final MapCodec<BlockScarecrow> CODEC = simpleCodec(BlockScarecrow::new);
 
+    public BlockScarecrow(Identifier id) {
+        super(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, id))
+                .sound(SoundType.GRASS)
+                .sound(SoundType.GRASS)
+                .strength(0.2F)
+                .noOcclusion());
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(HALF, DoubleBlockHalf.LOWER)
+                .setValue(FACING, Direction.NORTH));
+    }
 
-    public BlockScarecrow() {
-        super(BlockBehaviour.Properties.of().sound(SoundType.GRASS).sound(SoundType.GRASS).strength(0.2F).noOcclusion());
-        this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(FACING, Direction.NORTH));
+    public BlockScarecrow(Properties properties) {
+        super(properties);
     }
 
     @Override
     protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return simpleCodec(properties -> new BlockScarecrow());
+        return CODEC;
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos currentPos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
+                                  BlockPos pos, Direction direction, BlockPos neighbourPos,
+                                  BlockState neighborState, RandomSource random) {
         DoubleBlockHalf currentHalf = state.getValue(HALF);
         boolean isLower = currentHalf == DoubleBlockHalf.LOWER && direction == Direction.UP;
         boolean isUpper = currentHalf == DoubleBlockHalf.UPPER && direction == Direction.DOWN;
@@ -65,7 +83,7 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
             }
             return Blocks.AIR.defaultBlockState();
         }
-        return super.updateShape(state, direction, neighborState, level, currentPos, neighborPos);
+        return super.updateShape(state, level, ticks, pos, direction, neighbourPos, neighborState, random);
     }
 
     @Override
@@ -92,7 +110,7 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
         BlockPos clickedPos = context.getClickedPos();
         Level level = context.getLevel();
         BlockPos abovePos = clickedPos.above();
-        if (clickedPos.getY() < level.getMaxBuildHeight() - 1 && level.getBlockState(abovePos).canBeReplaced(context)) {
+        if (clickedPos.getY() < level.getMaxY() - 1 && level.getBlockState(abovePos).canBeReplaced(context)) {
             Direction horizontalDirection = context.getHorizontalDirection();
             return this.defaultBlockState().setValue(FACING, horizontalDirection).setValue(HALF, DoubleBlockHalf.LOWER);
         }

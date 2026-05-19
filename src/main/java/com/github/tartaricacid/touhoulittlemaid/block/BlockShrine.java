@@ -4,10 +4,14 @@ import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemFilm;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityShrine;
+import com.google.common.collect.Lists;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -24,25 +28,38 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.EnumProperty; import net.minecraft.core.Direction;
-
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class BlockShrine extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final VoxelShape SHAPE = Shapes.or(Block.box(0, 0, 0, 16, 5, 16),
             Block.box(2, 5, 2, 14, 10, 14),
             Block.box(4, 10, 4, 12, 16, 12));
+    private static final MapCodec<BlockShrine> CODEC = simpleCodec(BlockShrine::new);
 
-    public BlockShrine() {
-        super(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(SoundType.WOOD).strength(2.0F, 3.0F).noOcclusion());
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+    public BlockShrine(Identifier id) {
+        super(BlockBehaviour.Properties.of()
+                .setId(ResourceKey.create(Registries.BLOCK, id))
+                .mapColor(MapColor.WOOD)
+                .sound(SoundType.WOOD)
+                .strength(2.0F, 3.0F)
+                .noOcclusion());
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH));
+    }
+
+    public BlockShrine(Properties properties) {
+        super(properties);
     }
 
     @Override
@@ -51,16 +68,17 @@ public class BlockShrine extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos,
+                                       Player playerIn, InteractionHand hand, BlockHitResult hit) {
         if (hand == InteractionHand.MAIN_HAND && worldIn.getBlockEntity(pos) instanceof TileEntityShrine shrine) {
             if (playerIn.isShiftKeyDown()) {
                 if (!shrine.isEmpty()) {
                     ItemStack storageItem = shrine.extractStorageItem();
-                    ItemHandlerHelper.giveItemToPlayer(playerIn, storageItem);
+                    playerIn.getInventory().placeItemBackInInventory(storageItem);
                     worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, 1, 1);
                     return InteractionResult.SUCCESS;
                 }
-                return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+                return InteractionResult.PASS;
             }
             if (shrine.isEmpty()) {
                 if (shrine.canInsert(playerIn.getMainHandItem())) {
@@ -72,7 +90,7 @@ public class BlockShrine extends BaseEntityBlock {
                 if (!worldIn.isClientSide()) {
                     playerIn.sendSystemMessage(Component.translatable("message.touhou_little_maid.shrine.not_film"));
                 }
-                return InteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+                return InteractionResult.PASS;
             }
             if (playerIn.getMainHandItem().isEmpty()) {
                 // 创造模式玩家可以随意复活
@@ -96,17 +114,14 @@ public class BlockShrine extends BaseEntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, Level worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock()) && !isMoving) {
-            BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-            if (blockEntity instanceof TileEntityShrine shrine) {
-                ItemStack storageItem = shrine.extractStorageItem();
-                if (!storageItem.isEmpty()) {
-                    Block.popResource(worldIn, pos.offset(0, 1, 0), storageItem);
-                }
-            }
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        List<ItemStack> drops = Lists.newArrayList(super.getDrops(state, params));
+        BlockEntity parameter = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
+        if (parameter instanceof TileEntityShrine shrine) {
+            ItemStack storageItem = shrine.extractStorageItem();
+            drops.add(storageItem);
         }
-        super.onRemove(state, worldIn, pos, newState, isMoving);
+        return drops;
     }
 
     @Override
@@ -116,12 +131,7 @@ public class BlockShrine extends BaseEntityBlock {
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        return simpleCodec((properties) -> new BlockShrine());
-    }
-
-    @Override
-    public RenderShape getRenderShape(BlockState pState) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return CODEC;
     }
 
     @Nullable

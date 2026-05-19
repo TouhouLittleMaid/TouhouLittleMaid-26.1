@@ -5,17 +5,11 @@ import com.github.tartaricacid.touhoulittlemaid.api.game.xqwlight.Position;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.util.CChessUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 public class TileEntityCChess extends TileEntityJoy implements IBoardGameEntityBlock {
-    public static final BlockEntityType<TileEntityCChess> TYPE = BlockEntityType.Builder.of(TileEntityCChess::new, InitBlocks.CCHESS.get()).build(null);
-
     private static final String CHESS_DATA = "ChessData";
     private static final String CHESS_COUNTER = "ChessCounter";
     private static final String SELECT_CHESS_POINT = "SelectChessPoint";
@@ -37,7 +31,7 @@ public class TileEntityCChess extends TileEntityJoy implements IBoardGameEntityB
     private boolean moveNumberLimit = false;
 
     public TileEntityCChess(BlockPos pos, BlockState blockState) {
-        super(TYPE, pos, blockState);
+        super(InitBlocks.CCHESS_TE.get(), pos, blockState);
         this.chessData = new Position();
         this.chessData.fromFen(CChessUtil.INIT);
     }
@@ -48,27 +42,25 @@ public class TileEntityCChess extends TileEntityJoy implements IBoardGameEntityB
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        CompoundTag data = getPersistentData();
-        data.putString(CHESS_DATA, chessData.toFen());
-        data.putInt(CHESS_COUNTER, chessCounter);
-        data.putInt(SELECT_CHESS_POINT, selectChessPoint);
-        data.putBoolean(CHECKMATE, checkmate);
-        data.putBoolean(REPEAT, repeat);
-        data.putBoolean(MOVE_NUMBER_LIMIT, moveNumberLimit);
-        super.saveAdditional(tag, provider);
+    protected void saveAdditional(ValueOutput output) {
+        output.putString(CHESS_DATA, chessData.toFen());
+        output.putInt(CHESS_COUNTER, chessCounter);
+        output.putInt(SELECT_CHESS_POINT, selectChessPoint);
+        output.putBoolean(CHECKMATE, checkmate);
+        output.putBoolean(REPEAT, repeat);
+        output.putBoolean(MOVE_NUMBER_LIMIT, moveNumberLimit);
+        super.saveAdditional(output);
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider provider) {
-        super.loadAdditional(nbt, provider);
-        CompoundTag data = getPersistentData();
-        chessCounter = data.getInt(CHESS_COUNTER);
-        selectChessPoint = data.getInt(SELECT_CHESS_POINT);
-        chessData.fromFen(data.getString(CHESS_DATA));
-        checkmate = data.getBoolean(CHECKMATE);
-        repeat = data.getBoolean(REPEAT);
-        moveNumberLimit = data.getBoolean(MOVE_NUMBER_LIMIT);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        chessCounter = input.getIntOr(CHESS_COUNTER, 0);
+        selectChessPoint = input.getIntOr(SELECT_CHESS_POINT, 0);
+        chessData.fromFen(input.getStringOr(CHESS_DATA, CChessUtil.INIT));
+        checkmate = input.getBooleanOr(CHECKMATE, false);
+        repeat = input.getBooleanOr(REPEAT, false);
+        moveNumberLimit = input.getBooleanOr(MOVE_NUMBER_LIMIT, false);
     }
 
     public void reset() {

@@ -1,74 +1,67 @@
 package com.github.tartaricacid.touhoulittlemaid.tileentity;
 
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
+import com.github.tartaricacid.touhoulittlemaid.item.ItemModelSwitcher;
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
 public class TileEntityModelSwitcher extends BlockEntity {
-    public static final BlockEntityType<TileEntityModelSwitcher> TYPE = BlockEntityType.Builder.of(TileEntityModelSwitcher::new, InitBlocks.MODEL_SWITCHER.get()).build(null);
     public static final String INFO_LIST = "info_list";
     public static final String ENTITY_UUID = "entity_uuid";
     public static final String LIST_INDEX = "list_index";
+
     private List<ModeInfo> infoList = Lists.newArrayList();
     private boolean isPowered;
-    private UUID uuid;
+    private @Nullable UUID uuid;
     private int index;
 
     public TileEntityModelSwitcher(BlockPos pWorldPosition, BlockState pBlockState) {
-        super(TYPE, pWorldPosition, pBlockState);
+        super(InitBlocks.MODEL_SWITCHER_TE.get(), pWorldPosition, pBlockState);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        ListTag listTag = new ListTag();
-        for (ModeInfo info : infoList) {
-            listTag.add(info.serialize());
-        }
-        getPersistentData().put(INFO_LIST, listTag);
+    protected void saveAdditional(ValueOutput output) {
+        output.store(INFO_LIST, ModeInfo.CODEC.listOf(), infoList);
         if (this.uuid != null) {
-            getPersistentData().put(ENTITY_UUID, NbtUtils.createUUID(this.uuid));
+            output.store(ENTITY_UUID, UUIDUtil.CODEC, this.uuid);
         }
-        getPersistentData().putInt(LIST_INDEX, this.index);
-        super.saveAdditional(pTag, pRegistries);
+        output.putInt(LIST_INDEX, this.index);
+        super.saveAdditional(output);
     }
 
     @Override
-    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        infoList.clear();
-        ListTag listTag = getPersistentData().getList(INFO_LIST, Tag.TAG_COMPOUND);
-        for (int i = 0; i < listTag.size(); i++) {
-            ModeInfo info = new ModeInfo();
-            info.deserialize(listTag.getCompound(i));
-            infoList.add(info);
-        }
-        Tag uuidTag = getPersistentData().get(ENTITY_UUID);
-        if (uuidTag != null) {
-            this.uuid = NbtUtils.loadUUID(uuidTag);
-        }
-        this.index = getPersistentData().getInt(LIST_INDEX);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        input.read(INFO_LIST, ModeInfo.CODEC.listOf()).ifPresent(c -> {
+            infoList.clear();
+            infoList.addAll(c);
+        });
+        this.uuid = input.read(ENTITY_UUID, UUIDUtil.CODEC).orElse(null);
+        this.index = input.getIntOr(LIST_INDEX, 0);
     }
 
     @Override
@@ -80,6 +73,14 @@ public class TileEntityModelSwitcher extends BlockEntity {
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (this.level instanceof ServerLevel serverLevel) {
+            ItemStack itemStack = ItemModelSwitcher.tileEntityToItemStack(serverLevel.registryAccess(), this);
+            Block.popResource(serverLevel, pos, itemStack);
+        }
     }
 
     @Nullable
@@ -129,7 +130,13 @@ public class TileEntityModelSwitcher extends BlockEntity {
         }
     }
 
-    public static class ModeInfo {
+    public static final class ModeInfo {
+        public static final Codec<ModeInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.STRING.xmap(Identifier::parse, Identifier::toString).fieldOf("model_id").forGetter(ModeInfo::getModelId),
+                Codec.STRING.fieldOf("text").forGetter(ModeInfo::getText),
+                Direction.CODEC.fieldOf("direction").forGetter(ModeInfo::getDirection)
+        ).apply(instance, ModeInfo::new));
+
         public static final StreamCodec<ByteBuf, ModeInfo> MODE_INFO_STREAM_CODEC = StreamCodec.composite(
                 Identifier.STREAM_CODEC,
                 ModeInfo::getModelId,
@@ -139,21 +146,15 @@ public class TileEntityModelSwitcher extends BlockEntity {
                 ModeInfo::getDirection,
                 ModeInfo::new
         );
+
         private Identifier modelId;
         private String text;
         private Direction direction;
-
-        public ModeInfo() {
-        }
 
         public ModeInfo(Identifier modelId, String text, Direction direction) {
             this.modelId = modelId;
             this.text = text;
             this.direction = direction;
-        }
-
-        public static ModeInfo fromBuf(FriendlyByteBuf buf) {
-            return new ModeInfo(buf.readIdentifier(), buf.readUtf(), Direction.from2DDataValue(buf.readVarInt()));
         }
 
         public Identifier getModelId() {
@@ -179,27 +180,5 @@ public class TileEntityModelSwitcher extends BlockEntity {
         public void setDirection(Direction direction) {
             this.direction = direction;
         }
-
-        public void toBuf(FriendlyByteBuf buf) {
-            buf.writeIdentifier(this.modelId);
-            buf.writeUtf(this.text);
-            buf.writeVarInt(this.direction.get2DDataValue());
-        }
-
-        public CompoundTag serialize() {
-            CompoundTag tag = new CompoundTag();
-            tag.putString("model_id", this.modelId.toString());
-            tag.putString("text", this.text);
-            tag.putInt("direction", this.direction.get2DDataValue());
-            return tag;
-        }
-
-        public void deserialize(CompoundTag nbt) {
-            this.modelId = Identifier.parse(nbt.getString("model_id"));
-            this.text = nbt.getString("text");
-            this.direction = Direction.from2DDataValue(nbt.getInt("direction"));
-        }
     }
-
-
 }

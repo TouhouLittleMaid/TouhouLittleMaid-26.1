@@ -3,31 +3,29 @@ package com.github.tartaricacid.touhoulittlemaid.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockSnackCabinet;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+
+import java.util.List;
+import java.util.Objects;
 
 public class TileEntitySnackCabinet extends RandomizableContainerBlockEntity {
-    public static final BlockEntityType<TileEntitySnackCabinet> TYPE = BlockEntityType.Builder
-            .of(TileEntitySnackCabinet::new, InitBlocks.SNACK_CABINET.get())
-            .build(null);
-
     private static final int SLOT_COUNT = 27;
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
@@ -48,7 +46,7 @@ public class TileEntitySnackCabinet extends RandomizableContainerBlockEntity {
         }
 
         @Override
-        protected boolean isOwnContainer(Player player) {
+        public boolean isOwnContainer(Player player) {
             if (player.containerMenu instanceof ChestMenu menu) {
                 return menu.getContainer() == TileEntitySnackCabinet.this;
             } else {
@@ -58,23 +56,23 @@ public class TileEntitySnackCabinet extends RandomizableContainerBlockEntity {
     };
 
     public TileEntitySnackCabinet(BlockPos pos, BlockState blockState) {
-        super(TYPE, pos, blockState);
+        super(InitBlocks.SNACK_CABINET_TE.get(), pos, blockState);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        if (!this.trySaveLootTable(tag)) {
-            ContainerHelper.saveAllItems(tag, this.items, registries);
+    public void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        if (!this.trySaveLootTable(output)) {
+            ContainerHelper.saveAllItems(output, this.items, false);
         }
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        if (!this.tryLoadLootTable(tag)) {
-            ContainerHelper.loadAllItems(tag, this.items, registries);
+        if (!this.tryLoadLootTable(input)) {
+            ContainerHelper.loadAllItems(input, this.items);
         }
     }
 
@@ -104,17 +102,28 @@ public class TileEntitySnackCabinet extends RandomizableContainerBlockEntity {
     }
 
     @Override
-    public void startOpen(Player player) {
-        if (!this.remove && !player.isSpectator() && this.level != null) {
-            this.openersCounter.incrementOpeners(player, this.level, this.getBlockPos(), this.getBlockState());
+    public void startOpen(ContainerUser containerUser) {
+        if (!this.remove && !containerUser.getLivingEntity().isSpectator() && this.getLevel() != null) {
+            this.openersCounter.incrementOpeners(
+                    containerUser.getLivingEntity(), this.getLevel(),
+                    this.getBlockPos(), this.getBlockState(),
+                    containerUser.getContainerInteractionRange()
+            );
         }
     }
 
     @Override
-    public void stopOpen(Player player) {
-        if (!this.remove && !player.isSpectator() && this.level != null) {
-            this.openersCounter.decrementOpeners(player, this.level, this.getBlockPos(), this.getBlockState());
+    public void stopOpen(ContainerUser containerUser) {
+        if (!this.remove && !containerUser.getLivingEntity().isSpectator() && this.getLevel() != null) {
+            this.openersCounter.decrementOpeners(containerUser.getLivingEntity(),
+                    this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
+    }
+
+    @Override
+    public List<ContainerUser> getEntitiesWithContainerOpen() {
+        Level world = Objects.requireNonNull(this.getLevel());
+        return this.openersCounter.getEntitiesWithContainerOpen(world, this.getBlockPos());
     }
 
     public void recheckOpen() {
@@ -125,12 +134,12 @@ public class TileEntitySnackCabinet extends RandomizableContainerBlockEntity {
 
     void playSound(BlockState state, SoundEvent sound) {
         if (this.level != null) {
-            Vec3i facing = state.getValue(BlockSnackCabinet.FACING).getNormal();
+            var facing = state.getValue(BlockSnackCabinet.FACING).getUnitVec3i();
             double x = this.worldPosition.getX() + 0.5 + facing.getX() / 2.0;
-            double y = this.worldPosition.getY() + 0.5 + facing.getY() / 2.0;
+            double y = this.worldPosition.getY() + 0.5 + facing.getX() / 2.0;
             double z = this.worldPosition.getZ() + 0.5 + facing.getZ() / 2.0;
             this.level.playSound(null, x, y, z, sound, SoundSource.BLOCKS, 0.5F,
-                    this.level.random.nextFloat() * 0.1F + 0.8F);
+                    this.level.getRandom().nextFloat() * 0.1F + 0.8F);
         }
     }
 }

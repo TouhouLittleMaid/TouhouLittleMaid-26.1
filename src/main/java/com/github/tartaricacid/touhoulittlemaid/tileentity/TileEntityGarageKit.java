@@ -10,34 +10,36 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 
+import static net.minecraft.world.item.component.CustomData.COMPOUND_TAG_CODEC;
+
 public class TileEntityGarageKit extends BlockEntity {
-    public static final BlockEntityType<TileEntityGarageKit> TYPE = BlockEntityType.Builder.of(TileEntityGarageKit::new, InitBlocks.GARAGE_KIT.get()).build(null);
     private static final String FACING_TAG = "GarageKitFacing";
     private static final String EXTRA_DATA = "ExtraData";
     private Direction facing = Direction.NORTH;
     private CompoundTag extraData = new CompoundTag();
 
     public TileEntityGarageKit(BlockPos blockPos, BlockState blockState) {
-        super(TYPE, blockPos, blockState);
+        super(InitBlocks.GARAGE_KIT_TE.get(), blockPos, blockState);
     }
 
     @Override
-    public void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        getPersistentData().putString(FACING_TAG, facing.getSerializedName());
-        getPersistentData().put(EXTRA_DATA, extraData);
-        super.saveAdditional(pTag, pRegistries);
+    public void saveAdditional(ValueOutput output) {
+        output.store(FACING_TAG, Direction.CODEC, facing);
+        output.store(EXTRA_DATA, COMPOUND_TAG_CODEC, extraData);
+        super.saveAdditional(output);
     }
 
     @Override
-    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
-        facing = Direction.byName(getPersistentData().getString(FACING_TAG));
-        extraData = getPersistentData().getCompound(EXTRA_DATA);
+    public void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+        facing = input.read(FACING_TAG, Direction.CODEC).orElse(Direction.NORTH);
+        extraData = input.read(EXTRA_DATA, COMPOUND_TAG_CODEC).orElseGet(CompoundTag::new);
     }
 
     @Override
