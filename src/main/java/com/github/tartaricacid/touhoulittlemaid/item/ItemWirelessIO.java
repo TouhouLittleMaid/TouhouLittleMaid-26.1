@@ -87,7 +87,7 @@ public class ItemWirelessIO extends Item implements MenuProvider {
                 ItemStack itemStack = itemStackHandler.getResource(i).toStack();
                 itemStackList.add(itemStack);
             }
-            stack.set(FILTER_LIST_TAG, itemStackList));
+            stack.set(FILTER_LIST_TAG, itemStackList);
         }
     }
 
