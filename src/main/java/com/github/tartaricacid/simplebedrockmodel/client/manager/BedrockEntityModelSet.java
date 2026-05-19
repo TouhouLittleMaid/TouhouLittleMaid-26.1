@@ -4,18 +4,18 @@ import com.github.tartaricacid.simplebedrockmodel.SimpleBedrockModel;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.AbstractBedrockEntityModel;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.Entity;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.function.Function;
 
-public class BedrockEntityModelSet<T extends AbstractBedrockEntityModel<? extends Entity>> extends SimplePreparableReloadListener<Void> {
+public class BedrockEntityModelSet<T extends AbstractBedrockEntityModel<? extends EntityRenderState>> extends SimplePreparableReloadListener<Void> {
     private Map<Identifier, T> models = ImmutableMap.of();
     private Map<Identifier, Function<InputStream, T>> knowLocations = Maps.newHashMap();
 
@@ -52,7 +52,7 @@ public class BedrockEntityModelSet<T extends AbstractBedrockEntityModel<? extend
         this.models = ImmutableMap.copyOf(models);
     }
 
-    Map<Identifier, ? extends AbstractBedrockEntityModel<? extends Entity>> getModels() {
+    Map<Identifier, ? extends AbstractBedrockEntityModel<? extends EntityRenderState>> getModels() {
         return models;
     }
 }

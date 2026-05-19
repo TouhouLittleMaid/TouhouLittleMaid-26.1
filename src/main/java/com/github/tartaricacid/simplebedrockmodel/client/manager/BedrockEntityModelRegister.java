@@ -1,13 +1,12 @@
 package com.github.tartaricacid.simplebedrockmodel.client.manager;
 
-import com.github.tartaricacid.simplebedrockmodel.SimpleBedrockModel;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.AbstractBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
@@ -18,7 +17,7 @@ import java.util.Set;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
-public class BedrockEntityModelRegister<T extends AbstractBedrockEntityModel<? extends Entity>> {
+public class BedrockEntityModelRegister<T extends AbstractBedrockEntityModel<? extends EntityRenderState>> {
     public static BedrockEntityModelRegister INSTANCE = null;
     private final BedrockEntityModelSet<T> modelSet;
 
@@ -39,7 +38,7 @@ public class BedrockEntityModelRegister<T extends AbstractBedrockEntityModel<? e
         }
     }
 
-    public AbstractBedrockEntityModel<? extends Entity> getModel(Identifier location) {
+    public AbstractBedrockEntityModel<? extends EntityRenderState> getModel(Identifier location) {
         return modelSet.getModels().get(location);
     }
 

@@ -5,11 +5,14 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.FaceItem;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.FaceUVsItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public class BedrockCubePerFace implements BedrockCube {
+import java.util.Set;
+
+public class BedrockCubePerFace extends ModelPart.Cube implements BedrockCube {
     protected static final Vector3f[] VERTICES = new Vector3f[8];
     protected static final Vector3f EDGE_X = new Vector3f();
     protected static final Vector3f EDGE_Y = new Vector3f();
@@ -33,6 +36,8 @@ public class BedrockCubePerFace implements BedrockCube {
     }
 
     public BedrockCubePerFace(float x, float y, float z, float width, float height, float depth, float delta, float texWidth, float texHeight, FaceUVsItem faces) {
+        super(0, 0, x, y, z, width, height, depth, delta, delta, delta, false, texWidth, texHeight, Set.of(Direction.values()));
+
         this.x = (x - delta) / 16.0f;
         this.y = (y - delta) / 16.0f;
         this.z = (z - delta) / 16.0f;
@@ -79,7 +84,7 @@ public class BedrockCubePerFace implements BedrockCube {
     }
 
     @Override
-    public void compile(PoseStack.Pose pose, Vector3f[] normals, VertexConsumer consumer, int lightmap, int overlay, float r, float g, float b, float a) {
+    public void compile(PoseStack.Pose pose, Vector3f[] normals, VertexConsumer consumer, int lightmap, int overlay, int color) {
         Matrix4f matrix4f = pose.pose();
         prepareVertices(matrix4f);
 
@@ -91,19 +96,19 @@ public class BedrockCubePerFace implements BedrockCube {
             // uvs[i]: [右上U, 右上V, 左上U, 左上V, 左下U, 左下V, 右下U, 右下V]
             // 顶点0: 右上, 顶点1: 左上, 顶点2: 左下, 顶点3: 右下
             consumer.addVertex(VERTICES[VERTEX_ORDER[i][0]].x, VERTICES[VERTEX_ORDER[i][0]].y, VERTICES[VERTEX_ORDER[i][0]].z)
-                    .setColor(r, g, b, a).setUv(uvs[i][0], uvs[i][1])
+                    .setColor(color).setUv(uvs[i][0], uvs[i][1])
                     .setOverlay(overlay).setLight(lightmap).setNormal(normals[i].x, normals[i].y, normals[i].z);
 
             consumer.addVertex(VERTICES[VERTEX_ORDER[i][1]].x, VERTICES[VERTEX_ORDER[i][1]].y, VERTICES[VERTEX_ORDER[i][1]].z)
-                    .setColor(r, g, b, a).setUv(uvs[i][2], uvs[i][3])
+                    .setColor(color).setUv(uvs[i][2], uvs[i][3])
                     .setOverlay(overlay).setLight(lightmap).setNormal(normals[i].x, normals[i].y, normals[i].z);
 
             consumer.addVertex(VERTICES[VERTEX_ORDER[i][2]].x, VERTICES[VERTEX_ORDER[i][2]].y, VERTICES[VERTEX_ORDER[i][2]].z)
-                    .setColor(r, g, b, a).setUv(uvs[i][4], uvs[i][5])
+                    .setColor(color).setUv(uvs[i][4], uvs[i][5])
                     .setOverlay(overlay).setLight(lightmap).setNormal(normals[i].x, normals[i].y, normals[i].z);
 
             consumer.addVertex(VERTICES[VERTEX_ORDER[i][3]].x, VERTICES[VERTEX_ORDER[i][3]].y, VERTICES[VERTEX_ORDER[i][3]].z)
-                    .setColor(r, g, b, a).setUv(uvs[i][6], uvs[i][7])
+                    .setColor(color).setUv(uvs[i][6], uvs[i][7])
                     .setOverlay(overlay).setLight(lightmap).setNormal(normals[i].x, normals[i].y, normals[i].z);
         }
     }
