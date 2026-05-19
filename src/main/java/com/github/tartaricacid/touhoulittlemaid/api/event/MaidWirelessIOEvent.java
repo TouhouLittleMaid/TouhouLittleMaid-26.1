@@ -37,7 +37,12 @@ public abstract class MaidWirelessIOEvent extends Event implements ICancellableE
      */
     private final List<Boolean> slotConfig;
 
-    public MaidWirelessIOEvent(EntityMaid maid, ResourceHandler<@NotNull ItemResource> maidInv, ResourceHandler<@NotNull ItemResource> chestInv, ResourceHandler<@NotNull ItemResource> filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
+    public MaidWirelessIOEvent(EntityMaid maid,
+                               ResourceHandler<@NotNull ItemResource> maidInv,
+                               ResourceHandler<@NotNull ItemResource> chestInv,
+                               ResourceHandler<@NotNull ItemResource> filterInv,
+                               boolean isBlacklist,
+                               List<Boolean> slotConfig) {
         this.maid = maid;
         this.maidInv = maidInv;
         this.chestInv = chestInv;
@@ -71,13 +76,23 @@ public abstract class MaidWirelessIOEvent extends Event implements ICancellableE
     }
 
     public static class MaidToChest extends MaidWirelessIOEvent {
-        public MaidToChest(EntityMaid maid, ResourceHandler<@NotNull ItemResource> maidInv, ResourceHandler<@NotNull ItemResource> chestInv, ResourceHandler<@NotNull ItemResource> filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
+        public MaidToChest(EntityMaid maid,
+                           ResourceHandler<@NotNull ItemResource> maidInv,
+                           ResourceHandler<@NotNull ItemResource> chestInv,
+                           ResourceHandler<@NotNull ItemResource> filterInv,
+                           boolean isBlacklist,
+                           List<Boolean> slotConfig) {
             super(maid, maidInv, chestInv, filterInv, isBlacklist, slotConfig);
         }
     }
 
     public static class ChestToMaid extends MaidWirelessIOEvent {
-        public ChestToMaid(EntityMaid maid, ResourceHandler<@NotNull ItemResource> maidInv, ResourceHandler<@NotNull ItemResource> chestInv, ResourceHandler<@NotNull ItemResource> filterInv, boolean isBlacklist, List<Boolean> slotConfig) {
+        public ChestToMaid(EntityMaid maid,
+                           ResourceHandler<@NotNull ItemResource> maidInv,
+                           ResourceHandler<@NotNull ItemResource> chestInv,
+                           ResourceHandler<@NotNull ItemResource> filterInv,
+                           boolean isBlacklist,
+                           List<Boolean> slotConfig) {
             super(maid, maidInv, chestInv, filterInv, isBlacklist, slotConfig);
         }
     }

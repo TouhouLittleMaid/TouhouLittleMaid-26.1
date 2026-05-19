@@ -55,7 +55,7 @@ public interface IAttackTask extends IMaidTask {
             return false;
         }
         // 有主的宠物也不攻击
-        if (target instanceof TamableAnimal tamableAnimal && tamableAnimal.getOwnerUUID() != null) {
+        if (target instanceof TamableAnimal tamableAnimal && tamableAnimal.getOwnerReference() != null) {
             return false;
         }
         // 特殊命名的怪物，因为有的玩家会使用怪物做刷怪塔，会被女仆误杀

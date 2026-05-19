@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.api.backpack;
 
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -52,7 +53,7 @@ public abstract class IMaidBackpack {
 
     @Nullable
     @OnlyIn(Dist.CLIENT)
-    public abstract EntityModel<EntityMaid> getBackpackModel(EntityModelSet modelSet);
+    public abstract EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet);
 
     @Nullable
     @OnlyIn(Dist.CLIENT)

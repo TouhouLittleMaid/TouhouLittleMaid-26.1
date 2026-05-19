@@ -3,7 +3,6 @@ package com.github.tartaricacid.touhoulittlemaid.api;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.GameContextRegister;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ToolRegister;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.SerializerRegister;
-import com.github.tartaricacid.touhoulittlemaid.ai.service.function.FunctionCallRegister;
 import com.github.tartaricacid.touhoulittlemaid.block.multiblock.MultiBlockManager;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimationManger;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.magic.MagicCastingAnimationManager;
@@ -144,15 +143,6 @@ public interface ILittleMaid {
      */
     @ApiStatus.AvailableSince("1.5.1")
     default void registerAIMaidContext(GameContextRegister register) {
-    }
-
-    /**
-     * 注册一个自己的 function call
-     *
-     * @deprecated 自 1.5.1 起，更换为 skill 机制，此方法已经无效
-     */
-    @Deprecated(since = "1.5.1", forRemoval = true)
-    default void registerAIFunctionCall(FunctionCallRegister register) {
     }
 
     /**
