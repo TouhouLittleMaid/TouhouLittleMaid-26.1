@@ -8,6 +8,8 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.fml.ModList;
@@ -46,8 +48,8 @@ public final class FallbackIngredient implements ICustomIngredient {
     }
 
     @Override
-    public Stream<ItemStack> getItems() {
-        return Stream.of(this.resolvedIngredient.getItems());
+    public Stream<Holder<Item>> items() {
+        return this.resolvedIngredient.getValues().stream();
     }
 
     @Override

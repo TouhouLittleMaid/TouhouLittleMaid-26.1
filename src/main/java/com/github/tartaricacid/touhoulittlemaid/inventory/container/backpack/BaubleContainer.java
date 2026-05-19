@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidBaubleChangeEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.MaidMainContainer;
+import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SyncBaublePackage;
 import net.minecraft.network.chat.Component;
@@ -18,8 +19,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
 import javax.annotation.Nullable;
 
@@ -63,7 +66,7 @@ public class BaubleContainer extends MaidMainContainer {
         // 3 级及以上，全部开放
         int level = this.maid.getFavorabilityManager().getLevel();
         // 以防万一，检测是否越界
-        int maxSize = maid.getMaidBauble().getSlots();
+        int maxSize = maid.getMaidBauble().size();
 
         for (int y = 0; y < 6; y++) {
             if (level <= 1 && y >= 2) {
@@ -77,7 +80,7 @@ public class BaubleContainer extends MaidMainContainer {
                 if (index >= maxSize) {
                     return;
                 }
-                addSlot(new BaubleSlot(maid, index, 152 + 18 * x, 45 + 18 * y));
+                addSlot(BaubleSlot.create(maid, index, 152 + 18 * x, 45 + 18 * y));
             }
         }
     }
@@ -122,24 +125,29 @@ public class BaubleContainer extends MaidMainContainer {
             // 用来修正护甲值不变化的问题
             if (PLAYER_INVENTORY_SIZE <= index && index < PLAYER_INVENTORY_SIZE + 4) {
                 EquipmentSlot equipmentSlot = SLOT_IDS[index - PLAYER_INVENTORY_SIZE];
-                maid.setLastArmorItem(equipmentSlot, stack1);
+                maid.setItemSlot(equipmentSlot, stack1);
             }
             // 还有主副手
             if (PLAYER_INVENTORY_SIZE + 4 <= index && index < PLAYER_INVENTORY_SIZE + 6) {
                 int slotIndex = index - PLAYER_INVENTORY_SIZE - 4;
                 EquipmentSlot equipmentSlot = slotIndex == 0 ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-                maid.setLastHandItem(equipmentSlot, stack1);
+                maid.setItemSlot(equipmentSlot, stack1);
             }
         }
         return stack1;
     }
 
-    public static class BaubleSlot extends SlotItemHandler implements ITriggerSlotChange {
+    public static class BaubleSlot extends ResourceHandlerSlot implements ITriggerSlotChange {
         private final EntityMaid maid;
 
-        public BaubleSlot(EntityMaid maid, int index, int xPosition, int yPosition) {
-            super(maid.getMaidBauble(), index, xPosition, yPosition);
+        private BaubleSlot(EntityMaid maid, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
+            super(maid.getMaidBauble(), slotModifier, index, xPosition, yPosition);
             this.maid = maid;
+        }
+
+        public static BaubleSlot create(EntityMaid maid, int index, int xPosition, int yPosition) {
+            BaubleItemHandler maidBauble = maid.getMaidBauble();
+            return new BaubleSlot(maid, maidBauble::set, index, xPosition, yPosition);
         }
 
         @Override

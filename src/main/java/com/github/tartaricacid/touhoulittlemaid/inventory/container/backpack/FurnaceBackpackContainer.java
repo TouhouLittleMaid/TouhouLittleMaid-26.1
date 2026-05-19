@@ -13,8 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class FurnaceBackpackContainer extends MaidMainContainer {
     public static final MenuType<FurnaceBackpackContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new FurnaceBackpackContainer(windowId, inv, data.readInt()));
@@ -43,15 +41,15 @@ public class FurnaceBackpackContainer extends MaidMainContainer {
     @Override
     protected void addBackpackInv(Inventory inventory) {
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, 6 + i, 143 + 18 * i, 57));
+            addSlot(BackpackSlot.create(maid, 6 + i, 143 + 18 * i, 57));
         }
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, 12 + i, 143 + 18 * i, 75));
+            addSlot(BackpackSlot.create(maid, 12 + i, 143 + 18 * i, 75));
         }
     }
 
     private boolean isFuel(ItemStack stack) {
-        return stack.getBurnTime(RecipeType.SMELTING) > 0;
+        return stack.getBurnTime(RecipeType.SMELTING, this.maid.level.fuelValues()) > 0;
     }
 
     public int getBurnProgress() {

@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.container.MaidMainCont
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class SmallBackpackContainer extends MaidMainContainer {
     public static final MenuType<SmallBackpackContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new SmallBackpackContainer(windowId, inv, data.readInt()));
@@ -16,7 +15,7 @@ public class SmallBackpackContainer extends MaidMainContainer {
     @Override
     protected void addBackpackInv(Inventory inventory) {
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, 6 + i, 143 + 18 * i, 59));
+            addSlot(BackpackSlot.create(maid, 6 + i, 143 + 18 * i, 59));
         }
     }
 }

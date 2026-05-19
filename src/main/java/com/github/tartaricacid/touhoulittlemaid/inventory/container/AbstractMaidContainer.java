@@ -55,6 +55,6 @@ public abstract class AbstractMaidContainer extends AbstractContainerMenu {
         if (!maid.isAlive() || maid.isSleeping()) {
             return false;
         }
-        return playerIn.canInteractWithEntity(this.maid, 4.0);
+        return playerIn.isWithinEntityInteractionRange(this.maid, 4.0);
     }
 }
