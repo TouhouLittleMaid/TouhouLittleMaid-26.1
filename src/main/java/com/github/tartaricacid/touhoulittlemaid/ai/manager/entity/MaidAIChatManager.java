@@ -37,6 +37,7 @@ import org.apache.logging.log4j.core.lookup.StrSubstitutor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -86,8 +87,8 @@ public final class MaidAIChatManager extends MaidAIChatData {
         MutableComponent tip = Component.translatable("ai.touhou_little_maid.chat.llm.deepseek_secret_key_missing")
                 .withStyle(ChatFormatting.RED);
         MutableComponent url = Component.literal(DEEPSEEK_PLATFORM_URL);
-        ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, DEEPSEEK_PLATFORM_URL);
-        HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.link.open"));
+        ClickEvent clickEvent = new ClickEvent.OpenUrl(URI.create(DEEPSEEK_PLATFORM_URL));
+        HoverEvent hoverEvent = new HoverEvent.ShowText(Component.translatable("chat.link.open"));
         url.withStyle(style -> style.withHoverEvent(hoverEvent).withClickEvent(clickEvent)
                 .withUnderlined(true).withColor(ChatFormatting.BLUE));
         player.sendSystemMessage(tip);

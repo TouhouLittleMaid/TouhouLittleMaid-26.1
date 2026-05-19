@@ -33,7 +33,7 @@ public final class WorldContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            long time = maid.level.getDayTime();
+            long time = maid.level.getGameTime() % 24000;
             long hours = (time / 1000 + 6) % 24;
             long minutes = (time % 1000) / (50 / 3);
             return TIME_FORMAT.formatted(hours, minutes);
@@ -75,7 +75,7 @@ public final class WorldContexts {
             if (dimension == Level.END) {
                 return END;
             }
-            return dimension.location().toString();
+            return dimension.identifier().toString();
         }
     }
 
@@ -87,7 +87,7 @@ public final class WorldContexts {
         @Override
         public String getValue(EntityMaid maid) {
             Biome biome = maid.level.getBiome(maid.blockPosition()).value();
-            Identifier key = maid.level.registryAccess().registryOrThrow(Registries.BIOME).getKey(biome);
+            Identifier key = maid.level.registryAccess().lookupOrThrow(Registries.BIOME).getKey(biome);
             return key == null ? UNKNOWN_BIOME : key.toString();
         }
     }

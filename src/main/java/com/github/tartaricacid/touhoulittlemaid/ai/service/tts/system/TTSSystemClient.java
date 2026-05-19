@@ -19,6 +19,6 @@ public class TTSSystemClient implements TTSClient, TTSSystemServices {
     @OnlyIn(Dist.CLIENT)
     private void onHandle(String message) {
         Minecraft mc = Minecraft.getInstance();
-        mc.getNarrator().narrator.say(message, true);
+        mc.getNarrator().narrator.say(message, true, 1.0f);
     }
 }

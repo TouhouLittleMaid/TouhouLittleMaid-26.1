@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Lists;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -58,8 +59,8 @@ public final class EquipmentMaidContexts {
         public String getValue(EntityMaid maid) {
             List<String> names = Lists.newArrayList();
             var backpack = maid.getAvailableBackpackInv();
-            for (int i = 0; i < backpack.getSlots(); i++) {
-                ItemStack stack = backpack.getStackInSlot(i);
+            for (int i = 0; i < backpack.size(); i++) {
+                ItemStack stack = ItemUtil.getStack(backpack, i);
                 if (!stack.isEmpty()) {
                     String itemName = stack.getDisplayName().getString();
                     int count = stack.getCount();
@@ -81,13 +82,15 @@ public final class EquipmentMaidContexts {
         @Override
         public String getValue(EntityMaid maid) {
             List<String> names = Lists.newArrayList();
-            maid.getArmorSlots().forEach(stack -> {
+            var armor = maid.getArmorInvWrapper();
+            for (int i = 0; i < armor.size(); i++) {
+                ItemStack stack = ItemUtil.getStack(armor, i);
                 if (!stack.isEmpty()) {
                     String itemName = stack.getDisplayName().getString();
                     int count = stack.getCount();
                     names.add(ITEM_AND_COUNT_FORMAT.formatted(itemName, count));
                 }
-            });
+            }
             if (names.isEmpty()) {
                 return EMPTY;
             }

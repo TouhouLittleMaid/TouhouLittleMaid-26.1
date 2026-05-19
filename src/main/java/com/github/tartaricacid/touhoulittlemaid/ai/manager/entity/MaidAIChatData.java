@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.CharacterSetting;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.SettingReader;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.site.AvailableSites;
@@ -15,8 +14,8 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.CappedQueue;
 import com.google.common.collect.Lists;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,46 +43,29 @@ public abstract class MaidAIChatData extends MaidAIChatSerializable {
     }
 
     @Override
-    public CompoundTag readFromTag(CompoundTag tag) {
-        if (tag.contains(MAID_HISTORY_CHAT_TAG)) {
-            try {
-                this.history.getDeque().clear();
-                LLMMessage.CODEC.listOf().parse(NbtOps.INSTANCE, tag.get(MAID_HISTORY_CHAT_TAG))
-                        .resultOrPartial(TouhouLittleMaid.LOGGER::error)
-                        .ifPresent(list -> {
-                            ListIterator<LLMMessage> iterator = list.listIterator(list.size());
-                            while (iterator.hasPrevious()) {
-                                history.add(iterator.previous());
-                            }
-                        });
-            } catch (Exception e) {
-                TouhouLittleMaid.LOGGER.error("Failed to parse MaidHistoryChat", e);
+    public void loadValue(ValueInput input) {
+        super.loadValue(input);
+        input.read(MAID_HISTORY_CHAT_TAG, LLMMessage.CODEC.listOf()).ifPresent(list -> {
+            this.history.getDeque().clear();
+            ListIterator<LLMMessage> iterator = list.listIterator(list.size());
+            while (iterator.hasPrevious()) {
+                history.add(iterator.previous());
             }
-        }
-        this.compressedSummary = tag.getString(MAID_HISTORY_SUMMARY_TAG);
-        this.lastChatTokenUsage = tag.getInt(MAID_LAST_CHAT_TOKEN_USAGE_TAG);
-        return super.readFromTag(tag);
+        });
+
+        this.compressedSummary = input.getStringOr(MAID_HISTORY_SUMMARY_TAG, StringUtils.EMPTY);
+        this.lastChatTokenUsage = input.getIntOr(MAID_LAST_CHAT_TOKEN_USAGE_TAG, 0);
     }
 
     @Override
-    public CompoundTag writeToTag(CompoundTag tag) {
+    public void saveValue(ValueOutput output) {
+        super.saveValue(output);
         if (this.history.size() > 0) {
-            try {
-                ArrayList<LLMMessage> llmMessages = Lists.newArrayList(this.history.getDeque());
-                LLMMessage.CODEC.listOf().encodeStart(NbtOps.INSTANCE, llmMessages)
-                        .resultOrPartial(TouhouLittleMaid.LOGGER::error)
-                        .ifPresent(t -> tag.put(MAID_HISTORY_CHAT_TAG, t));
-            } catch (Exception e) {
-                TouhouLittleMaid.LOGGER.error("Failed to parse MaidHistoryChat", e);
-            }
+            ArrayList<LLMMessage> llmMessages = Lists.newArrayList(this.history.getDeque());
+            output.store(MAID_HISTORY_CHAT_TAG, LLMMessage.CODEC.listOf(), llmMessages);
         }
-        if (StringUtils.isNotBlank(this.compressedSummary)) {
-            tag.putString(MAID_HISTORY_SUMMARY_TAG, this.compressedSummary);
-        }
-        if (this.lastChatTokenUsage > 0) {
-            tag.putInt(MAID_LAST_CHAT_TOKEN_USAGE_TAG, this.lastChatTokenUsage);
-        }
-        return super.writeToTag(tag);
+        output.putString(MAID_HISTORY_SUMMARY_TAG, this.compressedSummary);
+        output.putInt(MAID_LAST_CHAT_TOKEN_USAGE_TAG, this.lastChatTokenUsage);
     }
 
     @Nullable
