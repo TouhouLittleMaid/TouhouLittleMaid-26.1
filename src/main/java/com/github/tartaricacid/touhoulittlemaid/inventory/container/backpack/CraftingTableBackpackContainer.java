@@ -15,8 +15,6 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 import java.util.Optional;
 
@@ -65,7 +63,7 @@ public class CraftingTableBackpackContainer extends MaidMainContainer {
             ItemStack stack2 = slot.getItem();
             stack1 = stack2.copy();
             if (index == resultSlot.index) {
-                this.access.execute((level, blockPos) -> stack2.getItem().onCraftedBy(stack2, level, player));
+                this.access.execute((level, blockPos) -> stack2.getItem().onCraftedBy(stack2, player));
                 if (!this.moveItemStackTo(stack2, 0, PLAYER_INVENTORY_SIZE, true)) {
                     return ItemStack.EMPTY;
                 }
@@ -104,10 +102,10 @@ public class CraftingTableBackpackContainer extends MaidMainContainer {
     @Override
     protected void addBackpackInv(Inventory inventory) {
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, 6 + i, 143 + 18 * i, 57));
+            addSlot(BackpackSlot.create(maid, 6 + i, 143 + 18 * i, 57));
         }
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, 12 + i, 143 + 18 * i, 75));
+            addSlot(BackpackSlot.create(maid, 12 + i, 143 + 18 * i, 75));
         }
     }
 
@@ -119,8 +117,8 @@ public class CraftingTableBackpackContainer extends MaidMainContainer {
             Optional<RecipeHolder<CraftingRecipe>> optional = level.getServer().getRecipeManager().getRecipeFor(RecipeType.CRAFTING, craftInput, level);
             if (optional.isPresent()) {
                 RecipeHolder<CraftingRecipe> recipe = optional.get();
-                if (result.setRecipeUsed(level, serverPlayer, recipe)) {
-                    ItemStack stack2 = recipe.value().assemble(craftInput, level.registryAccess());
+                if (result.setRecipeUsed(serverPlayer, recipe)) {
+                    ItemStack stack2 = recipe.value().assemble(craftInput);
                     if (stack2.isItemEnabled(level.enabledFeatures())) {
                         stack1 = stack2;
                     }

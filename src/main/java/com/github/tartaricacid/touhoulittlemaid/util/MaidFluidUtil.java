@@ -18,7 +18,7 @@ public class MaidFluidUtil {
     private static final Predicate<FluidResource> NON_EMPTY = r -> !r.isEmpty();
 
     @Nullable
-    private static ResourceHandler<FluidResource> fluidOnItem(ItemStack stack) {
+    public static ResourceHandler<FluidResource> fluidOnItem(ItemStack stack) {
         return ItemAccess.forStack(stack).oneByOne().getCapability(Capabilities.Fluid.ITEM);
     }
 

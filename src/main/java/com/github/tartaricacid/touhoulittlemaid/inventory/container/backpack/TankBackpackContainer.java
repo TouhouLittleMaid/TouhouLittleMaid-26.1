@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.data.TankBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.MaidMainContainer;
-import com.mojang.datafixers.util.Pair;
+import com.github.tartaricacid.touhoulittlemaid.util.MaidFluidUtil;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,11 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
-
-import static net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS;
 
 public class TankBackpackContainer extends MaidMainContainer {
     public static final MenuType<TankBackpackContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new TankBackpackContainer(windowId, inv, data.readInt()));
@@ -43,10 +38,10 @@ public class TankBackpackContainer extends MaidMainContainer {
     @Override
     protected void addBackpackInv(Inventory inventory) {
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, 6 + i, 143 + 18 * i, 57));
+            addSlot(BackpackSlot.create(maid, 6 + i, 143 + 18 * i, 57));
         }
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, 12 + i, 143 + 18 * i, 75));
+            addSlot(BackpackSlot.create(maid, 12 + i, 143 + 18 * i, 75));
         }
     }
 
@@ -61,13 +56,13 @@ public class TankBackpackContainer extends MaidMainContainer {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return FluidUtil.getFluidHandler(stack).isPresent();
+            return MaidFluidUtil.fluidOnItem(stack) != null;
         }
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        public Pair<Identifier, Identifier> getNoItemIcon() {
-            return Pair.of(BLOCK_ATLAS, INPUT_SLOT);
+        public Identifier getNoItemIcon() {
+            return INPUT_SLOT;
         }
     }
 
@@ -78,13 +73,13 @@ public class TankBackpackContainer extends MaidMainContainer {
 
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return FluidUtil.getFluidHandler(stack).isPresent();
+            return MaidFluidUtil.fluidOnItem(stack) != null;
         }
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        public Pair<Identifier, Identifier> getNoItemIcon() {
-            return Pair.of(BLOCK_ATLAS, OUTPUT_SLOT);
+        public Identifier getNoItemIcon() {
+            return OUTPUT_SLOT;
         }
     }
 }

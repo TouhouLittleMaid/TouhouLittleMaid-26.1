@@ -6,15 +6,16 @@ import com.github.tartaricacid.touhoulittlemaid.item.ItemWirelessIO;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
 public class WirelessIOContainer extends AbstractContainerMenu {
@@ -36,22 +37,22 @@ public class WirelessIOContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ClickType clickTypeIn, Player player) {
+    public void clicked(int slotId, int button, ContainerInput containerInput, Player player) {
         // 禁阻一切对当前手持物品的交互，防止刷物品 bug
-        if (slotId == 27 + player.getInventory().selected) {
+        if (slotId == 27 + player.getInventory().getSelectedSlot()) {
             return;
         }
-        if (clickTypeIn == ClickType.SWAP) {
+        if (containerInput == ContainerInput.SWAP) {
             return;
         }
-        super.clicked(slotId, button, clickTypeIn, player);
+        super.clicked(slotId, button, containerInput, player);
         ItemWirelessIO.setFilterList(player.registryAccess(), wirelessIO, filterListInv);
     }
 
     private void addWirelessIOSlots() {
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
-                this.addSlot(new WirelessIOSlotItemHandler(filterListInv, col + row * 3, 62 + col * 18, 17 + row * 18));
+                this.addSlot(new WirelessIOSlotResourceHandler(filterListInv, filterListInv::set, col + row * 3, 62 + col * 18, 17 + row * 18));
             }
         }
     }
@@ -95,9 +96,9 @@ public class WirelessIOContainer extends AbstractContainerMenu {
         return wirelessIO;
     }
 
-    private class WirelessIOSlotItemHandler extends SlotItemHandler {
-        private WirelessIOSlotItemHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-            super(itemHandler, index, xPosition, yPosition);
+    private class WirelessIOSlotResourceHandler extends ResourceHandlerSlot {
+        private WirelessIOSlotResourceHandler(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
+            super(handler, slotModifier, index, xPosition, yPosition);
         }
 
         @Override

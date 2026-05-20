@@ -2,32 +2,33 @@ package com.github.tartaricacid.touhoulittlemaid.inventory.container.other;
 
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemPicnicBasket;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
 public class PicnicBasketContainer extends AbstractContainerMenu {
     public static final MenuType<PicnicBasketContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new PicnicBasketContainer(windowId, inv, ItemStack.STREAM_CODEC.decode(data)));
     private final ItemStack picnicBasket;
-    private final ItemStackHandler container;
+    private final ItemStacksResourceHandler container;
 
     public PicnicBasketContainer(int id, Inventory inventory, ItemStack picnicBasket) {
         super(TYPE, id);
         this.picnicBasket = picnicBasket;
         this.container = ItemPicnicBasket.getContainer(picnicBasket);
         for (int i = 0; i < 9; ++i) {
-            this.addSlot(new SlotItemHandler(container, i, 8 + i * 18, 18) {
+            this.addSlot(new ResourceHandlerSlot(container, container::set, i, 8 + i * 18, 18) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
-                    return stack.getFoodProperties(null) != null;
+                    return stack.has(DataComponents.FOOD);
                 }
             });
         }
@@ -42,15 +43,15 @@ public class PicnicBasketContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slotId, int button, ClickType clickTypeIn, Player player) {
+    public void clicked(int slotId, int button, ContainerInput containerInput, Player player) {
         // 禁阻一切对当前手持物品的交互，防止刷物品 bug
-        if (slotId == 36 + player.getInventory().selected) {
+        if (slotId == 36 + player.getInventory().getSelectedSlot()) {
             return;
         }
-        if (clickTypeIn == ClickType.SWAP) {
+        if (containerInput == ContainerInput.SWAP) {
             return;
         }
-        super.clicked(slotId, button, clickTypeIn, player);
+        super.clicked(slotId, button, containerInput, player);
         ItemPicnicBasket.setContainer(picnicBasket, container);
     }
 

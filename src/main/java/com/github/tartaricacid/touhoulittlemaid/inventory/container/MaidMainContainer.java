@@ -5,7 +5,6 @@ import com.github.tartaricacid.touhoulittlemaid.api.backpack.ITriggerSlotChange;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidBackpackChangeEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitCapabilities;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -19,10 +18,11 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static net.minecraft.world.inventory.InventoryMenu.*;
@@ -46,40 +46,41 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
     }
 
     protected void addMaidHandInv() {
-        IItemHandler handler = maid.getCapability(InitCapabilities.HAND_ITEM, Direction.DOWN);
+        ItemStacksResourceHandler handler = (ItemStacksResourceHandler)maid.getCapability(InitCapabilities.HAND_ITEM, Direction.DOWN);
         if (handler == null) {
             return;
         }
-        addSlot(new SlotItemHandler(handler, 0, 87, 77) {
+
+        addSlot(new ResourceHandlerSlot(handler, handler::set, 0, 87, 77) {
             @Override
             @OnlyIn(Dist.CLIENT)
-            public Pair<Identifier, Identifier> getNoItemIcon() {
-                return Pair.of(BLOCK_ATLAS, EMPTY_MAINHAND_SLOT);
+            public Identifier getNoItemIcon() {
+                return EMPTY_MAINHAND_SLOT;
             }
         });
-        addSlot(new SlotItemHandler(handler, 1, 121, 77) {
+        addSlot(new ResourceHandlerSlot(handler, handler::set,1, 121, 77) {
             @Override
             @OnlyIn(Dist.CLIENT)
-            public Pair<Identifier, Identifier> getNoItemIcon() {
-                return Pair.of(BLOCK_ATLAS, EMPTY_ARMOR_SLOT_SHIELD);
+            public Identifier getNoItemIcon() {
+                return EMPTY_ARMOR_SLOT_SHIELD;
             }
         });
     }
 
     protected void addMaidArmorInv() {
-        IItemHandler handler = maid.getCapability(InitCapabilities.ARMOR_ITEM, Direction.DOWN);
+        ItemStacksResourceHandler handler = (ItemStacksResourceHandler)maid.getCapability(InitCapabilities.HAND_ITEM, Direction.DOWN);
         if (handler != null) {
             for (int i = 0; i < 2; ++i) {
                 for (int j = 0; j < 2; j++) {
                     final EquipmentSlot equipmentSlot = SLOT_IDS[2 * i + j];
-                    addSlot(new SlotItemHandler(handler, 3 - 2 * i - j, 94 + 20 * j, 37 + 20 * i) {
+                    addSlot(new ResourceHandlerSlot(handler, handler::set,3 - 2 * i - j, 94 + 20 * j, 37 + 20 * i) {
                         @Override
                         public int getMaxStackSize() {
                             return 1;
                         }
 
                         @Override
-                        public boolean mayPlace(@Nonnull ItemStack stack) {
+                        public boolean mayPlace(ItemStack stack) {
                             return stack.canEquip(equipmentSlot, maid) && stack.getItem().canFitInsideContainerItems();
                         }
 
@@ -93,8 +94,8 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
 
                         @Override
                         @OnlyIn(Dist.CLIENT)
-                        public Pair<Identifier, Identifier> getNoItemIcon() {
-                            return Pair.of(BLOCK_ATLAS, TEXTURE_EMPTY_SLOTS[equipmentSlot.getIndex()]);
+                        public Identifier getNoItemIcon() {
+                            return TEXTURE_EMPTY_SLOTS[equipmentSlot.getIndex()];
                         }
                     });
                 }
@@ -105,13 +106,14 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
     protected void addMainDefaultInv() {
         // 默认背包
         for (int i = 0; i < 6; i++) {
-            addSlot(new BackpackSlot(maid, i, 143 + 18 * i, 37));
+            addSlot(BackpackSlot.create(maid, i, 143 + 18 * i, 37));
             // 最后一格给予特殊图标
             if (i == 5) {
-                addSlot(new BackpackSlot(maid, i, 143 + 18 * i, 37) {
+                ItemStacksResourceHandler maidInv = maid.getMaidInv();
+                addSlot(new BackpackSlot(maid, maidInv::set, i, 143 + 18 * i, 37) {
                     @Override
-                    public Pair<Identifier, Identifier> getNoItemIcon() {
-                        return Pair.of(BLOCK_ATLAS, EMPTY_BACK_SHOW_SLOT);
+                    public Identifier getNoItemIcon() {
+                        return EMPTY_BACK_SHOW_SLOT;
                     }
                 });
             }
@@ -155,24 +157,29 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
             // 用来修正护甲值不变化的问题
             if (PLAYER_INVENTORY_SIZE <= index && index < PLAYER_INVENTORY_SIZE + 4) {
                 EquipmentSlot equipmentSlot = SLOT_IDS[index - PLAYER_INVENTORY_SIZE];
-                maid.setLastArmorItem(equipmentSlot, stack1);
+                maid.setItemSlot(equipmentSlot, stack1);
             }
             // 还有主副手
             if (PLAYER_INVENTORY_SIZE + 4 <= index && index < PLAYER_INVENTORY_SIZE + 6) {
                 int slotIndex = index - PLAYER_INVENTORY_SIZE - 4;
                 EquipmentSlot equipmentSlot = slotIndex == 0 ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-                maid.setLastHandItem(equipmentSlot, stack1);
+                maid.setItemSlot(equipmentSlot, stack1);
             }
         }
         return stack1;
     }
 
-    public static class BackpackSlot extends SlotItemHandler implements ITriggerSlotChange {
+    public static class BackpackSlot extends ResourceHandlerSlot implements ITriggerSlotChange {
         private final EntityMaid maid;
 
-        public BackpackSlot(EntityMaid maid, int index, int xPosition, int yPosition) {
-            super(maid.getMaidInv(), index, xPosition, yPosition);
+        private BackpackSlot(EntityMaid maid, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
+            super(maid.getMaidInv(), slotModifier, index, xPosition, yPosition);
             this.maid = maid;
+        }
+
+        public static BackpackSlot create(EntityMaid maid, int index, int xPosition, int yPosition) {
+            ItemStacksResourceHandler maidInv = maid.getMaidInv();
+            return new BackpackSlot(maid, maidInv::set, index, xPosition, yPosition);
         }
 
         @Override
