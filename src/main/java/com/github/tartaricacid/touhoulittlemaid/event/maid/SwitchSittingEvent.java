@@ -33,7 +33,7 @@ public final class SwitchSittingEvent {
                 BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getHomePosition(), 0.7f, 3);
             }
             maid.playSound(SoundEvents.ITEM_PICKUP, 0.2F,
-                    ((world.random.nextFloat() - world.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                    ((world.getRandom().nextFloat() - world.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
             event.setCanceled(true);
         }
     }

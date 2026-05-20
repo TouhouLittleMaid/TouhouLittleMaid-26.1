@@ -24,7 +24,7 @@ public final class CopyEntityIdEvent {
         InteractionHand hand = event.getHand();
         Entity target = event.getTarget();
         if (player.getItemInHand(hand).is(InitItems.ENTITY_ID_COPY.get())) {
-            if (player.level.isClientSide() && FMLEnvironment.dist == Dist.CLIENT) {
+            if (player.level.isClientSide() && FMLEnvironment.getDist() == Dist.CLIENT) {
                 copyEntityId(player, target);
             }
             event.setCanceled(true);

@@ -14,7 +14,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 @EventBusSubscriber
 public class SaddleMaidEvent {
@@ -26,7 +26,7 @@ public class SaddleMaidEvent {
         if (stack.is(Items.SADDLE)) {
             if (player.getPassengers().isEmpty() && maid.getPassengers().isEmpty()) {
                 boolean success = maid.startRiding(player);
-                if (success && FMLLoader.getDist() == Dist.CLIENT) {
+                if (success && FMLEnvironment.getDist() == Dist.CLIENT) {
                     SaddleMaidEvent.showTips();
                 }
                 if (maid.isHomeModeEnable()) {
@@ -50,6 +50,5 @@ public class SaddleMaidEvent {
         Minecraft minecraft = Minecraft.getInstance();
         Component component = Component.translatable("message.touhou_little_maid.saddle.how_to_eject");
         minecraft.gui.setOverlayMessage(component, false);
-        minecraft.getNarrator().sayNow(component);
     }
 }

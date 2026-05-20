@@ -47,7 +47,7 @@ public final class GetExpBottleEvent {
                 ItemStack xpBottles = new ItemStack(Items.EXPERIENCE_BOTTLE, count);
                 Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), xpBottles);
             }
-            maid.playSound(SoundEvents.ITEM_PICKUP, 0.2F, ((world.random.nextFloat() - world.random.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+            maid.playSound(SoundEvents.ITEM_PICKUP, 0.2F, ((world.getRandom().nextFloat() - world.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
             if (player instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.TAKE_MAID_XP);
             }

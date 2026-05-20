@@ -5,11 +5,13 @@ import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.event.InteractMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -21,11 +23,14 @@ public final class ApplyGoldenAppleEvent {
         ItemStack stack = event.getStack();
         EntityMaid maid = event.getMaid();
         Level world = event.getWorld();
-        FoodProperties food = stack.getItem().getFoodProperties(stack, maid);
+        FoodProperties food = stack.get(DataComponents.FOOD);
         Player player = event.getPlayer();
 
         if (player.isDiscrete() && (food == Foods.GOLDEN_APPLE || food == Foods.ENCHANTED_GOLDEN_APPLE)) {
-            maid.eat(world, stack);
+            Consumable consumable = stack.get(DataComponents.CONSUMABLE);
+            if (consumable != null) {
+                consumable.onConsume(world, maid, stack);
+            }
             if (food == Foods.ENCHANTED_GOLDEN_APPLE && player instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.EAT_ENCHANTED_GOLDEN_APPLE);
             }

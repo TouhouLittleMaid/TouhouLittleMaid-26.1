@@ -3,9 +3,12 @@ package com.github.tartaricacid.touhoulittlemaid.event.maid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidFavorabilityLevelChangeEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 @EventBusSubscriber
 public class MaidDropBaubleEvent {
@@ -16,6 +19,9 @@ public class MaidDropBaubleEvent {
     public static void onFavorabilityLevelChange(MaidFavorabilityLevelChangeEvent event) {
         int newLevel = event.getNewLevel();
         EntityMaid maid = event.getMaid();
+        if (!(maid.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
         // 3 级：不需要掉落
         if (newLevel >= 3) {
             return;
@@ -24,9 +30,17 @@ public class MaidDropBaubleEvent {
         // 0 和 1 级：10 个格子
         int startIndex = newLevel <= 1 ? 10 : 20;
         BaubleItemHandler maidBauble = maid.getMaidBauble();
-        for (int i = startIndex; i < maidBauble.getSlots(); i++) {
-            ItemStack drop = maidBauble.extractItem(i, 1, false);
-            maid.spawnAtLocation(drop);
+        try (Transaction tx = Transaction.openRoot()) {
+            for (int i = startIndex; i < maidBauble.size(); i++) {
+                ItemResource resource = maidBauble.getResource(i);
+                int extract = maidBauble.extract(i, resource, 1, tx);
+                if (extract == 0) {
+                    continue;
+                }
+                ItemStack drop = resource.toStack(extract);
+                maid.spawnAtLocation(serverLevel, drop);
+            }
+            tx.commit();
         }
     }
 }

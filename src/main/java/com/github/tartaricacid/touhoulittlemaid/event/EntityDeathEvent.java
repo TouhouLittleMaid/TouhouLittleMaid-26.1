@@ -4,10 +4,12 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
 import com.github.tartaricacid.touhoulittlemaid.data.PowerAttachment;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -35,7 +37,12 @@ public class EntityDeathEvent {
         Player newEntity = event.getEntity();
         Player oldEntity = event.getOriginal();
         boolean wasDeath = event.isWasDeath();
-        boolean isKeep = newEntity.level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+        Level level = newEntity.level;
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        boolean isKeep = serverLevel.getGameRules().get(GameRules.KEEP_INVENTORY);
 
         PowerAttachment power = oldEntity.getData(POWER_NUM);
         MaidNumAttachment maidNum = oldEntity.getData(MAID_NUM);

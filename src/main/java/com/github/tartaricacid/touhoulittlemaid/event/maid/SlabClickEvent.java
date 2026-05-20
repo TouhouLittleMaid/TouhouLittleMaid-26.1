@@ -22,7 +22,7 @@ public final class SlabClickEvent {
         Item emptySmartSlab = InitItems.SMART_SLAB_EMPTY.get();
         Item maidSmartSlab = InitItems.SMART_SLAB_HAS_MAID.get();
         if (stack.getItem() == emptySmartSlab) {
-            if (!player.getCooldowns().isOnCooldown(emptySmartSlab)) {
+            if (!player.getCooldowns().isOnCooldown(new ItemStack(emptySmartSlab))) {
                 ItemStack output = maidSmartSlab.getDefaultInstance();
                 maid.setHomeModeEnable(false);
                 ItemSmartSlab.storeMaidData(output, maid);
@@ -30,7 +30,7 @@ public final class SlabClickEvent {
                 maid.discard();
                 maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, maid.level.getRandom().nextFloat() * 0.1F + 0.9F);
                 player.setItemInHand(InteractionHand.MAIN_HAND, output);
-                player.getCooldowns().addCooldown(maidSmartSlab, 20);
+                player.getCooldowns().addCooldown(new ItemStack(maidSmartSlab), 20);
             }
             event.setCanceled(true);
         }

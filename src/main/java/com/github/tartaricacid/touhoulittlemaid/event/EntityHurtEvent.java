@@ -21,8 +21,9 @@ public final class EntityHurtEvent {
         if (attacker instanceof TamableAnimal thrower && ray instanceof EntityHitResult hitResult) {
             Entity victim = hitResult.getEntity();
             if (victim instanceof TamableAnimal tameable) {
+                LivingEntity owner = thrower.getOwner();
                 // 同一主人，那么免伤
-                if (tameable.getOwnerUUID() != null && tameable.getOwnerUUID().equals(thrower.getOwnerUUID())) {
+                if (owner != null && tameable.isOwnedBy(owner)) {
                     event.setCanceled(true);
                 }
             }

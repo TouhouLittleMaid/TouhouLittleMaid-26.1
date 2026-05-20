@@ -13,8 +13,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.EffectCures;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 @EventBusSubscriber
 public final class ApplyPotionEffectEvent {
@@ -29,19 +27,19 @@ public final class ApplyPotionEffectEvent {
             stack.getItem().finishUsingItem(stack.copy(), world, maid);
             if (!player.isCreative()) {
                 stack.shrink(1);
-                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.GLASS_BOTTLE));
+                player.getInventory().placeItemBackInInventory(new ItemStack(Items.GLASS_BOTTLE));
             }
-            maid.playSound(SoundEvents.GENERIC_DRINK, 0.6f, 0.8F + world.random.nextFloat() * 0.4F);
+            maid.playSound(SoundEvents.GENERIC_DRINK.value(), 0.6f, 0.8F + world.getRandom().nextFloat() * 0.4F);
             event.setCanceled(true);
         }
 
         if (player.isDiscrete() && stack.getItem() == Items.MILK_BUCKET) {
-            maid.removeEffectsCuredBy(EffectCures.MILK);
+            maid.removeAllEffects();
             if (!player.isCreative()) {
                 stack.shrink(1);
-                ItemHandlerHelper.giveItemToPlayer(player, new ItemStack(Items.BUCKET));
+                player.getInventory().placeItemBackInInventory(new ItemStack(Items.BUCKET));
             }
-            maid.playSound(SoundEvents.GENERIC_DRINK, 0.6f, 0.8F + world.random.nextFloat() * 0.4F);
+            maid.playSound(SoundEvents.GENERIC_DRINK.value(), 0.6f, 0.8F + world.getRandom().nextFloat() * 0.4F);
             if (player instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.CLEAR_MAID_EFFECTS);
             }

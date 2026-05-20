@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SyncDataPackage;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.animal.Animal;
@@ -35,8 +36,8 @@ public class EntityJoinWorldEvent {
             // 先复制一遍进行遍历，避免出现 ConcurrentModificationException
             var goals = List.copyOf(animal.goalSelector.getAvailableGoals());
             goals.stream().filter(goal -> goal.getGoal() instanceof TemptGoal).findFirst().ifPresent(g -> {
-                if (g.getGoal() instanceof TemptGoal temptGoal) {
-                    MaidTemptGoal maidTemptGoal = new MaidTemptGoal(temptGoal.mob, temptGoal.speedModifier, temptGoal.items, temptGoal.canScare);
+                if (g.getGoal() instanceof TemptGoal temptGoal && temptGoal.mob instanceof PathfinderMob pathfinderMob) {
+                    MaidTemptGoal maidTemptGoal = new MaidTemptGoal(pathfinderMob, temptGoal.speedModifier, temptGoal.items, temptGoal.canScare);
                     animal.goalSelector.addGoal(g.getPriority(), maidTemptGoal);
                 }
             });
