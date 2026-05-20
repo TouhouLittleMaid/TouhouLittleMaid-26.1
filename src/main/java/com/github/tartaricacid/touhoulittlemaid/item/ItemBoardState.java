@@ -8,29 +8,28 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ItemBoardState extends Item {
-    public static final String DATA_TAG = "BoardStateData";
-    public static final String DESC_TAG = "BoardStateDesc";
-    public static final String AUTHOR_TAG = "BoardStateAuthor";
-
-    public ItemBoardState() {
-        super((new Properties()));
+    public ItemBoardState(Identifier id) {
+        super((new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id)));
     }
 
     public static void setState(ItemStack stack, String data, String desc, String author) {
@@ -47,10 +46,10 @@ public class ItemBoardState extends Item {
         return new String[]{info.data(), info.description(), info.author()};
     }
 
+    // FIXME 客户端类加载问题
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-        if (!Screen.hasShiftDown()) {
+        if (!Minecraft.getInstance().hasShiftDown()) {
             return Optional.empty();
         }
 
@@ -75,26 +74,26 @@ public class ItemBoardState extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
         String[] state = getState(stack);
 
         if (state == null) {
-            tooltip.add(Component.translatable("tooltips.touhou_little_maid.board_state.empty").withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("tooltips.touhou_little_maid.board_state.empty").withStyle(ChatFormatting.GRAY));
             return;
         }
 
         String descKey = state[1];
         if (StringUtils.isNotBlank(descKey)) {
-            tooltip.add(Component.translatable(descKey).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable(descKey).withStyle(ChatFormatting.GRAY));
         }
 
         String author = state[2];
         if (StringUtils.isNotBlank(author)) {
-            tooltip.add(Component.translatable("tooltips.touhou_little_maid.board_state.author", author).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.translatable("tooltips.touhou_little_maid.board_state.author", author).withStyle(ChatFormatting.GRAY));
         }
 
-        if (!Screen.hasShiftDown()) {
-            tooltip.add(Component.translatable("board_state.touhou_little_maid.show_picture")
+        if (!tooltipFlag.hasShiftDown()) {
+            tooltip.accept(Component.translatable("board_state.touhou_little_maid.show_picture")
                     .withStyle(ChatFormatting.DARK_GRAY).withStyle(ChatFormatting.ITALIC));
         }
     }

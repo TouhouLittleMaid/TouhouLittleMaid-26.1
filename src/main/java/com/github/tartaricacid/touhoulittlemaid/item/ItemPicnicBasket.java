@@ -1,15 +1,14 @@
 package com.github.tartaricacid.touhoulittlemaid.item;
 
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.PicnicBasketRender;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.other.PicnicBasketContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemContainerTooltip;
-import com.google.common.base.Suppliers;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -23,33 +22,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class ItemPicnicBasket extends BlockItem implements MenuProvider {
-    public static final IClientItemExtensions ITEM_EXTENSIONS = FMLEnvironment.dist == Dist.CLIENT ? new IClientItemExtensions() {
-        private static final Supplier<PicnicBasketRender> MEMOIZE = Suppliers.memoize(() -> {
-            Minecraft minecraft = Minecraft.getInstance();
-            return new PicnicBasketRender(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        });
-
-        @Override
-        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-            return MEMOIZE.get();
-        }
-    } : null;
     private static final int PICNIC_BASKET_SIZE = 9;
 
-    public ItemPicnicBasket(Block block) {
-        super(block, (new Properties()).stacksTo(1));
+    public ItemPicnicBasket(Identifier id, Block block) {
+        super(block, (new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1)
+                .overrideDescription("item.touhou_little_maid.picnic_basket"));
     }
 
     public static ItemStacksResourceHandler getContainer(ItemStack stack) {
@@ -79,10 +66,10 @@ public class ItemPicnicBasket extends BlockItem implements MenuProvider {
     }
 
     @Override
-    public InteractionResult<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (handIn == InteractionHand.MAIN_HAND && playerIn instanceof ServerPlayer serverPlayer) {
             serverPlayer.openMenu(this, data -> ItemStack.STREAM_CODEC.encode(data, serverPlayer.getMainHandItem()));
-            return InteractionResult.success(playerIn.getMainHandItem());
+            return InteractionResult.SUCCESS;
         }
         return super.use(worldIn, playerIn, handIn);
     }
@@ -91,11 +78,6 @@ public class ItemPicnicBasket extends BlockItem implements MenuProvider {
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
         var container = getContainer(stack);
         return Optional.of(new ItemContainerTooltip(container));
-    }
-
-    @Override
-    public String getDescriptionId() {
-        return "item.touhou_little_maid.picnic_basket";
     }
 
     @Override

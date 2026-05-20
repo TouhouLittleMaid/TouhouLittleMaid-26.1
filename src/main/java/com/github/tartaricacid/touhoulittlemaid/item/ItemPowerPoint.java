@@ -1,6 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityThrowPowerPoint;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
@@ -12,12 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class ItemPowerPoint extends Item {
-    public ItemPowerPoint() {
-        super((new Properties()));
+    public ItemPowerPoint(Identifier id) {
+        super((new Properties()
+                .setId(ResourceKey.create(Registries.ITEM, id))));
     }
 
     @Override
-    public InteractionResult<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_BOTTLE_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (player.getRandom().nextFloat() * 0.4F + 0.8F));
         if (!world.isClientSide()) {
@@ -30,6 +34,6 @@ public class ItemPowerPoint extends Item {
         if (!player.isCreative()) {
             stack.shrink(1);
         }
-        return InteractionResult.sidedSuccess(stack, world.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 }

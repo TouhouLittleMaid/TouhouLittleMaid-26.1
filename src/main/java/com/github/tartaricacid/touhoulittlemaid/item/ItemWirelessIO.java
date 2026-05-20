@@ -8,7 +8,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,8 +41,10 @@ public class ItemWirelessIO extends Item implements MenuProvider {
     private static final int FILTER_LIST_SIZE = 9;
     private static final String TOOLTIPS_PREFIX = "§a▍ §7";
 
-    public ItemWirelessIO() {
-        super((new Properties()).stacksTo(1));
+    public ItemWirelessIO(Identifier id) {
+        super((new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1));
     }
 
     public static void setMode(ItemStack stack, boolean maidToChest) {

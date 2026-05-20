@@ -8,11 +8,13 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemMaidToolti
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.YsmMaidInfo;
 import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,6 +24,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.StringUtils;
@@ -42,8 +47,9 @@ public abstract class AbstractStoreMaidItem extends Item {
     public static void storeMaidData(ItemStack stack, EntityMaid maid) {
         CustomData compoundData = stack.get(InitDataComponent.MAID_INFO);
         if (compoundData == null) {
-            CompoundTag tag = new CompoundTag();
-            maid.saveWithoutId(tag);
+            TagValueOutput valueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, maid.level().registryAccess());
+            maid.saveWithoutId(valueOutput);
+            CompoundTag tag = valueOutput.buildResult();
 
             var event = new MaidAndItemTransformEvent.ToItem(maid, stack, tag);
             NeoForge.EVENT_BUS.post(event);
@@ -61,7 +67,7 @@ public abstract class AbstractStoreMaidItem extends Item {
             entity.setInvulnerable(true);
         }
         Vec3 position = entity.position();
-        int minY = entity.level.getMinBuildHeight();
+        int minY = entity.level.getMinY();
         if (position.y < minY) {
             entity.setNoGravity(true);
             entity.setDeltaMovement(Vec3.ZERO);
@@ -76,13 +82,14 @@ public abstract class AbstractStoreMaidItem extends Item {
         if (maidInfo == null) {
             return Optional.empty();
         }
-        Optional<String> modelId = maidInfo.read(Codec.STRING.fieldOf(MODEL_ID_TAG_NAME)).result();
+        CompoundTag tag = maidInfo.copyTag();
+        Optional<String> modelId = tag.read(Codec.STRING.fieldOf(MODEL_ID_TAG_NAME));
         if (modelId.isEmpty()) {
             return Optional.empty();
         }
-        String customName = maidInfo.read(Codec.STRING.fieldOf(CUSTOM_NAME)).result().orElse(StringUtils.EMPTY);
+        String customName = tag.read(Codec.STRING.fieldOf(CUSTOM_NAME)).orElse(StringUtils.EMPTY);
         // YSM 渲染相关数据
-        YsmMaidInfo ysmMaidInfo = YsmCompat.getYsmMaidInfo(maidInfo.copyTag());
+        YsmMaidInfo ysmMaidInfo = YsmCompat.getYsmMaidInfo(tag);
         return Optional.of(new ItemMaidTooltip(modelId.get(), customName, ysmMaidInfo));
     }
 
@@ -91,7 +98,7 @@ public abstract class AbstractStoreMaidItem extends Item {
         CustomData compoundData = stack.get(InitDataComponent.MAID_INFO);
         if (compoundData != null) {
             CompoundTag maidCompound = compoundData.copyTag();
-            UUID ownerUid = maidCompound.getUUID(MAID_OWNER);
+            UUID ownerUid = maidCompound.read(UUIDUtil.CODEC.fieldOf(MAID_OWNER)).orElse(null);
             if (!player.getUUID().equals(ownerUid)) {
                 MutableComponent tip = Component.translatable("tooltips.touhou_little_maid.smart_slab.not_your_maid").withStyle(ChatFormatting.DARK_RED);
                 if (!worldIn.isClientSide()) {
@@ -103,15 +110,16 @@ public abstract class AbstractStoreMaidItem extends Item {
             var event = new MaidAndItemTransformEvent.ToMaid(maid, stack, maidCompound);
             NeoForge.EVENT_BUS.post(event);
 
-            maid.load(maidCompound);
-            maid.moveTo(context.getClickedPos().above(), 0, 0);
+            ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, worldIn.registryAccess(), maidCompound);
+            maid.load(input);
+            maid.snapTo(context.getClickedPos().above(), 0, 0);
             if (worldIn instanceof ServerLevel) {
                 worldIn.addFreshEntity(maid);
             }
             maid.spawnExplosionParticle();
-            maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, worldIn.random.nextFloat() * 0.1F + 0.9F);
+            maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, worldIn.getRandom().nextFloat() * 0.1F + 0.9F);
             runnable.run();
-            return InteractionResult.sidedSuccess(worldIn.isClientSide());
+            return InteractionResult.SUCCESS;
         } else {
             if (worldIn.isClientSide()) {
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.photo.have_no_nbt_data"));

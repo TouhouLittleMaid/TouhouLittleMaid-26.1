@@ -7,6 +7,9 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.google.common.base.Predicates;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -31,13 +34,15 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ItemHakureiGohei extends ProjectileWeaponItem {
-    public ItemHakureiGohei() {
+    public ItemHakureiGohei(Identifier id) {
         super((new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
                 .durability(1200)
-                .setNoRepair()
                 .attributes(ItemAttributeModifiers.builder()
-                        .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                        .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, -2, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 4,
+                                AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                        .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, -2,
+                                AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                         .build()));
     }
 
@@ -116,13 +121,7 @@ public class ItemHakureiGohei extends ProjectileWeaponItem {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         stack.hurtAndBreak(2, attacker, attacker.getEquipmentSlotForItem(stack));
-        return true;
-    }
-
-    @Override
-    public boolean isEnchantable(ItemStack pStack) {
-        return super.isEnchantable(pStack);
     }
 }

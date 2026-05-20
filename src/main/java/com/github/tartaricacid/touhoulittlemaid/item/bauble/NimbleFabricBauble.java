@@ -14,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 
 public class NimbleFabricBauble implements IMaidBauble {
     private static final int MAX_RETRY = 16;
@@ -30,9 +32,9 @@ public class NimbleFabricBauble implements IMaidBauble {
             int slot = ItemsUtil.getBaubleSlotInMaid(maid, this);
             if (slot >= 0) {
                 event.setCanceled(true);
-                ItemStack stack = maid.getMaidBauble().getStackInSlot(slot);
+                ItemStack stack = ItemUtil.getStack(maid.getMaidBauble(), slot);
                 maid.hurtAndBreak(stack, 1);
-                maid.getMaidBauble().setStackInSlot(slot, stack);
+                maid.getMaidBauble().set(slot, ItemResource.of(stack), 1);
                 for (int i = 0; i < MAX_RETRY; ++i) {
                     if (TeleportHelper.teleport(maid)) {
                         if (maid.getOwner() instanceof ServerPlayer serverPlayer) {

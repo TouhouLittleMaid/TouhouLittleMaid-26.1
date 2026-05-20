@@ -11,34 +11,47 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePac
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class ItemFilm extends AbstractStoreMaidItem {
     private static final String ID_TAG = "id";
 
-    public ItemFilm() {
-        super((new Item.Properties()).stacksTo(1));
+    public ItemFilm(Identifier id) {
+        super((new Item.Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1));
     }
 
     public static ItemStack maidToFilm(EntityMaid maid) {
         ItemStack film = InitItems.FILM.get().getDefaultInstance();
-        CompoundTag maidTag = new CompoundTag();
         maid.setHomeModeEnable(false);
-        maid.saveWithoutId(maidTag);
+
+        TagValueOutput valueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, maid.registryAccess());
+        maid.saveWithoutId(valueOutput);
+
+        CompoundTag maidTag = new CompoundTag();
+        maidTag.merge(valueOutput.buildResult());
         removeMaidSomeData(maidTag);
         maidTag.putString(ID_TAG, Objects.requireNonNull(BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get())).toString());
 
@@ -55,7 +68,12 @@ public class ItemFilm extends AbstractStoreMaidItem {
             return;
         }
         CompoundTag data = compoundData.copyTag();
-        Identifier entityId = Identifier.tryParse(data.getString(ID_TAG));
+        Optional<String> idOpt = data.getString(ID_TAG);
+        if (idOpt.isEmpty()) {
+            return;
+        }
+
+        Identifier entityId = Identifier.tryParse(idOpt.get());
         Identifier maidId = BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get());
 
         if (entityId != null && entityId.equals(maidId)) {
@@ -64,7 +82,7 @@ public class ItemFilm extends AbstractStoreMaidItem {
             var event = new MaidAndItemTransformEvent.ToMaid(maid, film, data);
             NeoForge.EVENT_BUS.post(event);
 
-            maid.readAdditionalSaveData(data);
+            maid.load(TagValueInput.create(ProblemReporter.DISCARDING, worldIn.registryAccess(), data));
             maid.setPos(pos.getX(), pos.getY(), pos.getZ());
             // 实体生成必须在服务端应用
             if (!worldIn.isClientSide()) {
@@ -110,9 +128,9 @@ public class ItemFilm extends AbstractStoreMaidItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
         if (stack.get(InitDataComponent.MAID_INFO) == null) {
-            tooltip.add(Component.translatable("tooltips.touhou_little_maid.film.no_data.desc").withStyle(ChatFormatting.DARK_RED));
+            tooltip.accept(Component.translatable("tooltips.touhou_little_maid.film.no_data.desc").withStyle(ChatFormatting.DARK_RED));
         }
     }
 }

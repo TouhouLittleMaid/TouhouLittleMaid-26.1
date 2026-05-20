@@ -9,6 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -23,6 +24,10 @@ import java.util.function.Consumer;
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.TANK_BACKPACK_TAG;
 
 public class ItemTankBackpack extends ItemMaidBackpack {
+    public ItemTankBackpack(Identifier id) {
+        super(id);
+    }
+
     public static ItemStack getTankBackpack(HolderLookup.Provider provider, TankBackpackData data) {
         ItemStack backpack = InitItems.TANK_BACKPACK.get().getDefaultInstance();
         CompoundTag tags = backpack.get(TANK_BACKPACK_TAG);

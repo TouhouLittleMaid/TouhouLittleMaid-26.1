@@ -22,7 +22,7 @@ public class UndyingTotemBauble implements IMaidBauble {
             maid.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
             maid.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
             maid.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
-            maid.level.broadcastEntityEvent(maid, EntityEvent.TALISMAN_ACTIVATE);
+            maid.level.broadcastEntityEvent(maid, EntityEvent.PROTECTED_FROM_DEATH);
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_UNDEAD_BAUBLE);
             }

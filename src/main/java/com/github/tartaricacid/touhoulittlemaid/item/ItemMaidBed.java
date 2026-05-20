@@ -3,20 +3,26 @@ package com.github.tartaricacid.touhoulittlemaid.item;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemMaidBed extends BlockItem {
     private static final String COLOR_TAG = "BedColor";
 
-    public ItemMaidBed() {
-        super(InitBlocks.MAID_BED.get(), (new Item.Properties()).stacksTo(1));
+    public ItemMaidBed(Identifier id) {
+        super(InitBlocks.MAID_BED.get(), (new Item.Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1));
     }
 
     public static void setColor(DyeColor color, ItemStack bed) {
@@ -33,10 +39,10 @@ public class ItemMaidBed extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable TooltipContext context, List<Component> pTooltip, TooltipFlag pFlag) {
+    public void appendHoverText(ItemStack pStack, @Nullable TooltipContext context, TooltipDisplay display, Consumer<Component> pTooltip, TooltipFlag pFlag) {
         DyeColor color = getColor(pStack);
         Component colorText = Component.translatable("color.minecraft." + color.getName());
         Component all = Component.translatable("item.color", colorText).withStyle(ChatFormatting.GRAY);
-        pTooltip.add(all);
+        pTooltip.accept(all);
     }
 }

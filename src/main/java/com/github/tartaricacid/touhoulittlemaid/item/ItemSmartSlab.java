@@ -10,8 +10,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Util;
@@ -23,23 +26,28 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.MAID_NUM;
 
 public class ItemSmartSlab extends AbstractStoreMaidItem {
     private final Type type;
 
-    public ItemSmartSlab(Type type) {
-        super((new Properties()).stacksTo(1).rarity(Rarity.RARE));
+    public ItemSmartSlab(Identifier id, Type type) {
+        super((new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1)
+                .rarity(Rarity.RARE)
+                .overrideDescription("item.touhou_little_maid.smart_slab"));
         this.type = type;
     }
 
@@ -59,11 +67,6 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
     }
 
     @Override
-    public String getDescriptionId() {
-        return "item.touhou_little_maid.smart_slab";
-    }
-
-    @Override
     public InteractionResult useOn(UseOnContext context) {
         Direction clickedFace = context.getClickedFace();
         Player player = context.getPlayer();
@@ -73,7 +76,7 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
             return super.useOn(context);
         }
         if (clickedFace == Direction.UP && !PlaceHelper.notSuitableForPlaceMaid(worldIn, clickedPos)) {
-            EntityMaid maid = InitEntities.MAID.get().create(worldIn);
+            EntityMaid maid = InitEntities.MAID.get().create(worldIn, EntitySpawnReason.SPAWN_ITEM_USE);
             if (maid == null) {
                 return super.useOn(context);
             }
@@ -93,7 +96,7 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
             if (this.type == Type.HAS_MAID) {
                 return spawnFromStore(context, player, worldIn, maid, () -> {
                     player.setItemInHand(context.getHand(), InitItems.SMART_SLAB_EMPTY.get().getDefaultInstance());
-                    player.getCooldowns().addCooldown(InitItems.SMART_SLAB_EMPTY.get(), 20);
+                    player.getCooldowns().addCooldown(new ItemStack(InitItems.SMART_SLAB_EMPTY.get()), 20);
                 });
             }
         } else {
@@ -111,16 +114,16 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
                 cap.add();
             }
             maid.tame(player);
-            if (worldIn instanceof ServerLevel) {
-                maid.finalizeSpawn((ServerLevel) worldIn, worldIn.getCurrentDifficultyAt(context.getClickedPos()), EntitySpawnReason.SPAWN_EGG, null);
-                maid.moveTo(context.getClickedPos().above(), 0, 0);
-                worldIn.addFreshEntity(maid);
+            if (worldIn instanceof ServerLevel serverLevel) {
+                maid.finalizeSpawn(serverLevel, serverLevel.getCurrentDifficultyAt(context.getClickedPos()), EntitySpawnReason.SPAWN_ITEM_USE, null);
+                maid.snapTo(context.getClickedPos().above(), 0, 0);
+                serverLevel.addFreshEntity(maid);
             }
             maid.spawnExplosionParticle();
-            maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, worldIn.random.nextFloat() * 0.1F + 0.9F);
+            maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, worldIn.getRandom().nextFloat() * 0.1F + 0.9F);
             player.setItemInHand(context.getHand(), InitItems.SMART_SLAB_EMPTY.get().getDefaultInstance());
-            player.getCooldowns().addCooldown(InitItems.SMART_SLAB_EMPTY.get(), 20);
-            return InteractionResult.sidedSuccess(worldIn.isClientSide());
+            player.getCooldowns().addCooldown(new ItemStack(InitItems.SMART_SLAB_EMPTY.get()), 20);
+            return InteractionResult.SUCCESS;
         } else {
             if (worldIn.isClientSide()) {
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.owner_maid_num.can_not_add", cap.get(), cap.getMaxNum()));
@@ -141,12 +144,12 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
         if (this.type == Type.INIT) {
             MutableComponent text = Component.translatable("tooltips.touhou_little_maid.smart_slab.maid_name", I18n.get("tooltips.touhou_little_maid.smart_slab.maid_name.unknown"));
-            tooltip.add(text.withStyle(ChatFormatting.GRAY));
+            tooltip.accept(text.withStyle(ChatFormatting.GRAY));
         }
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.smart_slab.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.smart_slab.desc").withStyle(ChatFormatting.GRAY));
     }
 
     @Override

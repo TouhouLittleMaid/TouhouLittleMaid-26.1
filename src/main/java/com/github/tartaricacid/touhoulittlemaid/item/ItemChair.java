@@ -1,20 +1,18 @@
 package com.github.tartaricacid.touhoulittlemaid.item;
 
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.TileEntityItemStackChairRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
-import com.google.common.base.Suppliers;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -26,6 +24,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -34,31 +33,20 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.*;
 
 public class ItemChair extends Item {
     private static final String DEFAULT_MODEL_ID = "touhou_little_maid:cushion";
-    public static final IClientItemExtensions ITEM_EXTENSIONS = FMLEnvironment.dist == Dist.CLIENT ? new IClientItemExtensions() {
-        private static final Supplier<TileEntityItemStackChairRenderer> MEMOIZE = Suppliers.memoize(() -> {
-            Minecraft minecraft = Minecraft.getInstance();
-            return new TileEntityItemStackChairRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels());
-        });
 
-        @Override
-        public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-            return MEMOIZE.get();
-        }
-    } : null;
-
-    public ItemChair() {
-        super((new Properties()).stacksTo(1));
+    public ItemChair(Identifier id) {
+        super((new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1));
     }
 
     public static Data getData(ItemStack stack) {
@@ -102,7 +90,7 @@ public class ItemChair extends Item {
                     world.playSound(null, chair.getX(), chair.getY(), chair.getZ(), SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
                 }
                 stack.shrink(1);
-                return InteractionResult.sidedSuccess(world.isClientSide());
+                return InteractionResult.SUCCESS;
             }
         }
         return InteractionResult.FAIL;
@@ -114,7 +102,7 @@ public class ItemChair extends Item {
             if (stack.get(DataComponents.CUSTOM_NAME) != null) {
                 e.setCustomName(stack.get(DataComponents.CUSTOM_NAME));
             }
-        }, pos, EntitySpawnReason.SPAWN_EGG, true, true);
+        }, pos, EntitySpawnReason.SPAWN_ITEM_USE, true, true);
         if (chair != null) {
             addExtraData(player, stack, chair, rotation);
         }
@@ -129,7 +117,7 @@ public class ItemChair extends Item {
         chair.setNoGravity(data.isNoGravity());
         chair.setOwner(player);
         float yaw = (float) Mth.floor((Mth.wrapDegrees(rotation - 180) + 22.5F) / 45.0F) * 45.0F;
-        chair.moveTo(chair.getX(), chair.getY(), chair.getZ(), yaw, 0.0F);
+        chair.snapTo(chair.getX(), chair.getY(), chair.getZ(), yaw, 0.0F);
         chair.setYBodyRot(yaw);
         chair.setYHeadRot(yaw);
     }
@@ -137,7 +125,7 @@ public class ItemChair extends Item {
     @Override
     @OnlyIn(Dist.CLIENT)
     public Component getName(ItemStack stack) {
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             // 添加坐垫前缀，方便搜索
             MutableComponent prefix = Component.translatable("item.touhou_little_maid.chair.prefix");
             ItemChair.Data data = getData(stack);
@@ -151,17 +139,17 @@ public class ItemChair extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.chair.place.desc").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.chair.destroy.desc").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.chair.gui.desc").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.place.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.destroy.desc").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.gui.desc").withStyle(ChatFormatting.GRAY));
         // 调试模式，不加国际化
-        if (flagIn.isAdvanced() && Screen.hasShiftDown()) {
+        if (flagIn.isAdvanced() && flagIn.hasShiftDown()) {
             Data data = Data.deserialization(stack);
-            tooltip.add(Component.literal("Model Id: " + data.modelId()).withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal("Mounted Height: " + data.height()).withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal("Tameable Can Ride: " + data.canRide()).withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.literal("Is No Gravity: " + data.isNoGravity()).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal("Model Id: " + data.modelId()).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal("Mounted Height: " + data.height()).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal("Tameable Can Ride: " + data.canRide()).withStyle(ChatFormatting.GRAY));
+            tooltip.accept(Component.literal("Is No Gravity: " + data.isNoGravity()).withStyle(ChatFormatting.GRAY));
         }
     }
 

@@ -11,7 +11,10 @@ import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -30,8 +33,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ItemChisel extends Item {
-    public ItemChisel() {
-        super((new Properties()).stacksTo(1).durability(64));
+    public ItemChisel(Identifier id) {
+        super((new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1)
+                .durability(64));
     }
 
     @Override
@@ -105,8 +111,8 @@ public class ItemChisel extends Item {
                     BlockPos pos = switch (facing) {
                         case WEST -> origin.offset(new Vec3i(x, y, z));
                         case SOUTH -> origin.offset(new Vec3i(x, y, -z));
-                        default -> origin.offset(new Vec3i(-x, y, z));
                         case EAST -> origin.offset(new Vec3i(-x, y, -z));
+                        default -> origin.offset(new Vec3i(-x, y, z));
                     };
                     posList[index] = pos;
                     index++;

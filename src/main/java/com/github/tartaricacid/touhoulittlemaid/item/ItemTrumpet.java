@@ -6,7 +6,10 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidInfo;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -18,20 +21,24 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemTrumpet extends Item {
     private static final int MIN_USE_DURATION = 20;
 
-    public ItemTrumpet() {
-        super((new Properties()).stacksTo(1));
+    public ItemTrumpet(Identifier id) {
+        super((new Properties())
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .stacksTo(1));
     }
 
     @Override
-    public void releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
+    public boolean releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
         if (entityLiving instanceof Player player && timeLeft >= MIN_USE_DURATION) {
             if (worldIn instanceof ServerLevel serverLevel) {
                 serverLevel.getEntities(EntityMaid.TYPE, Entity::isAlive).stream()
@@ -48,8 +55,10 @@ public class ItemTrumpet extends Item {
             if (player instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_TRUMPET);
             }
-            player.getCooldowns().addCooldown(this, 200);
+            player.getCooldowns().addCooldown(stack, 200);
+            return true;
         }
+        return false;
     }
 
     private void teleportToOwner(EntityMaid maid, Player player) {
@@ -72,15 +81,15 @@ public class ItemTrumpet extends Item {
     }
 
     @Override
-    public InteractionResult<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         playerIn.startUsingItem(handIn);
-        return InteractionResult.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.usage").withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.note").withStyle(ChatFormatting.DARK_RED));
+    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.usage").withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.note").withStyle(ChatFormatting.DARK_RED));
     }
 }
