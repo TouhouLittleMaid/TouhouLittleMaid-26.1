@@ -100,13 +100,14 @@ public final class EntityBaseAnimation {
                 Level world = entity.level();
                 ModelRendererWrapper dayShow = modelMap.get("dayShow");
                 ModelRendererWrapper nightShow = modelMap.get("nightShow");
+                long dayTime = world.getGameTime() % 24000;
 
                 if (dayShow != null) {
-                    dayShow.setHidden(world.getDayTime() >= 13000);
+                    dayShow.setHidden(dayTime >= 13000);
                 }
 
                 if (nightShow != null) {
-                    nightShow.setHidden(world.getDayTime() < 13000);
+                    nightShow.setHidden(dayTime < 13000);
                 }
             }
         };
@@ -116,7 +117,7 @@ public final class EntityBaseAnimation {
         return new IAnimation<LivingEntity>() {
             @Override
             public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, LivingEntity entity, HashMap<String, ModelRendererWrapper> modelMap) {
-                long time = entity.level().getDayTime();
+                long time = entity.level().getGameTime() % 24000;
                 float hourDeg = (float) (Math.PI + ((time / 1000) % 12) * (Math.PI / 6));
                 float minDeg = (float) (((time % 1000) / (50 / 3)) * (Math.PI / 30));
 

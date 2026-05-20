@@ -16,17 +16,17 @@ public final class WorldWrapper implements IWorldData {
 
     @Override
     public long getWorldTime() {
-        return world.getDayTime();
+        return world.getGameTime() % 24000;
     }
 
     @Override
     public boolean isDay() {
-        return world.getDayTime() < 13000;
+        return getWorldTime() < 13000;
     }
 
     @Override
     public boolean isNight() {
-        return world.getDayTime() >= 13000;
+        return getWorldTime() >= 13000;
     }
 
     @Override

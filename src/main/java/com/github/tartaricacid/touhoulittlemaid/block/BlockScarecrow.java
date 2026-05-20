@@ -1,21 +1,16 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.util.VoxelShapeUtils;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -34,7 +29,6 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class BlockScarecrow extends HorizontalDirectionalBlock {
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
@@ -148,11 +142,5 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
                 return UPPER_AABB_NORTH;
             }
         }
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        int range = MiscConfig.SCARECROW_RANGE.get();
-        tooltip.add(Component.translatable("tooltips.touhou_little_maid.scarecrow.desc", range, range).withStyle(ChatFormatting.GRAY));
     }
 }

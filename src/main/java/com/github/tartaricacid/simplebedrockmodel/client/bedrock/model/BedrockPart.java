@@ -8,6 +8,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Util;
 import org.joml.Matrix3f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
@@ -20,6 +21,7 @@ public class BedrockPart extends ModelPart {
         }
     });
 
+    public float offsetX = 0, offsetY = 0, offsetZ = 0;
     public @Nullable BedrockPart parent = null;
     public boolean illuminated = false;
     public boolean mirror = false;
@@ -59,6 +61,18 @@ public class BedrockPart extends ModelPart {
     }
 
     @Override
+    public void translateAndRotate(PoseStack poseStack) {
+        poseStack.translate((this.x / 16.0F) + this.offsetX, (this.y / 16.0F) + this.offsetY, (this.z / 16.0F) + this.offsetZ);
+        if (this.xRot != 0.0F || this.yRot != 0.0F || this.zRot != 0.0F) {
+            poseStack.mulPose(new Quaternionf().rotationZYX(this.zRot, this.yRot, this.xRot));
+        }
+
+        if (this.xScale != 1.0F || this.yScale != 1.0F || this.zScale != 1.0F) {
+            poseStack.scale(this.xScale, this.yScale, this.zScale);
+        }
+    }
+
+    @Override
     public void compile(PoseStack.Pose pose, VertexConsumer consumer, int lightmap, int overlay, int color) {
         Matrix3f normal = pose.normal();
         NORMALS[0].set(-normal.m10, -normal.m11, -normal.m12);
@@ -88,5 +102,17 @@ public class BedrockPart extends ModelPart {
     @Nullable
     public BedrockPart getParent() {
         return parent;
+    }
+
+    public float getInitRotX() {
+        return this.initialPose.xRot();
+    }
+
+    public float getInitRotY() {
+        return this.initialPose.yRot();
+    }
+
+    public float getInitRotZ() {
+        return this.initialPose.zRot();
     }
 }

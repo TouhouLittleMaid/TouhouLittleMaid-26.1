@@ -19,6 +19,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.patpat.PatPatCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ponder.PonderCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.sodium.SodiumCompat;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -35,6 +36,8 @@ import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.HOTBAR;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = TouhouLittleMaid.MOD_ID)
 public class ClientSetupEvent {
+    private static final Identifier MAID_EMOJI_RELOAD = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid_emoji_reload");
+
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(AnimationRegister::registerAnimationState);
@@ -75,6 +78,6 @@ public class ClientSetupEvent {
 
     @SubscribeEvent
     public static void onRegisterClientReloadListeners(AddClientReloadListenersEvent event) {
-        event.registerReloadListener(new EmojiReloadListener());
+        event.addListener(MAID_EMOJI_RELOAD, new EmojiReloadListener());
     }
 }

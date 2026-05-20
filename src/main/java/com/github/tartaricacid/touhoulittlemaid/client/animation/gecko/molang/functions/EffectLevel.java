@@ -25,7 +25,7 @@ public class EffectLevel extends ContextFunction<Entity> {
             return null;
         }
 
-        Holder.Reference<MobEffect> effect = BuiltInRegistries.MOB_EFFECT.getHolder(effectId).orElse(null);
+        Holder.Reference<MobEffect> effect = BuiltInRegistries.MOB_EFFECT.get(effectId).orElse(null);
         if (effect == null) {
             return 0;
         }

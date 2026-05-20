@@ -3,11 +3,9 @@ package com.github.tartaricacid.touhoulittlemaid.block;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntitySnackCabinet;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -18,9 +16,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -36,8 +32,6 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class BlockSnackCabinet extends BaseEntityBlock {
@@ -139,12 +133,6 @@ public class BlockSnackCabinet extends BaseEntityBlock {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
-    }
-
-
-    @Override
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("block.touhou_little_maid.snack_cabinet.tip").withStyle(ChatFormatting.GRAY));
     }
 
     @Override

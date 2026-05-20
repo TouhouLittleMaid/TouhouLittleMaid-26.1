@@ -222,6 +222,9 @@ dependencies {
     // YAML 库
     mcLib "org.yaml:snakeyaml:2.4"
 
+    // Nashorn JavaScript 引擎，目前仅用于女仆的旧版 JS 动画
+    mcLib "org.openjdk.nashorn:nashorn-core:15.4"
+
     // 单元测试
     testImplementation 'junit:junit:4.13.2'
 

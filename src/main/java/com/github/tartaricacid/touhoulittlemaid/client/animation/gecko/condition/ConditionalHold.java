@@ -63,7 +63,12 @@ public class ConditionalHold {
             if (substring.equals(ItemUseAnimation.NONE.name().toLowerCase(Locale.US))) {
                 return;
             }
-            Arrays.stream(ItemUseAnimation.values()).filter(a -> a.name().toLowerCase(Locale.US).equals(substring)).findFirst().ifPresent(extraTest::add);
+            Arrays.stream(ItemUseAnimation.values())
+                    .filter(a -> a.name()
+                            .toLowerCase(Locale.US)
+                            .equals(substring))
+                    .findFirst()
+                    .ifPresent(extraTest::add);
             innerTest.add(name);
         }
     }
@@ -103,7 +108,11 @@ public class ConditionalHold {
             return EMPTY;
         }
         ItemStack itemInHand = maid.asEntity().getItemInHand(hand);
-        return tagTest.stream().filter(itemInHand::is).findFirst().map(itemTagKey -> tagPre + itemTagKey.location()).orElse(EMPTY);
+        return tagTest.stream()
+                .filter(itemInHand::is)
+                .findFirst()
+                .map(itemTagKey -> tagPre + itemTagKey.location())
+                .orElse(EMPTY);
     }
 
     private String doExtraTest(IMaid maid, InteractionHand hand) {

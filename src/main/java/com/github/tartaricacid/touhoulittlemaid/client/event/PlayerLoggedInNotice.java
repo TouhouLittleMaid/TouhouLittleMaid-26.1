@@ -12,6 +12,8 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
+import java.net.URI;
+
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public class PlayerLoggedInNotice {
@@ -26,8 +28,8 @@ public class PlayerLoggedInNotice {
         if (missingPatchouli) {
             MutableComponent title = Component.translatable("message.touhou_little_maid.missing_patchouli.title")
                     .withStyle(style -> style.withColor(ChatFormatting.GREEN).withBold(true));
-            ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, I18n.get("message.touhou_little_maid.missing_patchouli.url"));
-            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.touhou_little_maid.missing_patchouli.url"));
+            ClickEvent clickEvent = new ClickEvent.OpenUrl(URI.create(I18n.get("message.touhou_little_maid.missing_patchouli.url")));
+            HoverEvent hoverEvent = new HoverEvent.ShowText(Component.translatable("message.touhou_little_maid.missing_patchouli.url"));
             MutableComponent base = Component.translatable("message.touhou_little_maid.missing_patchouli.click_here")
                     .withStyle(style -> style.withColor(ChatFormatting.GOLD).withBold(false).withUnderlined(true).withClickEvent(clickEvent).withHoverEvent(hoverEvent));
             event.getEntity().sendSystemMessage(title.append(CommonComponents.SPACE).append(base));

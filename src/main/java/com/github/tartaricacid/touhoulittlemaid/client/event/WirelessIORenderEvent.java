@@ -5,9 +5,11 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemWirelessIO;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -21,24 +23,22 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public final class WirelessIORenderEvent {
     @SubscribeEvent
-    public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null) {
-                return;
-            }
-            ItemStack mainStack = mc.player.getMainHandItem();
-            if (mainStack.getItem() != InitItems.WIRELESS_IO.get()) {
-                return;
-            }
-            BlockPos pos = ItemWirelessIO.getBindingPos(mainStack);
-            if (pos == null) {
-                return;
-            }
-            Vec3 position = event.getCamera().getPosition().reverse();
-            AABB aabb = new AABB(pos).move(position);
-            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
-            LevelRenderer.renderLineBox(event.getPoseStack(), buffer, aabb, 1.0F, 0, 0, 1.0F);
+    public static void onRender(RenderLevelStageEvent.AfterOpaqueBlocks event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) {
+            return;
         }
+        ItemStack mainStack = mc.player.getMainHandItem();
+        if (mainStack.getItem() != InitItems.WIRELESS_IO.get()) {
+            return;
+        }
+        BlockPos pos = ItemWirelessIO.getBindingPos(mainStack);
+        if (pos == null) {
+            return;
+        }
+        Vec3 position = event.getLevelRenderState().cameraRenderState.pos.reverse();
+        AABB aabb = new AABB(pos).move(position);
+        VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
+        Gizmos.cuboid(aabb, GizmoStyle.fill(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
     }
 }

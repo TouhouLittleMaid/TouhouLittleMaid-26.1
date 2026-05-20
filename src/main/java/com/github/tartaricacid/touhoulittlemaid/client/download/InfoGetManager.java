@@ -24,7 +24,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.internal.versions.neoforge.NeoForgeVersion;
+import net.neoforged.neoforge.common.NeoForgeVersion;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -90,11 +90,11 @@ public class InfoGetManager {
 
         map.put("X-Minecraft-Username", user.getName());
         map.put("X-Minecraft-UUID", UndashedUuid.toString(user.getProfileId()));
-        map.put("X-Minecraft-Version", currentVersion.getName());
-        map.put("X-Minecraft-Version-ID", currentVersion.getId());
+        map.put("X-Minecraft-Version", currentVersion.name());
+        map.put("X-Minecraft-Version-ID", currentVersion.id());
         map.put("X-NeoForge-Version", NeoForgeVersion.getVersion());
         map.put("X-TLM-Version", ModList.get().getModFileById(TouhouLittleMaid.MOD_ID).versionString());
-        map.put("User-Agent", "Minecraft Java/" + currentVersion.getName());
+        map.put("User-Agent", "Minecraft Java/" + currentVersion.name());
 
         return map;
     }

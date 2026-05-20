@@ -13,8 +13,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.settings.KeyModifier;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -38,8 +37,7 @@ public class PressAIChatKeyEvent {
     private static boolean keyIsMatch(InputEvent.Key event) {
         KeyMapping keyChat = Minecraft.getInstance().options.keyChat;
         return event.getAction() == GLFW.GLFW_PRESS
-               && keyChat.matches(event.getKey(), event.getScanCode())
-               && keyChat.getKeyModifier().equals(KeyModifier.getActiveModifier());
+               && keyChat.matches(event.getKeyEvent());
     }
 
     @Nullable

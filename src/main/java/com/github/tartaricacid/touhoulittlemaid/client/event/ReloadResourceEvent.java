@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.GeckoModelLoader
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.PlayerMaidModels;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.Util;
@@ -23,9 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 @EventBusSubscriber(value = Dist.CLIENT)
 public final class ReloadResourceEvent extends SimplePreparableReloadListener<Void> {
+    private static final Identifier MAID_PACK_RELOAD = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid_pack_reload");
+
     @SubscribeEvent
     public static void onRegister(AddClientReloadListenersEvent event) {
-        event.registerReloadListener(new ReloadResourceEvent());
+        event.addListener(MAID_PACK_RELOAD, new ReloadResourceEvent());
     }
 
     public static void asyncReloadAllPack() {

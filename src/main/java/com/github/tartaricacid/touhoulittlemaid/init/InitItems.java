@@ -1,10 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.init;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.item.*;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -68,14 +69,18 @@ public final class InitItems {
     public static DeferredItem<Item> KAPPA_COMPASS = ITEMS.register("kappa_compass", ItemKappaCompass::new);
     public static DeferredItem<Item> BROOM = ITEMS.register("broom", ItemBroom::new);
     public static DeferredItem<Item> PICNIC_BASKET = ITEMS.register("picnic_basket", () -> new ItemPicnicBasket(InitBlocks.PICNIC_MAT.get()));
-    public static DeferredItem<Item> SCARECROW = ITEMS.register("scarecrow", () -> new BlockItem(InitBlocks.SCARECROW.get(), new Item.Properties()));
+    public static DeferredItem<Item> SCARECROW = ITEMS.register("scarecrow", ItemScarecrow::new);
     public static DeferredItem<Item> SERVANT_BELL = ITEMS.register("servant_bell", ItemServantBell::new);
     public static DeferredItem<Item> ENTITY_ID_COPY = ITEMS.register("entity_id_copy", ItemEntityIdCopy::new);
-    public static DeferredItem<Item> OWNER_CONVERSION_TOOL = ITEMS.register("owner_conversion_tool", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+
+    public static DeferredItem<Item> OWNER_CONVERSION_TOOL = ITEMS.register("owner_conversion_tool", id ->
+            new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).setId(ResourceKey.create(Registries.ITEM, id)))
+    );
+
     public static DeferredItem<Item> GOMOKU_BOARD_STATE = ITEMS.register("gomoku_board_state", ItemBoardState::new);
     public static DeferredItem<Item> CCHESS_BOARD_STATE = ITEMS.register("cchess_board_state", ItemBoardState::new);
     public static DeferredItem<Item> WCHESS_BOARD_STATE = ITEMS.register("wchess_board_state", ItemBoardState::new);
-    public static DeferredItem<Item> SNACK_CABINET = ITEMS.register("snack_cabinet", () -> new BlockItem(InitBlocks.SNACK_CABINET.get(), new Item.Properties()));
+    public static DeferredItem<Item> SNACK_CABINET = ITEMS.register("snack_cabinet", ItemSnackCabinet::new);
     @SuppressWarnings("deprecation")
     public static DeferredItem<Item> MONSTER_LIST = ITEMS.register("monster_list", ItemMonsterList::new);
 

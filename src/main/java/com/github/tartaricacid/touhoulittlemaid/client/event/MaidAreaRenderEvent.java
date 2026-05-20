@@ -10,11 +10,13 @@ import com.google.common.cache.CacheBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -34,32 +36,31 @@ public class MaidAreaRenderEvent {
     private static final Cache<Integer, SchedulePos> CACHE = CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
     @SubscribeEvent
-    public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null || mc.level == null) {
+    public static void onRender(RenderLevelStageEvent.AfterOpaqueFeatures event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) {
+            return;
+        }
+        Vec3 camera = event.getLevelRenderState().cameraRenderState.pos.reverse();
+        PoseStack poseStack = event.getPoseStack();
+        for (int id : CACHE.asMap().keySet()) {
+            SchedulePos pos = CACHE.getIfPresent(id);
+            if (pos == null) {
+                continue;
+            }
+            Entity entity = mc.level.getEntity(id);
+            if (!(entity instanceof EntityMaid maid)) {
                 return;
             }
-            Vec3 camera = event.getCamera().getPosition().reverse();
-            PoseStack poseStack = event.getPoseStack();
-            for (int id : CACHE.asMap().keySet()) {
-                SchedulePos pos = CACHE.getIfPresent(id);
-                if (pos == null) {
-                    continue;
-                }
-                Entity entity = mc.level.getEntity(id);
-                if (!(entity instanceof EntityMaid maid)) {
-                    return;
-                }
-                Identifier dimension = pos.getDimension();
-                if (mc.player.level.dimension().location().equals(dimension)) {
-                    renderPos(pos.getWorkPos(), pos.getIdlePos(), pos.getSleepPos(), camera, poseStack, mc, maid, mc.player);
-                }
+            Identifier dimension = pos.getDimension();
+            if (mc.player.level.dimension().identifier().equals(dimension)) {
+                renderPos(pos.getWorkPos(), pos.getIdlePos(), pos.getSleepPos(), camera, poseStack, mc, maid, mc.player);
             }
         }
     }
 
-    private static void renderPos(@Nullable BlockPos workPos, @Nullable BlockPos idlePos, @Nullable BlockPos resetPos, Vec3 camera, PoseStack poseStack, Minecraft mc, EntityMaid maid, Player player) {
+    private static void renderPos(@Nullable BlockPos workPos, @Nullable BlockPos idlePos, @Nullable BlockPos resetPos, Vec3 camera,
+                                  PoseStack poseStack, Minecraft mc, EntityMaid maid, Player player) {
         poseStack.pushPose();
         poseStack.translate(0, 1, 0);
 
@@ -71,7 +72,7 @@ public class MaidAreaRenderEvent {
         Vec3 maidPos = camera.add(maid.position());
         RenderHelper.renderLine(poseStack, mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES), restrictPos, maidPos, 1.0f, 0.2f, 0.2f);
         AABB aabb = maid.getBoundingBox().move(0, -1, 0).move(camera);
-        DebugRenderer.renderFilledBox(poseStack, mc.renderBuffers().bufferSource(), aabb, 0.8F, 0.8F, 0.2F, 0.75F);
+        Gizmos.cuboid(aabb, GizmoStyle.fill(ARGB.colorFromFloat(0.8F, 0.2F, 0.75F, 0.8F)));
 
         if (workPos != null) {
             Vec3 centerPos = camera.add(workPos.getX() + 0.5, workPos.getY() + 0.5, workPos.getZ() + 0.5);

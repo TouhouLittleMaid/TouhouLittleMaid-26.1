@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.util.EquipmentUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -14,6 +15,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 public class EquippedEnchantmentLevel extends LivingEntityFunction {
     @Override
@@ -43,7 +45,12 @@ public class EquippedEnchantmentLevel extends LivingEntityFunction {
             return 0;
         }
 
-        return itemStack.getEnchantmentLevel(enchantment);
+        ItemEnchantments enchantments = itemStack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        if (enchantments.isEmpty()) {
+            return 0;
+        }
+
+        return enchantments.getLevel(enchantment);
     }
 
     @Override
