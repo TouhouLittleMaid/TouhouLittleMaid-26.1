@@ -9,7 +9,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public final class PackCommand {
     private static final String PACK_NAME = "pack";
@@ -24,7 +24,7 @@ public final class PackCommand {
 
     private static int reloadAllPack(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() -> Component.translatable("commands.touhou_little_maid.pack.reload.start"), true);
-        if (FMLLoader.getDist() == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             ReloadResourceEvent.asyncReloadAllPack();
         }
         ServerCustomPackLoader.reloadPacks();

@@ -98,8 +98,8 @@ public class BackupCommand {
             MutableComponent pos = Component.translatable("tooltips.touhou_little_maid.fox_scroll.position", data.pos().toShortString());
             String command = "/tlm backup get @s %s".formatted(id);
 
-            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, CommonComponents.joinLines(dimension, pos));
-            ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
+            HoverEvent hoverEvent = new HoverEvent.ShowText(CommonComponents.joinLines(dimension, pos));
+            ClickEvent clickEvent = new ClickEvent.RunCommand(command);
 
             msg.withStyle(style -> style.withHoverEvent(hoverEvent))
                     .withStyle(style -> style.withClickEvent(clickEvent));
@@ -131,7 +131,7 @@ public class BackupCommand {
             MutableComponent msg = Component.literal(backupFile).withStyle(ChatFormatting.DARK_PURPLE);
 
             String command = "/tlm backup get @s %s \"%s\"".formatted(uuid, backupFile);
-            ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
+            ClickEvent clickEvent = new ClickEvent.RunCommand(command);
             msg.withStyle(style -> style.withClickEvent(clickEvent));
 
             player.sendSystemMessage(msg);
