@@ -64,12 +64,6 @@ public class ClientSetupEvent {
     }
 
     @SubscribeEvent
-    public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
-        event.register(STTChatKey.STT_CHAT_KEY);
-        event.register(DismountBroomKey.DISMOUNT_KEY);
-    }
-
-    @SubscribeEvent
     public static void onAddPackFinders(AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
             event.addRepositorySource(new LegacyPackRepositorySource());

@@ -10,10 +10,12 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
+
+import static com.github.tartaricacid.touhoulittlemaid.client.init.KeyMappingRegister.MAID_CATEGORY;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(value = Dist.CLIENT)
@@ -23,7 +25,8 @@ public class DismountBroomKey {
             KeyModifier.NONE,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_C,
-            "key.category.touhou_little_maid");
+            MAID_CATEGORY
+    );
 
     @SubscribeEvent
     public static void onDismountPress(InputEvent.Key event) {
@@ -44,8 +47,7 @@ public class DismountBroomKey {
 
     @SuppressWarnings("removal")
     private static boolean keyIsMatch(InputEvent.Key event) {
-        return DISMOUNT_KEY.matches(event.getKey(), event.getScanCode())
-                && DISMOUNT_KEY.getKeyModifier().equals(KeyModifier.getActiveModifier());
+        return DISMOUNT_KEY.matches(event.getKeyEvent());
     }
 
     private static boolean isInGame() {

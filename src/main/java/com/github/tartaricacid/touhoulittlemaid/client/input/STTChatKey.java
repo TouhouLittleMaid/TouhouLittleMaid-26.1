@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static com.github.tartaricacid.touhoulittlemaid.client.init.KeyMappingRegister.MAID_CATEGORY;
+
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(value = Dist.CLIENT)
 public class STTChatKey {
@@ -36,7 +38,8 @@ public class STTChatKey {
             KeyModifier.NONE,
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_X,
-            "key.category.touhou_little_maid");
+            MAID_CATEGORY
+    );
 
     @SubscribeEvent
     public static void onSttChatPress(InputEvent.Key event) {
@@ -69,8 +72,7 @@ public class STTChatKey {
 
     @SuppressWarnings("removal")
     private static boolean keyIsMatch(InputEvent.Key event) {
-        return STT_CHAT_KEY.matches(event.getKey(), event.getScanCode())
-               && STT_CHAT_KEY.getKeyModifier().equals(KeyModifier.getActiveModifier());
+        return STT_CHAT_KEY.matches(event.getKeyEvent());
     }
 
     private static void getNearestMaid(LocalPlayer player, Consumer<EntityMaid> consumer, boolean isStart) {
