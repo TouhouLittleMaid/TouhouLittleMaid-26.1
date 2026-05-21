@@ -2,11 +2,11 @@ package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
-import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityBroomRenderState;
 
 import java.io.InputStream;
 
-public class BroomModel extends SimpleBedrockModel<EntityBroom> {
+public class BroomModel extends SimpleBedrockModel<EntityBroomRenderState> {
     private final BedrockPart all;
 
     public BroomModel(InputStream stream) {
@@ -15,9 +15,11 @@ public class BroomModel extends SimpleBedrockModel<EntityBroom> {
     }
 
     @Override
-    public void setupAnim(EntityBroom broom, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityBroomRenderState state) {
+        float headPitch = state.xRot;
+        float netHeadYaw = state.yRot;
         all.yRot = netHeadYaw * ((float) Math.PI / 180F);
-        if (broom.isVehicle()) {
+        if (state.isVehicle) {
             all.xRot = headPitch * ((float) Math.PI / 180F) / 10;
         }
     }

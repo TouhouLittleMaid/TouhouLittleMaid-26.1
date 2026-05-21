@@ -1,26 +1,26 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 
-public class EntitySitRenderer extends EntityRenderer<EntitySit> {
-    private static final Identifier EMPTY = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
-
+public class EntitySitRenderer extends EntityRenderer<EntitySit, EntityRenderState> {
     public EntitySitRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public void render(EntitySit entitySit, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public EntityRenderState createRenderState() {
+        return new EntityRenderState();
     }
 
     @Override
-    public Identifier getTextureLocation(EntitySit entitySit) {
-        return EMPTY;
+    public void submit(EntityRenderState state, PoseStack poseStack,
+                       SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState) {
+        // SitEntity 是不可见的坐骑锚点，不渲染任何内容
     }
 }

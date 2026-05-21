@@ -3,12 +3,12 @@ package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
-import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityFairyRenderState;
 import net.minecraft.util.Mth;
 
 import java.io.InputStream;
 
-public class EntityFairyModel extends SimpleBedrockModel<EntityFairy> {
+public class EntityFairyModel extends SimpleBedrockModel<EntityFairyRenderState> {
     private final BedrockPart head;
     private final BedrockPart armRight;
     private final BedrockPart armLeft;
@@ -31,12 +31,18 @@ public class EntityFairyModel extends SimpleBedrockModel<EntityFairy> {
     }
 
     @Override
-    public void setupAnim(EntityFairy entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityFairyRenderState state) {
+        float headPitch = state.xRot;
+        float netHeadYaw = state.yRot;
+        float ageInTicks = state.ageInTicks;
+        float limbSwing = state.walkAnimationPos;
+        float limbSwingAmount = state.walkAnimationSpeed;
+
         head.xRot = headPitch * 0.017453292F;
         head.yRot = netHeadYaw * 0.017453292F;
         armLeft.zRot = Mth.cos(ageInTicks * 0.05f) * 0.05f - 0.4f;
         armRight.zRot = -Mth.cos(ageInTicks * 0.05f) * 0.05f + 0.4f;
-        if (entityIn.onGround()) {
+        if (state.isOnGround) {
             legLeft.xRot = Mth.cos(limbSwing * 0.67f) * 0.3f * limbSwingAmount;
             legRight.xRot = -Mth.cos(limbSwing * 0.67f) * 0.3f * limbSwingAmount;
             armLeft.xRot = -Mth.cos(limbSwing * 0.67f) * 0.7F * limbSwingAmount;

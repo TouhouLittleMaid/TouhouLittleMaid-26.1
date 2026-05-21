@@ -1,66 +1,75 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.projectile.DanmakuColor;
-import com.github.tartaricacid.touhoulittlemaid.entity.projectile.DanmakuType;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityDanmakuRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityDanmaku;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
-public class EntityDanmakuRenderer extends EntityRenderer<EntityDanmaku> {
+
+public class EntityDanmakuRenderer extends EntityRenderer<EntityDanmaku, EntityDanmakuRenderState> {
     private static final Identifier DANMAKU_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/danmaku.png");
-    private static final RenderTypes RENDER_TYPE = RenderTypes.itemEntityTranslucentCull(DANMAKU_TEXTURE);
+    private static final RenderType RENDER_TYPE = RenderTypes.entityTranslucentCullItemTarget(DANMAKU_TEXTURE);
+    private static final int TEX_WIDTH = 416;
+    private static final int TEX_HEIGHT = 128;
+    private static final int CELL_SIZE = 32;
 
     public EntityDanmakuRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager);
     }
 
-    private static void vertex(VertexConsumer bufferIn, Matrix4f pose, Matrix3f normal, double x, double y, double texU, double texV, int packedLight) {
-        Vector3f vector3f = normal.transform(new Vector3f(0.0F, 1.0F, 0.0F));
-        bufferIn.addVertex(pose, (float) x, (float) y, 0.0F).setColor(255, 255, 255, 255).setUv((float) texU, (float) texV).setOverlay(OverlayTexture.NO_OVERLAY).setLight(packedLight).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+    @Override
+    public EntityDanmakuRenderState createRenderState() {
+        return new EntityDanmakuRenderState();
     }
 
     @Override
-    public void render(EntityDanmaku entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
-        // 获取相关数据
-        DanmakuColor color = entity.getColor();
-        DanmakuType type = entity.getDanmakuType();
-        // 材质宽度
-        int width = 416;
-        // 材质长度
-        int length = 128;
-
-        // 依据类型颜色开始定位材质位置（材质块都是 32 * 32 大小）
-        double startU = 32 * color.ordinal();
-        double startV = 32 * type.ordinal();
-
-        poseStack.pushPose();
-        poseStack.translate(0, 0.1, 0);
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-
-        VertexConsumer buffer = bufferIn.getBuffer(RENDER_TYPE);
-        PoseStack.Pose poseStackLast = poseStack.last();
-        Matrix4f pose = poseStackLast.pose();
-        Matrix3f normal = poseStackLast.normal();
-
-        vertex(buffer, pose, normal, -type.getSize(), type.getSize(), (startU + 0) / width, (startV + 0) / length, packedLightIn);
-        vertex(buffer, pose, normal, -type.getSize(), -type.getSize(), (startU + 0) / width, (startV + 32) / length, packedLightIn);
-        vertex(buffer, pose, normal, type.getSize(), -type.getSize(), (startU + 32) / width, (startV + 32) / length, packedLightIn);
-        vertex(buffer, pose, normal, type.getSize(), type.getSize(), (startU + 32) / width, (startV + 0) / length, packedLightIn);
-        poseStack.popPose();
+    public void extractRenderState(EntityDanmaku entity, EntityDanmakuRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.color = entity.getColor();
+        state.type = entity.getDanmakuType();
     }
 
     @Override
-    public Identifier getTextureLocation(EntityDanmaku entity) {
-        return DANMAKU_TEXTURE;
+    public void submit(EntityDanmakuRenderState state, PoseStack poseStack,
+                       SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.color != null && state.type != null) {
+            // 依据类型颜色计算纹理 UV 坐标
+            double startU = CELL_SIZE * state.color.ordinal();
+            double startV = CELL_SIZE * state.type.ordinal();
+            double size = state.type.getSize();
+
+            poseStack.pushPose();
+            poseStack.translate(0, 0.1, 0);
+            poseStack.mulPose(camera.orientation);
+
+            submitNodeCollector.submitCustomGeometry(poseStack, RENDER_TYPE, (pose, buffer) -> {
+                vertex(buffer, pose, state.lightCoords, -size, size, (startU + 0) / TEX_WIDTH, (startV + 0) / TEX_HEIGHT);
+                vertex(buffer, pose, state.lightCoords, -size, -size, (startU + 0) / TEX_WIDTH, (startV + CELL_SIZE) / TEX_HEIGHT);
+                vertex(buffer, pose, state.lightCoords, size, -size, (startU + CELL_SIZE) / TEX_WIDTH, (startV + CELL_SIZE) / TEX_HEIGHT);
+                vertex(buffer, pose, state.lightCoords, size, size, (startU + CELL_SIZE) / TEX_WIDTH, (startV + 0) / TEX_HEIGHT);
+            });
+
+            poseStack.popPose();
+        }
+        super.submit(state, poseStack, submitNodeCollector, camera);
+    }
+
+    private static void vertex(VertexConsumer buffer, PoseStack.Pose pose, int lightCoords,
+                               double x, double y, double texU, double texV) {
+        buffer.addVertex(pose, (float) x, (float) y, 0.0F)
+                .setColor(-1)
+                .setUv((float) texU, (float) texV)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(lightCoords)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 }

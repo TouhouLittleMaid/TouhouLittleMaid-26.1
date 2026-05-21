@@ -12,13 +12,14 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimatio
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityChairWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityMaidWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -30,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @OnlyIn(Dist.CLIENT)
-public class BedrockModel<T extends LivingEntity> extends AbstractBedrockEntityModel<T> {
+public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBedrockEntityModel<T> {
     /**
      * 用于自定义动画的变量
      */
@@ -50,7 +51,7 @@ public class BedrockModel<T extends LivingEntity> extends AbstractBedrockEntityM
 
     @Override
     @NullMarked
-    public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(LivingEntityRenderState state) {
         if (animations != null) {
             Invocable invocable = (Invocable) CustomJsAnimationManger.NASHORN;
             if (entityIn instanceof Mob mob) {
@@ -62,7 +63,7 @@ public class BedrockModel<T extends LivingEntity> extends AbstractBedrockEntityM
                 }
                 return;
             }
-            if (entityIn instanceof EntityChair) {
+            if (state instanceof EntityChairRenderState) {
                 setupChairAnim((EntityChair) entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
             }
         }

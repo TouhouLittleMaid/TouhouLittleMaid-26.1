@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -40,11 +41,11 @@ public class EntityGraphics {
         this.fill(RenderTypes.textBackground(), minX, minY, maxX, maxY, z, color);
     }
 
-    public void fill(RenderTypes renderType, int minX, int minY, int maxX, int maxY, int color) {
+    public void fill(RenderType renderType, int minX, int minY, int maxX, int maxY, int color) {
         this.fill(renderType, minX, minY, maxX, maxY, 0, color);
     }
 
-    public void fill(RenderTypes renderType, int minX, int minY, int maxX, int maxY, int z, int color) {
+    public void fill(RenderType renderType, int minX, int minY, int maxX, int maxY, int z, int color) {
         Matrix4f matrix4f = this.pose.last().pose();
         if (minX < maxX) {
             int i = minX;

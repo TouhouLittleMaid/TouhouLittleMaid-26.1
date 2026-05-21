@@ -1,78 +1,64 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityFairyRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 
 import java.util.Locale;
 import java.util.Objects;
 
-public class NewEntityFairyRenderer extends MobRenderer<EntityFairy, SimpleBedrockModel<EntityFairy>> {
-    private static final Identifier TEXTURE_0 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_0.png");
-    private static final Identifier TEXTURE_1 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_1.png");
-    private static final Identifier TEXTURE_2 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_2.png");
-    private static final Identifier TEXTURE_3 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_3.png");
-    private static final Identifier TEXTURE_4 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_4.png");
-    private static final Identifier TEXTURE_5 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_5.png");
-    private static final Identifier TEXTURE_6 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_6.png");
-    private static final Identifier TEXTURE_7 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_7.png");
-    private static final Identifier TEXTURE_8 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_8.png");
-    private static final Identifier TEXTURE_9 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_9.png");
-    private static final Identifier TEXTURE_10 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_10.png");
-    private static final Identifier TEXTURE_11 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_11.png");
-    private static final Identifier TEXTURE_12 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_12.png");
-    private static final Identifier TEXTURE_13 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_13.png");
-    private static final Identifier TEXTURE_14 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_14.png");
-    private static final Identifier TEXTURE_15 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_15.png");
-    private static final Identifier TEXTURE_16 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_16.png");
-    private static final Identifier TEXTURE_17 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_17.png");
-    private static final Identifier TEXTURE_RICK = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_rick.png");
+public class NewEntityFairyRenderer extends MobRenderer<EntityFairy, EntityFairyRenderState, EntityModel<EntityFairyRenderState>> {
+    private static final Identifier[] TEXTURE = Util.make(new Identifier[18], array -> {
+        for (int i = 0; i < array.length; i++) {
+            String name = "textures/bedrock/entity/new_maid_fairy/maid_fairy_%s.png".formatted(i);
+            array[i] = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name);
+        }
+    });
 
-    @SuppressWarnings("unchecked")
+    private static final Identifier TEXTURE_RICK = Identifier.fromNamespaceAndPath(
+            TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/new_maid_fairy/maid_fairy_rick.png"
+    );
+
     public NewEntityFairyRenderer(EntityRendererProvider.Context context) {
         super(context, Objects.requireNonNull(BedrockModelLoader.getModel(BedrockModelLoader.NEW_MAID_FAIRY)), 0.5f);
     }
 
     @Override
-    protected void setupRotations(EntityFairy fairy, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTicks, float scale) {
-        super.setupRotations(fairy, poseStack, ageInTicks, rotationYaw, partialTicks, scale);
-        if (!fairy.onGround()) {
-            poseStack.mulPose(Axis.XN.rotation(8 * (float) Math.PI / 180.0f));
-        }
+    public EntityFairyRenderState createRenderState() {
+        return new EntityFairyRenderState();
     }
 
     @Override
-    public Identifier getTextureLocation(EntityFairy entity) {
-        String name = entity.getName().getString().toLowerCase(Locale.ENGLISH);
-        // Rick-rolling 彩蛋
-        if (EntityFairy.RICK.equals(name)) {
+    public void extractRenderState(EntityFairy entity, EntityFairyRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.fairyTypeOrdinal = entity.getFairyTypeOrdinal();
+        state.isOnGround = entity.onGround();
+        state.isRick = EntityFairy.RICK.equals(entity.getName().getString().toLowerCase(Locale.ENGLISH));
+    }
+
+    @Override
+    public Identifier getTextureLocation(EntityFairyRenderState state) {
+        if (state.isRick) {
             return TEXTURE_RICK;
         }
-        return switch (entity.getFairyTypeOrdinal()) {
-            case 1 -> TEXTURE_1;
-            case 2 -> TEXTURE_2;
-            case 3 -> TEXTURE_3;
-            case 4 -> TEXTURE_4;
-            case 5 -> TEXTURE_5;
-            case 6 -> TEXTURE_6;
-            case 7 -> TEXTURE_7;
-            case 8 -> TEXTURE_8;
-            case 9 -> TEXTURE_9;
-            case 10 -> TEXTURE_10;
-            case 11 -> TEXTURE_11;
-            case 12 -> TEXTURE_12;
-            case 13 -> TEXTURE_13;
-            case 14 -> TEXTURE_14;
-            case 15 -> TEXTURE_15;
-            case 16 -> TEXTURE_16;
-            case 17 -> TEXTURE_17;
-            default -> TEXTURE_0;
-        };
+        int index = Mth.clamp(state.fairyTypeOrdinal, 0, TEXTURE.length - 1);
+        return TEXTURE[index];
+    }
+
+    @Override
+    protected void setupRotations(EntityFairyRenderState state, PoseStack poseStack, float bodyRot, float scale) {
+        super.setupRotations(state, poseStack, bodyRot, scale);
+        if (!state.isOnGround) {
+            poseStack.mulPose(Axis.XN.rotation(8 * (float) Math.PI / 180.0f));
+        }
     }
 }
