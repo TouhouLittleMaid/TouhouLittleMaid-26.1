@@ -39,7 +39,7 @@ public final class MiscConfig {
         builder.comment("The following dimension do not spawn maid fairy")
                 .translation(translateKey("maid_fairy_blacklist_dimension"));
         MAID_FAIRY_BLACKLIST_DIMENSION = builder.defineList("MaidFairyBlacklistDimension",
-                Lists.newArrayList(Level.NETHER.location().toString(), Level.END.location().toString(),
+                Lists.newArrayList(Level.NETHER.identifier().toString(), Level.END.identifier().toString(),
                         "twilightforest:twilight_forest"), MiscConfig::checkId);
 
         builder.comment("Loss power point after player death")
