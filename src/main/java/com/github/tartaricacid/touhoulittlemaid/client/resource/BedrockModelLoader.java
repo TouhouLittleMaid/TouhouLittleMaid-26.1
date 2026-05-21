@@ -9,8 +9,8 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.EntityFairyModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.NewEntityFairyModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.google.common.collect.Maps;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -28,7 +28,7 @@ import java.util.function.Function;
 @OnlyIn(Dist.CLIENT)
 public class BedrockModelLoader {
     // 内部数据
-    private static final Map<Identifier, Function<InputStream, ? extends SimpleBedrockModel<? extends Entity>>> ALL_MODELS = Maps.newHashMap();
+    private static final Map<Identifier, Function<InputStream, ? extends SimpleBedrockModel<? extends EntityRenderState>>> ALL_MODELS = Maps.newHashMap();
 
     // 注册数据
     public static final Identifier ALTAR = registerSimpleBlockModel("altar");
@@ -88,17 +88,17 @@ public class BedrockModelLoader {
         return registerModel(location, SimpleBedrockModel::new);
     }
 
-    public static Identifier registerBlockModel(String name, Function<InputStream, ? extends SimpleBedrockModel<? extends Entity>> function) {
+    public static Identifier registerBlockModel(String name, Function<InputStream, ? extends SimpleBedrockModel<? extends EntityRenderState>> function) {
         Identifier location = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/" + name);
         return registerModel(location, function);
     }
 
-    public static Identifier registerEntityModel(String name, Function<InputStream, ? extends SimpleBedrockModel<? extends Entity>> function) {
+    public static Identifier registerEntityModel(String name, Function<InputStream, ? extends SimpleBedrockModel<? extends EntityRenderState>> function) {
         Identifier location = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/entity/" + name);
         return registerModel(location, function);
     }
 
-    public static Identifier registerModel(Identifier location, Function<InputStream, ? extends SimpleBedrockModel<? extends Entity>> function) {
+    public static Identifier registerModel(Identifier location, Function<InputStream, ? extends SimpleBedrockModel<? extends EntityRenderState>> function) {
         ALL_MODELS.put(location, function);
         return location;
     }
@@ -112,7 +112,7 @@ public class BedrockModelLoader {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public static <T extends Entity> SimpleBedrockModel<T> getModel(Identifier location) {
+    public static <T extends EntityRenderState> SimpleBedrockModel<T> getModel(Identifier location) {
         return (SimpleBedrockModel<T>) BedrockEntityModelRegister.INSTANCE.getModel(location);
     }
 }
