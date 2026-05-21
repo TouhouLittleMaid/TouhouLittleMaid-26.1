@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.BackpackItem;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
@@ -38,12 +38,14 @@ public class BackpackRightClickMaidEvent {
         }
         backpack.getFluidHandler().ifPresent(fluid -> {
             int count = XpHelper.experienceToLiquid(maidXp);
-            int filled = fluid.fill(ModFluids.EXPERIENCE_TAG, count, ModFluids.XP_STILL.get(),
-                    IFluidHandler.FluidAction.EXECUTE, true);
-            if (filled > 0) {
-                maid.setExperience(maidXp - (int) XpHelper.liquidToExperience(filled));
+            try (Transaction tx = Transaction.openRoot()) {
+                int filled = fluid.insert(ModFluids.EXPERIENCE_TAG, count, ModFluids.XP_STILL.get(), tx, true);
+                if (filled > 0) {
+                    maid.setExperience(maidXp - (int) XpHelper.liquidToExperience(filled));
+                }
+                event.setCanceled(true);
+                tx.commit();
             }
-            event.setCanceled(true);
         });
     }
 }

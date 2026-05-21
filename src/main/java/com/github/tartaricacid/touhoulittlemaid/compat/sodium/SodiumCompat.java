@@ -19,9 +19,6 @@ public class SodiumCompat {
 
     public static boolean sodiumRenderCubesOfBone(AnimatedGeoBone bone, PoseStack poseStack, VertexConsumer buffer, int cubePackedLight,
                                                   int packedOverlay, float red, float green, float blue, float alpha) {
-        if (SodiumCompat.isSodiumInstalled()) {
-            return SodiumGeoRenderer.renderCubesOfBone(bone, poseStack, buffer, cubePackedLight, packedOverlay, red, green, blue, alpha);
-        }
         return false;
     }
 }

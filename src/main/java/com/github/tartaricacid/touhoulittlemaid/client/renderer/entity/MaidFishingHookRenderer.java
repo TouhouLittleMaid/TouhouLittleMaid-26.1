@@ -21,7 +21,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class MaidFishingHookRenderer extends EntityRenderer<MaidFishingHook, MaidFishingHookRenderState> {
+public class MaidFishingHookRenderer<T extends MaidFishingHook, S extends MaidFishingHookRenderState> extends EntityRenderer<T, S> {
     private static final Identifier TEXTURE_LOCATION = Identifier.withDefaultNamespace("textures/entity/fishing_hook.png");
     private static final RenderType RENDER_TYPE = RenderTypes.entityCutoutCull(TEXTURE_LOCATION);
 
@@ -30,12 +30,13 @@ public class MaidFishingHookRenderer extends EntityRenderer<MaidFishingHook, Mai
     }
 
     @Override
-    public MaidFishingHookRenderState createRenderState() {
-        return new MaidFishingHookRenderState();
+    @SuppressWarnings("unchecked")
+    public S createRenderState() {
+        return (S) new MaidFishingHookRenderState();
     }
 
     @Override
-    public void extractRenderState(MaidFishingHook entity, MaidFishingHookRenderState state, float partialTicks) {
+    public void extractRenderState(T entity, S state, float partialTicks) {
         super.extractRenderState(entity, state, partialTicks);
         EntityMaid maid = entity.getMaidOwner();
         if (maid == null) {
@@ -74,7 +75,7 @@ public class MaidFishingHookRenderer extends EntityRenderer<MaidFishingHook, Mai
     }
 
     @Override
-    public void submit(MaidFishingHookRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    public void submit(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         if (state.lineOriginOffset.equals(Vec3.ZERO) && state.lineColorR == 0 && state.lineColorG == 0 && state.lineColorB == 0) {
             return;
         }
@@ -85,7 +86,8 @@ public class MaidFishingHookRenderer extends EntityRenderer<MaidFishingHook, Mai
         super.submit(state, poseStack, submitNodeCollector, camera);
     }
 
-    private void renderBobber(MaidFishingHookRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    protected void renderBobber(MaidFishingHookRenderState state, PoseStack poseStack,
+                                SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         poseStack.pushPose();
         poseStack.scale(0.5F, 0.5F, 0.5F);
         poseStack.mulPose(camera.orientation);
@@ -102,7 +104,7 @@ public class MaidFishingHookRenderer extends EntityRenderer<MaidFishingHook, Mai
         return new float[]{0f, 0f, 0f};
     }
 
-    private void renderFishingLine(MaidFishingHookRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+    protected void renderFishingLine(MaidFishingHookRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         float xa = (float) state.lineOriginOffset.x;
         float ya = (float) state.lineOriginOffset.y;
         float za = (float) state.lineOriginOffset.z;
@@ -128,8 +130,8 @@ public class MaidFishingHookRenderer extends EntityRenderer<MaidFishingHook, Mai
         return (float) numerator / (float) 16;
     }
 
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, int lightMapUV,
-                               float pX, int pY, int pU, int pV) {
+    protected static void vertex(VertexConsumer consumer, PoseStack.Pose pose, int lightMapUV,
+                                 float pX, int pY, int pU, int pV) {
         consumer.addVertex(pose, pX - 0.5F, pY - 0.5F, 0.0F)
                 .setColor(255, 255, 255, 255)
                 .setUv((float) pU, (float) pV)
@@ -138,10 +140,21 @@ public class MaidFishingHookRenderer extends EntityRenderer<MaidFishingHook, Mai
                 .setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 
-    private static void stringVertex(float pX, float pY, float pZ,
-                                     VertexConsumer consumer, PoseStack.Pose pose,
-                                     float fraction1, float fraction2,
-                                     float r, float g, float b) {
+    protected static void vertex(VertexConsumer consumer, PoseStack.Pose pose, int lightMapUV,
+                                 float pX, int pY, int pU, int pV,
+                                 float r, float g, float b) {
+        consumer.addVertex(pose, pX - 0.5F, pY - 0.5F, 0.0F)
+                .setColor(r, g, b, 1.0F)
+                .setUv((float) pU, (float) pV)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(lightMapUV)
+                .setNormal(pose, 0.0F, 1.0F, 0.0F);
+    }
+
+    protected static void stringVertex(float pX, float pY, float pZ,
+                                       VertexConsumer consumer, PoseStack.Pose pose,
+                                       float fraction1, float fraction2,
+                                       float r, float g, float b) {
         float x = pX * fraction1;
         float y = pY * (fraction1 * fraction1 + fraction1) * 0.5F + 0.25F;
         float z = pZ * fraction1;

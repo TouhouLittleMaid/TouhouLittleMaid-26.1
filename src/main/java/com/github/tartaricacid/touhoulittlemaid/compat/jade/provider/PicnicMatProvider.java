@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.jetbrains.annotations.Nullable;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.view.*;
@@ -26,10 +26,10 @@ public enum PicnicMatProvider implements IServerExtensionProvider<ItemStack>, IC
     public @Nullable List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
         if (accessor.getTarget() instanceof TileEntityPicnicMat picnicMat) {
             if (accessor.getLevel().getBlockEntity(picnicMat.getCenterPos()) instanceof TileEntityPicnicMat picnicMatCenter) {
-                ItemStackHandler handler = picnicMatCenter.getHandler();
+                var handler = picnicMatCenter.getHandler();
                 List<ItemStack> list = Lists.newArrayList();
-                for (int i = 0; i < handler.getSlots(); i++) {
-                    ItemStack stack = handler.getStackInSlot(i);
+                for (int i = 0; i < handler.size(); i++) {
+                    ItemStack stack = ItemUtil.getStack(handler, i);
                     if (stack.isEmpty()) {
                         continue;
                     }

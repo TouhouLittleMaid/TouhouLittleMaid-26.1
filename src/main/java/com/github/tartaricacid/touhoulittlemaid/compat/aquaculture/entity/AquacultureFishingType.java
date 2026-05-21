@@ -12,8 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.Tiers;
+import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
@@ -38,7 +37,7 @@ public class AquacultureFishingType implements IFishingType {
     @Override
     public MaidFishingHook getFishingHook(EntityMaid maid, Level level, ItemStack rod, Vec3 pos) {
         int lureSpeed = (int) (EnchantmentHelper.getFishingTimeReduction((ServerLevel) level, rod, maid) * 20.0F);
-        Tier tier = Tiers.WOOD;
+        ToolMaterial tier = ToolMaterial.WOOD;
         if (rod.getItem() instanceof AquaFishingRodItem aquaFishingRodItem) {
             tier = aquaFishingRodItem.getTier();
         }

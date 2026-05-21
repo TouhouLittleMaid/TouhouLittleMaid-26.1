@@ -4,9 +4,10 @@ import com.github.tartaricacid.touhoulittlemaid.compat.extracontainer.curios.Cur
 import com.github.tartaricacid.touhoulittlemaid.compat.sbackpack.SBackpackCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
-import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
+import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemResourceHandler;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ItemStackKey;
 
 import java.util.Set;
@@ -32,10 +33,10 @@ public class SBackpackSlotRef extends CuriosSlotRef {
             return false;
         }
         var wrapper = BackpackWrapper.fromStack(backpackStack);
-        ITrackedContentsItemHandler inv = wrapper.getInventoryForUpgradeProcessing();
+        ITrackedContentsItemResourceHandler inv = wrapper.getInventoryForUpgradeProcessing();
         Set<ItemStackKey> trackedStacks = inv.getTrackedStacks();
-        return trackedStacks.stream().anyMatch(key ->
-                ItemStack.isSameItemSameComponents(key.getStack(), itemToCheck));
+        ItemStackKey check = ItemStackKey.of(itemToCheck);
+        return trackedStacks.stream().anyMatch(key -> key.equals(check));
     }
 
     @Override
@@ -45,8 +46,15 @@ public class SBackpackSlotRef extends CuriosSlotRef {
             return itemStack;
         }
         var wrapper = BackpackWrapper.fromStack(backpackStack);
-        ITrackedContentsItemHandler inv = wrapper.getInventoryForUpgradeProcessing();
-        return ItemHandlerHelper.insertItemStacked(inv, itemStack, simulate);
+        ITrackedContentsItemResourceHandler inv = wrapper.getInventoryForUpgradeProcessing();
+        try (Transaction tx = Transaction.openRoot()) {
+            ItemResource resource = ItemResource.of(itemStack);
+            int count = inv.insert(resource, itemStack.count(), tx);
+            if (!simulate) {
+                tx.commit();
+            }
+            return resource.toStack(count);
+        }
     }
 
     @Override
@@ -57,8 +65,8 @@ public class SBackpackSlotRef extends CuriosSlotRef {
         }
 
         var wrapper = BackpackWrapper.fromStack(backpackStack);
-        ITrackedContentsItemHandler inv = wrapper.getInventoryForUpgradeProcessing();
-        for (int slot = 0; slot < inv.getSlots(); slot++) {
+        ITrackedContentsItemResourceHandler inv = wrapper.getInventoryForUpgradeProcessing();
+        for (int slot = 0; slot < inv.size(); slot++) {
             ItemStack stackInSlot = inv.getStackInSlot(slot);
             if (stackInSlot.isEmpty() || !filter.test(stackInSlot)) {
                 continue;
@@ -69,7 +77,12 @@ public class SBackpackSlotRef extends CuriosSlotRef {
                     ? itemMaxStack
                     : Math.min(maxCount, itemMaxStack);
             int extractCount = Math.min(effectiveMaxCount, stackInSlot.getCount());
-            return inv.extractItem(slot, extractCount, false);
+            try (Transaction tx = Transaction.openRoot()) {
+                ItemResource resource = inv.getResource(slot);
+                int extracted = inv.extract(resource, extractCount, tx);
+                tx.commit();
+                return resource.toStack(extracted);
+            }
         }
         return ItemStack.EMPTY;
     }

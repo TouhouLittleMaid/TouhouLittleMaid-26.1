@@ -14,23 +14,13 @@ public class ImmersiveMelodiesCompat {
     }
 
     public static void addAnimation(HardcodedAnimationManger manger) {
-        if (IS_LOADED) {
-            manger.addMaidAnimation(new CompatAnimation());
-        }
     }
 
     public static void updateMelodyProgress(LivingEntity entity, ImmersiveMelodiesCompat.ImmersiveMelodiesData imData) {
-        if (IS_LOADED) {
-            ImmersiveMelodiesCompatInner.updateMelodyProgress(entity, imData);
-        }
     }
 
     public static void addBinding(CtrlBinding binding) {
-        if (IS_LOADED) {
-            ImmersiveMelodiesCompatInner.addInnerBinding(binding);
-        } else {
-            addEmptyBinding(binding);
-        }
+        addEmptyBinding(binding);
     }
 
     /**

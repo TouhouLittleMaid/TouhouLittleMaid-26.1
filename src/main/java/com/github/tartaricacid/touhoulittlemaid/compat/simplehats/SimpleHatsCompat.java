@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockMode
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.processor.ILocationBone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
@@ -18,15 +19,11 @@ public class SimpleHatsCompat {
         isLoaded = ModList.get().isLoaded(SIMPLE_HATS);
     }
 
-    public static void renderHat(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, Mob mob, ItemStack stack, BedrockModel<Mob> model) {
-        if (isLoaded) {
-            SimpleHatsRenderer.renderHat(poseStack, bufferIn, packedLightIn, mob, stack, model);
-        }
+    public static void renderHat(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn,
+                                 Mob mob, ItemStack stack, BedrockModel<LivingEntityRenderState> model) {
     }
 
-    public static void renderGeckoHat(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, Mob mob, ItemStack stack, List<? extends ILocationBone> model) {
-        if (isLoaded) {
-            SimpleHatsRenderer.renderGeckoHat(poseStack, bufferIn, packedLightIn, mob, stack, model);
-        }
+    public static void renderGeckoHat(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn,
+                                      Mob mob, ItemStack stack, List<? extends ILocationBone> model) {
     }
 }

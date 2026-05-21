@@ -11,7 +11,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 public class AquacultureCompat {
@@ -19,7 +19,7 @@ public class AquacultureCompat {
     private static boolean INSTALLED;
 
     public static void init(IEventBus eventBus) {
-        INSTALLED = LoadingModList.get().getModFileById(MOD_ID) != null;
+        INSTALLED = FMLLoader.getCurrent().getLoadingModList().getModFileById(MOD_ID) != null;
         if (INSTALLED) {
             registerAll(eventBus);
         }
@@ -33,13 +33,16 @@ public class AquacultureCompat {
 
     private static void registerAll(IEventBus eventBus) {
         eventBus.register(new AquacultureCompat());
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             eventBus.register(new AquacultureClientRegister());
         }
     }
 
     @SubscribeEvent
     public void register(RegisterEvent event) {
-        event.register(BuiltInRegistries.ENTITY_TYPE.key(), helper -> helper.register(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "aquaculture_fishing_hook"), AquacultureFishingHook.TYPE));
+        Identifier id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "aquaculture_fishing_hook");
+        event.register(BuiltInRegistries.ENTITY_TYPE.key(), helper ->
+                helper.register(id, AquacultureFishingHook.TYPE)
+        );
     }
 }

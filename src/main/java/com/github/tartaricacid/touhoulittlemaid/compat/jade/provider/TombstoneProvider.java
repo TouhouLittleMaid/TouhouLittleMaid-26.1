@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.jetbrains.annotations.Nullable;
 import snownee.jade.api.Accessor;
 import snownee.jade.api.view.*;
@@ -27,9 +27,9 @@ public enum TombstoneProvider implements IServerExtensionProvider<ItemStack>, IC
     public @Nullable List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
         if (accessor.getTarget() instanceof EntityTombstone tombstone) {
             List<ItemStack> list = Lists.newArrayList();
-            ItemStackHandler items = tombstone.getItems();
-            for (int i = 0; i < items.getSlots(); i++) {
-                ItemStack stack = items.getStackInSlot(i);
+            var items = tombstone.getItems();
+            for (int i = 0; i < items.size(); i++) {
+                ItemStack stack = ItemUtil.getStack(items, i);
                 if (stack.isEmpty()) {
                     continue;
                 }

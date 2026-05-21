@@ -7,8 +7,5 @@ public class JmcCompat {
     public static final String ID = "jmc";
 
     public static void addJmcEdible(MaidEdibleBlockManager manager) {
-        if (ModList.get().isLoaded(ID)) {
-            manager.add(new JmcEdible());
-        }
     }
 }

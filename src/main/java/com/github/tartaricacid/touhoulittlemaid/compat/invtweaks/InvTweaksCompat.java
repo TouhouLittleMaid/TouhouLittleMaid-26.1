@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.invtweaks;
 
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 
 public class InvTweaksCompat {
@@ -8,7 +8,7 @@ public class InvTweaksCompat {
     private static boolean INSTALLED = false;
 
     public static void init() {
-        ModFileInfo modFileById = LoadingModList.get().getModFileById(INV_TWEAKS_ID);
+        ModFileInfo modFileById = FMLLoader.getCurrent().getLoadingModList().getModFileById(INV_TWEAKS_ID);
         INSTALLED = modFileById != null;
     }
 

@@ -10,9 +10,6 @@ public class ImmersiveMelodiesServerCompat {
     }
 
     public static boolean isInstrumentItem(ItemStack stack) {
-        if (IS_LOADED) {
-            return ImmersiveMelodiesCompatServerInner.isInstrumentItem(stack);
-        }
         return false;
     }
 }
