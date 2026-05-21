@@ -2,60 +2,85 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.AltarRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAltar> {
+public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAltar, AltarRenderState> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/altar.png");
-    private final SimpleBedrockModel<? extends Entity> model;
+    private final @Nullable SimpleBedrockModel<EntityRenderState> model;
+    private final ItemModelResolver itemModelResolver;
 
-    public TileEntityAltarRenderer(BlockEntityRendererProvider.Context render) {
+    public TileEntityAltarRenderer(BlockEntityRendererProvider.Context context) {
         this.model = BedrockModelLoader.getModel(BedrockModelLoader.ALTAR);
+        this.itemModelResolver = context.itemModelResolver();
     }
 
     @Override
-    public void render(TileEntityAltar te, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.isRender()) {
+    public AltarRenderState createRenderState() {
+        return new AltarRenderState();
+    }
+
+    @Override
+    public void extractRenderState(TileEntityAltar te, AltarRenderState state, float partialTicks,
+                                   Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(te, state, partialTicks, cameraPosition, breakProgress);
+        state.renderModel = te.isRender();
+        state.direction = te.getDirection();
+        state.canPlaceItem = te.isCanPlaceItem();
+        ItemStack stack = state.canPlaceItem ? te.getStorageItem() : ItemStack.EMPTY;
+        state.hasItem = !stack.isEmpty();
+        if (state.hasItem) {
+            state.itemRenderState.clear();
+            itemModelResolver.updateForTopItem(state.itemRenderState, stack, ItemDisplayContext.GROUND,
+                    te.getLevel(), null, (int) te.getBlockPos().asLong());
+        }
+    }
+
+    @Override
+    public void submit(AltarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.renderModel && model != null) {
             poseStack.pushPose();
-            this.setTranslateAndPose(te, poseStack);
+            this.setTranslateAndPose(state.direction, poseStack);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-            VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.entityTranslucent(TEXTURE));
-            model.renderToBuffer(poseStack, buffer, combinedLightIn, combinedOverlayIn);
+            RenderType renderType = RenderTypes.entityTranslucent(TEXTURE);
+            submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) ->
+                    model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY));
             poseStack.popPose();
         }
 
-        if (te.isCanPlaceItem() && !te.handler.getStackInSlot(0).isEmpty()) {
-            ItemStack stack = te.handler.getStackInSlot(0);
+        if (state.hasItem) {
             poseStack.pushPose();
-            double time = (System.currentTimeMillis() + te.getBlockPos().asLong()) % 3600;
+            double time = (System.currentTimeMillis() + state.blockPos.asLong()) % 3600;
             poseStack.translate(0.5, 1.25 + Math.sin(time / 1800 * Math.PI) * 0.1, 0.5);
             poseStack.mulPose(Axis.YP.rotationDegrees((float) time / 10));
-            Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, combinedLightIn, combinedOverlayIn, poseStack, bufferIn, te.getLevel(), 0);
+            state.itemRenderState.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();
         }
     }
 
-    @Override
-    public boolean shouldRenderOffScreen(TileEntityAltar te) {
-        return true;
-    }
-
-    private void setTranslateAndPose(TileEntityAltar te, PoseStack poseStack) {
-        switch (te.getDirection()) {
+    private void setTranslateAndPose(Direction direction, PoseStack poseStack) {
+        switch (direction) {
             case SOUTH:
                 poseStack.translate(1, -1.5, -3);
                 poseStack.mulPose(Axis.YP.rotationDegrees(180));
@@ -75,8 +100,15 @@ public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAl
     }
 
     @Override
+    public boolean shouldRenderOffScreen() {
+        return true;
+    }
+
+    @Override
     public AABB getRenderBoundingBox(TileEntityAltar te) {
-        return RenderHelper.getAABB(te.getWorldPosition().offset(-9, -5, -9),
-                te.getWorldPosition().offset(9, 5, 9));
+        return RenderHelper.getAABB(
+                te.getWorldPosition().offset(-9, -5, -9),
+                te.getWorldPosition().offset(9, 5, 9)
+        );
     }
 }
