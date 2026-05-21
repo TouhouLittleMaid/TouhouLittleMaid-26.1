@@ -1,8 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.texture;
 
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.ReloadableTexture;
+import net.minecraft.resources.Identifier;
 
-public abstract class SizeTexture extends AbstractTexture {
+public abstract class SizeTexture extends ReloadableTexture {
+    public SizeTexture(Identifier resourceId) {
+        super(resourceId);
+    }
+
     /**
      * 获取材质宽度
      *

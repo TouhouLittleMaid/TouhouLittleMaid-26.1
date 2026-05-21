@@ -2,8 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.texture;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.TextureUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
@@ -15,53 +14,41 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ZipPackTexture extends SizeTexture {
-    private final Identifier texturePath;
     private final Path zipFilePath;
     private int width = 16;
     private int height = 16;
 
     public ZipPackTexture(String zipFilePath, Identifier texturePath) {
+        super(texturePath);
         this.zipFilePath = Paths.get(zipFilePath);
-        this.texturePath = texturePath;
     }
 
     @Override
     public boolean isExist() {
         try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
-            ZipEntry entry = zipFile.getEntry(String.format("assets/%s/%s", texturePath.getNamespace(), texturePath.getPath()));
+            String filePath = String.format("assets/%s/%s", resourceId().getNamespace(), resourceId().getPath());
+            ZipEntry entry = zipFile.getEntry(filePath);
             return entry != null;
         } catch (IOException e) {
-            TouhouLittleMaid.LOGGER.error("Failed to inspect zip texture {}", texturePath, e);
+            TouhouLittleMaid.LOGGER.error("Failed to inspect zip texture {}", resourceId(), e);
         }
         return false;
     }
 
     @Override
-    public void load(ResourceManager manager) {
-        if (!RenderSystem.isOnRenderThreadOrInit()) {
-            RenderSystem.recordRenderCall(this::doLoad);
-        } else {
-            this.doLoad();
-        }
-    }
-
-    private void doLoad() {
+    public TextureContents loadContents(ResourceManager resourceManager) throws IOException {
         try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
-            ZipEntry entry = zipFile.getEntry(String.format("assets/%s/%s", texturePath.getNamespace(), texturePath.getPath()));
+            String filePath = String.format("assets/%s/%s", resourceId().getNamespace(), resourceId().getPath());
+            ZipEntry entry = zipFile.getEntry(filePath);
             if (entry == null) {
-                return;
+                return TextureContents.createMissing();
             }
             try (InputStream stream = zipFile.getInputStream(entry)) {
                 NativeImage imageIn = NativeImage.read(stream);
                 width = imageIn.getWidth();
                 height = imageIn.getHeight();
-                TextureUtil.prepareImage(this.getId(), 0, width, height);
-                imageIn.upload(0, 0, 0, 0, 0, width, height, false, false, false, true);
-            } catch (IOException e) {
-                TouhouLittleMaid.LOGGER.error("Failed to load zip texture {}", texturePath, e);
+                return new TextureContents(imageIn, null);
             }
-        } catch (IOException e) {
-            TouhouLittleMaid.LOGGER.error("Failed to open zip texture {}", texturePath, e);
         }
     }
 
