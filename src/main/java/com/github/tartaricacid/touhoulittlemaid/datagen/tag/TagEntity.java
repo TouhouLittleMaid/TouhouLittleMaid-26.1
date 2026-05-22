@@ -8,10 +8,9 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-
 import java.util.concurrent.CompletableFuture;
 
 public class TagEntity extends EntityTypeTagsProvider {
@@ -37,8 +36,8 @@ public class TagEntity extends EntityTypeTagsProvider {
     );
 
 
-    public TagEntity(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, TouhouLittleMaid.MOD_ID, existingFileHelper);
+    public TagEntity(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, TouhouLittleMaid.MOD_ID);
     }
 
     private static TagKey<EntityType<?>> createTagKey(String name) {
@@ -57,16 +56,16 @@ public class TagEntity extends EntityTypeTagsProvider {
         tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(InitEntities.FAIRY.get());
 
         tag(MAID_FAIRY_ATTACK_GOAL).add(EntityType.IRON_GOLEM)
-                .addOptional(id("guardvillagers:guard"))
-                .addOptional(id("earthtojavamobs:furnace_golem"))
-                .addOptional(id("earthmobsmod:furnace_golem"))
-                .addOptional(id("mutantmonsters:mutant_snow_golem"))
-                .addOptional(id("alexscaves:gingerbread_man"))
-                .addOptional(id("alexsmobs:bunfungus"));
+                .add(TagEntry.optionalElement(id("guardvillagers:guard")))
+                .add(TagEntry.optionalElement(id("earthtojavamobs:furnace_golem")))
+                .add(TagEntry.optionalElement(id("earthmobsmod:furnace_golem")))
+                .add(TagEntry.optionalElement(id("mutantmonsters:mutant_snow_golem")))
+                .add(TagEntry.optionalElement(id("alexscaves:gingerbread_man")))
+                .add(TagEntry.optionalElement(id("alexsmobs:bunfungus")));
 
         tag(MAID_VEHICLE_ROTATE_BLOCKLIST)
-                .addOptional(id("create:carriage_contraption"))
-                .addOptional(id("create:seat"));
+                .add(TagEntry.optionalElement(id("create:carriage_contraption")))
+                .add(TagEntry.optionalElement(id("create:seat")));
 
         tag(CARRYON_ENTITY_BLACKLIST).add(
                 InitEntities.TOMBSTONE.get(),

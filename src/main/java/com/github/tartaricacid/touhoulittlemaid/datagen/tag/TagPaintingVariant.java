@@ -8,17 +8,15 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.PaintingVariantTagsProvider;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.PaintingVariantTags;
-import net.minecraft.world.entity.decoration.PaintingVariant;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.entity.decoration.painting.PaintingVariant;
 
 import java.util.concurrent.CompletableFuture;
 
 public class TagPaintingVariant extends PaintingVariantTagsProvider {
     private static final ResourceKey<PaintingVariant> WINE_FOX = ResourceKey.create(Registries.PAINTING_VARIANT, ResourceLocationUtil.getResourceLocation("wine_fox"));
 
-    public TagPaintingVariant(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, provider, TouhouLittleMaid.MOD_ID, existingFileHelper);
+    public TagPaintingVariant(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+        super(output, provider, TouhouLittleMaid.MOD_ID);
     }
 
     @Override

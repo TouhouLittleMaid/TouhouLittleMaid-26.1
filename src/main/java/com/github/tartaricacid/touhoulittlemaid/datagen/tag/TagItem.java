@@ -5,17 +5,15 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.concurrent.CompletableFuture;
 
 public class TagItem extends ItemTagsProvider {
@@ -58,9 +56,8 @@ public class TagItem extends ItemTagsProvider {
     public static final TagKey<Item> MAID_EAT_BLOCKLIST_ITEM = createTagKey("maid_eat_blocklist_item");
 
     public TagItem(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider,
-                   CompletableFuture<TagLookup<Block>> pBlockTags, String modId,
-                   @Nullable ExistingFileHelper existingFileHelper) {
-        super(pOutput, pLookupProvider, pBlockTags, modId, existingFileHelper);
+                   String modId) {
+        super(pOutput, pLookupProvider, modId);
     }
 
     public static TagKey<Item> createTagKey(String name) {
@@ -90,28 +87,28 @@ public class TagItem extends ItemTagsProvider {
         this.tag(MAID_PLANTABLE_SEEDS)
                 .addTag(ItemTags.VILLAGER_PLANTABLE_SEEDS)
                 .addTag(Tags.Items.SEEDS)
-                .addOptionalTag(Identifier.parse("kaleidoscope_cookery:cookery_mod_seeds"));
+                .add(TagEntry.optionalTag(Identifier.parse("kaleidoscope_cookery:cookery_mod_seeds")));
         this.tag(MAID_PLANTABLE_SEEDS).add(Items.NETHER_WART);
 
         this.tag(MAID_TAMED_ITEM)
                 .add(Items.CAKE)
-                .addOptionalTag(Identifier.parse("forge:cakes"))
-                .addOptionalTag(Identifier.parse("c:cakes"))
-                .addOptionalTag(Identifier.parse("jmc:cakes"))
-                .addOptional(Identifier.parse("kawaiidishes:cheese_cake"))
-                .addOptional(Identifier.parse("kawaiidishes:honey_cheese_cake"))
-                .addOptional(Identifier.parse("kawaiidishes:chocolate_cheese_cake"))
-                .addOptional(Identifier.parse("kawaiidishes:piece_of_cake"))
-                .addOptional(Identifier.parse("kawaiidishes:piece_of_cheesecake"))
-                .addOptional(Identifier.parse("kawaiidishes:piece_of_chocolate_cheesecake"))
-                .addOptional(Identifier.parse("kawaiidishes:piece_of_honey_cheesecake"));
+                .add(TagEntry.optionalTag(Identifier.parse("forge:cakes")))
+                .add(TagEntry.optionalTag(Identifier.parse("c:cakes")))
+                .add(TagEntry.optionalTag(Identifier.parse("jmc:cakes")))
+                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:cheese_cake")))
+                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:honey_cheese_cake")))
+                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:chocolate_cheese_cake")))
+                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_cake")))
+                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_cheesecake")))
+                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_chocolate_cheesecake")))
+                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_honey_cheesecake")));
 
         tag(MAID_MENDING_BLOCKLIST_ITEM).add(InitItems.ULTRAMARINE_ORB_ELIXIR.get());
         tag(MAID_VANISHING_BLOCKLIST_ITEM).add(InitItems.ULTRAMARINE_ORB_ELIXIR.get());
 
         // 森罗物语辣椒
         tag(MAID_EAT_BLOCKLIST_ITEM)
-                .addOptional(Identifier.parse("kaleidoscope_cookery:red_chili"))
-                .addOptional(Identifier.parse("kaleidoscope_cookery:green_chili"));
+                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:red_chili")))
+                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:green_chili")));
     }
 }
