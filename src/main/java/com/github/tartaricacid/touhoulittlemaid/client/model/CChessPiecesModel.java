@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedro
 import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 
 import java.util.Objects;
 
@@ -13,7 +13,7 @@ public class CChessPiecesModel {
     private final BedrockPart main;
 
     public CChessPiecesModel(String name) {
-        SimpleBedrockModel<Entity> model = BedrockModelLoader.getModel(BedrockModelLoader.CCHESS_PIECES);
+        SimpleBedrockModel<EntityRenderState> model = BedrockModelLoader.getModel(BedrockModelLoader.CCHESS_PIECES);
         this.main = Objects.requireNonNull(model).getPart(name);
     }
 
@@ -44,6 +44,6 @@ public class CChessPiecesModel {
     }
 
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        main.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        main.render(poseStack, vertexConsumer, packedLight, packedOverlay, -1);
     }
 }

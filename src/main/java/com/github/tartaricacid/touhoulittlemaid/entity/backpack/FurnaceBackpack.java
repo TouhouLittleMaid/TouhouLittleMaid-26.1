@@ -23,8 +23,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
@@ -105,13 +103,11 @@ public class FurnaceBackpack extends IMaidBackpack {
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Identifier getBackpackTexture() {
         return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/backpack/furnace_backpack.png");
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void offsetBackpackItem(PoseStack poseStack) {
         poseStack.translate(0, 0.625, 0.25);
     }

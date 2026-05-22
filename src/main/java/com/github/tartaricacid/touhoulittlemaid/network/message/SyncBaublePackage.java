@@ -13,8 +13,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -59,7 +57,6 @@ public record SyncBaublePackage(boolean isFull, int entityId,
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void handleClient(SyncBaublePackage message) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {

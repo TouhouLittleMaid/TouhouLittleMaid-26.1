@@ -11,8 +11,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -44,7 +42,6 @@ public record SyncYsmMaidDataPackage(int entityId, String rouletteAnim, boolean 
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void onHandle(SyncYsmMaidDataPackage message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {

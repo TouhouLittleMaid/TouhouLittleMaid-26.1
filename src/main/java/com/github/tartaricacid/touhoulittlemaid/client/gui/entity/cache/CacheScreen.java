@@ -14,8 +14,6 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.Queue;
@@ -23,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 
-@OnlyIn(Dist.CLIENT)
 public class CacheScreen<T extends LivingEntity, E extends IModelInfo> extends Screen {
     protected final Screen parent;
     protected final EntityType<T> entityType;

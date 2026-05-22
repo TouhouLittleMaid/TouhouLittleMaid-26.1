@@ -16,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
@@ -49,15 +48,10 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
     public MutableComponent getName(MaidModelInfo info, YsmMaidInfo ysmMaidInfo) {
         // 优先使用 YSM 模型名称
         if (YsmCompat.isInstalled() && ysmMaidInfo.isYsmModel()) {
-            ClientLevel level = Minecraft.getInstance().level;
-            if (level == null) {
-                return Component.empty();
-            }
-            MutableComponent name = Component.Serializer.fromJson(ysmMaidInfo.name(), level.registryAccess());
-            if (name == null || name.equals(Component.empty())) {
-                return Component.literal(ysmMaidInfo.modelId());
-            }
-            return name;
+            // TODO: Component.Serializer.fromJson 在 26.1.2 中已移除
+            // 需使用 ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseString(...)).getOrThrow()
+            // 临时回退：直接使用 modelId 作为 YSM 模型显示名
+            return Component.literal(ysmMaidInfo.modelId());
         }
 
         // 然后才是默认模型名

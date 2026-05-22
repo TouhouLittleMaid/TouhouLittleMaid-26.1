@@ -9,8 +9,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -46,7 +44,6 @@ public record PlayMaidSoundAtPosPackage(Identifier soundEvent, String id,
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void playSound(PlayMaidSoundAtPosPackage message) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {

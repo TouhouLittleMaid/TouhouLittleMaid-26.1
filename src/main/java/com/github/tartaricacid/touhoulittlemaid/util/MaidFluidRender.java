@@ -18,8 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.fluid.FluidTintSource;
 import net.neoforged.neoforge.fluids.FluidStack;
 
@@ -30,7 +28,6 @@ import java.util.Optional;
  * From JEI: <a href="https://github.com/mezz/JustEnoughItems/blob/26.1/Library/src/main/java/mezz/jei/library/render/FluidTankRenderer.java">...</a> and
  * <a href="https://github.com/mezz/JustEnoughItems/blob/26.1/NeoForge/src/main/java/mezz/jei/neoforge/platform/FluidHelper.java">...</a>
  */
-@OnlyIn(Dist.CLIENT)
 public final class MaidFluidRender {
     private static final int TEXTURE_SIZE = 16;
 

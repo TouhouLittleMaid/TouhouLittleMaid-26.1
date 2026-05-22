@@ -15,8 +15,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.transfer.IndexModifier;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -46,21 +44,19 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
     }
 
     protected void addMaidHandInv() {
-        ItemStacksResourceHandler handler = (ItemStacksResourceHandler)maid.getCapability(InitCapabilities.HAND_ITEM, Direction.DOWN);
+        ItemStacksResourceHandler handler = (ItemStacksResourceHandler) maid.getCapability(InitCapabilities.HAND_ITEM, Direction.DOWN);
         if (handler == null) {
             return;
         }
 
         addSlot(new ResourceHandlerSlot(handler, handler::set, 0, 87, 77) {
             @Override
-            @OnlyIn(Dist.CLIENT)
             public Identifier getNoItemIcon() {
                 return EMPTY_MAINHAND_SLOT;
             }
         });
-        addSlot(new ResourceHandlerSlot(handler, handler::set,1, 121, 77) {
+        addSlot(new ResourceHandlerSlot(handler, handler::set, 1, 121, 77) {
             @Override
-            @OnlyIn(Dist.CLIENT)
             public Identifier getNoItemIcon() {
                 return EMPTY_ARMOR_SLOT_SHIELD;
             }
@@ -68,12 +64,12 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
     }
 
     protected void addMaidArmorInv() {
-        ItemStacksResourceHandler handler = (ItemStacksResourceHandler)maid.getCapability(InitCapabilities.HAND_ITEM, Direction.DOWN);
+        ItemStacksResourceHandler handler = (ItemStacksResourceHandler) maid.getCapability(InitCapabilities.HAND_ITEM, Direction.DOWN);
         if (handler != null) {
             for (int i = 0; i < 2; ++i) {
                 for (int j = 0; j < 2; j++) {
                     final EquipmentSlot equipmentSlot = SLOT_IDS[2 * i + j];
-                    addSlot(new ResourceHandlerSlot(handler, handler::set,3 - 2 * i - j, 94 + 20 * j, 37 + 20 * i) {
+                    addSlot(new ResourceHandlerSlot(handler, handler::set, 3 - 2 * i - j, 94 + 20 * j, 37 + 20 * i) {
                         @Override
                         public int getMaxStackSize() {
                             return 1;
@@ -93,7 +89,6 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
                         }
 
                         @Override
-                        @OnlyIn(Dist.CLIENT)
                         public Identifier getNoItemIcon() {
                             return TEXTURE_EMPTY_SLOTS[equipmentSlot.getIndex()];
                         }

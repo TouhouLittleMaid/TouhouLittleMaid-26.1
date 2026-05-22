@@ -9,7 +9,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
@@ -17,7 +16,6 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(value = Dist.CLIENT)
 public class PressAIChatKeyEvent {
     @SubscribeEvent

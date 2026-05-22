@@ -11,8 +11,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
 public class TankBackpackContainer extends MaidMainContainer {
@@ -60,7 +58,6 @@ public class TankBackpackContainer extends MaidMainContainer {
         }
 
         @Override
-        @OnlyIn(Dist.CLIENT)
         public Identifier getNoItemIcon() {
             return INPUT_SLOT;
         }
@@ -77,7 +74,6 @@ public class TankBackpackContainer extends MaidMainContainer {
         }
 
         @Override
-        @OnlyIn(Dist.CLIENT)
         public Identifier getNoItemIcon() {
             return OUTPUT_SLOT;
         }

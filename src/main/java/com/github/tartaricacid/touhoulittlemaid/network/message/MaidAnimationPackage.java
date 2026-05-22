@@ -7,8 +7,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -51,7 +49,6 @@ public record MaidAnimationPackage(int maidId, int animationId) implements Custo
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void handle(MaidAnimationPackage message) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {

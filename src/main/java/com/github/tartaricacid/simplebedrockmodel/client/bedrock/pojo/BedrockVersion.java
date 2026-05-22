@@ -2,13 +2,10 @@ package com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo;
 
 
 import com.github.tartaricacid.simplebedrockmodel.SimpleBedrockModel;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 
-@OnlyIn(Dist.CLIENT)
 public enum BedrockVersion {
     /**
      * 旧版本基岩版模型，仅限 1.10.0

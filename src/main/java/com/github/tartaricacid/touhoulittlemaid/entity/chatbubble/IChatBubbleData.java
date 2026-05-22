@@ -4,8 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public interface IChatBubbleData {
     /**
@@ -53,7 +51,6 @@ public interface IChatBubbleData {
      * @param position 排列位置
      * @return 渲染类
      */
-    @OnlyIn(Dist.CLIENT)
     IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position);
 
     /**

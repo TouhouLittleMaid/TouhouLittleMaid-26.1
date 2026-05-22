@@ -12,8 +12,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class MaidConfigButton extends Button {
     private static final Identifier ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_button.png");
@@ -82,7 +80,6 @@ public class MaidConfigButton extends Button {
         graphics.text(pFont, formattedcharsequence, pX - pFont.width(formattedcharsequence) / 2, pY, pColor, false);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public interface OnPress {
         void onPress(MaidConfigButton button);
     }

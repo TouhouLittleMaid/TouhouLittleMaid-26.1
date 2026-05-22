@@ -13,7 +13,6 @@ import com.github.tartaricacid.touhoulittlemaid.api.event.*;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
@@ -143,8 +142,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
@@ -675,8 +672,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             InteractMaidEvent event = new InteractMaidEvent(playerIn, this, stack);
             // 利用短路原理，逐个触发对应的交互事件
             if (NeoForge.EVENT_BUS.post(event).isCanceled()
-                    || stack.interactLivingEntity(playerIn, this, hand).consumesAction()
-                    || openMaidGui(playerIn)) {
+                || stack.interactLivingEntity(playerIn, this, hand).consumesAction()
+                || openMaidGui(playerIn)) {
                 return InteractionResult.SUCCESS;
             }
         } else {
@@ -854,7 +851,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         for (int i = 0; i < handler.size(); i++) {
             ItemStack stackInSlot = ItemUtil.getStack(handler, i);
             if (!stackInSlot.isEmpty() && getEnchantmentLevel(access, Enchantments.MENDING, stackInSlot) > 0
-                    && stackInSlot.isDamaged() && !stackInSlot.is(TagItem.MAID_MENDING_BLOCKLIST_ITEM)) {
+                && stackInSlot.isDamaged() && !stackInSlot.is(TagItem.MAID_MENDING_BLOCKLIST_ITEM)) {
                 stacks.add(stackInSlot);
             }
         }
@@ -1114,8 +1111,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     private void sendMaidPos() {
         if (this.dead && this.level instanceof ServerLevel level
-                && level.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
-                && this.getOwner() instanceof ServerPlayer serverPlayer) {
+            && level.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
+            && this.getOwner() instanceof ServerPlayer serverPlayer) {
             // 支持旅行地图格式
             // [name:"name", x:-136, y:36, z:48, dim:minecraft:the_nether]
             BlockPos blockPos = this.blockPosition();
@@ -1333,7 +1330,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public void spawnRankUpParticle() {
         if (this.level.isClientSide()) {
             Minecraft minecraft = Minecraft.getInstance();
@@ -1811,7 +1807,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Vec3 getLeashOffset() {
         String modelId = this.getModelId();
         Vec3 pose = getLegacyLeashOffset(modelId);
@@ -1822,7 +1817,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     }
 
     @Nullable
-    @OnlyIn(Dist.CLIENT)
     private Vec3 getLegacyLeashOffset(String modelId) {
         var modelOptional = CustomPackLoader.MAID_MODELS.getModel(modelId);
         Optional<MaidModelInfo> infoOptional = CustomPackLoader.MAID_MODELS.getInfo(modelId);
@@ -1842,12 +1836,16 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             if (arm != null) {
                 BedrockPart positioningModel = model.getArmPositioningModel(armSide);
                 Vector3f positionVec;
+                // TODO: getTranslateAndRotateVector3f() 在 BedrockPart 中已被移除
+                // 需要使用新的变换获取方式（可能是 x/y/z 字段 + rotationDegreesX/Y/Z 组合）
                 if (positioningModel != null) {
-                    positionVec = positioningModel.getTranslateAndRotateVector3f();
+                    // positionVec = positioningModel.getTranslateAndRotateVector3f();
+                    positionVec = new Vector3f(0, 0.5f, 0);  // 临时默认值
                 } else {
                     positionVec = new Vector3f(0, 0.5f, 0);
                 }
-                Vector3f armVec = arm.getTranslateAndRotateVector3f();
+                // Vector3f armVec = arm.getTranslateAndRotateVector3f();
+                Vector3f armVec = new Vector3f(0, 10, 0);  // 临时默认值
                 Vector3f pose = armVec.add(positionVec);
                 return new Vec3(pose.x() * renderEntityScale, (1.5 - pose.y) * renderEntityScale, pose.z() * renderEntityScale);
             }
@@ -2282,6 +2280,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(TASK_DATA_SYNC, this.taskDataMaps, true);
     }
 
+    @Override
     public float getLuck() {
         return (float) this.getAttributeValue(Attributes.LUCK);
     }
@@ -2699,6 +2698,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_IS_AIMING, aiming);
     }
 
+    @Override
     public void spawnItemParticles(ItemStack stack, int amount) {
         for (int i = 0; i < amount; ++i) {
             Vec3 speed = new Vec3((this.random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);

@@ -20,8 +20,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.CRAFTING_TABLE_BACKPACK;
@@ -68,21 +66,18 @@ public class CraftingTableBackpack extends IMaidBackpack {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void offsetBackpackItem(PoseStack poseStack) {
         poseStack.translate(0, 0.625, 0.25);
     }
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
         return BedrockModelLoader.getModel(CRAFTING_TABLE_BACKPACK);
     }
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Identifier getBackpackTexture() {
         return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/backpack/crafting_table_backpack.png");
     }

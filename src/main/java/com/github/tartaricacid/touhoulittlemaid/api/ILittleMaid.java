@@ -25,8 +25,6 @@ import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.entity.Mob;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -173,28 +171,24 @@ public interface ILittleMaid {
      * <p>
      * 有些物品在指向女仆时，能够在屏幕上显示相关提示文本
      */
-    @OnlyIn(Dist.CLIENT)
     default void addMaidTips(MaidTipsOverlay maidTipsOverlay) {
     }
 
     /**
      * 添加默认模型风格的实体 layer 渲染
      */
-    @OnlyIn(Dist.CLIENT)
     default void addAdditionMaidLayer(EntityMaidRenderer renderer, EntityRendererProvider.Context context) {
     }
 
     /**
      * 添加 Gecko 风格的实体 layer 渲染
      */
-    @OnlyIn(Dist.CLIENT)
     default void addAdditionGeckoMaidLayer(GeckoEntityMaidRenderer<? extends Mob> renderer, EntityRendererProvider.Context context) {
     }
 
     /**
      * 添加硬编码的动画
      */
-    @OnlyIn(Dist.CLIENT)
     default void addHardcodeAnimation(HardcodedAnimationManger manger) {
     }
 
@@ -203,7 +197,6 @@ public interface ILittleMaid {
      *
      * @param manager 注册管理器
      */
-    @OnlyIn(Dist.CLIENT)
     @ApiStatus.AvailableSince("1.4.7")
     default void registerMagicCastingAnimation(MagicCastingAnimationManager manager) {
     }

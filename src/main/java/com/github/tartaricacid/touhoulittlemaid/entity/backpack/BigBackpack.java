@@ -20,8 +20,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -70,19 +68,16 @@ public class BigBackpack extends IMaidBackpack {
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
         return BedrockModelLoader.getModel(BIG_BACKPACK);
     }
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Identifier getBackpackTexture() {
         return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/backpack/big_backpack.png");
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
     public void offsetBackpackItem(PoseStack poseStack) {
         poseStack.translate(0, 0.25, -0.25);

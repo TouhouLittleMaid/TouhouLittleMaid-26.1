@@ -2,10 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubb
 
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public interface IChatBubbleRenderer {
     /**
      * 气泡框高度

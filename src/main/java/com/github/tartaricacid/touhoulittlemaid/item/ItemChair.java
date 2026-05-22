@@ -31,7 +31,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 import javax.annotation.Nullable;
@@ -63,7 +62,6 @@ public class ItemChair extends Item {
         return stack;
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void fillItemCategory(CreativeModeTab.Output items) {
         for (String key : CustomPackLoader.CHAIR_MODELS.getModelIdSet()) {
             float height = CustomPackLoader.CHAIR_MODELS.getModelMountedYOffset(key);
@@ -123,7 +121,6 @@ public class ItemChair extends Item {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Component getName(ItemStack stack) {
         if (FMLEnvironment.getDist() == Dist.CLIENT) {
             // 添加坐垫前缀，方便搜索
@@ -138,7 +135,6 @@ public class ItemChair extends Item {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
         tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.place.desc").withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.destroy.desc").withStyle(ChatFormatting.GRAY));

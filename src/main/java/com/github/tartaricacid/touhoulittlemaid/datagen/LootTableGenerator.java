@@ -230,23 +230,18 @@ public class LootTableGenerator {
         }
 
         @Override
-        protected boolean canHaveLootTable(EntityType<?> type) {
-            return true;
-        }
-
-        @Override
         protected Stream<EntityType<?>> getKnownEntityTypes() {
             return knownEntities.stream();
         }
 
         @Override
         protected void add(EntityType<?> type, LootTable.Builder builder) {
-            this.add(type, type.getDefaultLootTable(), builder);
+            type.getDefaultLootTable().ifPresent(lootTable -> this.add(type, lootTable, builder));
         }
 
         @Override
-        protected void add(EntityType<?> type, ResourceKey<LootTable> lootTable, LootTable.Builder builder) {
-            super.add(type, lootTable, builder);
+        protected void add(EntityType<?> type, ResourceKey<LootTable> result, LootTable.Builder builder) {
+            super.add(type, result, builder);
             knownEntities.add(type);
         }
     }

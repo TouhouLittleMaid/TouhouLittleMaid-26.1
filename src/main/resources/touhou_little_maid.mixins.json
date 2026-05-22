@@ -11,7 +11,7 @@
     "EntityMixin",
     "FishingHookPredicateMixin",
     "MixinCrossbowItem",
-    "MobInteractMixin",
+    // "MobInteractMixin",
     "NavigationMixin",
     "NodeEvaluatorBurningCacher",
     "ParrotMixin",
@@ -27,14 +27,8 @@
     "accessor.LivingEntityAccessor"
   ],
   "client": [
-    "client.ClientPacketListenerMixin",
-    "client.HumanoidModelMixin",
-    "client.ItemPropertiesMixin",
-    "client.LanguageMixin",
-    "client.LivingEntityRendererMixin",
-    "client.Matrix4fMixin",
-    "client.InventoryScreenMixin",
-    "client.LevelRendererMixin"
+    "client.ClientPacketListenerMixin", "client.HumanoidModelMixin", "client.InventoryScreenMixin",
+    "client.LanguageMixin", "client.LevelRendererMixin", "client.LivingEntityRendererMixin", "client.Matrix4fMixin"
   ],
   "injectors": {
     "defaultRequire": 1

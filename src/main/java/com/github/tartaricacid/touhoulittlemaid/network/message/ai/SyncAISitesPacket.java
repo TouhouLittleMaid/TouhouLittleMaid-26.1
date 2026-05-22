@@ -17,8 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,7 +92,6 @@ public record SyncAISitesPacket(
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void onHandle(SyncAISitesPacket message) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof LLMSiteEditorScreen editor) {

@@ -7,13 +7,10 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModel
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-@OnlyIn(Dist.CLIENT)
 public final class MaidModels {
     private static final String JSON_FILE_NAME = "maid_model.json";
     private static @Nullable MaidModels INSTANCE;

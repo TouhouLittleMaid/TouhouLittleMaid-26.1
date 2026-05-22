@@ -3,12 +3,10 @@ package com.github.tartaricacid.touhoulittlemaid.client.event;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.download.ClientPackDownloadManager;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public class ClientPackDownloadEvent {
     private static final String CONFIG_NAME = "touhou_little_maid-server.toml";

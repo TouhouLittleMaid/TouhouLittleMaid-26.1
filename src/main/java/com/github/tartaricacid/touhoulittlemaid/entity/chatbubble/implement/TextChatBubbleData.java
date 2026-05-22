@@ -8,8 +8,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class TextChatBubbleData implements IChatBubbleData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "text");
@@ -19,7 +17,6 @@ public class TextChatBubbleData implements IChatBubbleData {
     private final int priority;
     private Component text;
 
-    @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
     private TextChatBubbleData(int existTick, Component text, Identifier bg, int priority) {
@@ -65,7 +62,6 @@ public class TextChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position) {
         if (renderer == null) {
             renderer = new TextChatBubbleRenderer(this.text, this.bg, position);

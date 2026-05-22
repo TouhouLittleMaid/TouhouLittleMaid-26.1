@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModel
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.PlayerMaidModels;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -18,7 +17,6 @@ import java.util.Collections;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader.MAID_MODELS;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public final class SpecialMaidRenderEvent {
     public static final String EASTER_EGG_MODEL = "touhou_little_maid:easter_egg_model";

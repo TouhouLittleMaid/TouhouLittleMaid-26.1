@@ -5,19 +5,15 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockMode
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-@OnlyIn(Dist.CLIENT)
 public final class ChairModels {
     private static final String JSON_FILE_NAME = "maid_chair.json";
-    private @Nullable static ChairModels INSTANCE;
+    private static @Nullable ChairModels INSTANCE;
     private final List<CustomModelPack<ChairModelInfo>> packList;
     private final HashMap<String, BedrockModel<EntityChairRenderState>> idModelMap;
     private final HashMap<String, ChairModelInfo> idInfoMap;

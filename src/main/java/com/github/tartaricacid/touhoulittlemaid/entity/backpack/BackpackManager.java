@@ -12,8 +12,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
@@ -51,7 +49,6 @@ public class BackpackManager {
         BACKPACK_ITEM_MAP = ImmutableMap.copyOf(BACKPACK_ITEM_MAP);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void initClient(EntityModelSet modelSet) {
         // 有些模组可能会比上面 init 还要早执行这块，所以需要检查一下？
         if (BACKPACK_ID_MAP == null) {

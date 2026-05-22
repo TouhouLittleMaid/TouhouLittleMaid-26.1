@@ -2,8 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.function.BiConsumer;
 
@@ -31,7 +29,6 @@ public class WirelessIOButton extends TouhouStateSwitchButton {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public interface ITooltip {
         void onTooltip(GuiGraphicsExtractor graphics, int x, int y);
     }

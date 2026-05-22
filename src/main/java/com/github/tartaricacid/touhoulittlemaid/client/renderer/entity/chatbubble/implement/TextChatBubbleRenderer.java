@@ -8,12 +8,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
-@OnlyIn(Dist.CLIENT)
 public class TextChatBubbleRenderer implements IChatBubbleRenderer {
     private static final int MAX_WIDTH = 120;
     private static final int MAX_CENTER_WIDTH = 200;

@@ -16,7 +16,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber
 public final class UseNameTagEvent {
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
     public static void onInteractClient(InteractMaidEvent event) {
         ItemStack stack = event.getStack();
         Player player = event.getPlayer();

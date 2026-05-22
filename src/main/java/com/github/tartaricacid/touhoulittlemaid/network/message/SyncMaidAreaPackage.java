@@ -6,8 +6,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -28,7 +26,6 @@ public record SyncMaidAreaPackage(int id, SchedulePos schedulePos) implements Cu
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void writePos(SyncMaidAreaPackage message) {
         MaidAreaRenderEvent.addSchedulePos(message.id, message.schedulePos);
     }

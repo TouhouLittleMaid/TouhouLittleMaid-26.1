@@ -6,13 +6,10 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubbl
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class EmojiChatBubbleData implements IChatBubbleData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "emoji");
     private final Identifier bg;
-    @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
     public EmojiChatBubbleData(Identifier bg) {

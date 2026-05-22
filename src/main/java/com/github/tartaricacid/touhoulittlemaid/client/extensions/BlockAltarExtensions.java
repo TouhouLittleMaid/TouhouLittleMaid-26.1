@@ -16,8 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 
 import java.util.Optional;
@@ -53,7 +51,6 @@ public class BlockAltarExtensions implements IClientBlockExtensions {
         return Optional.empty();
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void crack(ClientLevel world, BlockPos pos, BlockState state, Direction side) {
         if (state.getRenderShape() != RenderShape.INVISIBLE) {
             int posX = pos.getX();

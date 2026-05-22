@@ -15,15 +15,12 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityModelSwitcher;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.LinkedList;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.event.SpecialMaidRenderEvent.EASTER_EGG_MODEL;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
-@OnlyIn(Dist.CLIENT)
 public final class CacheIconManager {
     private static final LinkedList<MaidModelInfo> MAID_CACHE_QUEUE = new LinkedList<>();
     private static final LinkedList<ChairModelInfo> CHAIR_CACHE_QUEUE = new LinkedList<>();

@@ -7,8 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.util.HttpUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ZipFileCheck;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -26,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * 依据服务端配置，下载客户端模型包
  */
-@OnlyIn(Dist.CLIENT)
 public class ClientPackDownloadManager {
     /**
      * 缓存的配置文件哈希值，用于判断客户端是否需要更新

@@ -7,8 +7,6 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 
@@ -22,7 +20,6 @@ import java.util.HashMap;
  * <p>
  * 但由于 net.minecraft.client.model.EntityModel 和 net.minecraft.client.model.Model 是继承关系，无法复用，故重复代码
  */
-@OnlyIn(Dist.CLIENT)
 public abstract class AbstractBedrockEntityModel<T extends EntityRenderState> extends EntityModel<T> implements BedrockModelProvider<AbstractBedrockEntityModel<T>> {
     /**
      * 存储 BedrockPart 的 HashMap

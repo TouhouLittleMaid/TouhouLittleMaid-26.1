@@ -6,8 +6,6 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.MenuProvider;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -35,12 +33,10 @@ public class CuriosCompat {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void registerScreen(RegisterMenuScreensEvent event) {
         event.register(CuriosContainer.TYPE, CuriosContainerScreen::new);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void clientUpdatePage(int page) {
         if (isLoadedOrEnable()) {
             Minecraft mc = Minecraft.getInstance();
@@ -50,7 +46,6 @@ public class CuriosCompat {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void clientResetPage() {
         if (isLoadedOrEnable()) {
             Minecraft mc = Minecraft.getInstance();

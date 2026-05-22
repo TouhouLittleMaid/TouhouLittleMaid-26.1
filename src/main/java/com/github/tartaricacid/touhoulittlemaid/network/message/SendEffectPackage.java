@@ -8,8 +8,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
@@ -40,7 +38,6 @@ public record SendEffectPackage(int id, Collection<MobEffectInstance> effects) i
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void handle(SendEffectPackage message) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {

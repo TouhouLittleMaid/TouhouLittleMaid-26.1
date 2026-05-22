@@ -2,8 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.util;
 
 import io.github.jaredmdobson.concentus.OpusDecoder;
 import io.github.jaredmdobson.concentus.OpusException;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 import org.gagravarr.ogg.OggFile;
 import org.gagravarr.opus.OpusAudioData;
@@ -14,7 +12,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-@OnlyIn(Dist.CLIENT)
 public final class OpusDecoderUtil {
     /**
      * Opus 支持的帧长有：2.5ms、5ms、10ms、20ms、40ms、60ms

@@ -13,8 +13,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.MutableComponent;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.net.URI;
@@ -42,7 +40,6 @@ public class TTSPlayer2Client implements TTSClient, TTSSystemServices {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void handle(String message, TTSConfig config) {
         URI url = URI.create(this.site.url());
         String model = config.model();

@@ -7,8 +7,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -30,7 +28,6 @@ public record OpenPlayerInventoryPackage(int action) implements CustomPacketPayl
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void onHandle(OpenPlayerInventoryPackage message) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {

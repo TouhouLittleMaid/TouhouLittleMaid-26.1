@@ -30,8 +30,6 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -157,7 +155,6 @@ public class ItemServantBell extends Item {
         return maid.isOwnedBy(player) && maid.getUUID().equals(searchUuid);
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void openServantBellSetScreen(EntityMaid maid) {
         if (maid.level.isClientSide()) {
             Minecraft.getInstance().setScreen(new ServantBellSetScreen(maid));

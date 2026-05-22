@@ -9,8 +9,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.Util;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -51,7 +49,6 @@ public record GomokuClientPackage(BlockPos pos, List<byte[]> chessData, Point po
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void onHandle(GomokuClientPackage message) {
         Point aiPoint = MaidGomokuAI.getService(message.count).getPoint(message.chessData.toArray(new byte[15][]), message.point);
         int time = (int) (Math.random() * 1250) + 250;

@@ -1,115 +1,103 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.GarageKitRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemGarageKit;
-import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.mojang.serialization.Codec;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.geom.EntityModelSet;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.level.Level;
+import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
-import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.ENTITY_ID_TAG_NAME;
-import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.STATUE_BASE;
 
-public class TileEntityItemStackGarageKitRenderer extends BlockEntityWithoutLevelRenderer {
+/**
+ * GarageKit 物品的特殊模型渲染器，替代旧版 BlockEntityWithoutLevelRenderer
+ * <p>
+ * 参考 PlayerDollItemRenderer 的 SpecialModelRenderer 模式实现。
+ * 底座模型（STATUE_BASE）可直接通过 submitCustomGeometry 渲染。
+ * 实体预览渲染暂未迁移，需要适配新的 SubmitNodeCollector API。
+ */
+public class TileEntityItemStackGarageKitRenderer implements SpecialModelRenderer<GarageKitRenderState> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/statue_base.png");
-    private static SimpleBedrockModel<Entity> BASE_MODEL;
+    private final @Nullable SimpleBedrockModel<EntityRenderState> baseModel;
 
-    public TileEntityItemStackGarageKitRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
-        super(dispatcher, modelSet);
-        BASE_MODEL = BedrockModelLoader.getModel(BedrockModelLoader.STATUE_BASE);
+    public TileEntityItemStackGarageKitRenderer() {
+        this.baseModel = BedrockModelLoader.getModel(STATUE_BASE);
     }
 
     @Override
-    public void renderByItem(ItemStack stack, ItemDisplayContext transformType, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (BASE_MODEL == null) {
-            return;
-        }
-        poseStack.pushPose();
-        poseStack.scale(0.5f, 0.5f, 0.5f);
-        poseStack.translate(1, 1.5, 1);
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-        VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(TEXTURE));
-        BASE_MODEL.renderToBuffer(poseStack, buffer, combinedLightIn, combinedOverlayIn);
-        poseStack.popPose();
-
+    public GarageKitRenderState extractArgument(ItemStack stack) {
+        GarageKitRenderState state = new GarageKitRenderState();
         CustomData data = ItemGarageKit.getMaidData(stack);
-        Level world = Minecraft.getInstance().level;
-        if (data.isEmpty() || world == null) {
-            return;
-        }
-
-        EntityType.byString(data.read(Codec.STRING.fieldOf(ENTITY_ID_TAG_NAME)).getOrThrow()).ifPresent(type -> {
-                    try {
-                        renderEntity(stack, poseStack, bufferIn, combinedLightIn, data.copyTag(), world, type);
-                    } catch (ExecutionException e) {
-                        TouhouLittleMaid.LOGGER.error("Failed to render garage kit item entity", e);
-                    }
-                }
-        );
+        state.extraData = data.copyTag();
+        return state;
     }
 
-    private void renderEntity(ItemStack stack, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn, CompoundTag data, Level world, EntityType<?> type) throws ExecutionException {
-        Entity entity;
-        if (type.equals(InitEntities.MAID.get())) {
-            entity = EntityCacheUtil.GARAGE_KIT_CACHE.get(stack, () -> new EntityMaid(world));
-        } else {
-            entity = EntityCacheUtil.ENTITY_CACHE.get(type, () -> {
-                Entity e = type.create(world);
-                return Objects.requireNonNullElseGet(e, () -> new EntityMaid(world));
+    @Override
+    public void submit(
+            GarageKitRenderState state,
+            PoseStack poseStack,
+            SubmitNodeCollector collector,
+            int lightCoords,
+            int overlayCoords,
+            boolean hasFoil,
+            int outlineColor
+    ) {
+        // 渲染底座模型
+        if (baseModel != null) {
+            poseStack.pushPose();
+            poseStack.scale(0.5f, 0.5f, 0.5f);
+            poseStack.translate(1, 1.5, 1);
+            poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+            collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
+                baseModel.renderToBuffer(poseStack, buffer, lightCoords, overlayCoords);
             });
+            poseStack.popPose();
         }
 
-        float renderItemScale = 1;
-        entity.load(data);
-        if (entity instanceof EntityMaid maid) {
-            clearMaidDataResidue(maid, true);
-            if (data.contains(EntityMaid.MODEL_ID_TAG, Tag.TAG_STRING)) {
-                String modelId = data.getString(EntityMaid.MODEL_ID_TAG);
-                renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(modelId);
-            }
-            maid.renderState = MaidRenderState.GARAGE_KIT;
+        // TODO: 实体预览渲染需要迁移
+        // 旧代码使用 EntityRenderDispatcher.render() 渲染实体（Maid 或其他实体类型），
+        // 但 SpecialModelRenderer.submit() 不提供 MultiBufferSource 参数，
+        // 无法直接调用 EntityRenderDispatcher。
+        // 需要将实体渲染改为通过 ItemStackRenderState 管道，
+        // 参考 TileEntityGarageKitRenderer（Block Entity 版本）的 submit() 实现。
+        if (state != null) {
+            TouhouLittleMaid.LOGGER.debug("GarageKit item entity preview render not yet migrated");
+        }
+    }
+
+    @Override
+    public void getExtents(Consumer<Vector3fc> output) {
+        // TODO: 需要从底座模型获取实际尺寸
+        PoseStack poseStack = new PoseStack();
+        poseStack.scale(0.5F, 0.5F, 0.5F);
+        // 暂无模型可供 getExtentsForGui 调用，待后续精修
+    }
+
+    public record Unbaked() implements SpecialModelRenderer.Unbaked<GarageKitRenderState> {
+        public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "garage_kit");
+        public static final MapCodec<TileEntityItemStackGarageKitRenderer.Unbaked> MAP_CODEC = MapCodec.unit(TileEntityItemStackGarageKitRenderer.Unbaked::new);
+
+        @Override
+        public MapCodec<TileEntityItemStackGarageKitRenderer.Unbaked> type() {
+            return MAP_CODEC;
         }
 
-        poseStack.pushPose();
-        poseStack.scale(0.5f, 0.5f, 0.5f);
-        poseStack.scale(renderItemScale, renderItemScale, renderItemScale);
-        poseStack.translate(1, 0.21328125, 1);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180));
-        EntityRenderDispatcher render = Minecraft.getInstance().getEntityRenderDispatcher();
-        boolean isShowHitBox = render.shouldRenderHitBoxes();
-        render.setRenderHitBoxes(false);
-        RenderSystem.runAsFancy(() -> {
-            render.render(entity, 0, 0, 0, 0, 0,
-                    poseStack, bufferIn, combinedLightIn);
-        });
-        render.setRenderHitBoxes(isShowHitBox);
-        poseStack.popPose();
+        @Override
+        public TileEntityItemStackGarageKitRenderer bake(SpecialModelRenderer.BakingContext context) {
+            return new TileEntityItemStackGarageKitRenderer();
+        }
     }
 }

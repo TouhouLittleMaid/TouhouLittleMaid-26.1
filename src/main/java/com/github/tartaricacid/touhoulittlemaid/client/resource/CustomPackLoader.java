@@ -28,8 +28,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -53,7 +51,6 @@ import java.util.zip.ZipFile;
 
 import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 
-@OnlyIn(Dist.CLIENT)
 public class CustomPackLoader {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeHierarchyAdapter(Identifier.class, new IdentifierAdapter())

@@ -14,8 +14,6 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -48,15 +46,12 @@ public abstract class IMaidBackpack {
 
     public abstract int getAvailableMaxContainerIndex();
 
-    @OnlyIn(Dist.CLIENT)
     public abstract void offsetBackpackItem(PoseStack poseStack);
 
     @Nullable
-    @OnlyIn(Dist.CLIENT)
     public abstract EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet);
 
     @Nullable
-    @OnlyIn(Dist.CLIENT)
     public abstract Identifier getBackpackTexture();
 
     protected final void dropAllItems(EntityMaid maid) {

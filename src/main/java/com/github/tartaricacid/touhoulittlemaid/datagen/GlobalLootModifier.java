@@ -52,7 +52,7 @@ public class GlobalLootModifier extends GlobalLootModifierProvider {
 
     private void addChestLootModifier(String name, @Nullable ResourceKey<LootTable> lootTableId, ResourceKey<LootTable> lootTableAdd) {
         LootTableTypeCondition condition = new LootTableTypeCondition(CHEST, lootTableId, lootTableAdd);
-        this.add(name, new AddTableLootModifier(new LootItemCondition[]{condition}, lootTableAdd));
+        this.add(name, new AddTableLootModifier(new LootItemCondition[]{condition}, 1, lootTableAdd));
     }
 
     private void addAllChestLootModifier(String name, ResourceKey<LootTable> lootTableAdd) {
@@ -61,6 +61,6 @@ public class GlobalLootModifier extends GlobalLootModifierProvider {
 
     private void addFishLootModifier(String name, @Nullable ResourceKey<LootTable> lootTableId, ResourceKey<LootTable> lootTableAdd) {
         LootTableTypeCondition condition = new LootTableTypeCondition(FISHING, lootTableId, lootTableAdd);
-        this.add(name, new AddTableLootModifier(new LootItemCondition[]{condition}, lootTableAdd));
+        this.add(name, new AddTableLootModifier(new LootItemCondition[]{condition}, 1, lootTableAdd));
     }
 }

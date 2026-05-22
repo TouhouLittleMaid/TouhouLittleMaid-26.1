@@ -9,15 +9,12 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-@OnlyIn(Dist.CLIENT)
 public class TaskButton extends Button implements ITooltipButton {
     private final IMaidTask task;
     private final boolean enable;

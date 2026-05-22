@@ -6,8 +6,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.IModelInfo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.io.IOUtils;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
@@ -26,7 +24,6 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@OnlyIn(Dist.CLIENT)
 public class CustomJsAnimationManger {
     public static final ScriptEngine NASHORN = new NashornScriptEngineFactory().getScriptEngine();
     private static final Map<Identifier, Object> CUSTOM_ANIMATION_MAP = Maps.newHashMap();

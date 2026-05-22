@@ -4,22 +4,22 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.RenderMaidEvent;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimationManger;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityMaidRenderer;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.*;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackItem;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackpack;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBipedHead;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidHeldItem;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.swarfare.SWarfareCompat;
-import com.github.tartaricacid.touhoulittlemaid.compat.patpat.PatPatCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
@@ -48,14 +48,11 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-@OnlyIn(Dist.CLIENT)
 @SuppressWarnings("rawtypes,unchecked")
 public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
     public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();

@@ -10,8 +10,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.Util;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -40,7 +38,6 @@ public record WChessToClientPackage(BlockPos pos, String fenData) implements Cus
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void onHandle(WChessToClientPackage message) {
         int levelTime = 1000;
         long timeStart = System.currentTimeMillis();

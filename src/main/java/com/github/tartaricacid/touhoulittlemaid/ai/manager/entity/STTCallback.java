@@ -10,15 +10,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.http.HttpRequest;
 
-@OnlyIn(Dist.CLIENT)
 public class STTCallback implements ResponseCallback<String> {
     private final Player player;
     private final EntityMaid maid;

@@ -5,8 +5,6 @@ import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingAnimationProvider;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +19,6 @@ import java.util.List;
  * @author Gardel &lt;gardel741@outlook.com&gt;
  * @since 2026-01-03
  */
-@OnlyIn(Dist.CLIENT)
 public class MagicCastingAnimationManager {
     private static List<IMagicCastingAnimationProvider> PROVIDERS = Lists.newArrayList();
 

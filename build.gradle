@@ -231,7 +231,7 @@ dependencies {
     compileOnly "libs:patpat:1.2.1+1.21.1" // FIXME：旧版
 
     // JEI
-    implementation "maven.modrinth:jei:29.6.2.31-neoforge"
+    compileOnly "maven.modrinth:jei:29.6.2.31-neoforge"
 
     // REI
     compileOnly "maven.modrinth:architectury-api:13.0.8+neoforge" // FIXME：旧版
@@ -251,7 +251,7 @@ dependencies {
     // runtimeOnly "com.github.rtyley:animated-gif-lib-for-java:animated-gif-lib-1.7"
 
     // Curios
-    implementation "maven.modrinth:curios:15.0.0-beta.2+26.1.2-neoforge"
+    compileOnly "maven.modrinth:curios:15.0.0-beta.2+26.1.2-neoforge"
 
     compileOnly "maven.modrinth:sodium:mc26.1.2-0.8.12-neoforge"
     compileOnly "maven.modrinth:iris:1.10.9+26.1-neoforge"
@@ -268,8 +268,8 @@ dependencies {
     // implementation "maven.modrinth:carry-on:2.2.2-neoforge"
     compileOnly "maven.modrinth:inventory-tweaks-refoxed:1.21.1-1.2.0" // FIXME：旧版
 
-    implementation "maven.modrinth:sophisticated-core:26.1.2-1.4.45.1849"
-    implementation "maven.modrinth:sophisticated-backpacks:26.1.2-3.25.55.1739"
+    compileOnly "maven.modrinth:sophisticated-core:26.1.2-1.4.45.1849"
+    compileOnly "maven.modrinth:sophisticated-backpacks:26.1.2-3.25.55.1739"
 
     // FIXME 下面全是旧版
 

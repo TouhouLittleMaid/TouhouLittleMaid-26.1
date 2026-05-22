@@ -8,8 +8,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +21,6 @@ public class WaitingChatBubbleData implements IChatBubbleData {
     private final @Nullable Component secondaryText;
     private final Identifier icon;
 
-    @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
     private WaitingChatBubbleData(int existTick, Identifier bg, int priority, Component text,
@@ -69,7 +66,6 @@ public class WaitingChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position) {
         if (renderer == null) {
             renderer = new WaitingChatBubbleRenderer(this.bg, this.text, this.secondaryText, this.icon);

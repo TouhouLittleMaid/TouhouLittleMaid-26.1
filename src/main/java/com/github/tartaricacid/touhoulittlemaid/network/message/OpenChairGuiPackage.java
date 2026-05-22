@@ -8,8 +8,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -33,7 +31,6 @@ public record OpenChairGuiPackage(int id) implements CustomPacketPayload {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void handleOpenGui(OpenChairGuiPackage message) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {

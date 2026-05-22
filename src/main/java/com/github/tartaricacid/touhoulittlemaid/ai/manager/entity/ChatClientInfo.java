@@ -9,8 +9,6 @@ import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +34,6 @@ public record ChatClientInfo(String language, String name, List<String> descript
         return new ChatClientInfo(language, name, description);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static ChatClientInfo fromMaid(EntityMaid maid) {
         String language = getClientLanguage();
         String name = getMaidName(maid);
@@ -44,17 +41,14 @@ public record ChatClientInfo(String language, String name, List<String> descript
         return new ChatClientInfo(language, name, description);
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static String getClientLanguage() {
         return Minecraft.getInstance().getLanguageManager().getSelected();
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static String getMaidName(EntityMaid maid) {
         return maid.getName().getString();
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static List<String> getMaidDescription(EntityMaid maid) {
         List<String> description = Lists.newArrayList();
         // YSM 模型没有描述文本

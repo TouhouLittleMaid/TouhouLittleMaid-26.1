@@ -2,10 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class ImageButtonWithId extends TouhouImageButton {
     private final int index;
 

@@ -21,8 +21,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -71,20 +69,17 @@ public class MiddleBackpack extends IMaidBackpack {
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
         return BedrockModelLoader.getModel(MIDDLE_BACKPACK);
     }
 
     @Nullable
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Identifier getBackpackTexture() {
         return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/backpack/middle_backpack.png");
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public void offsetBackpackItem(PoseStack poseStack) {
         poseStack.mulPose(Axis.XP.rotationDegrees(-7.5F));
         poseStack.translate(0, 0.625, -0.25);

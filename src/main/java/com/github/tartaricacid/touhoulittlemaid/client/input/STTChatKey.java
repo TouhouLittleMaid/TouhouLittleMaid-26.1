@@ -16,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
@@ -30,7 +29,6 @@ import java.util.function.Consumer;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.init.KeyMappingRegister.MAID_CATEGORY;
 
-@OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(value = Dist.CLIENT)
 public class STTChatKey {
     public static final KeyMapping STT_CHAT_KEY = new KeyMapping("key.touhou_little_maid.stt_chat.desc",

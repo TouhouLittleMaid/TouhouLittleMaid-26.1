@@ -15,11 +15,8 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-@OnlyIn(Dist.CLIENT)
 public class AquacultureFishingHookRenderer extends MaidFishingHookRenderer<AquacultureFishingHook, AquacultureFishingHookRenderState> {
     private static final int DEFAULT_BOBBER_COLOR = 0xC12626;
     private static final Identifier BOBBER = Identifier.fromNamespaceAndPath(Aquaculture.MOD_ID, "textures/entity/rod/bobber/bobber.png");

@@ -28,8 +28,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -54,7 +52,6 @@ public class EntityChair extends AbstractEntityFromItem {
 
     private static final String DEFAULT_MODEL_ID = "touhou_little_maid:cushion";
 
-    @OnlyIn(Dist.CLIENT)
     private GeckoChairEntity animatable;
 
     protected EntityChair(EntityType<EntityChair> type, Level worldIn) {
@@ -266,7 +263,6 @@ public class EntityChair extends AbstractEntityFromItem {
                 new ItemChair.Data(getModelId(), getMountedHeight(), isTameableCanRide(), isNoGravity()));
     }
 
-    @OnlyIn(Dist.CLIENT)
     public GeckoChairEntity getAnimatableEntity() {
         return animatable;
     }

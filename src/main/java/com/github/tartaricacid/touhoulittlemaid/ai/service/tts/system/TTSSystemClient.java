@@ -5,8 +5,6 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSClient;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSConfig;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSystemServices;
 import net.minecraft.client.Minecraft;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class TTSSystemClient implements TTSClient, TTSSystemServices {
     @Override
@@ -16,7 +14,6 @@ public class TTSSystemClient implements TTSClient, TTSSystemServices {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private void onHandle(String message) {
         Minecraft mc = Minecraft.getInstance();
         mc.getNarrator().narrator.say(message, true, 1.0f);

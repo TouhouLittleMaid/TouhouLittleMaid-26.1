@@ -7,12 +7,9 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidBackpackHandler;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
-import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
-import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
-import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -62,8 +59,13 @@ public class ExtraContainerRequestHandler {
     }
 
     private ItemStack transferToMaidInv(EntityMaid maid, ItemStack stack) {
-        IItemHandler inv = maid.getAvailableInv(false);
-        return ItemHandlerHelper.insertItemStacked(inv, stack, false);
+        var inv = maid.getAvailableInv(false);
+        try (Transaction tx = Transaction.openRoot()) {
+            ItemResource resource = ItemResource.of(stack);
+            int count = inv.insert(resource, stack.getCount(), tx);
+            tx.commit();
+            return resource.toStack(count);
+        }
     }
 
     /**
@@ -121,13 +123,21 @@ public class ExtraContainerRequestHandler {
         }
 
         if (remaining.getCount() < originStack.getCount()) {
-            if (remaining.isEmpty()) {
-                inv.extractItem(slotToEmpty, originStack.getCount(), false);
-            } else {
-                inv.extractItem(slotToEmpty, originStack.getCount() - remaining.getCount(), false);
+            try (Transaction tx = Transaction.openRoot()) {
+                ItemResource resource = ItemResource.of(originStack);
+                int count;
+
+                if (remaining.isEmpty()) {
+                    count = originStack.getCount();
+                } else {
+                    count = originStack.getCount() - remaining.getCount();
+                }
+
+                inv.extract(resource, count, tx);
+                tx.commit();
             }
 
-            ItemStack stack = inv.getStackInSlot(slotToEmpty);
+            ItemStack stack = ItemUtil.getStack(inv, slotToEmpty);
             return stack.isEmpty() || stack.getCount() < stack.getMaxStackSize();
         }
 

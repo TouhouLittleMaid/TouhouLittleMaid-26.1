@@ -10,7 +10,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -31,7 +30,6 @@ public final class CopyEntityIdEvent {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void copyEntityId(Player player, Entity target) {
         Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(target.getType());
         if (key == null) {

@@ -8,8 +8,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -45,7 +43,6 @@ public record TTSSystemAudioToClientPackage(String siteName, String chatText, TT
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void onHandle(TTSSystemAudioToClientPackage message) {
         TTSSite ttsSite = AvailableSites.getTTSSite(message.siteName);
         if (ttsSite == null || !ttsSite.enabled()) {

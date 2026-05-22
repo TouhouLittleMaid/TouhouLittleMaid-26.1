@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -45,7 +44,6 @@ public class SaddleMaidEvent {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void showTips() {
         Minecraft minecraft = Minecraft.getInstance();
         Component component = Component.translatable("message.touhou_little_maid.saddle.how_to_eject");

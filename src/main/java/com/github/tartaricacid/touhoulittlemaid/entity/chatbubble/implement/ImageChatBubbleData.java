@@ -6,8 +6,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubbl
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class ImageChatBubbleData implements IChatBubbleData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "image");
@@ -23,7 +21,6 @@ public class ImageChatBubbleData implements IChatBubbleData {
     private final int textureHeight;
     private final int priority;
 
-    @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
     private ImageChatBubbleData(int existTick, Identifier bg, Identifier image, int width, int height,
@@ -73,7 +70,6 @@ public class ImageChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position) {
         if (this.renderer == null) {
             this.renderer = new ImageChatBubbleRenderer(this.width, this.height, this.uOffset, this.vOffset,

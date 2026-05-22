@@ -2,8 +2,6 @@ package com.github.tartaricacid.simplebedrockmodel.client.bedrock;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.HashMap;
 
@@ -13,7 +11,6 @@ import java.util.HashMap;
  *
  * @param <T> The type of the Bedrock model provider.
  */
-@OnlyIn(Dist.CLIENT)
 public interface BedrockModelProvider<T extends BedrockModelProvider<T>> {
     /**
      * Gets the render bounding box for the model.

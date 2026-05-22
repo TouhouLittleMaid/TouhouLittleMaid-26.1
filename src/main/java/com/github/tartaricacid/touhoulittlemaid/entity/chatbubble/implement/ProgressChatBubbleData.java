@@ -8,8 +8,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.Identifier;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 public class ProgressChatBubbleData implements IChatBubbleData {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "progress");
@@ -23,7 +21,6 @@ public class ProgressChatBubbleData implements IChatBubbleData {
     private final double progress;
     private final boolean alignCenter;
 
-    @OnlyIn(Dist.CLIENT)
     private IChatBubbleRenderer renderer;
 
     private ProgressChatBubbleData(int existTick, Identifier bg, int priority, Component text, int barBackgroundColor,
@@ -66,7 +63,6 @@ public class ProgressChatBubbleData implements IChatBubbleData {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position) {
         if (renderer == null) {
             renderer = new ProgressChatBubbleRenderer(this.bg, this.text, this.barBackgroundColor, this.barForegroundColor, this.progress, this.alignCenter);

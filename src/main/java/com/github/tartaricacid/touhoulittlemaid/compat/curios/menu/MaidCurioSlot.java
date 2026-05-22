@@ -5,8 +5,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
@@ -69,7 +67,6 @@ public class MaidCurioSlot extends SlotItemHandler {
                this.renderStatuses.get(this.getSlotIndex());
     }
 
-    @OnlyIn(Dist.CLIENT)
     public String getSlotName() {
         StringBuilder builder = new StringBuilder();
 

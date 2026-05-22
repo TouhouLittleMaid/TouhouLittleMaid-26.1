@@ -4,8 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.network.chat.Component;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -46,7 +44,6 @@ public final class SupportLanguage {
         return SUPPORTED_LANGUAGES.get(index);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static Component getLanguageName(String language) {
         if (StringUtils.isBlank(language)) {
             return Component.literal("English (US)");

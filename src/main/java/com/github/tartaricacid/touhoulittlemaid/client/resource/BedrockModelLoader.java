@@ -12,7 +12,6 @@ import com.google.common.collect.Maps;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -25,7 +24,6 @@ import java.util.function.Function;
  * 把所有硬编码的模型全部资源包化，方便资源包替换模型
  */
 @EventBusSubscriber(value = Dist.CLIENT)
-@OnlyIn(Dist.CLIENT)
 public class BedrockModelLoader {
     // 内部数据
     private static final Map<Identifier, Function<InputStream, ? extends SimpleBedrockModel<? extends EntityRenderState>>> ALL_MODELS = Maps.newHashMap();

@@ -18,8 +18,6 @@ import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Objects;
@@ -72,7 +70,6 @@ public record SyncMaidAIDataPacket(int entityId, CompoundTag configData, int cur
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
     private static void handle(SyncMaidAIDataPacket message) {
         ClientLevel level = Minecraft.getInstance().level;
         LocalPlayer player = Minecraft.getInstance().player;
