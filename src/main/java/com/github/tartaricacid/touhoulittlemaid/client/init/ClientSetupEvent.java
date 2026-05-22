@@ -5,8 +5,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimat
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationRegister;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.magic.MagicCastingAnimationManager;
 import com.github.tartaricacid.touhoulittlemaid.client.event.ShowOptifineScreen;
-import com.github.tartaricacid.touhoulittlemaid.client.input.DismountBroomKey;
-import com.github.tartaricacid.touhoulittlemaid.client.input.STTChatKey;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.BroomTipsOverlay;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.MaidTipsOverlay;
 import com.github.tartaricacid.touhoulittlemaid.client.overlay.ShowPowerOverlay;
@@ -27,7 +25,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;

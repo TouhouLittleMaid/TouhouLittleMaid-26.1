@@ -8,6 +8,8 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.CustomJsAnimati
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition.ConditionManager;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.FilePackTexture;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.ZipPackTexture;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.ChairModels;
@@ -16,8 +18,8 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelI
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.CustomSoundLoader;
-import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierAdapter;
 import com.github.tartaricacid.touhoulittlemaid.util.ZipFileCheck;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -26,7 +28,6 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Mob;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +56,7 @@ import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 @OnlyIn(Dist.CLIENT)
 public class CustomPackLoader {
     public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Identifier.class, new Identifier.Serializer())
+            .registerTypeHierarchyAdapter(Identifier.class, new IdentifierAdapter())
             .registerTypeAdapter(CubesItem.class, new CubesItem.Deserializer())
             .create();
     public static final MaidModels MAID_MODELS = MaidModels.getInstance();
@@ -186,7 +187,7 @@ public class CustomPackLoader {
 
     private static void loadMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) {
         // 尝试加载模型
-        BedrockModel<Mob> modelJson = loadMaidModel(rootPath, maidModelItem.getModel());
+        BedrockModel<EntityMaidRenderState> modelJson = loadMaidModel(rootPath, maidModelItem.getModel());
         // 加载贴图
         registerFilePackTexture(rootPath, maidModelItem.getTexture());
         // 加载动画
@@ -315,7 +316,7 @@ public class CustomPackLoader {
 
     private static void loadMaidModelElement(ZipFile zipFile, MaidModelInfo maidModelItem) {
         // 尝试加载模型
-        BedrockModel<Mob> modelJson = loadMaidModel(zipFile, maidModelItem.getModel());
+        BedrockModel<EntityMaidRenderState> modelJson = loadMaidModel(zipFile, maidModelItem.getModel());
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), maidModelItem.getTexture());
         // 加载动画
@@ -413,7 +414,7 @@ public class CustomPackLoader {
     }
 
     @SuppressWarnings("all")
-    private static void putMaidEasterEggData(MaidModelInfo maidModelItem, @Nullable BedrockModel<Mob> modelJson, @Nullable List<Object> animations) {
+    private static void putMaidEasterEggData(MaidModelInfo maidModelItem, @Nullable BedrockModel<EntityMaidRenderState> modelJson, @Nullable List<Object> animations) {
         MaidModelInfo.EasterEgg easterEgg = maidModelItem.getEasterEgg();
         MaidModels.ModelData data = new MaidModels.ModelData(modelJson, maidModelItem, animations);
         if (easterEgg.isEncrypt()) {
@@ -423,7 +424,7 @@ public class CustomPackLoader {
         }
     }
 
-    private static void putMaidModelData(MaidModelInfo maidModelItem, BedrockModel<Mob> modelJson, List<Object> animations) {
+    private static void putMaidModelData(MaidModelInfo maidModelItem, BedrockModel<EntityMaidRenderState> modelJson, List<Object> animations) {
         String id = maidModelItem.getModelId().toString();
         // 如果加载的模型不为空
         MAID_MODELS.putModel(id, modelJson);
@@ -468,7 +469,7 @@ public class CustomPackLoader {
 
     private static void loadChairModelElement(Path rootPath, ChairModelInfo chairModelItem) {
         // 尝试加载模型
-        BedrockModel<EntityChair> modelJson = loadChairModel(rootPath, chairModelItem.getModel());
+        BedrockModel<EntityChairRenderState> modelJson = loadChairModel(rootPath, chairModelItem.getModel());
         // 加载贴图
         registerFilePackTexture(rootPath, chairModelItem.getTexture());
         // 加载动画
@@ -521,7 +522,7 @@ public class CustomPackLoader {
 
     private static void loadChairModelElement(ZipFile zipFile, ChairModelInfo chairModelItem) {
         // 尝试加载模型
-        BedrockModel<EntityChair> modelJson = loadChairModel(zipFile, chairModelItem.getModel());
+        BedrockModel<EntityChairRenderState> modelJson = loadChairModel(zipFile, chairModelItem.getModel());
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), chairModelItem.getTexture());
         // 加载动画
@@ -540,7 +541,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<Mob> loadMaidModel(Path rootPath, Identifier modelLocation) {
+    public static BedrockModel<EntityMaidRenderState> loadMaidModel(Path rootPath, Identifier modelLocation) {
         File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!file.isFile()) {
             return null;
@@ -581,7 +582,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<Mob> loadMaidModel(ZipFile zipFile, Identifier modelLocation) {
+    public static BedrockModel<EntityMaidRenderState> loadMaidModel(ZipFile zipFile, Identifier modelLocation) {
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry entry = zipFile.getEntry(path);
         if (entry == null) {
@@ -623,7 +624,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityChair> loadChairModel(Path rootPath, Identifier modelLocation) {
+    public static BedrockModel<EntityChairRenderState> loadChairModel(Path rootPath, Identifier modelLocation) {
         File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!file.isFile()) {
             return null;
@@ -664,7 +665,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityChair> loadChairModel(ZipFile zipFile, Identifier modelLocation) {
+    public static BedrockModel<EntityChairRenderState> loadChairModel(ZipFile zipFile, Identifier modelLocation) {
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry entry = zipFile.getEntry(path);
         if (entry == null) {

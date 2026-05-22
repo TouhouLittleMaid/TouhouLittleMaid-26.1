@@ -13,6 +13,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityCh
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityMaidWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.google.common.collect.Lists;
@@ -52,9 +53,16 @@ public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBed
     @Override
     @NullMarked
     public void setupAnim(LivingEntityRenderState state) {
+        float limbSwing = state.walkAnimationPos;
+        float limbSwingAmount = state.walkAnimationSpeed;
+        float ageInTicks = state.ageInTicks;
+        float netHeadYaw = state.yRot;
+        float headPitch = state.xRot;
+
         if (animations != null) {
+            // TODO 需要彻底移除 JS 动画
             Invocable invocable = (Invocable) CustomJsAnimationManger.NASHORN;
-            if (entityIn instanceof Mob mob) {
+            if (state instanceof EntityMaidRenderState maidState && maidState.entity instanceof Mob mob) {
                 IMaid maid = IMaid.convert(mob);
                 if (maid != null) {
                     setupMaidAnim(maid, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
@@ -63,8 +71,8 @@ public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBed
                 }
                 return;
             }
-            if (state instanceof EntityChairRenderState) {
-                setupChairAnim((EntityChair) entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
+            if (state instanceof EntityChairRenderState chairState && chairState.chair != null) {
+                setupChairAnim(chairState.chair, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
             }
         }
     }
@@ -73,10 +81,11 @@ public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBed
     private void setupMaidAnim(IMaid entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, Invocable invocable) {
         try {
             for (Object animation : animations) {
-                if (animation instanceof IAnimation) {
-                    ((IAnimation<Mob>) animation).setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0, entityIn.asEntity(), modelMapWrapper);
+                if (animation instanceof IAnimation iAnimation) {
+                    iAnimation.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0, entityIn.asEntity(), modelMapWrapper);
                 } else {
-                    entityMaidWrapper.setData(entityIn, attackTime, riding);
+                    // TODO: attackTime 和 riding 在 26.1.2 RenderState 中不直接可用
+                    entityMaidWrapper.setData(entityIn, 0f, false);
                     invocable.invokeMethod(animation, "animation", entityMaidWrapper, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625f, modelMapWrapper);
                     entityMaidWrapper.clearData();
                 }
@@ -91,8 +100,8 @@ public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBed
     private void setupChairAnim(EntityChair entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, Invocable invocable) {
         try {
             for (Object animation : animations) {
-                if (animation instanceof IAnimation) {
-                    ((IAnimation<EntityChair>) animation).setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0, entityIn, modelMapWrapper);
+                if (animation instanceof IAnimation iAnimation) {
+                    iAnimation.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0, entityIn, modelMapWrapper);
                 } else {
                     entityChairWrapper.setData(entityIn);
                     invocable.invokeMethod(animation, "animation", entityChairWrapper, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625f, modelMapWrapper);

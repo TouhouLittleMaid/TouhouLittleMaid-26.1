@@ -1,9 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
+import com.github.tartaricacid.simplebedrockmodel.client.bedrock.NewModelReader;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockModelPOJO;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -15,7 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-public class PlayerMaidModel extends BedrockModel<Mob> {
+public class PlayerMaidModel extends BedrockModel<EntityMaidRenderState> {
     private static final Identifier STEVE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid.json");
     private static final Identifier ALEX = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid_slim.json");
 

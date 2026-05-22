@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.model.PlayerMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -54,7 +55,7 @@ public final class PlayerMaidModels {
         };
     }
 
-    public static BedrockModel<Mob> getPlayerMaidModel(String name) {
+    public static BedrockModel<EntityMaidRenderState> getPlayerMaidModel(String name) {
         GameProfile newProfile = null;
         Minecraft minecraft = Minecraft.getInstance();
 

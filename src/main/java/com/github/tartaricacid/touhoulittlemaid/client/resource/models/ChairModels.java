@@ -4,20 +4,21 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIco
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
-import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
 @OnlyIn(Dist.CLIENT)
 public final class ChairModels {
     private static final String JSON_FILE_NAME = "maid_chair.json";
-    private static ChairModels INSTANCE;
+    private @Nullable static ChairModels INSTANCE;
     private final List<CustomModelPack<ChairModelInfo>> packList;
-    private final HashMap<String, BedrockModel<EntityChair>> idModelMap;
+    private final HashMap<String, BedrockModel<EntityChairRenderState>> idModelMap;
     private final HashMap<String, ChairModelInfo> idInfoMap;
     private final HashMap<String, List<Object>> idAnimationMap;
 
@@ -59,7 +60,7 @@ public final class ChairModels {
         CacheIconManager.addChairPack(pack);
     }
 
-    public void putModel(String modelId, BedrockModel<EntityChair> modelJson) {
+    public void putModel(String modelId, BedrockModel<EntityChairRenderState> modelJson) {
         this.idModelMap.put(modelId, modelJson);
     }
 
@@ -89,7 +90,7 @@ public final class ChairModels {
         this.packList.addAll(sortPackList);
     }
 
-    public Optional<BedrockModel<EntityChair>> getModel(String modelId) {
+    public Optional<BedrockModel<EntityChairRenderState>> getModel(String modelId) {
         return Optional.ofNullable(idModelMap.get(modelId));
     }
 
