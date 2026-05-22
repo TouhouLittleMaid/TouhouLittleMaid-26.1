@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityTombstoneRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
@@ -19,10 +19,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
-import java.util.Objects;
-
 import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.MOD_ID;
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.TOMBSTONE;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.TOMBSTONE;
 import static net.minecraft.resources.Identifier.fromNamespaceAndPath;
 
 public class EntityTombstoneRenderer extends EntityRenderer<EntityTombstone, EntityTombstoneRenderState> {
@@ -36,11 +34,11 @@ public class EntityTombstoneRenderer extends EntityRenderer<EntityTombstone, Ent
     private final static Identifier AETHER_LEVEL_ID = fromNamespaceAndPath("aether", "the_aether");
 
     private static final int NAME_SHOW_DISTANCE = 64;
-    private final SimpleBedrockModel<EntityTombstoneRenderState> tombstoneModel;
+    private final SimpleBedrockEntityModel<EntityTombstoneRenderState> tombstoneModel;
 
     public EntityTombstoneRenderer(EntityRendererProvider.Context manager) {
         super(manager);
-        tombstoneModel = Objects.requireNonNull(BedrockModelLoader.getModel(TOMBSTONE));
+        tombstoneModel = BedrockModelLoader.getEntityModel(TOMBSTONE);
     }
 
     @Override

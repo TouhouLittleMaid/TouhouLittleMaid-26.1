@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockPicnicMat;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.PicnicMatRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
@@ -20,6 +19,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 public class PicnicMatRender implements BlockEntityRenderer<TileEntityPicnicMat, PicnicMatRenderState> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/picnic_mat.png");
-    private final @Nullable SimpleBedrockModel<EntityRenderState> model;
+    private final SimpleBedrockModel<Unit> model;
     private final ItemModelResolver itemModelResolver;
 
     public PicnicMatRender(BlockEntityRendererProvider.Context context) {
@@ -54,7 +54,7 @@ public class PicnicMatRender implements BlockEntityRenderer<TileEntityPicnicMat,
 
     @Override
     public void submit(PicnicMatRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
-        if (!state.isCenter || this.model == null) {
+        if (!state.isCenter) {
             return;
         }
 

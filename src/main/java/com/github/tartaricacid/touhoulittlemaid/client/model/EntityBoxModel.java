@@ -2,14 +2,14 @@ package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityBoxRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBox;
 import net.minecraft.util.Mth;
 
 import java.io.InputStream;
 
-public class EntityBoxModel extends SimpleBedrockModel<EntityBoxRenderState> {
+public class EntityBoxModel extends SimpleBedrockEntityModel<EntityBoxRenderState> {
     private final BedrockPart x1;
     private final BedrockPart x2;
     private final BedrockPart z1;

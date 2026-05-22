@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.AltarRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -11,7 +11,6 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -20,6 +19,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAltar, AltarRenderState> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/altar.png");
-    private final @Nullable SimpleBedrockModel<EntityRenderState> model;
+    private final SimpleBedrockModel<Unit> model;
     private final ItemModelResolver itemModelResolver;
 
     public TileEntityAltarRenderer(BlockEntityRendererProvider.Context context) {
@@ -59,7 +59,7 @@ public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAl
 
     @Override
     public void submit(AltarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        if (state.renderModel && model != null) {
+        if (state.renderModel) {
             poseStack.pushPose();
             this.setTranslateAndPose(state.direction, poseStack);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));

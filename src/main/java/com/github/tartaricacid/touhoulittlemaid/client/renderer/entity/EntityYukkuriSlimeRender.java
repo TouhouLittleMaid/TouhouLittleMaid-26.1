@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.VanillaConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
@@ -15,9 +15,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.monster.Slime;
 
-import java.util.Objects;
-
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.REIMU_YUKKURI;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.REIMU_YUKKURI;
 
 public class EntityYukkuriSlimeRender extends MobRenderer<Slime, SlimeRenderState, EntityModel<SlimeRenderState>> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(
@@ -26,7 +24,7 @@ public class EntityYukkuriSlimeRender extends MobRenderer<Slime, SlimeRenderStat
     private final SlimeRenderer vanillaRender;
 
     public EntityYukkuriSlimeRender(EntityRendererProvider.Context context) {
-        super(context, Objects.requireNonNull(BedrockModelLoader.getModel(REIMU_YUKKURI)), 0.25F);
+        super(context, BedrockModelLoader.getEntityModel(REIMU_YUKKURI), 0.25F);
         this.vanillaRender = new SlimeRenderer(context);
     }
 

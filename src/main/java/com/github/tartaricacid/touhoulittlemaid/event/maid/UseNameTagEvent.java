@@ -30,7 +30,7 @@ public final class UseNameTagEvent {
     }
 
     @SubscribeEvent
-    @OnlyIn(Dist.DEDICATED_SERVER)
+    // @OnlyIn(Dist.DEDICATED_SERVER)
     public static void onInteractServer(InteractMaidEvent event) {
         ItemStack stack = event.getStack();
         Player player = event.getPlayer();

@@ -11,11 +11,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.StringUtils;
 
-@OnlyIn(value = Dist.CLIENT)
 public class PatchouliWarningScreen extends Screen {
     private final String patchouliUrl = "https://www.curseforge.com/minecraft/mc-mods/patchouli";
     private final Screen lastScreen;

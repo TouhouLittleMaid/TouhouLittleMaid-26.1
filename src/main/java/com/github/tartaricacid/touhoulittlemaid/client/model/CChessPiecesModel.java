@@ -2,10 +2,10 @@ package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.util.Unit;
 
 import java.util.Objects;
 
@@ -13,7 +13,7 @@ public class CChessPiecesModel {
     private final BedrockPart main;
 
     public CChessPiecesModel(String name) {
-        SimpleBedrockModel<EntityRenderState> model = BedrockModelLoader.getModel(BedrockModelLoader.CCHESS_PIECES);
+        SimpleBedrockModel<Unit> model = BedrockModelLoader.getModel(BedrockModelLoader.CCHESS_PIECES);
         this.main = Objects.requireNonNull(model).getPart(name);
     }
 
@@ -43,7 +43,7 @@ public class CChessPiecesModel {
         return new CChessPiecesModel("Selected");
     }
 
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay) {
         main.render(poseStack, vertexConsumer, packedLight, packedOverlay, -1);
     }
 }

@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
@@ -22,7 +22,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.CRAFTING_TABLE_BACKPACK;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.CRAFTING_TABLE_BACKPACK;
 
 public class CraftingTableBackpack extends IMaidBackpack {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "crafting_table_backpack");
@@ -73,7 +73,7 @@ public class CraftingTableBackpack extends IMaidBackpack {
     @Nullable
     @Override
     public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
-        return BedrockModelLoader.getModel(CRAFTING_TABLE_BACKPACK);
+        return BedrockModelLoader.getEntityModel(CRAFTING_TABLE_BACKPACK);
     }
 
     @Nullable

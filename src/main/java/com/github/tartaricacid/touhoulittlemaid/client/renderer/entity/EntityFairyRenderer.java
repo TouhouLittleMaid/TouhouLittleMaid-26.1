@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityFairyRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,8 +16,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 
-import java.util.Objects;
-
 public class EntityFairyRenderer extends MobRenderer<EntityFairy, EntityFairyRenderState, EntityModel<EntityFairyRenderState>> {
     private static final Identifier[] TEXTURE = Util.make(new Identifier[18], array -> {
         for (int i = 0; i < array.length; i++) {
@@ -30,7 +28,7 @@ public class EntityFairyRenderer extends MobRenderer<EntityFairy, EntityFairyRen
     private final EntityBabyFairyRenderer babyFairyRenderer;
 
     public EntityFairyRenderer(EntityRendererProvider.Context context) {
-        super(context, Objects.requireNonNull(BedrockModelLoader.getModel(BedrockModelLoader.MAID_FAIRY)), 0.5f);
+        super(context, BedrockModelLoader.getEntityModel(BedrockModelLoader.MAID_FAIRY), 0.5f);
         this.newEntityFairyRenderer = new NewEntityFairyRenderer(context);
         this.babyFairyRenderer = new EntityBabyFairyRenderer(context);
     }

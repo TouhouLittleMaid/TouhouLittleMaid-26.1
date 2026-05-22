@@ -2,10 +2,10 @@ package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.util.Unit;
 
 import java.util.Objects;
 
@@ -13,7 +13,7 @@ public class WChessPiecesModel {
     private final BedrockPart main;
 
     public WChessPiecesModel(String name) {
-        SimpleBedrockModel<EntityRenderState> model = BedrockModelLoader.getModel(BedrockModelLoader.WCHESS_PIECES);
+        SimpleBedrockModel<Unit> model = BedrockModelLoader.getModel(BedrockModelLoader.WCHESS_PIECES);
         this.main = Objects.requireNonNull(model).getPart(name);
     }
 
@@ -41,11 +41,11 @@ public class WChessPiecesModel {
         return new WChessPiecesModel("SELECT");
     }
 
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay) {
         poseStack.pushPose();
         poseStack.scale(0.9f, 0.9f, 0.9f);
         poseStack.translate(0, 0.175, 0);
-        main.render(poseStack, vertexConsumer, packedLight, packedOverlay, -1);
+        main.render(poseStack, vertexConsumer, packedLight, packedOverlay);
         poseStack.popPose();
     }
 }

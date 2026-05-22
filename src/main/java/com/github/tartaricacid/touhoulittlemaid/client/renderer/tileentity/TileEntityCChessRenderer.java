@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.CChessPiecesModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.CChessRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityCChess;
 import com.github.tartaricacid.touhoulittlemaid.util.CChessUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
@@ -17,7 +17,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -29,6 +28,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Unit;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -39,7 +39,7 @@ public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityC
     private static final int TIPS_RENDER_DISTANCE = 16;
     private static final int PIECE_RENDER_DISTANCE = 24;
     private final Font font;
-    private final @Nullable SimpleBedrockModel<EntityRenderState> chessModel;
+    private final SimpleBedrockModel<Unit> chessModel;
     private final CChessPiecesModel[] chessPiecesModels;
     private final CChessPiecesModel selectedModels;
 
@@ -171,11 +171,9 @@ public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityC
                     byte piecesIndex = data[Position.COORD_XY(x, y)];
                     if (CChessUtil.isRed(piecesIndex) || CChessUtil.isBlack(piecesIndex)) {
                         CChessPiecesModel chessPiecesModel = chessPiecesModels[piecesIndex];
-                        chessPiecesModel.renderToBuffer(poseStack, buffer, state.lightCoords,
-                                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                        chessPiecesModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
                         if (selectX == x && selectY == y) {
-                            selectedModels.renderToBuffer(poseStack, buffer, state.lightCoords,
-                                    OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                            selectedModels.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
                         }
                     }
                     poseStack.translate(0.304, 0, 0);
@@ -188,9 +186,6 @@ public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityC
     }
 
     private void renderChessboard(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, Direction facing) {
-        if (chessModel == null) {
-            return;
-        }
         poseStack.pushPose();
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));

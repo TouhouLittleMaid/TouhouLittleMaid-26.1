@@ -262,7 +262,7 @@ dependencies {
     implementation "maven.modrinth:cloth-config:26.1.154+neoforge"
     compileOnly "maven.modrinth:patchouli:1.21-88-neoforge" // FIXME：旧版
 
-    implementation "maven.modrinth:aquaculture:2.9.1-neoforge"
+    compileOnly "maven.modrinth:aquaculture:2.9.1-neoforge"
 
     compileOnly "maven.modrinth:iron-chests:1.21-neoforge-16.0.7" // FIXME：旧版
     // implementation "maven.modrinth:carry-on:2.2.2-neoforge"

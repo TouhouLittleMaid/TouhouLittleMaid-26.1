@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.StatueRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
@@ -17,13 +17,13 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ProblemReporter;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -35,12 +35,12 @@ import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.STATUE_BASE;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.STATUE_BASE;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
 public class TileEntityStatueRenderer implements BlockEntityRenderer<TileEntityStatue, StatueRenderState> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/statue_base.png");
-    private final @Nullable SimpleBedrockModel<EntityRenderState> baseModel;
+    private final SimpleBedrockModel<Unit> baseModel;
 
     public TileEntityStatueRenderer(BlockEntityRendererProvider.Context context) {
         baseModel = BedrockModelLoader.getModel(STATUE_BASE);
@@ -110,9 +110,6 @@ public class TileEntityStatueRenderer implements BlockEntityRenderer<TileEntityS
     @Override
     public void submit(StatueRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         if (!state.isCoreBlock) {
-            return;
-        }
-        if (baseModel == null) {
             return;
         }
 

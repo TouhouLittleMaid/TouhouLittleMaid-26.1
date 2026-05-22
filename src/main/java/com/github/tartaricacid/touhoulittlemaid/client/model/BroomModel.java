@@ -1,12 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityBroomRenderState;
 
 import java.io.InputStream;
 
-public class BroomModel extends SimpleBedrockModel<EntityBroomRenderState> {
+public class BroomModel extends SimpleBedrockEntityModel<EntityBroomRenderState> {
     private final BedrockPart all;
 
     public BroomModel(InputStream stream) {

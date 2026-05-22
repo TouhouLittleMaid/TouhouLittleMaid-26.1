@@ -4,14 +4,13 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.ShrineRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityShrine;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.rendertype.RenderType;
@@ -20,6 +19,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 
 public class TileEntityShrineRenderer implements BlockEntityRenderer<TileEntityShrine, ShrineRenderState> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/shrine.png");
-    private final @Nullable SimpleBedrockModel<EntityRenderState> model;
+    private final SimpleBedrockModel<Unit> model;
     private final ItemModelResolver itemModelResolver;
 
     public TileEntityShrineRenderer(BlockEntityRendererProvider.Context context) {
@@ -57,10 +57,6 @@ public class TileEntityShrineRenderer implements BlockEntityRenderer<TileEntityS
 
     @Override
     public void submit(ShrineRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        if (model == null) {
-            return;
-        }
-
         Direction facing = state.facing;
         poseStack.pushPose();
         poseStack.translate(0.5, 1.5, 0.5);

@@ -64,6 +64,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
 import com.github.tartaricacid.touhoulittlemaid.world.backups.MaidBackupsManager;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
@@ -163,6 +164,7 @@ import org.joml.Vector3f;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static com.github.tartaricacid.touhoulittlemaid.config.ServerConfig.MAID_AI_TIME_DEBUG;
 import static com.github.tartaricacid.touhoulittlemaid.datagen.EnchantmentKeys.getEnchantmentLevel;
@@ -203,12 +205,12 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     public static final int BAUBLE_INV_SIZE = 30;
 
     // Brain
-    private static final Brain.Provider<EntityMaid> BRAIN_PROVIDER = Brain.provider(
+    private static final Supplier<Brain.Provider<EntityMaid>> BRAIN_PROVIDER = Suppliers.memoize(() -> Brain.provider(
             MaidBrain.getMemoryTypes(),
             MaidBrain.getSensorTypes(),
             //TODO 是否可能简化Brain注册?
             _ -> new ArrayList<>()
-    );
+    ));
 
 
     // YSM 女仆兼容同步数据
@@ -500,7 +502,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     @Override
     protected Brain<? extends LivingEntity> makeBrain(Brain.Packed packedBrain) {
-        Brain<EntityMaid> brain = BRAIN_PROVIDER.makeBrain(this, packedBrain);
+        Brain<EntityMaid> brain = BRAIN_PROVIDER.get().makeBrain(this, packedBrain);
         MaidBrain.registerBrainGoals(brain, this);
         return brain;
     }

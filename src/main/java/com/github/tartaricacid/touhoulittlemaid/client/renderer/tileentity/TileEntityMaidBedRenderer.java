@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.MaidBedRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBed;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -25,13 +26,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntityMaidBed, MaidBedRenderState> {
-    private final Function<DyeColor, SimpleBedrockModel<?>> cacheModel = Util.memoize(color -> {
+    private final Function<DyeColor, SimpleBedrockModel<Unit>> cacheModel = Util.memoize(color -> {
         Identifier id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/maid_bed/" + color.getName());
-        return Objects.requireNonNull(BedrockModelLoader.getModel(id));
+        return BedrockModelLoader.getModel(id);
     });
     private final Function<DyeColor, Identifier> cacheTexture = Util.memoize(color ->
             Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/maid_bed/" + color.getName() + ".png"));
@@ -55,7 +55,7 @@ public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntity
     @Override
     public void submit(MaidBedRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         DyeColor dyeColor = state.dyeColor;
-        SimpleBedrockModel<?> model = cacheModel.apply(dyeColor);
+        SimpleBedrockModel<Unit> model = cacheModel.apply(dyeColor);
         Identifier texture = cacheTexture.apply(dyeColor);
 
         poseStack.pushPose();

@@ -27,8 +27,14 @@
     "accessor.LivingEntityAccessor"
   ],
   "client": [
-    "client.ClientPacketListenerMixin", "client.HumanoidModelMixin", "client.InventoryScreenMixin",
-    "client.LanguageMixin", "client.LevelRendererMixin", "client.LivingEntityRendererMixin", "client.Matrix4fMixin"
+    "client.ClientPacketListenerMixin",
+    // "client.HumanoidModelMixin",
+    // "client.ItemPropertiesMixin",
+    "client.LanguageMixin",
+    "client.LivingEntityRendererMixin",
+    "client.Matrix4fMixin",
+    "client.InventoryScreenMixin",
+    "client.LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
@@ -24,7 +24,7 @@ import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.MIDDLE_BACKPACK;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.MIDDLE_BACKPACK;
 
 public class MiddleBackpack extends IMaidBackpack {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "middle_backpack");
@@ -70,7 +70,7 @@ public class MiddleBackpack extends IMaidBackpack {
     @Nullable
     @Override
     public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
-        return BedrockModelLoader.getModel(MIDDLE_BACKPACK);
+        return BedrockModelLoader.getEntityModel(MIDDLE_BACKPACK);
     }
 
     @Nullable

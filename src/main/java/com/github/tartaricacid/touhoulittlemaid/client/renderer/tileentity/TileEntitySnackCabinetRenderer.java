@@ -5,32 +5,30 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockSnackCabinet;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.SnackCabinetRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntitySnackCabinet;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Objects;
-
 public class TileEntitySnackCabinetRenderer implements BlockEntityRenderer<TileEntitySnackCabinet, SnackCabinetRenderState> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/snack_cabinet.png");
-    private final SimpleBedrockModel<EntityRenderState> model;
+    private final SimpleBedrockModel<Unit> model;
     private final BedrockPart full;
     private final BedrockPart half;
 
     public TileEntitySnackCabinetRenderer(BlockEntityRendererProvider.Context context) {
-        this.model = Objects.requireNonNull(BedrockModelLoader.getModel(BedrockModelLoader.SNACK_CABINET));
+        this.model = BedrockModelLoader.getModel(BedrockModelLoader.SNACK_CABINET);
         this.full = this.model.getPart("full");
         this.half = this.model.getPart("half");
     }

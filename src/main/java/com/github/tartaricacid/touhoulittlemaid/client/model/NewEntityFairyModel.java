@@ -2,13 +2,13 @@ package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityFairyRenderState;
 import net.minecraft.util.Mth;
 
 import java.io.InputStream;
 
-public class NewEntityFairyModel extends SimpleBedrockModel<EntityFairyRenderState> {
+public class NewEntityFairyModel extends SimpleBedrockEntityModel<EntityFairyRenderState> {
     private final BedrockPart head;
     private final BedrockPart blink;
     private final BedrockPart armLeft;

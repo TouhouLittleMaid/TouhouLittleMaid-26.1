@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Statue;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.GomokuRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,7 +16,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
@@ -29,6 +28,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Unit;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -39,8 +39,8 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
     private static final Identifier WHITE_PIECE_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/gomoku_white_piece.png");
     private static final int TIPS_RENDER_DISTANCE = 16;
     private static final int PIECE_RENDER_DISTANCE = 24;
-    private final @Nullable SimpleBedrockModel<EntityRenderState> checkerBoardModel;
-    private final @Nullable SimpleBedrockModel<EntityRenderState> pieceModel;
+    private final SimpleBedrockModel<Unit> checkerBoardModel;
+    private final SimpleBedrockModel<Unit> pieceModel;
     private final Font font;
 
     public TileEntityGomokuRenderer(BlockEntityRendererProvider.Context context) {
@@ -101,10 +101,6 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
     }
 
     private void renderChessboard(GomokuRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
-        if (checkerBoardModel == null) {
-            return;
-        }
-
         Direction facing = state.facing;
         poseStack.pushPose();
         poseStack.translate(0.5, 1.5, 0.5);
@@ -121,9 +117,6 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
 
     private void renderPiece(GomokuRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         if (!state.inPieceRenderDistance) {
-            return;
-        }
-        if (pieceModel == null) {
             return;
         }
         byte[][] chessData = state.chessData;
