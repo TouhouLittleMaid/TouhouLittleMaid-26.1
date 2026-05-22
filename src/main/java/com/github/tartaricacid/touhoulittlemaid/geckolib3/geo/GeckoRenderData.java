@@ -24,7 +24,4 @@ public class GeckoRenderData {
 
     @Nullable
     public Matrix4f transform;
-
-    public float heightScale;
-    public float widthScale;
 }

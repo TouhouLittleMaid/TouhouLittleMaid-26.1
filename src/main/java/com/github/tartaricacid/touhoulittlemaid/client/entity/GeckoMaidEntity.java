@@ -2,16 +2,21 @@ package com.github.tartaricacid.touhoulittlemaid.client.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingState;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.MolangEventWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.IValue;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContext;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
+import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -42,6 +47,10 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> implemen
     private final IMaid maid;
     private final Vector2f headRotBackup = new Vector2f();
     private MaidModelInfo maidInfo;
+
+    private boolean fireInitEvent = false;
+    private IValue wrappedUpdateHandler = null;
+    private final BooleanList updateHandlerArgs = new BooleanArrayList(1);
 
     /**
      * 上一次的魔法咏唱阶段，用于判断阶段过渡时的动画行为
@@ -99,6 +108,23 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> implemen
     }
 
     @Override
+    protected void onLoadGeckoContainer(GeckoContainer newModel) {
+        super.onLoadGeckoContainer(newModel);
+        var updateHandlers = newModel.asset().eventHandlers().get(MolangEventWrapper.MAID_UPDATE);
+        if (updateHandlers != null) {
+            wrappedUpdateHandler = MolangEventWrapper.wrap(updateHandlers, updateHandlerArgs);
+        } else {
+            wrappedUpdateHandler = null;
+        }
+    }
+
+    @Override
+    protected void resetGeckoContainer() {
+        super.resetGeckoContainer();
+        wrappedUpdateHandler = null;
+    }
+
+    @Override
     protected void onLoadGeoModel(AnimatedGeoModel model) {
         super.onLoadGeoModel(model);
         if (model != null && model.head() != null) {
@@ -111,6 +137,7 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> implemen
     protected void resetGeoModel() {
         super.resetGeoModel();
         headRotBackup.set(0);
+        fireInitEvent = true;
     }
 
     @Override
@@ -135,6 +162,22 @@ public class GeckoMaidEntity<T extends Mob> extends AnimatableEntity<T> implemen
             var headRot = model.head().getRotation();
             headRot.x = headRotBackup.x;
             headRot.y = headRotBackup.y;
+        }
+    }
+
+    @Override
+    protected void preAnimationSetup(float seekTime, boolean shouldTick) {
+        super.preAnimationSetup(seekTime, shouldTick);
+        if (fireInitEvent) {
+            fireInitEvent = false;
+            var initEvent = getEventHandler(MolangEventWrapper.MAID_INIT);
+            if (initEvent != null) {
+                executeMolangExp(MolangEventWrapper.wrap(initEvent), true, true, null);
+            }
+        }
+        if (wrappedUpdateHandler != null) {
+            updateHandlerArgs.set(0, shouldTick);
+            executeMolangExp(wrappedUpdateHandler, true, true, null);
         }
     }
 

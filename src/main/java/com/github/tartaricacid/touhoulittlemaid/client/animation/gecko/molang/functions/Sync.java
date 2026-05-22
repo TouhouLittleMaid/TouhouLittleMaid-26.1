@@ -15,6 +15,9 @@ public class Sync extends PlayerEntityFunction {
             return null;
         }
 
+        // 当前未实现网络同步
+        context.entity().animatableEntity().molangSync(packArguments(context, arguments));
+
         return null;
     }
 

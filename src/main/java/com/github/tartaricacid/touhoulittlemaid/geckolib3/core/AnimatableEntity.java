@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core;
 
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.MolangEventWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.PhysicsManager;
 import com.github.tartaricacid.touhoulittlemaid.event.ClientTickEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.Animation;
@@ -26,11 +27,13 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoMo
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.model.provider.data.EntityModelData;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.data.SoundFormat;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.stream.AudioStreamProvider;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.stream.VorbisAudioStream;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
-import it.unimi.dsi.fastutil.objects.Object2ReferenceMaps;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -64,9 +67,9 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     private Identifier modelId;
     private GeckoContainer currentGeckoContainer;
     private AnimatedGeoModel currentModel;
-    private Object2ReferenceMap<String, List<IValue>> eventHandlers;
     @Nullable
     private List<IValue> deferHandler;
+    private List<IValue> syncHandler;
     private int lastCheckUpdateTime;
 
     // 这两个变量不跟随动画一起更新，所以不能放进 stateTracker
@@ -132,14 +135,6 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         return currentGeckoContainer != null;
     }
 
-    public float getWidthScale() {
-        return 0.7f;
-    }
-
-    public float getHeightScale() {
-        return 0.7f;
-    }
-
     @Nullable
     public Animation getAnimation(String name) {
         if (currentGeckoContainer != null) {
@@ -157,19 +152,40 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     }
 
     public Optional<AudioStreamProvider> getSoundStream(String name) {
+        if (currentGeckoContainer != null) {
+            var soundData = currentGeckoContainer.asset().sounds().get(name);
+            if (soundData != null && soundData.soundFormat() == SoundFormat.VORBIS) {
+                return Optional.of(() -> new VorbisAudioStream(soundData.byteBuffer()));
+            }
+        }
         return Optional.empty();
     }
 
     @Nullable
     public IValue getUserFunction(String name) {
+        if (currentGeckoContainer != null) {
+            return currentGeckoContainer.asset().userFunctions().get(name);
+        }
         return null;
     }
 
     @Nullable
     public final List<IValue> getEventHandler(String name) {
-        return this.eventHandlers.get(name);
+        if (currentGeckoContainer != null) {
+            return currentGeckoContainer.asset().eventHandlers().get(name);
+        }
+        return null;
     }
 
+    @Nullable
+    public AnimationControllerData getAnimationControllerData(String name) {
+        if (currentGeckoContainer != null) {
+            return currentGeckoContainer.animControllers().get(name);
+        }
+        return null;
+    }
+
+    @Nullable
     public List<IValue> getMolangDeferHandler() {
         return deferHandler;
     }
@@ -184,11 +200,6 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
             }
             return alterPhysicsManager;
         }
-    }
-
-    @Nullable
-    public AnimationControllerData getAnimationControllerData(String animationControllerName) {
-        return null;
     }
 
     protected float getSwingMotionAniMathHelperreshold() {
@@ -349,9 +360,6 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
 
         data.outlineColor = state.outlineColor;
         data.lightUV = state.lightCoords;
-
-        data.heightScale = getHeightScale();
-        data.widthScale = getWidthScale();
     }
 
     public void checkGeckoContainerUpdate() {
@@ -378,7 +386,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
                 if (model != currentGeckoContainer) {
                     currentGeckoContainer = model;
                     onLoadGeckoContainer(currentGeckoContainer);
-                    loadGeoModel(model.model(), Object2ReferenceMaps.emptyMap());
+                    loadGeoModel(model.model(), model.asset().eventHandlers());
                 }
             } else {
                 resetGeckoContainer();
@@ -387,12 +395,14 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     }
 
     protected void onLoadGeckoContainer(GeckoContainer newModel) {
-        // deferHandler = newModel.assets().eventHandlers().get(MolangEventWrapper.DEFER);
+        deferHandler = getEventHandler(MolangEventWrapper.DEFER);
+        syncHandler = getEventHandler(MolangEventWrapper.SYNC);
     }
 
     protected void resetGeckoContainer() {
         currentGeckoContainer = null;
         deferHandler = null;
+        syncHandler = null;
         resetGeoModel();
     }
 
@@ -407,6 +417,12 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
             if (cache.size() < 2) {
                 cache.add(modelState);
             }
+        }
+    }
+
+    public void molangSync(FloatArrayList args) {
+        if (syncHandler != null) {
+            executeMolangExp(MolangEventWrapper.wrap(syncHandler, args), true, false, null);
         }
     }
 
@@ -483,7 +499,6 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     protected void loadGeoModel(@NotNull GeoModel model, Object2ReferenceMap<String, List<IValue>> eventHandlers) {
         resetGeoModel();
         this.currentModel = new AnimatedGeoModel(model);
-        this.eventHandlers = eventHandlers;
         onSetupAnimationController();
         this.animationProcessor.loadModel(currentModel, eventHandlers);
         onLoadGeoModel(this.currentModel);
@@ -491,16 +506,13 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
 
     public void reloadGeoModel() {
         if (this.currentModel != null) {
-            var model = this.currentModel.geoModel();
-            var eventHandlers = this.eventHandlers;
             resetGeoModel();
-            loadGeoModel(model, eventHandlers);
+            loadGeoModel(currentGeckoContainer.model(), currentGeckoContainer.asset().eventHandlers());
         }
     }
 
     protected void resetGeoModel() {
         currentModel = null;
-        eventHandlers = null;
         animationProcessor.clearModel();
         physicsManager.reset();
         rateLimiter.reset();

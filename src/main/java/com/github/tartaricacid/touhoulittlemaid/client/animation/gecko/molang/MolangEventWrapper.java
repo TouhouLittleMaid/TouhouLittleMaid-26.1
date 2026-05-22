@@ -9,8 +9,8 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 import java.util.List;
 
 public class MolangEventWrapper {
-    public static final String PLAYER_INIT = "player_init";
-    public static final String PLAYER_UPDATE = "player_update";
+    public static final String MAID_INIT = "maid_init";
+    public static final String MAID_UPDATE = "maid_update";
     public static final String SYNC = "sync";
     public static final String DEFER = "defer";
 

@@ -40,7 +40,6 @@ public interface IGeoRenderer<TData extends GeckoRenderData> {
             if (data.transform != null) {
                 poseStack.mulPose(data.transform);
             }
-            poseStack.scale(data.widthScale, data.heightScale, data.widthScale);
         }
     }
 

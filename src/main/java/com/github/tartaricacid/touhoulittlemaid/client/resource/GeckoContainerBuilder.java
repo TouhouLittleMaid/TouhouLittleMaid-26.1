@@ -15,6 +15,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.tree.RawGeomet
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.GeoBuilder;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoModel;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.ConditionManager;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoAsset;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.json.JsonAnimationUtils;
@@ -98,8 +99,10 @@ public class GeckoContainerBuilder {
                 MaidControllerCollection.build(controllerResource) :
                 ChairControllerCollection.build(controllerResource);
 
+        // TODO: 控制器、音频、molang 函数读取
+        var asset = new GeckoAsset(Object2ReferenceMaps.emptyMap(), Object2ReferenceMaps.emptyMap(), Object2ReferenceMaps.emptyMap());
         GeckoLibCache.getInstance().getModels().put(id,
-                new GeckoContainer(geo, animationData, controllerFactory, manager, texture, type));
+                new GeckoContainer(geo, animationData, controllerFactory, Object2ReferenceMaps.emptyMap(), manager, texture, asset, type));
     }
 
     private static GeoModel registerGeo(InputStream inputStream) {
