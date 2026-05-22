@@ -4,25 +4,25 @@ import com.google.gson.annotations.SerializedName;
 
 public class Cube {
     @SerializedName("inflate")
-    private Double inflate;
+    private Float inflate;
     @SerializedName("mirror")
     private Boolean mirror;
     @SerializedName("origin")
-    private double[] origin = new double[]{0, 0, 0};
+    private float[] origin = new float[]{0, 0, 0};
     @SerializedName("pivot")
-    private double[] pivot = new double[]{0, 0, 0};
+    private float[] pivot = new float[]{0, 0, 0};
     @SerializedName("rotation")
-    private double[] rotation = new double[]{0, 0, 0};
+    private float[] rotation = new float[]{0, 0, 0};
     @SerializedName("size")
-    private double[] size = new double[]{1, 1, 1};
+    private float[] size = new float[]{1, 1, 1};
     @SerializedName("uv")
     private UvUnion uv;
 
-    public Double getInflate() {
+    public Float getInflate() {
         return inflate;
     }
 
-    public void setInflate(Double value) {
+    public void setInflate(Float value) {
         this.inflate = value;
     }
 
@@ -34,35 +34,35 @@ public class Cube {
         this.mirror = value;
     }
 
-    public double[] getOrigin() {
+    public float[] getOrigin() {
         return origin;
     }
 
-    public void setOrigin(double[] value) {
+    public void setOrigin(float[] value) {
         this.origin = value;
     }
 
-    public double[] getPivot() {
+    public float[] getPivot() {
         return pivot;
     }
 
-    public void setPivot(double[] value) {
+    public void setPivot(float[] value) {
         this.pivot = value;
     }
 
-    public double[] getRotation() {
+    public float[] getRotation() {
         return rotation;
     }
 
-    public void setRotation(double[] value) {
+    public void setRotation(float[] value) {
         this.rotation = value;
     }
 
-    public double[] getSize() {
+    public float[] getSize() {
         return size;
     }
 
-    public void setSize(double[] value) {
+    public void setSize(float[] value) {
         this.size = value;
     }
 

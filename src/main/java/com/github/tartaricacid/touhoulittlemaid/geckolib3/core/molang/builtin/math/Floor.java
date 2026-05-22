@@ -2,11 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.builtin.m
 
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
+import net.minecraft.util.Mth;
 
 public class Floor implements Function {
     @Override
     public Object evaluate(ExecutionContext<?> context, ArgumentCollection arguments) {
-        return Math.floor(arguments.getAsDouble(context, 0));
+        return Mth.floor(arguments.getAsFloat(context, 0));
     }
 
     @Override

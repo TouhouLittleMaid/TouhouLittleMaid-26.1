@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -23,8 +24,7 @@ public class BackpackManager {
     private static Map<Identifier, IMaidBackpack> BACKPACK_ID_MAP;
     private static Map<Item, IMaidBackpack> BACKPACK_ITEM_MAP;
 
-    //FIXME 等待EntityMaidRenderState的实现
-    private static Map<Identifier, Pair<EntityModel<EntityMaid>, Identifier>> BACKPACK_MODEL_MAP;
+    private static Map<Identifier, Pair<EntityModel<EntityMaidRenderState>, Identifier>> BACKPACK_MODEL_MAP;
     private static IMaidBackpack EMPTY_BACKPACK;
 
     private BackpackManager() {
@@ -82,7 +82,7 @@ public class BackpackManager {
     }
 
     //FIXME 等待EntityMaidRenderState的实现
-    public static Optional<Pair<EntityModel<EntityMaid>, Identifier>> findBackpackModel(Identifier id) {
+    public static Optional<Pair<EntityModel<EntityMaidRenderState>, Identifier>> findBackpackModel(Identifier id) {
         Pair<EntityModel<EntityMaid>, Identifier> pair = BACKPACK_MODEL_MAP.get(id);
         if (pair == null) {
             return Optional.empty();

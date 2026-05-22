@@ -5,17 +5,12 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.e
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.MolangUtils;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.util.EquipmentUtil;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class EquippedEnchantmentLevel extends LivingEntityFunction {
     @Override
@@ -24,37 +19,33 @@ public class EquippedEnchantmentLevel extends LivingEntityFunction {
         if (slotType == null) {
             return null;
         }
-
-        Identifier id = MolangUtils.parseResourceLocation(context.entity(), arguments.getAsString(context, 1));
-        if (id == null) {
+        var enchantmentsOpt = context.entity().entity().registryAccess().lookup(Registries.ENCHANTMENT);
+        if (enchantmentsOpt.isEmpty()) {
             return null;
         }
-        HolderLookup.RegistryLookup<Enchantment> lookup = context.entity().level().registryAccess().lookup(Registries.ENCHANTMENT).orElse(null);
-        if (lookup == null) {
-            return 0;
-        }
-
-        ResourceKey<Enchantment> resourceKey = ResourceKey.create(Registries.ENCHANTMENT, id);
-        Holder.Reference<Enchantment> enchantment = lookup.get(resourceKey).orElse(null);
-        if (enchantment == null) {
-            return 0;
-        }
+        var enchantments = enchantmentsOpt.get();
 
         ItemStack itemStack = EquipmentUtil.getEquippedItem(context.entity().entity(), slotType);
         if (itemStack.isEmpty()) {
             return 0;
         }
 
-        ItemEnchantments enchantments = itemStack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
-        if (enchantments.isEmpty()) {
-            return 0;
+        int sum = 0;
+        for (var i = 1; i < arguments.size(); ++i) {
+            Identifier id = arguments.getAsResourceLocation(context, 1);
+            if (id != null) {
+                var holder = enchantments.get(id);
+                if (holder.isPresent()) {
+                    sum += EnchantmentHelper.getTagEnchantmentLevel(holder.get(), itemStack);
+                }
+            }
         }
 
-        return enchantments.getLevel(enchantment);
+        return sum;
     }
 
     @Override
     public boolean validateArgumentSize(int size) {
-        return size == 2;
+        return size >= 2;
     }
 }

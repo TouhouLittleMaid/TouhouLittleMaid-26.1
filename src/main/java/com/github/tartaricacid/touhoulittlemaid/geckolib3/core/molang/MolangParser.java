@@ -2,12 +2,11 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.binding.PrimaryBinding;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.DoubleValue;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.FloatValue;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.IValue;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.MolangValue;
 import com.github.tartaricacid.touhoulittlemaid.molang.MolangEngine;
 import com.github.tartaricacid.touhoulittlemaid.molang.parser.ParseException;
-import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ObjectBinding;
 
 import java.util.Map;
 
@@ -15,33 +14,105 @@ public class MolangParser {
     private final MolangEngine engine;
     private final PrimaryBinding primaryBinding;
 
-    public MolangParser(Map<String, ObjectBinding> extraBindings) {
+    public MolangParser(Map<String, Object> extraBindings) {
         primaryBinding = new PrimaryBinding(extraBindings);
         engine = MolangEngine.fromCustomBinding(primaryBinding);
     }
 
-    @SuppressWarnings("unused")
     public IValue parseExpression(String molangExpression) {
+        return parseExpression(molangExpression, false);
+    }
+
+    @SuppressWarnings("unused")
+    public IValue parseExpression(String molangExpression, boolean isUserFunc) {
         try {
-            return parseExpressionUnsafe(molangExpression);
+            return parseExpressionUnsafe(molangExpression, isUserFunc);
         } catch (Exception e) {
-            TouhouLittleMaid.LOGGER.error("Failed to parse value \"{}\": {}", molangExpression, e.getMessage());
-            return DoubleValue.ZERO;
+            /* 暂时没有调试屏幕
+            if (DebugAnimationScreen.isEnabled()) {
+                YesSteveModel.LOGGER.error("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
+                CustomDebugSource.INSTANCE.print(Component.translatable("error.yes_steve_model.parse_molang_exp")
+                                .append(e.getMessage())
+                                .append("\n----------------------\n")
+                                .append(molangExpression.replace("\r\n", "\n").replace("\r", "\n"))
+                                .append("\n----------------------"));
+            } else
+            */
+            {
+                TouhouLittleMaid.LOGGER.debug("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
+            }
+            return FloatValue.ZERO;
         }
     }
 
-    public IValue parseExpressionUnsafe(String molangExpression) throws ParseException {
-        MolangValue value = new MolangValue(engine.parse(molangExpression));
-        primaryBinding.popStackFrame();
+    public IValue parseExpressionUnsafe(String molangExpression, boolean isUserFunc) throws ParseException {
+        MolangValue value = new MolangValue(engine.parse(isUserFunc ? filterComment(molangExpression) : molangExpression), isUserFunc);
+        primaryBinding.resetTransient();
         return value;
     }
 
+    // C 风格注释
+    private static String filterComment(String exp) {
+        StringBuilder result = new StringBuilder(exp.length());
+        boolean blockComment = false;
+        boolean lineComment = false;
+        boolean string = false;
+        for (int i = 0; i < exp.length(); i++) {
+            char c = exp.charAt(i);
+            if (string) {
+                if (c == '\'') {
+                    string = false;
+                }
+                result.append(c);
+                continue;
+            }
+            if (lineComment) {
+                if (c == '\r' || c == '\n') {
+                    lineComment = false;
+                    result.append('\n');
+                }
+                continue;
+            }
+            if (blockComment) {
+                if (c == '*' && i + 1 < exp.length()) {
+                    char next = exp.charAt(i + 1);
+                    if (next == '/') {
+                        blockComment = false;
+                        i++;
+                    }
+                }
+                continue;
+            }
+            if (c == '\'') {
+                string = true;
+                result.append('\'');
+                continue;
+            }
+            if (c == '/' && i + 1 < exp.length()) {
+                char next = exp.charAt(i + 1);
+                if (next == '/') {
+                    lineComment = true;
+                    i++;
+                    continue;
+                } else if (next == '*') {
+                    blockComment = true;
+                    i++;
+                    continue;
+                }
+            }
+            result.append(c);
+        }
+
+        return result.toString();
+    }
+
+    
     @SuppressWarnings("unused")
-    public IValue getConstant(double value) {
-        return new DoubleValue(value);
+    public IValue getConstant(float value) {
+        return new FloatValue(value);
     }
 
     public void reset() {
-        primaryBinding.reset();
+        primaryBinding.resetScoped();
     }
 }

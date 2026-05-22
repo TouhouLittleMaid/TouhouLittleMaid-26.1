@@ -1,20 +1,21 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo;
 
 import com.google.gson.annotations.SerializedName;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 public class MinecraftGeometry {
     @SerializedName("bones")
-    private Bone[] bones;
+    private ReferenceArrayList<Bone> bones;
     @SerializedName("cape")
     private String cape;
     @SerializedName("description")
     private ModelProperties modelProperties;
 
-    public Bone[] getBones() {
+    public ReferenceArrayList<Bone> getBones() {
         return bones;
     }
 
-    public void setBones(Bone[] value) {
+    public void setBones(ReferenceArrayList<Bone> value) {
         this.bones = value;
     }
 

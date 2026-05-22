@@ -2,13 +2,13 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.builtin.q
 
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.IContext;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.entity.EntityFunction;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.MolangUtils;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+
 import net.minecraft.world.level.biome.Biome;
 
 public class BiomeHasAllTags extends EntityFunction {
@@ -18,7 +18,7 @@ public class BiomeHasAllTags extends EntityFunction {
         Holder<Biome> biome = entity.level().getBiome(entity.blockPosition());
 
         for (int i = 0; i < arguments.size(); i++) {
-            Identifier id = MolangUtils.parseResourceLocation(context.entity(), arguments.getAsString(context, i));
+            Identifier id = arguments.getAsResourceLocation(context, i);
             if (id == null) {
                 return null;
             }

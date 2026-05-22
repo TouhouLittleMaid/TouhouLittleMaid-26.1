@@ -7,24 +7,14 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.BoneAnimation;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.event.EventKeyFrame;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.IValue;
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class Animation {
-    public final String animationName;
-    public final double animationLength;
-    public final ILoopType loop;
-    public final List<BoneAnimation> boneAnimations;
-    public final List<EventKeyFrame<IValue[]>> customInstructionKeyframes;
-
-    public Animation(String animationName, double animationLength, ILoopType loop,
-                     ReferenceArrayList<BoneAnimation> boneAnimations,
-                     ReferenceArrayList<EventKeyFrame<IValue[]>> customInstructionKeyframes) {
-        this.animationName = animationName;
-        this.animationLength = animationLength;
-        this.loop = loop;
-        this.boneAnimations = boneAnimations;
-        this.customInstructionKeyframes = customInstructionKeyframes;
+public record Animation(String animationName, float animationLength, LoopType loop, @Nullable IValue blendWeight,
+                        List<BoneAnimation> boneAnimations, List<EventKeyFrame<String>> soundKeyFrames,
+                        List<EventKeyFrame<IValue[]>> customInstructionKeyframes) {
+    public boolean isEmpty() {
+        return boneAnimations.isEmpty() && soundKeyFrames.isEmpty() && customInstructionKeyframes.isEmpty();
     }
 }

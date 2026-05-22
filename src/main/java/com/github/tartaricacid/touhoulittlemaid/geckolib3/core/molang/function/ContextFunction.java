@@ -23,5 +23,5 @@ public abstract class ContextFunction<TEntity> implements Function {
         }
     }
 
-    protected abstract Object eval(ExecutionContext<IContext<TEntity>> context, ArgumentCollection arguments);
+    protected abstract Object eval(ExecutionContext<IContext<TEntity>> ctx, ArgumentCollection arguments);
 }

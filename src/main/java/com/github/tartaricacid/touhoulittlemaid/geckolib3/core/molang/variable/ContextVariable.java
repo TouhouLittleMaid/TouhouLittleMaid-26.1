@@ -16,7 +16,8 @@ public abstract class ContextVariable<TEntity> implements Variable {
         if (entity instanceof IContext && validateContext((IContext<?>) entity)) {
             return evaluate((IContext<TEntity>) entity);
         } else {
-            return null;
+            // 如果类型不匹配，返回 0 （false）
+            return 0;
         }
     }
 

@@ -5,49 +5,115 @@
 
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.bone.BoneKeyFrame;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.point.AnimationPoint;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.snapshot.BoneSnapshot;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.snapshot.BoneTopLevelSnapshot;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.OrderedSegmentSearcher;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 public class BoneAnimationQueue {
     public final BoneTopLevelSnapshot topLevelSnapshot;
-    public final BoneSnapshot controllerSnapshot;
-    @Nullable
-    public BoneAnimation animation;
+    public final BoneSnapshot transitionOffset;
 
-    public AnimationPointQueue rotationQueue = new AnimationPointQueue();
-    public AnimationPointQueue positionQueue = new AnimationPointQueue();
-    public AnimationPointQueue scaleQueue = new AnimationPointQueue();
+    @Nullable
+    public OrderedSegmentSearcher<BoneKeyFrame> rotationKeyFrames;
+    @Nullable
+    public OrderedSegmentSearcher<BoneKeyFrame> positionKeyFrames;
+    @Nullable
+    public OrderedSegmentSearcher<BoneKeyFrame> scaleKeyFrames;
+
+    private boolean active = false;
+    private float blendWeight = 1;
+
+    public Vector3f rotationOffset;
+    public Vector3f positionOffset;
+    public Vector3f scaleOffset;
+
+    public boolean disableEndingTransition;
+
+    public AnimationPoint rotation;
+    public AnimationPoint position;
+    public AnimationPoint scale;
 
     public BoneAnimationQueue(BoneTopLevelSnapshot snapshot) {
         topLevelSnapshot = snapshot;
-        controllerSnapshot = new BoneSnapshot(snapshot);
+        transitionOffset = new BoneSnapshot(snapshot.bone);
     }
 
-    public BoneSnapshot snapshot() {
-        return controllerSnapshot;
+    public void setActive(BoneAnimation animation, boolean disableEndingTransition) {
+        if (!animation.rotationKeyFrames.isEmpty()) {
+            rotationKeyFrames = new OrderedSegmentSearcher<>(animation.rotationKeyFrames, 0, BoneKeyFrame::getEndTick);
+        } else {
+            rotationKeyFrames = null;
+        }
+        if (!animation.positionKeyFrames.isEmpty()) {
+            positionKeyFrames = new OrderedSegmentSearcher<>(animation.positionKeyFrames, 0, BoneKeyFrame::getEndTick);
+        } else {
+            positionKeyFrames = null;
+        }
+        if (!animation.scaleKeyFrames.isEmpty()) {
+            scaleKeyFrames = new OrderedSegmentSearcher<>(animation.scaleKeyFrames, 0, BoneKeyFrame::getEndTick);
+        } else {
+            scaleKeyFrames = null;
+        }
+        transitionOffset.copyFrom(topLevelSnapshot.bone);
+        active = true;
+        this.disableEndingTransition = disableEndingTransition;
+        resetQueues();
     }
 
-    public AnimationPointQueue rotationQueue() {
-        return rotationQueue;
+    public BoneSnapshot transitionOffset() {
+        return transitionOffset;
     }
 
-    public AnimationPointQueue positionQueue() {
-        return positionQueue;
+    public AnimationPoint rotation() {
+        return rotation;
     }
 
-    public AnimationPointQueue scaleQueue() {
-        return scaleQueue;
+    public AnimationPoint position() {
+        return position;
     }
 
-    public void updateSnapshot() {
-        controllerSnapshot.copyFrom(topLevelSnapshot);
+    public AnimationPoint scale() {
+        return scale;
     }
 
-    // 链表重开比 clear() 快
+    /**
+     * 该骨骼上是否有动画
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setInactive() {
+        rotationKeyFrames = null;
+        positionKeyFrames = null;
+        scaleKeyFrames = null;
+
+        rotationOffset = null;
+        positionOffset = null;
+        scaleOffset = null;
+
+        active = false;
+        resetQueues();
+    }
+
+    /**
+     * 权重不小于 0
+     */
+    public float getBlendWeight() {
+        return blendWeight;
+    }
+
+    public void setBlendWeight(float blendWeight) {
+        this.blendWeight = blendWeight > 0 ? blendWeight : 0;   // bb 里就是这样的
+    }
+
     public void resetQueues() {
-        rotationQueue = new AnimationPointQueue();
-        positionQueue = new AnimationPointQueue();
-        scaleQueue = new AnimationPointQueue();
+        rotation = null;
+        position = null;
+        scale = null;
     }
 }

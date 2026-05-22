@@ -8,7 +8,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRen
 import com.github.tartaricacid.touhoulittlemaid.client.animation.special.SwimAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.special.TridentAnimation;
 import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.client.ImmersiveMelodiesCompat;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.LivingEntity;
@@ -47,15 +46,6 @@ public final class HardcodedAnimationManger {
                                          float netHeadYaw, float headPitch) {
         for (ICustomAnimation animation : ANIMATIONS) {
             animation.setRotationAngles(maid.asEntity(), models, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        }
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void playGeckoMaidAnimation(IMaid maid, AnimatedGeoModel model,
-                                              float limbSwing, float limbSwingAmount, float ageInTicks,
-                                              float netHeadYaw, float headPitch) {
-        for (ICustomAnimation animation : ANIMATIONS) {
-            animation.setGeckoRotationAngles(maid.asEntity(), model, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         }
     }
 

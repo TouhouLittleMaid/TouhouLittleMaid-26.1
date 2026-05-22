@@ -53,6 +53,7 @@ public final class InitSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> FAIRY_HURT = registerSound("entity.fairy.hurt");
     public static final DeferredHolder<SoundEvent, SoundEvent> RECORDING_START = registerSound("ui.recording_start");
     public static final DeferredHolder<SoundEvent, SoundEvent> RECORDING_END = registerSound("ui.recording_end");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GECKO_CUSTOM = registerSound("gecko_custom");
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name), 16.0F));

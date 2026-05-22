@@ -45,7 +45,7 @@ public class JsonKeyFrameUtils {
         JsonObject obj = element.getAsJsonObject();
         for (String time : obj.keySet()) {
             RawBoneKeyFrame keyframe = new RawBoneKeyFrame();
-            keyframe.startTick = convertSecondsToTicks(Double.parseDouble(time));
+            keyframe.startTick = convertSecondsToTicks(Float.parseFloat(time));
 
             JsonElement item = obj.get(time);
             if (item.isJsonPrimitive() || item.isJsonArray()) {
@@ -103,12 +103,12 @@ public class JsonKeyFrameUtils {
         if (element.isJsonPrimitive()) {
             JsonPrimitive primitive = element.getAsJsonPrimitive();
             if (primitive.isString()) {
-                IValue value = parser.parseExpression(primitive.getAsString());
+                IValue value = parser.parseExpression(primitive.getAsString(), false);
                 keyframe.preXValue = value;
                 keyframe.preYValue = value;
                 keyframe.preZValue = value;
             } else if (primitive.isNumber()) {
-                double value = primitive.getAsDouble();
+                var value = primitive.getAsFloat();
                 keyframe.preX = value;
                 keyframe.preY = value;
                 keyframe.preZ = value;
@@ -128,21 +128,21 @@ public class JsonKeyFrameUtils {
                 JsonPrimitive zPri = array.get(2).getAsJsonPrimitive();
 
                 if (xPri.isString()) {
-                    keyframe.preXValue = parser.parseExpression(xPri.getAsString());
+                    keyframe.preXValue = parser.parseExpression(xPri.getAsString(), false);
                 } else if (xPri.isNumber()) {
-                    keyframe.preX = xPri.getAsDouble();
+                    keyframe.preX = xPri.getAsFloat();
                 }
 
                 if (yPri.isString()) {
-                    keyframe.preYValue = parser.parseExpression(yPri.getAsString());
+                    keyframe.preYValue = parser.parseExpression(yPri.getAsString(), false);
                 } else if (yPri.isNumber()) {
-                    keyframe.preY = yPri.getAsDouble();
+                    keyframe.preY = yPri.getAsFloat();
                 }
 
                 if (zPri.isString()) {
-                    keyframe.preZValue = parser.parseExpression(zPri.getAsString());
+                    keyframe.preZValue = parser.parseExpression(zPri.getAsString(), false);
                 } else if (zPri.isNumber()) {
-                    keyframe.preZ = zPri.getAsDouble();
+                    keyframe.preZ = zPri.getAsFloat();
                 }
 
                 return;
@@ -150,12 +150,12 @@ public class JsonKeyFrameUtils {
 
             JsonPrimitive primitive = array.get(0).getAsJsonPrimitive();
             if (primitive.isString()) {
-                IValue value = parser.parseExpression(primitive.getAsString());
+                IValue value = parser.parseExpression(primitive.getAsString(), false);
                 keyframe.preXValue = value;
                 keyframe.preYValue = value;
                 keyframe.preZValue = value;
             } else if (primitive.isNumber()) {
-                double value = primitive.getAsDouble();
+                var value = primitive.getAsFloat();
                 keyframe.preX = value;
                 keyframe.preY = value;
                 keyframe.preZ = value;
@@ -172,7 +172,7 @@ public class JsonKeyFrameUtils {
                 keyframe.postYValue = value;
                 keyframe.postZValue = value;
             } else if (primitive.isNumber()) {
-                double value = primitive.getAsDouble();
+                var value = primitive.getAsFloat();
                 keyframe.postX = value;
                 keyframe.postY = value;
                 keyframe.postZ = value;
@@ -194,19 +194,19 @@ public class JsonKeyFrameUtils {
                 if (xPri.isString()) {
                     keyframe.postXValue = parser.parseExpression(xPri.getAsString());
                 } else if (xPri.isNumber()) {
-                    keyframe.postX = xPri.getAsDouble();
+                    keyframe.postX = xPri.getAsFloat();
                 }
 
                 if (yPri.isString()) {
                     keyframe.postYValue = parser.parseExpression(yPri.getAsString());
                 } else if (yPri.isNumber()) {
-                    keyframe.postY = yPri.getAsDouble();
+                    keyframe.postY = yPri.getAsFloat();
                 }
 
                 if (zPri.isString()) {
                     keyframe.postZValue = parser.parseExpression(zPri.getAsString());
                 } else if (zPri.isNumber()) {
-                    keyframe.postZ = zPri.getAsDouble();
+                    keyframe.postZ = zPri.getAsFloat();
                 }
 
                 return;
@@ -219,7 +219,7 @@ public class JsonKeyFrameUtils {
                 keyframe.postYValue = value;
                 keyframe.postZValue = value;
             } else if (primitive.isNumber()) {
-                double value = primitive.getAsDouble();
+                var value = primitive.getAsFloat();
                 keyframe.postX = value;
                 keyframe.postY = value;
                 keyframe.postZ = value;

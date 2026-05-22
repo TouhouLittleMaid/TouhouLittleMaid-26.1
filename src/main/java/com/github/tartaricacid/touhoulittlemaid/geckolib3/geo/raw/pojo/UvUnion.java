@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 
 @JsonAdapter(UvUnion.Serializer.class)
 public class UvUnion {
-    public double[] boxUVCoords;
+    public float[] boxUVCoords;
     public UvFaces faceUV;
     public boolean isBoxUV;
 
@@ -18,7 +18,7 @@ public class UvUnion {
             UvUnion result = new UvUnion();
             if (json.isJsonArray()) {
                 result.isBoxUV = true;
-                result.boxUVCoords = context.deserialize(json, double[].class);
+                result.boxUVCoords = context.deserialize(json, float[].class);
             } else if (json.isJsonObject()) {
                 result.isBoxUV = false;
                 result.faceUV = context.deserialize(json, UvFaces.class);

@@ -16,8 +16,8 @@ public class Vector3v {
     }
 
     public Vector3f eval(ExpressionEvaluator<?> evaluator) {
-        return new Vector3f((float) x.evalAsDouble(evaluator),
-                (float) y.evalAsDouble(evaluator),
-                (float) z.evalAsDouble(evaluator));
+        return new Vector3f((float) x.evalAsFloat(evaluator),
+                (float) y.evalAsFloat(evaluator),
+                (float) z.evalAsFloat(evaluator));
     }
 }

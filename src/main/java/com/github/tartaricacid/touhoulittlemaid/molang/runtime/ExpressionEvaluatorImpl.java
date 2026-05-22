@@ -24,15 +24,15 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.runtime;
 
-import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.*;
-import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ValueConversions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.*;
+import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ValueConversions;
 
 import java.util.List;
 
 @SuppressWarnings("rawtypes,unchecked")
-public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluator<TEntity> {
+public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluator<TEntity>, ExpressionVisitor<Object> {
     private static final Evaluator[] BINARY_EVALUATORS = {
             bool((a, b) -> a.eval() && b.eval()),
             bool((a, b) -> a.eval() || b.eval()),
@@ -60,7 +60,11 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
                 if (val == null) {
                     return null;
                 } else {
-                    return b.visit(evaluator.createChild(val));
+                    var childEvaluator = evaluator.createChild(val);
+                    var result = b.visit(childEvaluator);
+                    // 暂时先这样
+                    evaluator.returnValue = childEvaluator.returnValue;
+                    return result;
                 }
             },
             (evaluator, a, b) -> { // null coalesce
@@ -86,15 +90,13 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
                     }
                     StructAccessExpression exp = (StructAccessExpression) a;
                     Object value = exp.left().visit(evaluator);
-                    if (value == null) {
-                        if (exp.left() instanceof AssignableVariableExpression) {
-                            AssignableVariable variable = ((AssignableVariableExpression) exp.left()).target();
-                            Struct struct = new HashMapStruct();
-                            struct.putProperty(exp.path(), val);
-                            variable.assign(evaluator, struct);
-                        }
-                    } else if (value instanceof Struct) {
+                    if (value instanceof Struct) {
                         ((Struct) value).putProperty(exp.path(), val);
+                    } else if (exp.left() instanceof AssignableVariableExpression) {
+                        AssignableVariable variable = ((AssignableVariableExpression) exp.left()).target();
+                        Struct struct = new HashMapStruct();
+                        struct.putProperty(exp.path(), val);
+                        variable.assign(evaluator, struct);
                     }
                 }
                 // TODO: (else case) This isn't fail-fast, we can only assign to access expressions
@@ -112,33 +114,38 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
                 Object right = b.visit(evaluator);
                 if (left == right)
                     return true;
-                if (right == null)
-                    return false;
-                if (right instanceof Number) {
+                if (right instanceof Number || left instanceof Number)
                     return ValueConversions.asFloat(right) == ValueConversions.asFloat(left);
-                } else if (right instanceof String) {
-                    return right.equals(left);
-                }
-                return false;
+                if (right == null || left == null)
+                    return false;
+                if (right instanceof StringExpression expr)
+                    return expr.equals(left);
+                if (left instanceof StringExpression expr)
+                    return expr.equals(right);
+                return left.equals(right);
             }, // eq
             (evaluator, a, b) -> {
                 Object left = a.visit(evaluator);
                 Object right = b.visit(evaluator);
                 if (left == right)
                     return false;
-                if (right == null)
-                    return true;
-                if (right instanceof Number) {
+                if (right instanceof Number || left instanceof Number)
                     return ValueConversions.asFloat(right) != ValueConversions.asFloat(left);
-                } else if (right instanceof String) {
-                    return !right.equals(left);
-                }
-                return false;
+                if (right == null || left == null)
+                    return true;
+                if (right instanceof StringExpression expr)
+                    return !expr.equals(left);
+                if (left instanceof StringExpression expr)
+                    return !expr.equals(right);
+                return !left.equals(right);
             }
     };
 
     private final TEntity entity;
     private @Nullable Object returnValue;
+    private @Nullable StatementExpression.@Nullable Op controlOp;
+    private int inLoop = 0;
+    private int returnThrough = 0;
 
     public ExpressionEvaluatorImpl(final @Nullable TEntity entity) {
         this.entity = entity;
@@ -171,22 +178,52 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
     }
 
     @Override
-    public @NotNull <TNewEntity> ExpressionEvaluator<TNewEntity> createChild(final @Nullable TNewEntity entity) {
+    public @Nullable Object evalSingleExpressionUnsafe(@NotNull Expression expression) {
+        try {
+            return expression.visit(this);
+        } finally {
+            returnValue = null;
+            controlOp = null;
+        }
+    }
+
+    @Override
+    public @Nullable Object evalMultiExpressionUnsafe(@NotNull Iterable<Expression> multiExpression, boolean returnThrough) {
+        if (returnThrough) {
+            this.returnThrough++;
+        }
+        Object lastResult = 0d;
+
+        try {
+            for (Expression expression : multiExpression) {
+                lastResult = expression.visit(this);
+                Object returnValue = popReturnValue();
+                if (returnValue != null) {
+                    lastResult = returnValue;
+                    break;
+                }
+            }
+        } finally {
+            returnValue = null;
+            controlOp = null;
+            if (returnThrough) {
+                this.returnThrough--;
+            }
+        }
+
+        return lastResult;
+    }
+
+    public @NotNull <TNewEntity> ExpressionEvaluatorImpl<TNewEntity> createChild(final @Nullable TNewEntity entity) {
         return new ExpressionEvaluatorImpl<>(entity);
     }
 
-    @Override
-    public @NotNull ExpressionEvaluator<TEntity> createChild() {
-        // Note that it will have its own returnValue, but same bindings
-        // (Should we create new bindings?)
-        return new ExpressionEvaluatorImpl<>(this.entity);
-    }
-
-    @Override
-    public @Nullable Object popReturnValue() {
-        Object val = this.returnValue;
-        this.returnValue = null;
-        return val;
+    private @Nullable Object popReturnValue() {
+        var ret = returnValue;
+        if (returnThrough == 0) {
+            returnValue = null;
+        }
+        return ret;
     }
 
     @Override
@@ -196,32 +233,71 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
     }
 
     @Override
-    public Object visitDouble(@NotNull DoubleExpression expression) {
+    public Object visitFloat(@NotNull FloatExpression expression) {
         return expression.value();
     }
 
     @Override
     public Object visitExecutionScope(@NotNull ExecutionScopeExpression executionScope) {
-        return buildExecutionScopeFunction(executionScope).evaluate(this, Function.EMPTY_ARGUMENT);
+        List<Expression> expressions = executionScope.expressions();
+        Object lastResult = null;
+        for (Expression expression : expressions) {
+            // eval expression, ignore result
+            lastResult = expression.visit(this);
+            // check for return values
+            Object returnValue = popReturnValue();
+            if (returnValue != null) {
+                return returnValue;
+            }
+            if (inLoop > 0 && controlOp != null) {
+                return null;
+            }
+        }
+        return lastResult;
     }
 
-    @Override
-    public Function buildExecutionScopeFunction(final @NotNull ExecutionScopeExpression executionScope) {
-        List<Expression> expressions = executionScope.expressions();
-        var evaluatorForThisScope = createChild();
-        return (context, arguments) -> {
-            Object lastResult = null;
+    private boolean visitExecutionScopeInLoop(@NotNull ExecutionScopeExpression executionScope) {
+        inLoop++;
+        try {
+            List<Expression> expressions = executionScope.expressions();
             for (Expression expression : expressions) {
                 // eval expression, ignore result
-                lastResult = evaluatorForThisScope.eval(expression);
+                expression.visit(this);
                 // check for return values
-                Object returnValue = evaluatorForThisScope.popReturnValue();
+                Object returnValue = popReturnValue();
                 if (returnValue != null) {
-                    return returnValue;
+                    return true;
+                }
+                var controlOp = this.controlOp;
+                this.controlOp = null;
+                if (controlOp == StatementExpression.Op.CONTINUE) {
+                    break;
+                }
+                if (controlOp == StatementExpression.Op.BREAK) {
+                    return true;
                 }
             }
-            return lastResult;
-        };
+        } finally {
+            inLoop--;
+        }
+        return false;
+    }
+
+    public void visitLoop(@NotNull ExecutionScopeExpression executionScope, int times) {
+        for (var i = 0; i < times; i++) {
+            if (visitExecutionScopeInLoop(executionScope)) {
+                break;
+            }
+        }
+    }
+
+    public void visitForEach(@NotNull ExecutionScopeExpression executionScope, AssignableVariable variable, Iterable<?> list) {
+        for (var param : list) {
+            variable.assign(this, param);
+            if (visitExecutionScopeInLoop(executionScope)) {
+                break;
+            }
+        }
     }
 
     @Override
@@ -246,6 +322,25 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
         } else {
             return null;
         }
+    }
+
+    @Override
+    public Object visitArray(ArrayAccessExpression expression) {
+        Object value = expression.array().visit(this);
+        Object indexObj = expression.index().visit(this);
+        if (indexObj instanceof Number) {
+            int index = ((Number) indexObj).intValue();
+            if (index < 0) {
+                index = 0;  // molang 文档是这么要求的
+            }
+            if (value instanceof List<?>) {
+                List<?> list = (List<?>) value;
+                if (list.size() > index) {
+                    return list.get(index);
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -278,11 +373,11 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
     public Object visitStatement(@NotNull StatementExpression expression) {
         switch (expression.op()) {
             case BREAK: {
-                this.returnValue = StatementExpression.Op.BREAK;
+                this.controlOp = StatementExpression.Op.BREAK;
                 break;
             }
             case CONTINUE: {
-                this.returnValue = StatementExpression.Op.CONTINUE;
+                this.controlOp = StatementExpression.Op.CONTINUE;
                 break;
             }
         }
@@ -291,7 +386,7 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
 
     @Override
     public Object visitString(@NotNull StringExpression expression) {
-        return expression.value();
+        return expression;
     }
 
     @Override
@@ -309,7 +404,7 @@ public final class ExpressionEvaluatorImpl<TEntity> implements ExpressionEvaluat
     }
 
     private interface Evaluator<TEntity> {
-        Object eval(ExpressionEvaluator<TEntity> evaluator, Expression a, Expression b);
+        Object eval(ExpressionEvaluatorImpl<TEntity> evaluator, Expression a, Expression b);
     }
 
     private interface BooleanOperator {

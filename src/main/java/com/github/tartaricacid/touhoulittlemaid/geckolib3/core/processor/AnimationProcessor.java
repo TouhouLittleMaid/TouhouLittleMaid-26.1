@@ -1,247 +1,308 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.processor;
 
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.controller.AnimationController;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.predicate.AnimationEvent;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.BoneAnimationQueue;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.controller.IAnimationController;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.manager.AnimationData;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.AnimationContext;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.storage.IForeignVariableStorage;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.storage.VariableStorage;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.MolangContext;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.storage.MolangMemory;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.IValue;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.snapshot.BoneSnapshot;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.snapshot.BoneTopLevelSnapshot;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.util.MathUtil;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.util.RateLimiter;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoBone;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.instance.SoundInstanceManager;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExpressionEvaluator;
-import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Struct;
+import it.unimi.dsi.fastutil.ints.Int2ReferenceMaps;
+import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceMaps;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import net.minecraft.client.Minecraft;
+import net.minecraft.util.ArrayListDeque;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.levelgen.RandomSupport;
+import net.minecraft.world.level.levelgen.XoroshiroRandomSource;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
-public class AnimationProcessor<T extends AnimatableEntity<?>> {
+public class AnimationProcessor<TEntity extends Entity> {
     private static final int ROAMING_STRUCT_NAME = StringPool.computeIfAbsent("roaming");
 
-    private final ReferenceArrayList<BoneTopLevelSnapshot> modelRendererList = new ReferenceArrayList<>();
-    private final Object2ReferenceOpenHashMap<String, BoneTopLevelSnapshot> modelRendererMap = new Object2ReferenceOpenHashMap<>();
-    private final VariableStorage animationStorage = new VariableStorage();
-    private final Random random = new Random();
-    private final ConcurrentLinkedQueue<Pair<IValue, Consumer<String>>> pendingValues = new ConcurrentLinkedQueue<>();
-    private final RateLimiter rateLimiter = new RateLimiter(Minecraft.getInstance().getWindow().getRefreshRate());
-    private final T animatable;
+    private final AnimatableEntity<TEntity> animatable;
+    private final ReferenceArrayList<BoneTopLevelSnapshot> modelBones = new ReferenceArrayList<>();
+    private Object2ReferenceMap<String, List<IValue>> eventHandlers = Object2ReferenceMaps.emptyMap();
+    private final Int2ReferenceOpenHashMap<BoneTopLevelSnapshot> modelBonesMap = new Int2ReferenceOpenHashMap<>();
+    private final ArrayListDeque<BoneTopLevelSnapshot> activeModelBones = new ArrayListDeque<>();
 
-    private List<IValue> initializationValues;
-    private List<IValue> preAnimationValues;
+    private final MolangMemory molangMemory = new MolangMemory();
+    private final SoundInstanceManager globalSoundManager = new SoundInstanceManager();
+    private final RandomSource random = new XoroshiroRandomSource(RandomSupport.generateUniqueSeed());
+    // molang 执行任务的生产和消费可能在不同线程上
+    private final ConcurrentLinkedQueue<MolangExecutionTask> pendingMolangTask = new ConcurrentLinkedQueue<>();
 
-    private boolean rendererDirty = false;
-    public boolean reloadAnimations = false;
+    private float lastTrimTime = 0;
+    private boolean modelDirty = false;
 
-    public AnimationProcessor(T animatable) {
+    public AnimationProcessor(AnimatableEntity<TEntity> animatable) {
         this.animatable = animatable;
     }
 
-    @SuppressWarnings("DataFlowIssue")
-    public boolean tickAnimation(double seekTime, AnimationEvent<T> event, AnimationContext<?> ctx) {
-        var shouldUpdate = rateLimiter.request((float) (seekTime / 20));
-
-        ctx.setStorage(this.animationStorage);
+    @SuppressWarnings("unchecked")
+    public void tickAnimation(AnimationEvent<AnimatableEntity<TEntity>> event, MolangContext<?> ctx, boolean shouldTick, boolean allowEmitting) {
+        ctx.setMemory(this.molangMemory);
         ctx.setRandom(this.random);
-        ExpressionEvaluator<AnimationContext<?>> evaluator = ExpressionEvaluator.evaluator(ctx);
+        ctx.setGlobalSoundManager(this.globalSoundManager);
+
+        ExpressionEvaluator<MolangContext<?>> evaluator = ExpressionEvaluator.evaluator(ctx);
+        var renderTicks = event.getRenderTicks();
+
+        if (renderTicks - lastTrimTime >= 1200) {
+            globalSoundManager.trim();
+            lastTrimTime = renderTicks;
+        } else if (lastTrimTime > renderTicks) {
+            lastTrimTime = renderTicks;
+        }
+
         preProcess(evaluator);
 
-        // InstancedAnimationFactory 仅保有一个 AnimationData 实例，与传入的 uniqueID 无关
         AnimationData manager = this.animatable.getAnimationData();
-        for (AnimationController<T> controller : manager.getAnimationControllers()) {
-            if (reloadAnimations) {
-                controller.markNeedsReload();
-                controller.getBoneAnimationQueues().clear();
+        for (IAnimationController<AnimatableEntity<TEntity>> controller : manager.getAnimationControllers()) {
+            if (this.modelDirty) {
+                controller.updateModel(this.modelBones, eventHandlers);
             }
-            controller.isJustStarting = manager.isFirstTick;
-            // 将当前控制器设置为动画测试事件
-            event.setController(controller);
-            // 处理动画并向点队列添加新值
-            controller.process(seekTime, event, evaluator, modelRendererList, false, rendererDirty, shouldUpdate);
-            boolean isParallelController = controller.getName().startsWith("parallel_");
+            if (shouldTick) {
+                // 将当前控制器设置为动画测试事件
+                // 处理动画并向点队列添加新值
+                controller.process(event, evaluator, allowEmitting);
+            }
+            // 解决一个历史遗留问题而保留的动画混合
+            @Deprecated boolean blendRotation = controller.blendRotation();
             // 遍历每个骨骼，并对属性进行插值计算
-            for (BoneAnimationQueue boneAnimation : controller.getBoneAnimationQueues()) {
-                BoneTopLevelSnapshot snapshot = boneAnimation.topLevelSnapshot;
-                BoneSnapshot initialSnapshot = snapshot.bone.getInitialSnapshot();
-                PointData pointData = snapshot.cachedPointData;
+            controller.visitBoneAnimationQueues(boneAnimation -> {
+                BoneTopLevelSnapshot snapshot = boneAnimation.getSnapshot();
+                if (!snapshot.hasAnimation) {
+                    snapshot.hasAnimation = true;
+                    activeModelBones.add(snapshot);
+                }
 
-                // 如果此骨骼有任何旋转值
-                if (!boneAnimation.rotationQueue().isEmpty()) {
-                    Vector3f scale = boneAnimation.rotationQueue().poll().getLerpPoint(evaluator);
-                    pointData.rotationValueX += scale.x();
-                    pointData.rotationValueY += scale.y();
-                    pointData.rotationValueZ += scale.z();
-                    if (isParallelController) {
-                        snapshot.rotationValueX = pointData.rotationValueX + initialSnapshot.rotationValueX;
-                        snapshot.rotationValueY = pointData.rotationValueY + initialSnapshot.rotationValueY;
-                        snapshot.rotationValueZ = pointData.rotationValueZ + initialSnapshot.rotationValueZ;
-                    } else {
-                        snapshot.rotationValueX = scale.x() + initialSnapshot.rotationValueX;
-                        snapshot.rotationValueY = scale.y() + initialSnapshot.rotationValueY;
-                        snapshot.rotationValueZ = scale.z() + initialSnapshot.rotationValueZ;
+                boneAnimation.pollRotationPoint(evaluator).ifPresent(rot -> {
+                    @Deprecated var pointData = snapshot.cachedPointData;
+                    if (!snapshot.isCurrentlyRunningRotationAnimation) {
+                        snapshot.isCurrentlyRunningRotationAnimation = true;
+                        snapshot.rotation.set(0, 0, 0);
                     }
-                    snapshot.isCurrentlyRunningRotationAnimation = true;
-                }
+                    snapshot.lastRotationUpdateTime = renderTicks;
+                    if (blendRotation) {
+                        // 此处假设旧版 blendRotation 只有高并行动画在用，并且该类型动画永不结束，所以尾过渡进度永远为 0。实际上也理应如此
+                        pointData.add(rot);
+                        snapshot.rotation.set(pointData);
+                    } else {
+                        rot.applyRotation(snapshot.rotation, boneAnimation.getSnapshot().bone.getInitialRotation());
+                        pointData.set(snapshot.rotation);
+                    }
+                });
 
-                // 如果此骨骼有任何位置值
-                if (!boneAnimation.positionQueue().isEmpty()) {
-                    Vector3f position = boneAnimation.positionQueue().poll().getLerpPoint(evaluator);
-                    snapshot.positionOffsetX = position.x();
-                    snapshot.positionOffsetY = position.y();
-                    snapshot.positionOffsetZ = position.z();
-                    snapshot.isCurrentlyRunningPositionAnimation = true;
-                }
+                boneAnimation.pollPositionPoint(evaluator).ifPresent(position -> {
+                    if (!snapshot.isCurrentlyRunningPositionAnimation) {
+                        snapshot.isCurrentlyRunningPositionAnimation = true;
+                        snapshot.position.set(0, 0, 0);
+                    }
+                    snapshot.lastPositionUpdateTime = renderTicks;
+                    position.apply(snapshot.position);
+                });
 
-                // 如果此骨骼有任何缩放点
-                if (!boneAnimation.scaleQueue().isEmpty()) {
-                    Vector3f scale = boneAnimation.scaleQueue().poll().getLerpPoint(evaluator);
-                    snapshot.scaleValueX = scale.x();
-                    snapshot.scaleValueY = scale.y();
-                    snapshot.scaleValueZ = scale.z();
-                    snapshot.isCurrentlyRunningScaleAnimation = true;
+                boneAnimation.pollScalePoint(evaluator).ifPresent(scale -> {
+                    if (!snapshot.isCurrentlyRunningScaleAnimation) {
+                        snapshot.isCurrentlyRunningScaleAnimation = true;
+                        snapshot.scale.set(1, 1, 1);
+                    }
+                    snapshot.lastScaleUpdateTime = renderTicks;
+                    scale.apply(snapshot.scale);
+                });
+            });
+        }
+
+        this.modelDirty = false;
+
+        // 追踪哪些骨骼应用了动画，并最终将没有动画的骨骼过渡到默认值
+        // 反向遍历降低更新开销
+        var activeBoneIterator = activeModelBones.listIterator(activeModelBones.size());
+        while (activeBoneIterator.hasPrevious()) {
+            var snapshot = activeBoneIterator.previous();
+            var active = false;
+
+            // 处理旋转尾过渡
+            if (snapshot.isCurrentlyRunningRotationAnimation) {
+                active = true;
+                snapshot.isCurrentlyRunningRotationAnimation = false;
+                snapshot.rotationOffset = null;
+            } else {
+                if (snapshot.rotationOffset == null) {
+                    snapshot.rotationOffset = new Vector3f(snapshot.rotation);
                 }
+                var progress = (renderTicks - snapshot.lastRotationUpdateTime) / manager.getResetSpeed();
+                if (progress < 1f) {
+                    active = true;
+                    MathUtil.lerpRotationValues(progress, snapshot.rotationOffset, MathUtil.ZERO, snapshot.bone.getInitialRotation(), snapshot.rotation);
+                } else {
+                    snapshot.rotation.set(MathUtil.ZERO);
+                }
+            }
+
+            // 处理位移尾过渡
+            if (snapshot.isCurrentlyRunningPositionAnimation) {
+                active = true;
+                snapshot.isCurrentlyRunningPositionAnimation = false;
+                snapshot.positionOffset = null;
+            } else {
+                if (snapshot.positionOffset == null) {
+                    snapshot.positionOffset = new Vector3f(snapshot.position);
+                }
+                var progress = (renderTicks - snapshot.lastPositionUpdateTime) / manager.getResetSpeed();
+                if (progress < 1f) {
+                    active = true;
+                    MathUtil.lerpValues(progress, snapshot.positionOffset, MathUtil.ZERO, snapshot.position);
+                } else {
+                    snapshot.position.set(0, 0, 0);
+                }
+            }
+
+            // 处理缩放尾过渡，终点为 1,1,1
+            if (snapshot.isCurrentlyRunningScaleAnimation) {
+                active = true;
+                snapshot.isCurrentlyRunningScaleAnimation = false;
+                snapshot.scaleOffset = null;
+            } else {
+                if (snapshot.scaleOffset == null) {
+                    snapshot.scaleOffset = new Vector3f(snapshot.scale);
+                }
+                var progress = (renderTicks - snapshot.lastScaleUpdateTime) / manager.getResetSpeed();
+                if (progress < 1f) {
+                    active = true;
+                    MathUtil.lerpValues(progress, snapshot.scaleOffset, MathUtil.ONE, snapshot.scale);
+                } else {
+                    snapshot.scale.set(1, 1, 1);
+                }
+            }
+
+            snapshot.commit();
+            if (!active) {
+                snapshot.hasAnimation = false;
+                activeBoneIterator.remove();
             }
         }
 
-        this.rendererDirty = false;
-        this.reloadAnimations = false;
-
-        // 追踪哪些骨骼应用了动画，并最终将没有动画的骨骼设置为默认值
-        final double resetTickLength = manager.getResetSpeed();
-        for (BoneTopLevelSnapshot topLevelSnapshot : modelRendererList) {
-            BoneSnapshot initialSnapshot = topLevelSnapshot.bone.getInitialSnapshot();
-
-            if (!topLevelSnapshot.isCurrentlyRunningRotationAnimation) {
-                double percentageReset = Math.min((seekTime - topLevelSnapshot.mostRecentResetRotationTick) / resetTickLength, 1);
-                if (percentageReset >= 1) {
-                    topLevelSnapshot.rotationValueX = MathUtil.lerpValues(percentageReset, topLevelSnapshot.rotationValueX,
-                            initialSnapshot.rotationValueX);
-                    topLevelSnapshot.rotationValueY = MathUtil.lerpValues(percentageReset, topLevelSnapshot.rotationValueY,
-                            initialSnapshot.rotationValueY);
-                    topLevelSnapshot.rotationValueZ = MathUtil.lerpValues(percentageReset, topLevelSnapshot.rotationValueZ,
-                            initialSnapshot.rotationValueZ);
-                }
-            } else {
-                // FIXME: 2023/7/12 莫名其妙修好了旋转 bug，原因未知
-                topLevelSnapshot.mostRecentResetRotationTick = 0;
-                topLevelSnapshot.isCurrentlyRunningRotationAnimation = false;
-            }
-
-            if (!topLevelSnapshot.isCurrentlyRunningPositionAnimation) {
-                double percentageReset = Math.min((seekTime - topLevelSnapshot.mostRecentResetPositionTick) / resetTickLength, 1);
-                if (percentageReset >= 1) {
-                    topLevelSnapshot.positionOffsetX = MathUtil.lerpValues(percentageReset, topLevelSnapshot.positionOffsetX,
-                            initialSnapshot.positionOffsetX);
-                    topLevelSnapshot.positionOffsetY = MathUtil.lerpValues(percentageReset, topLevelSnapshot.positionOffsetY,
-                            initialSnapshot.positionOffsetY);
-                    topLevelSnapshot.positionOffsetZ = MathUtil.lerpValues(percentageReset, topLevelSnapshot.positionOffsetZ,
-                            initialSnapshot.positionOffsetZ);
-                }
-            } else {
-                topLevelSnapshot.mostRecentResetPositionTick = (float) seekTime;
-                topLevelSnapshot.isCurrentlyRunningPositionAnimation = false;
-            }
-
-            if (!topLevelSnapshot.isCurrentlyRunningScaleAnimation) {
-                double percentageReset = Math.min((seekTime - topLevelSnapshot.mostRecentResetScaleTick) / resetTickLength, 1);
-                if (percentageReset >= 1) {
-                    topLevelSnapshot.scaleValueX = MathUtil.lerpValues(percentageReset, topLevelSnapshot.scaleValueX, initialSnapshot.scaleValueX);
-                    topLevelSnapshot.scaleValueY = MathUtil.lerpValues(percentageReset, topLevelSnapshot.scaleValueY, initialSnapshot.scaleValueY);
-                    topLevelSnapshot.scaleValueZ = MathUtil.lerpValues(percentageReset, topLevelSnapshot.scaleValueZ, initialSnapshot.scaleValueZ);
-                }
-            } else {
-                topLevelSnapshot.mostRecentResetScaleTick = (float) seekTime;
-                topLevelSnapshot.isCurrentlyRunningScaleAnimation = false;
-            }
-
-            topLevelSnapshot.commit();
-        }
-        manager.isFirstTick = false;
-
+        ctx.setControllerContext(null);
+        ctx.setAnimationContext(null);
         postProcess(evaluator);
-        return true;
     }
 
     @Nullable
-    public IBone getBone(String boneName) {
-        BoneTopLevelSnapshot renderer = modelRendererMap.get(boneName);
-        return renderer != null ? renderer.bone : null;
+    public AnimatedGeoBone getBone(int boneName) {
+        BoneTopLevelSnapshot bone = modelBonesMap.get(boneName);
+        return bone != null ? bone.bone : null;
     }
 
-    public void registerModelRenderer(Map<String, IBone> boneMap) {
-        this.modelRendererMap.clear();
-        this.modelRendererList.clear();
-        this.modelRendererList.ensureCapacity(boneMap.size());
-        for (Map.Entry<String, IBone> entry : boneMap.entrySet()) {
-            BoneTopLevelSnapshot renderer = new BoneTopLevelSnapshot(entry.getValue());
-            this.modelRendererMap.put(entry.getKey(), renderer);
-            this.modelRendererList.add(renderer);
-        }
-        this.animationStorage.initialize(null);
-        this.rendererDirty = true;
+    public void clearModel() {
+        this.modelBonesMap.clear();
+        this.activeModelBones.clear();
+        this.modelBones.clear();
+        this.molangMemory.initialize();
+        this.eventHandlers = Object2ReferenceMaps.emptyMap();
+        this.pendingMolangTask.clear();
+        this.globalSoundManager.stopAllPlayingSounds();
     }
 
-    public boolean isModelRendererEmpty() {
-        return modelRendererList.isEmpty();
-    }
-
-    public void preAnimationSetup(AnimatableEntity animatable, double seekTime) {
-    }
-
-    private void preProcess(ExpressionEvaluator<AnimationContext<?>> evaluator) {
-        if (rendererDirty && initializationValues != null) {
-            for (IValue value : initializationValues) {
-                value.evalAsDouble(evaluator);
-            }
-            initializationValues = null;
-        }
-        if (preAnimationValues != null) {
-            for (IValue value : preAnimationValues) {
-                value.evalAsDouble(evaluator);
-            }
-        }
-    }
-
-    private void postProcess(ExpressionEvaluator<AnimationContext<?>> evaluator) {
-        while (!pendingValues.isEmpty()) {
-            Pair<IValue, Consumer<String>> pair = pendingValues.poll();
-            String result;
-            try {
-                var ret = pair.getFirst().evalUnsafe(evaluator);
-                if (ret == null) {
-                    result = "null";
-                } else if (ret instanceof String) {
-                    result = "'" + ret + "'";
+    public void loadModel(AnimatedGeoModel model, Object2ReferenceMap<String, List<IValue>> eventHandlers) {
+        clearModel();
+        if (!model.boneMap().isEmpty()) {
+            this.modelBones.ensureCapacity(model.boneMap().size());
+            this.modelBones.add(null);
+            var rootName = model.geoModel().flatBoneList().getFirst().pooledName();
+            // 确保 root 组在第一个
+            Int2ReferenceMaps.fastForEach(model.boneMap(), entry -> {
+                BoneTopLevelSnapshot snapshot = new BoneTopLevelSnapshot(entry.getValue());
+                this.modelBonesMap.put(entry.getValue().getPooledName(), snapshot);
+                if (entry.getIntKey() == rootName) {
+                    this.modelBones.set(0, snapshot);
                 } else {
-                    result = ret.toString();
+                    this.modelBones.add(snapshot);
                 }
-            } catch (Exception e) {
-                result = "Error: " + e.getMessage();
-            }
-            if (pair.getSecond() != null) {
-                pair.getSecond().accept(result);
+            });
+        }
+        this.modelDirty = true;
+        this.eventHandlers = eventHandlers;
+    }
+
+    public void putRemoteStruct(@Nullable Struct remoteStruct) {
+        if (remoteStruct != null) {
+            molangMemory.setScoped(ROAMING_STRUCT_NAME, remoteStruct);
+        }
+    }
+
+    public boolean isModelEmpty() {
+        return modelBones.isEmpty();
+    }
+
+    private void preProcess(ExpressionEvaluator<MolangContext<?>> evaluator) {
+        for (var iter = pendingMolangTask.iterator(); iter.hasNext(); ) {
+            var task = iter.next();
+            if (task.pre) {
+                executeMolangTask(task, evaluator);
+                iter.remove();
             }
         }
     }
 
-    public void execute(IValue value, @Nullable Consumer<String> resultConsumer) {
-        pendingValues.add(Pair.of(value, resultConsumer));
+    private void postProcess(ExpressionEvaluator<MolangContext<?>> evaluator) {
+        for (var iter = pendingMolangTask.iterator(); iter.hasNext(); ) {
+            var task = iter.next();
+            if (!task.pre) {
+                executeMolangTask(task, evaluator);
+                iter.remove();
+            }
+        }
     }
 
-    public IForeignVariableStorage getPublicVariableStorage() {
-        return this.animationStorage;
+    private void executeMolangTask(MolangExecutionTask task, ExpressionEvaluator<MolangContext<?>> evaluator) {
+        String result;
+        try {
+            evaluator.entity().setAllowEmitting(task.allowEmitting());
+            var ret = task.exp().eval(evaluator);
+            if (task.resultCallback() == null) {
+                return;
+            }
+            if (ret == null) {
+                result = "null";
+            } else if (ret instanceof String) {
+                result = "'" + ret + "'";
+            } else {
+                result = ret.toString();
+            }
+        } catch (Throwable e) {
+            result = "Error: " + e.getMessage();
+        } finally {
+            evaluator.entity().setAllowEmitting(false);
+        }
+        task.resultCallback().accept(result);
+    }
+
+    public void enqueueMolangTask(IValue value, boolean allowEmitting, boolean pre, @Nullable Consumer<String> resultConsumer) {
+        pendingMolangTask.add(new MolangExecutionTask(value, allowEmitting, pre, resultConsumer));
+    }
+
+    public void visitScopedVariableNames(Consumer<String> visitor) {
+        this.molangMemory.visitScopedVariableNames(visitor);
+    }
+
+    private record MolangExecutionTask(IValue exp, boolean allowEmitting, boolean pre,
+                                       Consumer<String> resultCallback) {
     }
 }

@@ -1,14 +1,16 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.binding.variable;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.binding.TransientObject;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.IContext;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.AssignableVariable;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ObjectBinding;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+
 import org.jetbrains.annotations.NotNull;
 
-public class TempVariableBinding implements ObjectBinding {
+public class TempVariableBinding implements ObjectBinding, TransientObject {
     private final Object2ReferenceMap<String, TempVariable> variableMap = new Object2ReferenceOpenHashMap<>();
     private int topPointer = 0;
 
@@ -17,12 +19,18 @@ public class TempVariableBinding implements ObjectBinding {
         return variableMap.computeIfAbsent(name, k -> new TempVariable(topPointer++));
     }
 
-    public void reset() {
+    public void resetTransient() {
         variableMap.clear();
         topPointer = 0;
     }
 
-    private record TempVariable(int address) implements AssignableVariable {
+    private static class TempVariable implements AssignableVariable {
+        private final int address;
+
+        private TempVariable(int address) {
+            this.address = address;
+        }
+
         @Override
         @SuppressWarnings("unchecked")
         public Object evaluate(final @NotNull ExecutionContext<?> context) {

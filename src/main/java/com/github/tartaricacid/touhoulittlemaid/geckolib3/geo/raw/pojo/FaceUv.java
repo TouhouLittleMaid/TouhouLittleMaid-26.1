@@ -7,9 +7,9 @@ public class FaceUv {
     @SerializedName("material_instance")
     private String materialInstance;
     @SerializedName("uv")
-    private double[] uv;
+    private float[] uv;
     @SerializedName("uv_size")
-    private double[] uvSize;
+    private float[] uvSize;
 
     public String getMaterialInstance() {
         return materialInstance;
@@ -19,19 +19,19 @@ public class FaceUv {
         this.materialInstance = value;
     }
 
-    public double[] getUv() {
+    public float[] getUv() {
         return uv;
     }
 
-    public void setUv(double[] value) {
+    public void setUv(float[] value) {
         this.uv = value;
     }
 
-    public double[] getUvSize() {
+    public float[] getUvSize() {
         return uvSize;
     }
 
-    public void setUvSize(double[] value) {
+    public void setUvSize(float[] value) {
         this.uvSize = value;
     }
 }

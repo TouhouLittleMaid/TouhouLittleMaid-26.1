@@ -1,27 +1,27 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.bone;
 
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.DoubleValue;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.FloatValue;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.IValue;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.RotationValue;
 
 @SuppressWarnings("FieldMayBeFinal,unused")
 public class RawBoneKeyFrame {
-    public double startTick;
+    public float startTick;
     public EasingType easingType;
 
-    public double preX;
+    public float preX;
     public IValue preXValue;
-    public double preY;
+    public float preY;
     public IValue preYValue;
-    public double preZ;
+    public float preZ;
     public IValue preZValue;
 
-    public double postX;
+    public float postX;
     public IValue postXValue;
-    public double postY;
+    public float postY;
     public IValue postYValue;
-    public double postZ;
+    public float postZ;
     public IValue postZValue;
 
     public boolean contiguous = true;
@@ -32,12 +32,12 @@ public class RawBoneKeyFrame {
     public RawBoneKeyFrame() {
     }
 
-    private IValue getValue(IValue value, double primitive, boolean isRotation, boolean flip) {
+    private IValue getValue(IValue value, float primitive, boolean isRotation, boolean flip) {
         if (value == null) {
             if (isRotation) {
-                return new DoubleValue(RotationValue.processValue(primitive, flip));
+                return new FloatValue(RotationValue.processValue(primitive, flip));
             } else {
-                return new DoubleValue(primitive);
+                return new FloatValue(primitive);
             }
         }
         if (isRotation) {
@@ -69,7 +69,7 @@ public class RawBoneKeyFrame {
         }
     }
 
-    public double startTick() {
+    public float startTick() {
         return startTick;
     }
 

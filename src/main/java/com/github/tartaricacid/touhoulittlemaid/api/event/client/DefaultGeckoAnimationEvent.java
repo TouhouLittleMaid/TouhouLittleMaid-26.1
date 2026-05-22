@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.api.event.client;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.GeckoContainerBuilder;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -10,8 +11,6 @@ import org.jetbrains.annotations.ApiStatus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumMap;
-
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.GeckoModelLoader.mergeAnimationFile;
 
 /**
  * 在客户端加载额外的默认 Gecko 动画文件。
@@ -48,7 +47,7 @@ public class DefaultGeckoAnimationEvent extends Event {
 
     public void addAnimation(AnimationFile animationFile, Identifier file) {
         try (InputStream stream = Minecraft.getInstance().getResourceManager().open(file)) {
-            mergeAnimationFile(stream, animationFile);
+            animationFile.animations().putAll(GeckoContainerBuilder.getAnimationFile(stream).animations());
         } catch (IOException e) {
             TouhouLittleMaid.LOGGER.error("Failed to load animation file", e);
         }

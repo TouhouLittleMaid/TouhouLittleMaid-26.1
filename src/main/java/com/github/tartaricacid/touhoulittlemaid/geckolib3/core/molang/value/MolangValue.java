@@ -6,25 +6,16 @@ import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExpressionEvaluat
 import java.util.List;
 
 public class MolangValue implements IValue {
-    private final Expression[] expressions;
+    private final List<Expression> expressions;
+    private final boolean isUserFunc;
 
-    public MolangValue(List<Expression> expressions) {
-        this.expressions = expressions.toArray(new Expression[0]);
+    public MolangValue(List<Expression> expressions, boolean isUserFunc) {
+        this.expressions = expressions;
+        this.isUserFunc = isUserFunc;
     }
 
     @Override
-    public Object evalUnsafe(ExpressionEvaluator<?> evaluator) throws Exception {
-        Object lastResult = 0d;
-
-        for (Expression expression : expressions) {
-            lastResult = evaluator.eval(expression);
-            Object returnValue = evaluator.popReturnValue();
-            if (returnValue != null) {
-                lastResult = returnValue;
-                break;
-            }
-        }
-
-        return lastResult;
+    public Object evalUnsafe(ExpressionEvaluator<?> evaluator) {
+        return evaluator.evalMultiExpressionUnsafe(expressions, isUserFunc);
     }
 }

@@ -4,50 +4,52 @@
  */
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.ILoopType.EDefaultLoopTypes;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 public class AnimationBuilder {
-    private final List<RawAnimation> animationList = new ObjectArrayList<>();
+    private String animationName;
+    @Nullable
+    private LoopType loopType;
 
-    public AnimationBuilder addAnimation(String animationName, ILoopType loopType) {
-        animationList.add(new RawAnimation(animationName, loopType));
+    public AnimationBuilder addAnimation(String animationName, LoopType loopType) {
+        this.animationName = animationName;
+        this.loopType = loopType;
         return this;
     }
 
     public AnimationBuilder addAnimation(String animationName) {
-        animationList.add(new RawAnimation(animationName, null));
-        return this;
-    }
-
-    public AnimationBuilder addRepeatingAnimation(String animationName, int timesToRepeat) {
-        assert timesToRepeat > 0;
-        for (int i = 0; i < timesToRepeat; i++) {
-            addAnimation(animationName, EDefaultLoopTypes.PLAY_ONCE);
-        }
+        this.animationName = animationName;
+        this.loopType = null;
         return this;
     }
 
     public AnimationBuilder playOnce(String animationName) {
-        return this.addAnimation(animationName, EDefaultLoopTypes.PLAY_ONCE);
+        return this.addAnimation(animationName, LoopType.PLAY_ONCE);
     }
 
     public AnimationBuilder loop(String animationName) {
-        return this.addAnimation(animationName, EDefaultLoopTypes.LOOP);
+        return this.addAnimation(animationName, LoopType.LOOP);
     }
 
     public AnimationBuilder playAndHold(String animationName) {
-        return this.addAnimation(animationName, EDefaultLoopTypes.HOLD_ON_LAST_FRAME);
+        return this.addAnimation(animationName, LoopType.HOLD_ON_LAST_FRAME);
     }
 
     public AnimationBuilder clearAnimations() {
-        animationList.clear();
+        this.animationName = null;
+        this.loopType = null;
         return this;
     }
 
-    public List<RawAnimation> getRawAnimationList() {
-        return animationList;
+    public boolean isEmpty() {
+        return animationName != null;
+    }
+
+    public String animationName() {
+        return animationName;
+    }
+
+    public @Nullable LoopType loopType() {
+        return loopType;
     }
 }

@@ -6,6 +6,20 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core;
 
 public enum AnimationState {
-    // 动画状态
-    RUNNING, TRANSITIONING, STOPPED
+    /**
+     * 待机中
+     */
+    IDLE,
+    /**
+     * 开始前的过渡
+     */
+    BEGINNING_TRANSITION,
+    /**
+     * 播放中
+     */
+    RUNNING,
+    /**
+     * PLAY_ONCE 类型的动画结束后的过渡
+     */
+    ENDING_TRANSITION
 }

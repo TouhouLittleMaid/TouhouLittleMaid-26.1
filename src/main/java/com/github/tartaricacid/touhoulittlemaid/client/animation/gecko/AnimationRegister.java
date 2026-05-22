@@ -3,8 +3,8 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.ILoopType;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.predicate.AnimationEvent;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.LoopType;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.vehicle.boat.Boat;
@@ -15,7 +15,7 @@ public class AnimationRegister {
     private static final double MIN_SPEED = 0.05;
 
     public static void registerAnimationState() {
-        register("death", ILoopType.EDefaultLoopTypes.PLAY_ONCE, Priority.HIGHEST, (maid, event) -> maid.asEntity().isDeadOrDying());
+        register("death", LoopType.PLAY_ONCE, Priority.HIGHEST, (maid, event) -> maid.asEntity().isDeadOrDying());
         register("sleep", Priority.HIGHEST, (maid, event) -> maid.asEntity().getPose() == Pose.SLEEPING);
         register("swim", Priority.HIGHEST, (maid, event) -> maid.asEntity().isVisuallySwimming());
 
@@ -34,7 +34,7 @@ public class AnimationRegister {
         register("sit", Priority.HIGH, (maid, event) -> maid.isMaidInSittingPose());
 
         register("swim_stand", Priority.NORMAL, (maid, event) -> maid.asEntity().isInWater());
-        register("attacked", ILoopType.EDefaultLoopTypes.PLAY_ONCE, Priority.NORMAL, (maid, event) -> maid.asEntity().hurtTime > 0);
+        register("attacked", LoopType.PLAY_ONCE, Priority.NORMAL, (maid, event) -> maid.asEntity().hurtTime > 0);
         register("jump", Priority.NORMAL, (maid, event) -> !maid.asEntity().onGround() && !maid.asEntity().isInWater());
 
         register("run", Priority.LOW, (maid, event) -> maid.asEntity().onGround() && maid.asEntity().isSprinting());
@@ -47,13 +47,12 @@ public class AnimationRegister {
         return maid.asEntity().getVehicle() instanceof EntitySit sit && sit.getJoyType().equals(type.getTypeName());
     }
 
-    private static void register(String animationName, ILoopType loopType, int priority, BiPredicate<IMaid, AnimationEvent<?>> predicate) {
-        AnimationManager manager = AnimationManager.getInstance();
-        manager.register(new AnimationState(animationName, loopType, priority, predicate));
+    private static void register(String animationName, LoopType loopType, int priority, BiPredicate<IMaid, AnimationEvent<?>> predicate) {
+        AnimationManager.register(new AnimationState(animationName, loopType, priority, predicate));
     }
 
     private static void register(String animationName, int priority, BiPredicate<IMaid, AnimationEvent<?>> predicate) {
-        register(animationName, ILoopType.EDefaultLoopTypes.LOOP, priority, predicate);
+        register(animationName, LoopType.LOOP, priority, predicate);
     }
 
     private static float getVerticalSpeed(IMaid maid) {

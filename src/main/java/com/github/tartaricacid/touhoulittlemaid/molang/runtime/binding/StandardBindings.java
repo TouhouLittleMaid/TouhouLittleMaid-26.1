@@ -25,10 +25,8 @@
 package com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding;
 
 import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.*;
-import com.github.tartaricacid.touhoulittlemaid.molang.runtime.AssignableVariable;
+import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExpressionEvaluatorImpl;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
-
-import java.util.Arrays;
 
 /**
  * Class holding some default bindings and
@@ -39,81 +37,33 @@ public final class StandardBindings {
     private static final int MAX_LOOP_ROUND = 1024;
 
     public static final Function LOOP_FUNC = (ctx, args) -> {
-        // Parameters:
-        // - double:           How many times should we loop
-        // - CallableBinding:  The looped expressions
-
-        if (args.size() < 2) {
+        if (args.size() != 2) {
             return null;
         }
 
-        int n = Math.min((int) Math.round(args.getAsDouble(ctx, 0)), MAX_LOOP_ROUND);
-        Object expr = args.getExpression(1);
+        int n = Math.min(Math.round(args.getAsFloat(ctx, 0)), MAX_LOOP_ROUND);
 
-        if (expr instanceof ExecutionScopeExpression) {
-            Function callable = ((ExecutionScopeExpression) expr).buildFunction((ExpressionVisitor<?>) ctx);
-            if (callable != null) {
-                for (int i = 0; i < n; i++) {
-                    Object value = callable.evaluate(ctx, Function.EMPTY_ARGUMENT);
-                    if (value == StatementExpression.Op.BREAK) {
-                        break;
-                    }
-                    // (not necessary, callable already exits when returnValue
-                    //  is set to any non-null value)
-                    // if (value == StatementExpression.Op.CONTINUE) continue;
-                }
-            }
+        if (args.getExpression(1) instanceof ExecutionScopeExpression exeExpr) {
+            ((ExpressionEvaluatorImpl<?>) ctx).visitLoop(exeExpr, n);
         }
+
         return null;
     };
 
     public static final Function FOR_EACH_FUNC = (ctx, args) -> {
-        // Parameters:
-        // - any:              Variable
-        // - array:            Any array
-        // - CallableBinding:  The looped expressions
-
-        if (args.size() < 3) {
+        if (args.size() != 3) {
             return null;
         }
 
-        final Expression variableExpr = args.getExpression(0);
-        if (!(variableExpr instanceof AssignableVariableExpression)) {
-            // first argument must be an access expression,
-            // e.g. 'variable.test', 'v.pig', 't.entity' or
-            // 't.entity.location.world'
-            return null;
-        }
-        final AssignableVariable variableAccess = ((AssignableVariableExpression) variableExpr).target();
-
-        final Object array = args.getValue(ctx, 1);
-        final Iterable<?> arrayIterable;
-        if (array instanceof Object[]) {
-            arrayIterable = Arrays.asList((Object[]) array);
-        } else if (array instanceof Iterable<?>) {
-            arrayIterable = (Iterable<?>) array;
-        } else {
-            // second argument must be an array or iterable
-            return null;
-        }
-
-        final Expression expr = args.getExpression(2);
-
-        if (expr instanceof ExecutionScopeExpression) {
-            Function callable = ((ExecutionScopeExpression) expr).buildFunction((ExpressionVisitor<?>) ctx);
-            if (callable != null) {
-                for (final Object val : arrayIterable) {
-                    // set 'val' as current value
-                    // eval (objectExpr.propertyName = val)
-                    variableAccess.assign(ctx, val);
-                    final Object returnValue = callable.evaluate(ctx, Function.EMPTY_ARGUMENT);
-
-                    if (returnValue == StatementExpression.Op.BREAK) {
-                        break;
-                    }
+        if (args.getExpression(0) instanceof AssignableVariableExpression variableExpr) {
+            if (args.getExpression(2) instanceof ExecutionScopeExpression exeExpr) {
+                final Object array = args.getValue(ctx, 1);
+                if (array instanceof Iterable<?> iterable) {
+                    ((ExpressionEvaluatorImpl<?>) ctx).visitForEach(exeExpr, variableExpr.target(), iterable);
                 }
             }
         }
+
         return null;
     };
 }

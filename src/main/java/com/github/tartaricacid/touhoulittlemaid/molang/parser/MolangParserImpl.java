@@ -24,14 +24,14 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.parser;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.github.tartaricacid.touhoulittlemaid.molang.lexer.MolangLexer;
 import com.github.tartaricacid.touhoulittlemaid.molang.lexer.Token;
 import com.github.tartaricacid.touhoulittlemaid.molang.lexer.TokenKind;
 import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.*;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ObjectBinding;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -67,16 +67,16 @@ final class MolangParserImpl implements MolangParser {
         switch (token.kind()) {
             case FLOAT:
                 lexer.next();
-                return new DoubleExpression(Double.parseDouble(token.value()));
+                return new FloatExpression(Float.parseFloat(token.value()));
             case STRING:
                 lexer.next();
                 return new StringExpression(token.value());
             case TRUE:
                 lexer.next();
-                return DoubleExpression.ONE;
+                return FloatExpression.ONE;
             case FALSE:
                 lexer.next();
-                return DoubleExpression.ZERO;
+                return FloatExpression.ZERO;
             case LPAREN:
                 lexer.next();
                 // wrapped expression: (expression)
@@ -88,9 +88,13 @@ final class MolangParserImpl implements MolangParser {
                 lexer.next();
                 return expression;
             case LBRACE:
-                lexer.next();
+                token = lexer.next();
                 List<Expression> expressions = new ArrayList<>();
                 while (true) {
+                    if (token.kind() == TokenKind.RBRACE) {
+                        lexer.next();
+                        break;
+                    }
                     expressions.add(parseCompoundExpression(lexer, 0));
                     token = lexer.current();
                     if (token.kind() == TokenKind.RBRACE) {
@@ -108,7 +112,7 @@ final class MolangParserImpl implements MolangParser {
                         if (token.kind() != TokenKind.SEMICOLON) {
                             throw new ParseException("Missing semicolon", lexer.cursor());
                         }
-                        lexer.next();
+                        token = lexer.next();
                     }
                 }
                 return new ExecutionScopeExpression(expressions);
@@ -193,15 +197,17 @@ final class MolangParserImpl implements MolangParser {
     ) throws IOException {
         Token current = lexer.current();
 
-        switch (current.kind()) {
-            case RPAREN:
-            case EOF:
-                return left;
-            case LPAREN: { // CALL EXPRESSION: "left("
-                if (left instanceof IdentifierExpression) {
-                    lexer.next();
-                    final List<Expression> arguments = new ArrayList<>();
+        if (left instanceof CallExpression) {
+            CallExpression call = (CallExpression) left;
+            if (current.kind() == TokenKind.LPAREN) { // CALL EXPRESSION: "left("
+                if (call.arguments() != CallExpression.PLACE_HOLDER) {
+                    throw new ParseException("Multiple '()' after function name", lexer.cursor());
+                }
 
+                lexer.next();
+                final List<Expression> arguments = new ArrayList<>();
+
+                if (lexer.current().kind() != TokenKind.RPAREN) {
                     // start reading the arguments
                     while (true) {
                         arguments.add(parseCompoundExpression(lexer, 0));
@@ -219,41 +225,48 @@ final class MolangParserImpl implements MolangParser {
                             lexer.next();
                         }
                     }
-
-                    Object target = ((IdentifierExpression) left).target();
-                    String name = ((IdentifierExpression) left).name();
-                    if (target instanceof Function) {
-                        Function func = (Function) target;
-                        if (!func.validateArgumentSize(arguments.size())) {
-                            throw new ParseException("Function call to \"" + name + "\" has illegal parameter size", null);
-                        }
-                        return new CallExpression(func, new Function.ArgumentCollection(arguments));
-                    }
-                    throw new ParseException("\"" + name + "\" is not a function", null);
                 } else {
-                    if (lastPrecedence >= BinaryExpression.Op.MUL.precedence()) {
-                        return left;
-                    }
-                    Expression right = parseCompoundExpression(lexer, BinaryExpression.Op.MUL.precedence());
-                    return new BinaryExpression(BinaryExpression.Op.MUL, left, right);
-                }
-            }
-            case QUES: {
-                // 嵌套的三元条件表达式从右往左执行
-                if (lastPrecedence > PRECEDENCE_QUES) {
-                    return left;
-                }
-
-                lexer.next();
-                final Expression trueValue = parseCompoundExpression(lexer, PRECEDENCE_QUES);
-
-                if (lexer.current().kind() == TokenKind.COLON) {
-                    // then it's a ternary expression, since there is a ':', indicating the next expression
                     lexer.next();
-                    return new TernaryConditionalExpression(left, trueValue, parseCompoundExpression(lexer, PRECEDENCE_QUES));
-                } else {
-                    return new BinaryExpression(BinaryExpression.Op.CONDITIONAL, left, trueValue);
                 }
+
+                if (!call.function().validateArgumentSize(arguments.size())) {
+                    throw new ParseException("Illegal function arguments size", lexer.cursor());
+                }
+
+                return new CallExpression(call.function(), new Function.ArgumentCollection(arguments));
+            }
+
+            if (!call.function().validateArgumentSize(call.arguments().size())) {
+                throw new ParseException("Illegal function arguments size", lexer.cursor());
+            }
+        }
+
+        if (current.kind() == TokenKind.RPAREN || current.kind() == TokenKind.EOF) {
+            return left;
+        }
+
+        if (current.kind() == TokenKind.LPAREN) {
+            if (lastPrecedence >= BinaryExpression.Op.MUL.precedence()) {
+                return left;
+            }
+            Expression right = parseCompoundExpression(lexer, BinaryExpression.Op.MUL.precedence());
+            return new BinaryExpression(BinaryExpression.Op.MUL, left, right);
+        }
+
+        if (current.kind() == TokenKind.QUES) { // 嵌套的三元条件表达式从右往左执行
+            if (lastPrecedence > PRECEDENCE_QUES) {
+                return left;
+            }
+
+            lexer.next();
+            final Expression trueValue = parseCompoundExpression(lexer, PRECEDENCE_QUES);
+
+            if (lexer.current().kind() == TokenKind.COLON) {
+                // then it's a ternary expression, since there is a ':', indicating the next expression
+                lexer.next();
+                return new TernaryConditionalExpression(left, trueValue, parseCompoundExpression(lexer, PRECEDENCE_QUES));
+            } else {
+                return new BinaryExpression(BinaryExpression.Op.CONDITIONAL, left, trueValue);
             }
         }
 
@@ -265,6 +278,16 @@ final class MolangParserImpl implements MolangParser {
             } else {
                 throw new ParseException("Expect a identifier after struct access operator", lexer.cursor());
             }
+        }
+
+        if (current.kind() == TokenKind.LBRACKET) {
+            lexer.next();
+            Expression index = parseCompoundExpression(lexer, 0);
+            if (lexer.current().kind() == TokenKind.RBRACKET) {
+                lexer.next();
+                return new ArrayAccessExpression(left, index);
+            }
+            throw new ParseException("Expect a ']' after array index", lexer.cursor());
         }
 
         // check for binary expressions

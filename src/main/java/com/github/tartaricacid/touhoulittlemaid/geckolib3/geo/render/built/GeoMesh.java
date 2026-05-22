@@ -2,10 +2,10 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built;
 
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.*;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.VectorUtils;
-import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Math;
 
 public class GeoMesh {
     /**
@@ -38,7 +38,7 @@ public class GeoMesh {
         this.v1 = v1;
     }
 
-    static public class GeoMeshBuilder {
+    static public class Builder {
         private static final float DEGREES_TO_RADIANS = 0.017453292519943295f;
 
         private final Matrix4f poseMatrix = new Matrix4f();
@@ -56,7 +56,7 @@ public class GeoMesh {
 
         private int index = 0;
 
-        public GeoMeshBuilder(int cubeCount) {
+        public Builder(int cubeCount) {
             this.cubeCount = cubeCount;
             this.FACES = new int[cubeCount];
             this.POSITION = new Vector3f[cubeCount];
@@ -76,15 +76,15 @@ public class GeoMesh {
             }
         }
 
-        public void addCube(Cube cubeIn, ModelProperties properties, Double boneInflate, Boolean mirror) {
+        public void addCube(Cube cubeIn, ModelProperties properties, Float boneInflate, Boolean mirror) {
             float textureHeight = properties.getTextureHeight().floatValue();
             float textureWidth = properties.getTextureWidth().floatValue();
 
-            float inflate = cubeIn.getInflate() == null ? boneInflate.floatValue() : cubeIn.getInflate().floatValue();
+            float inflate = cubeIn.getInflate() == null ? boneInflate.floatValue() : cubeIn.getInflate();
             inflate /= 16f;
 
-            Vector3f size = VectorUtils.fromArray(cubeIn.getSize()).toVector3f().mul(0.0625f);
-            Vector3f origin = VectorUtils.fromArray(cubeIn.getOrigin()).toVector3f().mul(0.0625f);
+            Vector3f size = VectorUtils.fromArray(cubeIn.getSize()).mul(0.0625f);
+            Vector3f origin = VectorUtils.fromArray(cubeIn.getOrigin()).mul(0.0625f);
             float diff = Math.max(0.001f, size.x + inflate * 2);
 
             Vector3f P1 = new Vector3f(-(origin.x + size.x) - inflate, origin.y - inflate, origin.z - inflate);
@@ -99,11 +99,11 @@ public class GeoMesh {
                 diff = -diff;
             }
 
-            Vector3f rotation = VectorUtils.convertDoubleToFloat(VectorUtils.fromArray(cubeIn.getRotation()));
+            Vector3f rotation = VectorUtils.fromArray(cubeIn.getRotation());
 
             rotation.mul(-DEGREES_TO_RADIANS, -DEGREES_TO_RADIANS, DEGREES_TO_RADIANS);
 
-            Vector3f pivot = VectorUtils.convertDoubleToFloat(VectorUtils.fromArray(cubeIn.getPivot()));
+            Vector3f pivot = VectorUtils.fromArray(cubeIn.getPivot());
             pivot.mul(-0.0625f, 0.0625f, 0.0625f);
 
             poseMatrix.identity();
@@ -137,111 +137,111 @@ public class GeoMesh {
 
                 if (down != null) {
                     faces |= 0b000001;
-                    double[] uv = down.getUv();
-                    double[] uvSize = down.getUvSize();
+                    float[] uv = down.getUv();
+                    float[] uvSize = down.getUvSize();
 
-                    U0[faceIndex] = (float) uv[0] / textureWidth;
-                    V0[faceIndex] = (float) uv[1] / textureHeight;
-                    U1[faceIndex] = ((float) uv[0] + (float) uvSize[0]) / textureWidth;
-                    V1[faceIndex] = ((float) uv[1] + (float) uvSize[1]) / textureHeight;
+                    U0[faceIndex] = uv[0] / textureWidth;
+                    V0[faceIndex] = uv[1] / textureHeight;
+                    U1[faceIndex] = (uv[0] + uvSize[0]) / textureWidth;
+                    V1[faceIndex] = (uv[1] + uvSize[1]) / textureHeight;
                 }
                 if (up != null) {
                     faces |= 0b000010;
-                    double[] uv = up.getUv();
-                    double[] uvSize = up.getUvSize();
+                    float[] uv = up.getUv();
+                    float[] uvSize = up.getUvSize();
 
-                    U0[faceIndex + 1] = (float) uv[0] / textureWidth;
-                    V0[faceIndex + 1] = (float) uv[1] / textureHeight;
-                    U1[faceIndex + 1] = ((float) uv[0] + (float) uvSize[0]) / textureWidth;
-                    V1[faceIndex + 1] = ((float) uv[1] + (float) uvSize[1]) / textureHeight;
+                    U0[faceIndex + 1] = uv[0] / textureWidth;
+                    V0[faceIndex + 1] = uv[1] / textureHeight;
+                    U1[faceIndex + 1] = (uv[0] + uvSize[0]) / textureWidth;
+                    V1[faceIndex + 1] = (uv[1] + uvSize[1]) / textureHeight;
                 }
                 if (north != null) {
                     faces |= 0b000100;
-                    double[] uv = north.getUv();
-                    double[] uvSize = north.getUvSize();
+                    float[] uv = north.getUv();
+                    float[] uvSize = north.getUvSize();
 
-                    U0[faceIndex + 2] = (float) uv[0] / textureWidth;
-                    V0[faceIndex + 2] = (float) uv[1] / textureHeight;
-                    U1[faceIndex + 2] = ((float) uv[0] + (float) uvSize[0]) / textureWidth;
-                    V1[faceIndex + 2] = ((float) uv[1] + (float) uvSize[1]) / textureHeight;
+                    U0[faceIndex + 2] = uv[0] / textureWidth;
+                    V0[faceIndex + 2] = uv[1] / textureHeight;
+                    U1[faceIndex + 2] = (uv[0] + uvSize[0]) / textureWidth;
+                    V1[faceIndex + 2] = (uv[1] + uvSize[1]) / textureHeight;
                 }
                 if (south != null) {
                     faces |= 0b001000;
-                    double[] uv = south.getUv();
-                    double[] uvSize = south.getUvSize();
+                    float[] uv = south.getUv();
+                    float[] uvSize = south.getUvSize();
 
-                    U0[faceIndex + 3] = (float) uv[0] / textureWidth;
-                    V0[faceIndex + 3] = (float) uv[1] / textureHeight;
-                    U1[faceIndex + 3] = ((float) uv[0] + (float) uvSize[0]) / textureWidth;
-                    V1[faceIndex + 3] = ((float) uv[1] + (float) uvSize[1]) / textureHeight;
+                    U0[faceIndex + 3] = uv[0] / textureWidth;
+                    V0[faceIndex + 3] = uv[1] / textureHeight;
+                    U1[faceIndex + 3] = (uv[0] + uvSize[0]) / textureWidth;
+                    V1[faceIndex + 3] = (uv[1] + uvSize[1]) / textureHeight;
                 }
                 if (west != null) {
                     faces |= 0b010000;
-                    double[] uv = west.getUv();
-                    double[] uvSize = west.getUvSize();
+                    float[] uv = west.getUv();
+                    float[] uvSize = west.getUvSize();
 
-                    U0[faceIndex + 4] = (float) uv[0] / textureWidth;
-                    V0[faceIndex + 4] = (float) uv[1] / textureHeight;
-                    U1[faceIndex + 4] = ((float) uv[0] + (float) uvSize[0]) / textureWidth;
-                    V1[faceIndex + 4] = ((float) uv[1] + (float) uvSize[1]) / textureHeight;
+                    U0[faceIndex + 4] = uv[0] / textureWidth;
+                    V0[faceIndex + 4] = uv[1] / textureHeight;
+                    U1[faceIndex + 4] = (uv[0] + uvSize[0]) / textureWidth;
+                    V1[faceIndex + 4] = (uv[1] + uvSize[1]) / textureHeight;
                 }
                 if (east != null) {
                     faces |= 0b100000;
-                    double[] uv = east.getUv();
-                    double[] uvSize = east.getUvSize();
+                    float[] uv = east.getUv();
+                    float[] uvSize = east.getUvSize();
 
-                    U0[faceIndex + 5] = (float) uv[0] / textureWidth;
-                    V0[faceIndex + 5] = (float) uv[1] / textureHeight;
-                    U1[faceIndex + 5] = ((float) uv[0] + (float) uvSize[0]) / textureWidth;
-                    V1[faceIndex + 5] = ((float) uv[1] + (float) uvSize[1]) / textureHeight;
+                    U0[faceIndex + 5] = uv[0] / textureWidth;
+                    V0[faceIndex + 5] = uv[1] / textureHeight;
+                    U1[faceIndex + 5] = (uv[0] + uvSize[0]) / textureWidth;
+                    V1[faceIndex + 5] = (uv[1] + uvSize[1]) / textureHeight;
                 }
             } else {
                 faces |= 0b111111;
-                double[] uv = cubeIn.getUv().boxUVCoords;
-                Vec3 uvSize = VectorUtils.fromArray(cubeIn.getSize());
-                uvSize = new Vec3(Math.floor(uvSize.x), Math.floor(uvSize.y), Math.floor(uvSize.z));
+                float[] uv = cubeIn.getUv().boxUVCoords;
+                Vector3f uvSize = VectorUtils.fromArray(cubeIn.getSize());
+                uvSize = new Vector3f(Math.floor(uvSize.x), Math.floor(uvSize.y), Math.floor(uvSize.z));
 
-                float u0 = (float) (uv[0] + uvSize.z + uvSize.x);
-                float v0 = (float) (uv[1] + uvSize.z);
+                float u0 = (uv[0] + uvSize.z + uvSize.x);
+                float v0 = (uv[1] + uvSize.z);
                 U0[faceIndex] = u0 / textureWidth;
                 V0[faceIndex] = v0 / textureHeight;
-                U1[faceIndex] = (u0 + (float) uvSize.x) / textureWidth;
-                V1[faceIndex] = (v0 - (float) uvSize.z) / textureHeight;
+                U1[faceIndex] = (u0 + uvSize.x) / textureWidth;
+                V1[faceIndex] = (v0 - uvSize.z) / textureHeight;
 
-                u0 = (float) (uv[0] + uvSize.z);
-                v0 = (float) (uv[1]);
+                u0 = (uv[0] + uvSize.z);
+                v0 = (uv[1]);
                 U0[faceIndex + 1] = u0 / textureWidth;
                 V0[faceIndex + 1] = v0 / textureHeight;
-                U1[faceIndex + 1] = (u0 + (float) uvSize.x) / textureWidth;
-                V1[faceIndex + 1] = (v0 + (float) uvSize.z) / textureHeight;
+                U1[faceIndex + 1] = (u0 + uvSize.x) / textureWidth;
+                V1[faceIndex + 1] = (v0 + uvSize.z) / textureHeight;
 
-                u0 = (float) (uv[0] + uvSize.z);
-                v0 = (float) (uv[1] + uvSize.z);
+                u0 = (uv[0] + uvSize.z);
+                v0 = (uv[1] + uvSize.z);
                 U0[faceIndex + 2] = u0 / textureWidth;
                 V0[faceIndex + 2] = v0 / textureHeight;
-                U1[faceIndex + 2] = (u0 + (float) uvSize.x) / textureWidth;
-                V1[faceIndex + 2] = (v0 + (float) uvSize.y) / textureHeight;
+                U1[faceIndex + 2] = (u0 + uvSize.x) / textureWidth;
+                V1[faceIndex + 2] = (v0 + uvSize.y) / textureHeight;
 
-                u0 = (float) (uv[0] + uvSize.z + uvSize.x + uvSize.z);
-                v0 = (float) (uv[1] + uvSize.z);
+                u0 = (uv[0] + uvSize.z + uvSize.x + uvSize.z);
+                v0 = (uv[1] + uvSize.z);
                 U0[faceIndex + 3] = u0 / textureWidth;
                 V0[faceIndex + 3] = v0 / textureHeight;
-                U1[faceIndex + 3] = (u0 + (float) uvSize.x) / textureWidth;
-                V1[faceIndex + 3] = (v0 + (float) uvSize.y) / textureHeight;
+                U1[faceIndex + 3] = (u0 + uvSize.x) / textureWidth;
+                V1[faceIndex + 3] = (v0 + uvSize.y) / textureHeight;
 
-                u0 = (float) (uv[0] + uvSize.z + uvSize.x);
-                v0 = (float) (uv[1] + uvSize.z);
+                u0 = (uv[0] + uvSize.z + uvSize.x);
+                v0 = (uv[1] + uvSize.z);
                 U0[faceIndex + 4] = u0 / textureWidth;
                 V0[faceIndex + 4] = v0 / textureHeight;
-                U1[faceIndex + 4] = (u0 + (float) uvSize.z) / textureWidth;
-                V1[faceIndex + 4] = (v0 + (float) uvSize.y) / textureHeight;
+                U1[faceIndex + 4] = (u0 + uvSize.z) / textureWidth;
+                V1[faceIndex + 4] = (v0 + uvSize.y) / textureHeight;
 
-                u0 = (float) (uv[0]);
-                v0 = (float) (uv[1] + uvSize.z);
+                u0 = (uv[0]);
+                v0 = (uv[1] + uvSize.z);
                 U0[faceIndex + 5] = u0 / textureWidth;
                 V0[faceIndex + 5] = v0 / textureHeight;
-                U1[faceIndex + 5] = (u0 + (float) uvSize.z) / textureWidth;
-                V1[faceIndex + 5] = (v0 + (float) uvSize.y) / textureHeight;
+                U1[faceIndex + 5] = (u0 + uvSize.z) / textureWidth;
+                V1[faceIndex + 5] = (v0 + uvSize.y) / textureHeight;
             }
             FACES[index] = faces;
 

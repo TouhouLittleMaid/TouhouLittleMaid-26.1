@@ -3,61 +3,49 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.compat.carryon.RenderFixer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 public class LayerMaidHeldItem extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
-    private final ItemInHandRenderer itemInHandRenderer;
-
-    public LayerMaidHeldItem(EntityMaidRenderer maidRenderer, ItemInHandRenderer pItemInHandRenderer) {
+    public LayerMaidHeldItem(EntityMaidRenderer maidRenderer) {
         super(maidRenderer);
-        this.itemInHandRenderer = pItemInHandRenderer;
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, EntityMaidRenderState state, float limbSwing, float limbSwingAmount) {
-        Mob maid = state.entity;
-        if (maid == null) {
-            return;
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, EntityMaidRenderState state, float yRot, float xRot) {
+        var model = getParentModel();
+        if (!state.rightHandItemState.isEmpty() && model.hasRightArm()) {
+            this.renderArmWithItem(state, state.rightHandItemState, state.rightHandItemStack, HumanoidArm.RIGHT, poseStack, submitNodeCollector);
         }
-        ItemStack mainRightItem = maid.getMainHandItem();
-        ItemStack offLeftItem = maid.getOffhandItem();
-        BedrockModel<EntityMaidRenderState> model = getParentModel();
-        if (!mainRightItem.isEmpty() && model.hasRightArm() && !RenderFixer.isCarryOnRender(mainRightItem, bufferIn)) {
-            this.renderArmWithItem(maid, mainRightItem, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, HumanoidArm.RIGHT, poseStack, bufferIn, packedLightIn);
-        }
-        if (!offLeftItem.isEmpty() && model.hasLeftArm() && !RenderFixer.isCarryOnRender(offLeftItem, bufferIn)) {
-            this.renderArmWithItem(maid, offLeftItem, ItemDisplayContext.THIRD_PERSON_LEFT_HAND, HumanoidArm.LEFT, poseStack, bufferIn, packedLightIn);
+        if (!state.leftHandItemState.isEmpty() && model.hasLeftArm()) {
+            this.renderArmWithItem(state, state.leftHandItemState, state.leftHandItemStack, HumanoidArm.LEFT, poseStack, submitNodeCollector);
         }
     }
 
-    private void renderArmWithItem(Mob maid, ItemStack itemStack, ItemDisplayContext transformTypeIn, HumanoidArm handSide, PoseStack poseStack, MultiBufferSource typeBuffer, int combinedLightIn) {
-        if (!itemStack.isEmpty()) {
-            poseStack.pushPose();
-            boolean isLeft = handSide == HumanoidArm.LEFT;
-            getParentModel().translateToHand(handSide, poseStack);
-            if (getParentModel().hasArmPositioningModel(handSide)) {
-                getParentModel().translateToPositioningHand(handSide, poseStack);
-                poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                poseStack.translate(0, 0.125, -0.0625);
-            } else {
-                poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-                poseStack.translate((isLeft ? -1 : 1) / 16.0, 0.125, -0.525);
-            }
-            GunClientUtil.addItemTranslate(poseStack, itemStack, isLeft);
-            this.itemInHandRenderer.renderItem(maid, itemStack, transformTypeIn, isLeft, poseStack, typeBuffer, combinedLightIn);
-            poseStack.popPose();
+    private void renderArmWithItem(EntityMaidRenderState state, ItemStackRenderState item, ItemStack itemStack, HumanoidArm handSide, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+        poseStack.pushPose();
+        boolean isLeft = handSide == HumanoidArm.LEFT;
+        getParentModel().translateToHand(handSide, poseStack);
+        if (getParentModel().hasArmPositioningModel(handSide)) {
+            getParentModel().translateToPositioningHand(handSide, poseStack);
+            poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+            poseStack.translate(0, 0.125, -0.0625);
+        } else {
+            poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
+            poseStack.translate((isLeft ? -1 : 1) / 16.0, 0.125, -0.525);
         }
+        GunClientUtil.addItemTranslate(poseStack, itemStack, isLeft);
+        item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
+        poseStack.popPose();
     }
 }

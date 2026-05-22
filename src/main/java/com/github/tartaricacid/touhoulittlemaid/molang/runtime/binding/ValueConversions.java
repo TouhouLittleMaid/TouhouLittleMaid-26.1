@@ -24,6 +24,8 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
+import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.StringExpression;
 import org.jetbrains.annotations.Nullable;
 
 public final class ValueConversions {
@@ -35,9 +37,8 @@ public final class ValueConversions {
             return (Boolean) obj;
         }
         if (obj instanceof Number) {
-            // '0' is considered false here, anything else
-            // is considered true.
-            return ((Number) obj).floatValue() != 0;
+            var v = ((Number) obj).floatValue();
+            return !Float.isNaN(v) && v != 0;
         }
         return true;
     }
@@ -47,7 +48,11 @@ public final class ValueConversions {
             return 0;
         }
         if ((obj instanceof Number)) {
-            return ((Number) obj).floatValue();
+            var ret = ((Number) obj).floatValue();
+            if (!Float.isNaN(ret)) {
+                return ret;
+            }
+            return 0;
         }
         if (obj instanceof Boolean) {
             return ((Boolean) obj) ? 1 : 0;
@@ -73,7 +78,11 @@ public final class ValueConversions {
             return 0;
         }
         if (obj instanceof Number) {
-            return ((Number) obj).doubleValue();
+            var ret = ((Number) obj).doubleValue();
+            if (!Double.isNaN(ret)) {
+                return ret;
+            }
+            return 0;
         }
         if (obj instanceof Boolean) {
             return ((Boolean) obj) ? 1 : 0;
@@ -82,10 +91,22 @@ public final class ValueConversions {
     }
 
     public static String asString(final @Nullable Object obj) {
-        if (obj instanceof String) {
-            return ((String) obj);
+        if (obj instanceof StringExpression) {
+            return ((StringExpression) obj).value();
+        } else if (obj instanceof String) {
+            return (String) obj;
         } else {
             return null;
+        }
+    }
+
+    public static int asPooledString(final @Nullable Object obj) {
+        if (obj instanceof StringExpression) {
+            return ((StringExpression) obj).pooledValue();
+        } else if (obj instanceof String) {
+            return StringPool.computeIfAbsent((String) obj);
+        } else {
+            return StringPool.EMPTY;
         }
     }
 }

@@ -24,7 +24,6 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.parser.ast;
 
-import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -57,13 +56,13 @@ public interface ExpressionVisitor<R> {
     R visit(final @NotNull Expression expression);
 
     /**
-     * Evaluate for double expression.
+     * Evaluate for float expression.
      *
      * @param expression The expression.
      * @return The result.
      * @since 3.0.0
      */
-    default R visitDouble(final @NotNull DoubleExpression expression) {
+    default R visitFloat(final @NotNull FloatExpression expression) {
         return visit(expression);
     }
 
@@ -134,10 +133,6 @@ public interface ExpressionVisitor<R> {
         return visit(expression);
     }
 
-    default Function buildExecutionScopeFunction(final @NotNull ExecutionScopeExpression expression) {
-        throw new UnsupportedOperationException("Unsupported expression type: " + expression);
-    }
-
     /**
      * Evaluate for binary expression.
      *
@@ -171,4 +166,7 @@ public interface ExpressionVisitor<R> {
         return visit(expression);
     }
 
+    default R visitArray(ArrayAccessExpression expression) {
+        return visit(expression);
+    }
 }

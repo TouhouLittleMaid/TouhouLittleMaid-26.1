@@ -1,19 +1,20 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition;
 
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunCommonUtil;
-import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
 
 public class ConditionTAC {
     private static final String EMPTY = "";
-    private final List<String> nameTest = Lists.newArrayList();
-    private final List<Identifier> idTest = Lists.newArrayList();
+
+    private final Set<String> nameTest = new ReferenceOpenHashSet<>();
+    private final Set<Identifier> idTest = new ReferenceOpenHashSet<>();
 
     public void addTest(String name) {
         if (!name.startsWith("tac:") || !name.contains("$")) {

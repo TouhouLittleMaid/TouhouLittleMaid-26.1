@@ -1,35 +1,35 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.functions;
 
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.struct.Vec3fStruct;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.processor.IBone;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.processor.IBoneView;
 import org.jetbrains.annotations.NotNull;
 
 public final class BoneScale extends BoneParamFunction {
     @Override
-    protected Vec3fStruct getParam(@NotNull IBone bone) {
+    protected Vec3fStruct getParam(@NotNull IBoneView bone) {
         return new BoneScaleStruct(bone);
     }
 
     private static final class BoneScaleStruct extends Vec3fStruct {
-        private final IBone bone;
+        private final IBoneView bone;
 
-        public BoneScaleStruct(IBone bone) {
+        public BoneScaleStruct(IBoneView bone) {
             this.bone = bone;
         }
 
         @Override
         protected float getX() {
-            return bone.getScaleX();
+            return bone.getScale().x;
         }
 
         @Override
         protected float getY() {
-            return bone.getScaleY();
+            return bone.getScale().y;
         }
 
         @Override
         protected float getZ() {
-            return bone.getScaleZ();
+            return bone.getScale().z;
         }
     }
 }

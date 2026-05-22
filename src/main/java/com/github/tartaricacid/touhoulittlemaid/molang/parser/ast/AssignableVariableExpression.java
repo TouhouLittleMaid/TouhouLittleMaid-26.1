@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.molang.parser.ast;
 
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.AssignableVariable;
-import org.jetbrains.annotations.NotNull;
 
+import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class AssignableVariableExpression implements Expression {

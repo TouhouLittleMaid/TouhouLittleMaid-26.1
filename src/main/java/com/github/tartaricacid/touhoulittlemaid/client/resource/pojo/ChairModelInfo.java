@@ -1,9 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.pojo;
 
-import com.github.tartaricacid.touhoulittlemaid.client.resource.GeckoModelLoader;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import it.unimi.dsi.fastutil.objects.ReferenceLists;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
@@ -171,7 +171,7 @@ public class ChairModelInfo implements IModelInfo {
         }
         if (isGeckoModel) {
             if (animation == null || animation.isEmpty()) {
-                animation = Collections.singletonList(GeckoModelLoader.DEFAULT_CHAIR_ANIMATION);
+                animation = ReferenceLists.emptyList();
             } else {
                 animation = animation.stream().filter(res -> res.getPath().endsWith(GECKO_ANIMATION)).collect(Collectors.toList());
             }

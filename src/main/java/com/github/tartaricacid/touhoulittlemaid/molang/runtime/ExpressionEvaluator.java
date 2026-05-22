@@ -24,21 +24,20 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.runtime;
 
-import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.Expression;
-import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.ExpressionVisitor;
-import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ObjectBinding;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.ExpressionVisitor;
+import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ObjectBinding;
 
 /**
  * An {@link ExpressionVisitor} implementation that evaluates
  * (interprets) the expressions it visits and returns a single
- * value, commonly, a double value.
+ * value, commonly, a float value.
  *
  * @since 3.0.0
  */
 @SuppressWarnings("rawtypes")
-public /* sealed */ interface ExpressionEvaluator<TEntity> /* permits ExpressionEvaluatorImpl */ extends ExecutionContext<TEntity>, ExpressionVisitor<Object> {
+public /* sealed */ interface ExpressionEvaluator<TEntity> /* permits ExpressionEvaluatorImpl */ extends ExecutionContext<TEntity>  {
     /**
      * Creates a new {@link ExpressionEvaluator} instance with
      * the given bindings.
@@ -61,47 +60,4 @@ public /* sealed */ interface ExpressionEvaluator<TEntity> /* permits Expression
     static @NotNull ExpressionEvaluator evaluator() {
         return evaluator(ObjectBinding.EMPTY);
     }
-
-    @Override
-    default @Nullable Object eval(final @NotNull Expression expression) {
-        return expression.visit(this);
-    }
-
-    /**
-     * Creates a new, child, expression evaluator.
-     *
-     * <p>Child evaluators have all the bindings of
-     * their parents and may have extra bindings.</p>
-     *
-     * <p>Child evaluators have their own stack.</p>
-     *
-     * @return The child expression evaluator.
-     * @since 3.0.0
-     */
-    @NotNull ExpressionEvaluator<TEntity> createChild();
-
-    /**
-     * Creates a new, child, expression evaluator.
-     *
-     * <p>Child evaluators have all the bindings of
-     * their parents and may have extra bindings.</p>
-     *
-     * <p>Child evaluators have their own stack.</p>
-     *
-     * @param entity The new entity value
-     * @return The child expression evaluator.
-     * @since 3.0.0
-     */
-    @NotNull <TNewEntity> ExpressionEvaluator<TNewEntity> createChild(final @Nullable TNewEntity entity);
-
-    /**
-     * Pops the return value, set by the last "return"
-     * expression.
-     *
-     * @return The return value, null if no "return"
-     * expression is found.
-     * @since 3.0.0
-     */
-    @Nullable Object popReturnValue();
-
 }

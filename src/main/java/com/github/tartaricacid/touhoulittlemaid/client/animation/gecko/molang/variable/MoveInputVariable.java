@@ -11,8 +11,9 @@ public class MoveInputVariable {
         float partialTick = context.animationEvent().getPartialTick();
 
         // 求出当前移动的水平分量
-        double x = Mth.lerp(partialTick, entity.xo, entity.getX()) - entity.xo;
-        double z = Mth.lerp(partialTick, entity.zo, entity.getZ()) - entity.zo;
+        var delta = context.animatableEntity().getStateTracker().getPositionDelta();
+        var x = delta.x;
+        var z = delta.z;
 
         // 如果移动数值过小，那么认为没有一点，返回 0
         if (Math.sqrt(x * x + z * z) < 1.0E-4) {
@@ -32,8 +33,9 @@ public class MoveInputVariable {
         float partialTick = context.animationEvent().getPartialTick();
 
         // 求出当前移动的水平分量
-        double x = Mth.lerp(partialTick, entity.xo, entity.getX()) - entity.xo;
-        double z = Mth.lerp(partialTick, entity.zo, entity.getZ()) - entity.zo;
+        var delta = context.animatableEntity().getStateTracker().getPositionDelta();
+        var x = delta.x;
+        var z = delta.z;
 
         // 如果移动数值过小，那么认为没有一点，返回 0
         if (Math.sqrt(x * x + z * z) < 1.0E-4) {

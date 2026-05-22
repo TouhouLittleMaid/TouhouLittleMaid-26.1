@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.molang.parser.ast;
 
-import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Variable;
 import org.jetbrains.annotations.NotNull;
+import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Variable;
 
 import java.util.Objects;
 

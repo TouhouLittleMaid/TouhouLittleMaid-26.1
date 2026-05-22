@@ -1,17 +1,17 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
-import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
 
 public class ConditionalChair {
     private static final String EMPTY = "";
-    private final List<String> idTest = Lists.newArrayList();
+    private final Set<String> idTest = new ReferenceOpenHashSet<>();
     private final String idPre;
 
     public ConditionalChair() {

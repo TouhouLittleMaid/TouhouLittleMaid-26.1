@@ -24,12 +24,33 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.runtime;
 
-import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.Expression;
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.Expression;
 
 public interface ExecutionContext<TEntity> {
     TEntity entity();
 
-    @Nullable Object eval(final @NotNull Expression expression);
+    @Nullable Object evalSingleExpressionUnsafe(final @NotNull Expression expression);
+
+    @Nullable Object evalMultiExpressionUnsafe(final @NotNull Iterable<Expression> multiExpression, boolean returnThrough);
+
+    default @Nullable Object evalSingleExpression(final @NotNull Expression expression) {
+        try {
+            return evalSingleExpressionUnsafe(expression);
+        } catch (Exception e) {
+            TouhouLittleMaid.LOGGER.debug("Failed to evaluate molang expression.", e);
+            return null;
+        }
+    }
+
+    default @Nullable Object evalMultiExpression(final @NotNull Iterable<Expression> multiExpression, boolean returnThrough) {
+        try {
+            return evalMultiExpressionUnsafe(multiExpression, returnThrough);
+        } catch (Exception e) {
+            TouhouLittleMaid.LOGGER.debug("Failed to evaluate molang expression.", e);
+            return null;
+        }
+    }
 }

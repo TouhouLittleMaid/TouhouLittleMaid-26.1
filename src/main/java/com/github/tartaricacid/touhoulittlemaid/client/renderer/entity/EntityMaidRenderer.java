@@ -5,52 +5,69 @@ import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.RenderMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.HardcodedAnimationManger;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
+import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.*;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.swarfare.SWarfareCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.patpat.PatPatCompat;
+import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeoLayerRenderer;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntity;
+import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntityRenderer;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelResolver;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityAttachment;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BannerItem;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
 @SuppressWarnings("rawtypes,unchecked")
 public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
+    public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
+
     private static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
     private static final String DEFAULT_MODEL_ID = "touhou_little_maid:hakurei_reimu";
     /**
      * YSM 到时候会把渲染器加入其中
      */
     public static @Nullable Function<EntityRendererProvider.Context, IGeoEntityRenderer<Mob>> YSM_ENTITY_MAID_RENDERER;
+    private final ItemModelResolver itemModelResolver;
+    private final BlockModelResolver blockModelResolver;
     /**
      * 女仆模组自带的 GeckoLib 模型渲染
      */
@@ -58,15 +75,16 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
     /**
      * YSM 借用的渲染类型，和上述互斥
      */
-    private @Nullable IGeoEntityRenderer<Mob> ysmMaidRenderer;
+    // private @Nullable IGeoEntityRenderer<Mob> ysmMaidRenderer;
     private ChatBubbleRenderer chatBubbleRenderer2;
-    private MaidModelInfo mainInfo;
-    private List<Object> mainAnimations = Lists.newArrayList();
+    private CameraRenderState cameraRenderState;
 
     public EntityMaidRenderer(EntityRendererProvider.Context manager) {
         super(manager, new BedrockModel<>(), 0.5f);
-        this.addLayer(new LayerMaidHeldItem(this, manager.getItemInHandRenderer()));
-        this.addLayer(new LayerMaidBipedHead(this, manager.getModelSet()));
+        this.itemModelResolver = manager.getItemModelResolver();
+        this.blockModelResolver = manager.getBlockModelResolver();
+        this.addLayer(new LayerMaidHeldItem(this));
+        this.addLayer(new LayerMaidBipedHead(this, Minecraft.getInstance().getBlockEntityRenderDispatcher()));
         this.addLayer(new LayerMaidBackpack(this, manager.getModelSet()));
         this.addLayer(new LayerMaidBackItem(this));
         this.addLayer(new LayerMaidBanner(this, manager.getModelSet()));
@@ -76,24 +94,9 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         this.chatBubbleRenderer2 = new ChatBubbleRenderer(this);
     }
 
-    /**
-     * 不能使用事件来初始化 YSM 渲染器
-     * <p>
-     * 使用事件的话，会受到先后顺序的影响
-     */
-    private void initYsmModelRenderer(EntityRendererProvider.Context manager) {
-        if (!YsmCompat.isInstalled() || YSM_ENTITY_MAID_RENDERER == null) {
-            return;
-        }
-        IGeoEntityRenderer<Mob> geoEntityRenderer = YSM_ENTITY_MAID_RENDERER.apply(manager);
-        if (geoEntityRenderer != null) {
-            this.ysmMaidRenderer = geoEntityRenderer;
-            // 将女仆模组自带的 GeckoLib 模型的 Layer 渲染复制到 YSM 的 Layer 里去
-            List<GeoLayerRenderer> layerRenderers = this.geckoEntityMaidRenderer.getLayerRenderers();
-            for (GeoLayerRenderer layerRenderer : layerRenderers) {
-                this.ysmMaidRenderer.addGeoLayerRenderer(layerRenderer.copy(this.ysmMaidRenderer));
-            }
-        }
+    @Override
+    public EntityMaidRenderState createRenderState() {
+        return new EntityMaidRenderState();
     }
 
     @Override
@@ -108,7 +111,11 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
     }
 
     @Override
-    public void render(Mob entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
+    public void extractRenderState(Mob entity, EntityMaidRenderState state, float partialTicks) {
+        state.clear();
+        super.extractRenderState(entity, state, partialTicks);
+        ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, itemModelResolver, partialTicks);
+
         IMaid maid = IMaid.convert(entity);
         if (maid == null) {
             return;
@@ -120,48 +127,144 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         }
 
         // 读取默认模型，用于清除不存在模型的缓存残留
-        CustomPackLoader.MAID_MODELS.getModel(DEFAULT_MODEL_ID).ifPresent(model -> this.model = model);
-        CustomPackLoader.MAID_MODELS.getInfo(DEFAULT_MODEL_ID).ifPresent(info -> this.mainInfo = info);
-        CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).ifPresent(animations -> this.mainAnimations = animations);
+        CustomPackLoader.MAID_MODELS.getModel(DEFAULT_MODEL_ID).ifPresent(model -> state.bedrockModel = model);
+        CustomPackLoader.MAID_MODELS.getInfo(DEFAULT_MODEL_ID).ifPresent(mainInfo -> state.mainInfo = mainInfo);
+        CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).ifPresent(animations -> state.mainAnimations = animations);
 
-        MaidModels.ModelData eventModelData = new MaidModels.ModelData(model, mainInfo, mainAnimations);
+        MaidModels.ModelData eventModelData = new MaidModels.ModelData(state.bedrockModel, state.mainInfo, state.mainAnimations);
         if (NeoForge.EVENT_BUS.post(new RenderMaidEvent(maid, eventModelData)).isCanceled()) {
             BedrockModel<EntityMaidRenderState> bedrockModel = eventModelData.getModel();
             if (bedrockModel != null) {
-                this.model = bedrockModel;
+                state.bedrockModel = bedrockModel;
             }
-            this.mainInfo = eventModelData.getInfo();
-            this.mainAnimations = eventModelData.getAnimations();
+            state.mainInfo = eventModelData.getInfo();
+            state.mainAnimations = eventModelData.getAnimations();
         } else {
             // 通过模型 id 获取对应数据
-            CustomPackLoader.MAID_MODELS.getModel(maid.getModelId()).ifPresent(model -> this.model = model);
-            CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId()).ifPresent(info -> this.mainInfo = info);
-            CustomPackLoader.MAID_MODELS.getAnimation(maid.getModelId()).ifPresent(animations -> this.mainAnimations = animations);
+            CustomPackLoader.MAID_MODELS.getModel(maid.getModelId()).ifPresent(model -> state.bedrockModel = model);
+            CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId()).ifPresent(mainInfo -> state.mainInfo = mainInfo);
+            CustomPackLoader.MAID_MODELS.getAnimation(maid.getModelId()).ifPresent(animations -> state.mainAnimations = animations);
         }
 
-        // 渲染聊天气泡
-        EntityMaid maidEntity = maid.asStrictMaid();
+        // 头部物品
+        ItemStack headItem = entity.getItemBySlot(EquipmentSlot.HEAD);
+        if (headItem.getItem() instanceof BlockItem blockItem) {
+            if (blockItem.getBlock() instanceof AbstractSkullBlock) {
+                // TODO: 复刻 SkullBlockRenderer 的逻辑，extract 至 state.backBannerItem
+            } else {
+                blockModelResolver.update(state.headBlock, blockItem.getBlock().defaultBlockState(), BLOCK_DISPLAY_CONTEXT);
+            }
+        } else if (SimpleHatsCompat.isHatItem(headItem)) {
+            SimpleHatsCompat.extract(state.simpleHat, headItem);
+        }
+
+        // 背部物品
+        var maidEntity = IMaid.convertToMaid(entity);
         // 暂定只能女仆显示
         if (maidEntity != null && MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() && maidEntity.getConfigManager().isChatBubbleShow()) {
             Vec3 vec3 = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getViewYRot(partialTicks));
             if (vec3 != null) {
-                poseStack.pushPose();
-                double offsetY = vec3.y() + 0.5f;
-                if (maidEntity.isMaidInSittingPose()) {
-                    offsetY -= 0.25f;
-                }
-                poseStack.translate(vec3.x, offsetY, vec3.z);
-                poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-                poseStack.mulPose(Axis.YP.rotationDegrees(180));
-                poseStack.scale(-0.025F, -0.025F, 0.025F);
-                EntityGraphics graphics = new EntityGraphics(bufferIn, poseStack, maidEntity, packedLightIn, partialTicks);
-                this.chatBubbleRenderer2.render(graphics);
-                poseStack.popPose();
+                state.showBubble = true;
+                state.bubbleOffset = vec3;
             }
         }
 
+        if (maidEntity != null) {
+            state.showBackpack = maidEntity.getConfigManager().isShowBackpack();
+            if (!entity.isSleeping() && !entity.isInvisible()) {
+                state.backpack = state.showBackpack ? maidEntity.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
+                ItemStack backpackShowingItem = maidEntity.getBackpackShowItem();
+                if (GunClientUtil.isGun(backpackShowingItem)) {
+                    // 目前 26.1 没有枪械模组
+                } else if (backpackShowingItem.getItem() instanceof BannerItem item) {
+                    // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBannerItem
+                } else {
+                    itemModelResolver.updateForLiving(state.backItem, backpackShowingItem, ItemDisplayContext.FIXED, entity);
+                }
+            }
+        }
+
+        state.playerVehicle = entity.getVehicle() instanceof Player;
+        if (maidEntity != null) {
+            state.sitting = maidEntity.isMaidInSittingPose();
+        }
+
+        // 准备各模型类型的状态
+        if (maidEntity != null && maidEntity.isYsmModel()) {
+            // 还没想好需要什么
+            state.modelType = ModelType.YSM;
+        }
+
+        // Gecko 动画更新要放在最后
+        if (state.mainInfo.isGeckoModel()) {
+            state.modelType = ModelType.GECKO;
+            var geckoEntity = getGeckoEntity(entity);
+            if (geckoEntity != null) {
+                AnimationUpdateManager.createTask(geckoEntity, state);
+            }
+        }
+
+        if (state.modelType == ModelType.NONE) {
+            state.modelType = ModelType.SIMPLE_BEDROCK;
+        }
+    }
+
+    @Nullable
+    public GeckoMaidEntity<? extends Mob> getGeckoEntity(Mob entity) {
+        return entity.getData(GeckoMaidEntity.TYPE);
+    }
+
+    /**
+     * 不能使用事件来初始化 YSM 渲染器
+     * <p>
+     * 使用事件的话，会受到先后顺序的影响
+     */
+    private void initYsmModelRenderer(EntityRendererProvider.Context manager) {
+        if (!YsmCompat.isInstalled() || YSM_ENTITY_MAID_RENDERER == null) {
+            return;
+        }
+/*
+        IGeoEntityRenderer<Mob> geoEntityRenderer = YSM_ENTITY_MAID_RENDERER.apply(manager);
+        if (geoEntityRenderer != null) {
+            this.ysmMaidRenderer = geoEntityRenderer;
+            // 将女仆模组自带的 GeckoLib 模型的 Layer 渲染复制到 YSM 的 Layer 里去
+            List<GeoLayerRenderer> layerRenderers = this.geckoEntityMaidRenderer.getLayerRenderers();
+            for (GeoLayerRenderer layerRenderer : layerRenderers) {
+                this.ysmMaidRenderer.addGeoLayerRenderer(layerRenderer.copy(this.ysmMaidRenderer));
+            }
+        }
+*/
+    }
+
+    @Override
+    public void submit(EntityMaidRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.modelType == ModelType.NONE) {
+            return;
+        }
+
+        this.cameraRenderState = camera;
+
+        // 暂定只能女仆显示
+        if (state.showBubble) {
+            poseStack.pushPose();
+            double offsetY = state.bubbleOffset.y() + 0.5f;
+            if (state.sitting) {
+                offsetY -= 0.25f;
+            }
+            poseStack.translate(state.bubbleOffset.x, offsetY, state.bubbleOffset.z);
+            poseStack.mulPose(camera.orientation);
+            poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            poseStack.scale(-0.025F, -0.025F, 0.025F);
+
+            // TODO
+            EntityGraphics graphics = new EntityGraphics(poseStack, maidEntity, state.lightCoords, state.partialTick);
+            this.chatBubbleRenderer2.submit(submitNodeCollector, graphics);
+            poseStack.popPose();
+        }
+
         // YSM 接管渲染
-        if (maid.isYsmModel() && this.ysmMaidRenderer != null) {
+/*
+        if (state.modelType == ModelType.YSM && this.ysmMaidRenderer != null) {
             IGeoEntity geoEntity = this.ysmMaidRenderer.getGeoEntity(entity);
             geoEntity.setYsmModel(maid.getYsmModelId(), maid.getYsmModelTexture());
             if (maidEntity != null) {
@@ -169,65 +272,67 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
             }
             PatPatCompat.renderPat(entity, poseStack, partialTicks);
             this.ysmMaidRenderer.geoRender(entity, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-            return;
         }
+*/
 
         // GeckoLib 接管渲染
-        if (this.mainInfo.isGeckoModel()) {
-            this.geckoEntityMaidRenderer.getAnimatableEntity(entity).setMaidInfo(this.mainInfo);
-            PatPatCompat.renderPat(entity, poseStack, partialTicks);
-            this.geckoEntityMaidRenderer.render(entity, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-            return;
+        if (state.modelType == ModelType.GECKO) {
+            PatPatCompat.renderPat(state, poseStack, state.partialTick);
+            this.geckoEntityMaidRenderer.submit(state, poseStack, submitNodeCollector, camera);
         }
 
-        // 模型动画设置
-        this.model.setAnimations(this.mainAnimations);
-        // 渲染女仆模型本体
-        GlWrapper.setPoseStack(poseStack);
-        super.render(entity, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
-        GlWrapper.clearPoseStack();
+        if (state.modelType == ModelType.SIMPLE_BEDROCK) {
+            assert state.bedrockModel != null;
+            this.model = state.bedrockModel;
+            // 模型动画设置
+            this.model.setAnimations(state.mainAnimations);
+            // 渲染女仆模型本体
+            GlWrapper.setPoseStack(poseStack);
+            super.submit(state, poseStack, submitNodeCollector, camera);
+            GlWrapper.clearPoseStack();
+        }
     }
 
     @Override
-    protected void scale(EntityMaidRenderState state, PoseStack poseStack) {
-        float scale = mainInfo.getRenderEntityScale();
-        poseStack.scale(scale, scale, scale);
-    }
-
-    @Override
-    protected void setupRotations(EntityMaidRenderState state, PoseStack poseStack, float pRotationYaw, float pPartialTicks) {
-        super.setupRotations(state, poseStack, pRotationYaw, pPartialTicks);
-
-        Mob mob = state.entity;
-        if (mob == null) {
-            return;
-        }
+    protected void setupRotations(EntityMaidRenderState state, PoseStack poseStack, float bodyRot, float entityScale) {
+        super.setupRotations(state, poseStack, bodyRot, entityScale);
 
         // 抱起女仆时的旋转
-        if (mob.getVehicle() instanceof Player && !this.mainInfo.isGeckoModel()) {
+        if (state.playerVehicle && state.modelType != ModelType.GECKO) {
             poseStack.translate(-0.375, 0.8325, 0.375);
             poseStack.mulPose(Axis.ZN.rotationDegrees(65));
             poseStack.mulPose(Axis.YN.rotationDegrees(-80));
         }
 
         // 其他时候的旋转
-        HardcodedAnimationManger.setupRotations(mob, poseStack, state.ageInTicks, pRotationYaw, pPartialTicks, this.mainInfo.isGeckoModel());
+        HardcodedAnimationManger.setupRotations(mob, poseStack, state.ageInTicks, state.yRot, state.partialTick, state.mainInfo.isGeckoModel());
+    }
+
+    @Override
+    protected void scale(EntityMaidRenderState state, PoseStack poseStack) {
+        var scale = state.mainInfo.getRenderEntityScale();
+        poseStack.scale(scale, scale, scale);
     }
 
     @Override
     public Identifier getTextureLocation(EntityMaidRenderState state) {
-        if (mainInfo == null) {
+        if (state.mainInfo == null) {
             return DEFAULT_TEXTURE;
         }
-        return mainInfo.getTexture();
+        return state.mainInfo.getTexture();
     }
 
-    public MaidModelInfo getMainInfo() {
-        return mainInfo;
+    @Override
+    public float getWhiteOverlayProgress(EntityMaidRenderState state) {
+        return super.getWhiteOverlayProgress(state);
     }
 
     public EntityRenderDispatcher getDispatcher() {
         return this.entityRenderDispatcher;
+    }
+
+    public CameraRenderState getCameraRenderState() {
+        return this.cameraRenderState;
     }
 
     private void addAdditionMaidLayer(EntityRendererProvider.Context renderManager) {

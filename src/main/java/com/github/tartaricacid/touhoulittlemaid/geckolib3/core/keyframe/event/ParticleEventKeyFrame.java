@@ -5,7 +5,7 @@ public class ParticleEventKeyFrame extends EventKeyFrame<String> {
     public final String locator;
     public final String script;
 
-    public ParticleEventKeyFrame(double startTick, String eventData, String effect, String locator, String script) {
+    public ParticleEventKeyFrame(float startTick, String eventData, String effect, String locator, String script) {
         super(startTick, eventData);
         this.effect = effect;
         this.locator = locator;

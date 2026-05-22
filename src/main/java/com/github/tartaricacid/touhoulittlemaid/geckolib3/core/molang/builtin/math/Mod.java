@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
 public class Mod implements Function {
     @Override
     public Object evaluate(ExecutionContext<?> context, ArgumentCollection arguments) {
-        return arguments.getAsDouble(context, 0) % arguments.getAsDouble(context, 1);
+        return arguments.getAsFloat(context, 0) % arguments.getAsFloat(context, 1);
     }
 
     @Override

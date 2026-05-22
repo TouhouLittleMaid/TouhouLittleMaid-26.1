@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleData
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.ClientHooks;
 
@@ -16,7 +17,7 @@ public class ChatBubbleRenderer {
     }
 
     @SuppressWarnings("all")
-    public void render(EntityGraphics graphics) {
+    public void submit(SubmitNodeCollector submitNodeCollector, EntityGraphics graphics) {
         EntityMaid maid = graphics.getMaid();
         double distance = renderer.getDispatcher().distanceToSqr(maid);
         if (!ClientHooks.isNameplateInRenderDistance(maid, distance)) {

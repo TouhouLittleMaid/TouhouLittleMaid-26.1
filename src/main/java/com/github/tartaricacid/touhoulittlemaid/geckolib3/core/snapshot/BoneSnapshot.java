@@ -5,60 +5,58 @@
 
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.snapshot;
 
-public class BoneSnapshot {
-    public final String name;
-    public float scaleValueX;
-    public float scaleValueY;
-    public float scaleValueZ;
-    public float positionOffsetX;
-    public float positionOffsetY;
-    public float positionOffsetZ;
-    public float rotationValueX;
-    public float rotationValueY;
-    public float rotationValueZ;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoBone;
+import org.joml.Vector3f;
 
-    public boolean hidden;
+public class BoneSnapshot {
+    public final int name;
+
+    public final Vector3f position = new Vector3f();
+    public final Vector3f rotation = new Vector3f();
+    public final Vector3f scale = new Vector3f(1, 1, 1);
+
+    public boolean cubesHidden;
     public boolean childrenHidden;
 
-    protected BoneSnapshot(String name) {
-        this.name = name;
+    public BoneSnapshot(AnimatedGeoBone bone) {
+        copyFrom(bone);
+        this.name = bone.getPooledName();
     }
 
-    public BoneSnapshot(BoneSnapshot snapshot) {
-        copyFrom(snapshot);
-        this.name = snapshot.name;
+    public void copyFrom(AnimatedGeoBone bone) {
+        var initRot = bone.getInitialRotation();
+
+        position.set(bone.getPosition());
+        bone.getRotation().sub(initRot, rotation);
+        scale.set(bone.getScale());
+
+        cubesHidden = bone.areCubesHidden();
+        childrenHidden = bone.areChildrenHidden();
     }
 
     public void copyFrom(BoneSnapshot snapshot) {
-        this.scaleValueX = snapshot.scaleValueX;
-        this.scaleValueY = snapshot.scaleValueY;
-        this.scaleValueZ = snapshot.scaleValueZ;
+        position.set(snapshot.position);
+        rotation.set(snapshot.rotation);
+        scale.set(snapshot.scale);
 
-        this.positionOffsetX = snapshot.positionOffsetX;
-        this.positionOffsetY = snapshot.positionOffsetY;
-        this.positionOffsetZ = snapshot.positionOffsetZ;
-
-        this.rotationValueX = snapshot.rotationValueX;
-        this.rotationValueY = snapshot.rotationValueY;
-        this.rotationValueZ = snapshot.rotationValueZ;
-
-        this.hidden = snapshot.hidden;
-        this.childrenHidden = snapshot.childrenHidden;
+        cubesHidden = snapshot.cubesHidden;
+        childrenHidden = snapshot.childrenHidden;
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (other instanceof BoneSnapshot that) {
-            return this.name.equals(that.name);
+        if(o instanceof BoneSnapshot) {
+            BoneSnapshot that = (BoneSnapshot) o;
+            return name == that.name;
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        return name;
     }
 }

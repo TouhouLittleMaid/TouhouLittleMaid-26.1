@@ -16,7 +16,7 @@ public class ImmersiveMelodiesCompat {
     public static void addAnimation(HardcodedAnimationManger manger) {
     }
 
-    public static void updateMelodyProgress(LivingEntity entity, ImmersiveMelodiesCompat.ImmersiveMelodiesData imData) {
+    public static void updateMelodyProgress(LivingEntity entity, ImmersiveMelodiesCompat.ImmersiveMelodiesData imData, float partialTicks) {
     }
 
     public static void addBinding(CtrlBinding binding) {

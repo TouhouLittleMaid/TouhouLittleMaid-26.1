@@ -8,9 +8,9 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.event;
 
 public class EventKeyFrame<T> {
     private final T eventData;
-    private final double startTick;
+    private final float startTick;
 
-    public EventKeyFrame(double startTick, T eventData) {
+    public EventKeyFrame(float startTick, T eventData) {
         this.startTick = startTick;
         this.eventData = eventData;
     }
@@ -19,7 +19,7 @@ public class EventKeyFrame<T> {
         return eventData;
     }
 
-    public double getStartTick() {
+    public float getStartTick() {
         return startTick;
     }
 }

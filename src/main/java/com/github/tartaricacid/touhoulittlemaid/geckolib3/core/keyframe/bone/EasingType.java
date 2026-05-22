@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.bone;
 
 import java.util.List;
 
-// Native Access：所有字段都有读取
+
 public interface EasingType {
     EasingType LINEAR = EasingType::buildLinearKeyFrame;
     EasingType CATMULLROM = EasingType::buildCatmullRomKeyFrame;

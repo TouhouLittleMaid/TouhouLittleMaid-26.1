@@ -13,7 +13,7 @@ public class HashMapStruct implements Struct {
     }
 
     public HashMapStruct(boolean isRightValue) {
-        this.properties = new PooledStringHashMap<>();
+        this.properties = new PooledStringHashMap<>(4);
         this.isRightValue = isRightValue;
     }
 

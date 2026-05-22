@@ -1,8 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition;
 
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
-import com.google.common.collect.Lists;
-import net.minecraft.core.registries.BuiltInRegistries;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -13,23 +12,27 @@ import net.minecraft.world.item.ItemUseAnimation;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
 
 public class ConditionalSwing {
     private static final String EMPTY = "";
+
+    private final InteractionHand hand;
     private final int preSize;
     private final String idPre;
     private final String tagPre;
     private final String extraPre;
-    private final List<Identifier> idTest = Lists.newArrayList();
-    private final List<TagKey<Item>> tagTest = Lists.newArrayList();
-    private final List<ItemUseAnimation> extraTest = Lists.newArrayList();
-    private final List<String> innerTest = Lists.newArrayList();
+
+    private final Set<Identifier> idTest = new ReferenceOpenHashSet<>();
+    private final Set<TagKey<Item>> tagTest = new ReferenceOpenHashSet<>();
+    private final Set<ItemUseAnimation> extraTest = new ReferenceOpenHashSet<>();
+    private final Set<String> innerTest = new ReferenceOpenHashSet<>();
 
     public ConditionalSwing(InteractionHand hand) {
+        this.hand = hand;
         if (hand == InteractionHand.MAIN_HAND) {
             idPre = "swing$";
             tagPre = "swing#";
@@ -66,37 +69,35 @@ public class ConditionalSwing {
         }
     }
 
-    public String doTest(IMaid maid, InteractionHand hand) {
+    public String doTest(IMaid maid) {
         if (maid.asEntity().getItemInHand(hand).isEmpty()) {
             return EMPTY;
         }
-        String result = doIdTest(maid, hand);
+        String result = doIdTest(maid);
         if (result.isEmpty()) {
-            result = doTagTest(maid, hand);
+            result = doTagTest(maid);
             if (result.isEmpty()) {
-                return doExtraTest(maid, hand);
+                return doExtraTest(maid);
             }
             return result;
         }
         return result;
     }
 
-    private String doIdTest(IMaid maid, InteractionHand hand) {
+    @SuppressWarnings("deprecation")
+    private String doIdTest(IMaid maid) {
         if (idTest.isEmpty()) {
             return EMPTY;
         }
         ItemStack itemInHand = maid.asEntity().getItemInHand(hand);
-        Identifier registryName = BuiltInRegistries.ITEM.getKey(itemInHand.getItem());
-        if (registryName == null) {
-            return EMPTY;
-        }
+        Identifier registryName = itemInHand.getItem().builtInRegistryHolder().key().identifier();
         if (idTest.contains(registryName)) {
             return idPre + registryName;
         }
         return EMPTY;
     }
 
-    private String doTagTest(IMaid maid, InteractionHand hand) {
+    private String doTagTest(IMaid maid) {
         if (tagTest.isEmpty()) {
             return EMPTY;
         }
@@ -104,7 +105,7 @@ public class ConditionalSwing {
         return tagTest.stream().filter(itemInHand::is).findFirst().map(itemTagKey -> tagPre + itemTagKey.location()).orElse(EMPTY);
     }
 
-    private String doExtraTest(IMaid maid, InteractionHand hand) {
+    private String doExtraTest(IMaid maid) {
         if (extraTest.isEmpty() && innerTest.isEmpty()) {
             return EMPTY;
         }

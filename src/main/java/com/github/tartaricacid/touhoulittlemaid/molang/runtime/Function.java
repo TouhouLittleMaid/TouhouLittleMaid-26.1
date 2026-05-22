@@ -24,10 +24,13 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.runtime;
 
-import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.Expression;
-import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ValueConversions;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.IContext;
+import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.StringExpression;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.Expression;
+import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ValueConversions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +62,8 @@ public interface Function {
         return true;
     }
 
+    Function PLACE_HOLDER = (context, arguments) -> null;
+
     ArgumentCollection EMPTY_ARGUMENT = new ArgumentCollection(new ArrayList<>());
 
     class ArgumentCollection {
@@ -72,28 +77,61 @@ public interface Function {
             return arguments.size();
         }
 
+        @Nullable
         public String getAsString(@NotNull ExecutionContext<?> ctx, final int index) {
-            return ValueConversions.asString(ctx.eval(arguments.get(index)));
+            return ValueConversions.asString(ctx.evalSingleExpression(arguments.get(index)));
+        }
+
+        public int getAsPooledString(@NotNull ExecutionContext<?> ctx, final int index) {
+            return ValueConversions.asPooledString(ctx.evalSingleExpression(arguments.get(index)));
         }
 
         public double getAsDouble(@NotNull ExecutionContext<?> ctx, final int index) {
-            return ValueConversions.asDouble(ctx.eval(arguments.get(index)));
+            return ValueConversions.asDouble(ctx.evalSingleExpression(arguments.get(index)));
         }
 
         public int getAsInt(@NotNull ExecutionContext<?> ctx, final int index) {
-            return ValueConversions.asInt(ctx.eval(arguments.get(index)));
+            return ValueConversions.asInt(ctx.evalSingleExpression(arguments.get(index)));
         }
 
         public float getAsFloat(@NotNull ExecutionContext<?> ctx, final int index) {
-            return ValueConversions.asFloat(ctx.eval(arguments.get(index)));
+            return ValueConversions.asFloat(ctx.evalSingleExpression(arguments.get(index)));
         }
 
         public boolean getAsBoolean(@NotNull ExecutionContext<?> ctx, final int index) {
-            return ValueConversions.asBoolean(ctx.eval(arguments.get(index)));
+            return ValueConversions.asBoolean(ctx.evalSingleExpression(arguments.get(index)));
         }
 
+        @Nullable
+        public Identifier getAsResourceLocation(@NotNull ExecutionContext<? extends IContext<?>> ctx, final int index) {
+            var value = getValue(ctx, index);
+            Object res;
+            if (value instanceof StringExpression exp) {
+                if (exp.getCachedValue() != null) {
+                    return exp.getCachedValue();
+                }
+                var resourceLocation = Identifier.tryParse(exp.value());
+                if (resourceLocation != null) {
+                    exp.setCachedValue(resourceLocation);
+                    return resourceLocation;
+                }
+                res = exp.value();
+            } else if (value instanceof String str) {
+                var resourceLocation = Identifier.tryParse(str);
+                if (resourceLocation != null) {
+                    return resourceLocation;
+                }
+                res = str;
+            } else {
+                res = value;
+            }
+            ctx.entity().debugPrint("Illegal resource location: ", res);
+            return null;
+        }
+
+        @Nullable
         public Object getValue(@NotNull ExecutionContext<?> ctx, final int index) {
-            return ctx.eval(arguments.get(index));
+            return ctx.evalSingleExpression(arguments.get(index));
         }
 
         public Expression getExpression(final int index) {

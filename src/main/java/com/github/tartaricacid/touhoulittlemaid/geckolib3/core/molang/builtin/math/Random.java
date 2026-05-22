@@ -12,15 +12,15 @@ public class Random extends ContextFunction<Object> {
 
     @Override
     protected Object eval(ExecutionContext<IContext<Object>> context, ArgumentCollection arguments) {
-        double min = arguments.getAsDouble(context, 0);
-        double range = arguments.getAsDouble(context, 1);
+        float min = arguments.getAsFloat(context, 0);
+        float range = arguments.getAsFloat(context, 1);
         if(min > range) {
-            double temp = min;
+            float temp = min;
             min = range;
             range = temp - range;
         } else {
             range -= min;
         }
-        return min + context.entity().random().nextDouble() * range;
+        return min + context.entity().random().nextFloat() * range;
     }
 }

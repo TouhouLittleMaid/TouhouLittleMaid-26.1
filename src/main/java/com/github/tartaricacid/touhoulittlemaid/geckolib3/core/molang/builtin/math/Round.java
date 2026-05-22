@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
 public class Round implements Function {
     @Override
     public Object evaluate(ExecutionContext<?> context, ArgumentCollection arguments) {
-        return Math.round(arguments.getAsDouble(context, 0));
+        return Math.round(arguments.getAsFloat(context, 0));
     }
 
     @Override

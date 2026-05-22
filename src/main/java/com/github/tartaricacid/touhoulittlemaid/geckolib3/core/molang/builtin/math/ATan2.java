@@ -2,11 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.builtin.m
 
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
+import net.minecraft.util.Mth;
 
 public class ATan2 implements Function {
     @Override
     public Object evaluate(ExecutionContext<?> context, ArgumentCollection arguments) {
-        return Math.atan2(arguments.getAsDouble(context, 0),
+        return Mth.atan2(arguments.getAsDouble(context, 0),
                 arguments.getAsDouble(context, 1));
     }
 

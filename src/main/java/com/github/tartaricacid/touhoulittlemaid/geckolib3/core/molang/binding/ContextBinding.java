@@ -10,25 +10,41 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.variable.b
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.variable.entity.*;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.variable.item.ItemStackVariable;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.variable.item.ItemVariable;
+import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.StringExpression;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ObjectBinding;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import net.minecraft.client.entity.ClientAvatarEntity;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
+import java.util.Set;
+
 public class ContextBinding implements ObjectBinding {
-    private final Object2ReferenceOpenHashMap<String, Object> bindings = new Object2ReferenceOpenHashMap<>();
+    protected final Object2ReferenceOpenHashMap<String, Object> bindings = new Object2ReferenceOpenHashMap<>();
 
     @Override
     public Object getProperty(String name) {
         return bindings.get(name);
+    }
+
+    public Set<String> getAllName() {
+        return bindings.keySet();
     }
 
     public void function(String name, Function function) {
@@ -36,7 +52,15 @@ public class ContextBinding implements ObjectBinding {
     }
 
     public void constValue(String name, Object value) {
-        bindings.put(name, value);
+        if (value instanceof String str) {
+            bindings.put(name, new StringExpression(str));
+        } else if (value instanceof Number num) {
+            bindings.put(name, num.floatValue());
+        } else if (value instanceof Boolean b) {
+            bindings.put(name, b ? 1f : 0f);
+        } else {
+            bindings.put(name, value);
+        }
     }
 
     public void var(String name, IValueEvaluator<?, IContext<Object>> evaluator) {
@@ -61,6 +85,42 @@ public class ContextBinding implements ObjectBinding {
 
     public void maidEntityVar(String name, IValueEvaluator<?, IContext<EntityMaid>> evaluator) {
         bindings.put(name, new MaidEntityVariable(evaluator));
+    }
+
+    public void playerVar(String name, IValueEvaluator<?, IContext<Player>> evaluator) {
+        bindings.put(name, new PlayerVariable(evaluator));
+    }
+
+    public void avatarVar(String name, IValueEvaluator<?, IContext<ClientAvatarEntity>> evaluator) {
+        bindings.put(name, new AvatarVariable(evaluator));
+    }
+
+    public void clientPlayerVar(String name, IValueEvaluator<?, IContext<AbstractClientPlayer>> evaluator) {
+        bindings.put(name, new ClientPlayerVariable(evaluator));
+    }
+
+    public void localPlayerVar(String name, IValueEvaluator<?, IContext<LocalPlayer>> evaluator) {
+        bindings.put(name, new LocalPlayerVariable(evaluator));
+    }
+
+    public void projectileVar(String name, IValueEvaluator<?, IContext<Projectile>> evaluator) {
+        bindings.put(name, new ProjectileVariable(evaluator));
+    }
+
+    public void throwableItemProjectileVar(String name, IValueEvaluator<?, IContext<ThrowableItemProjectile>> evaluator) {
+        bindings.put(name, new ThrowableItemProjectileVariable(evaluator));
+    }
+
+    public void fishingHookVar(String name, IValueEvaluator<?, IContext<FishingHook>> evaluator) {
+        bindings.put(name, new FishingHookVariable(evaluator));
+    }
+
+    public void abstractArrowVar(String name, IValueEvaluator<?, IContext<AbstractArrow>> evaluator) {
+        bindings.put(name, new AbstractArrowVariable(evaluator));
+    }
+
+    public void arrowVar(String name, IValueEvaluator<?, IContext<Arrow>> evaluator) {
+        bindings.put(name, new ArrowVariable(evaluator));
     }
 
     public void itemVar(String name, IValueEvaluator<?, IContext<Item>> evaluator) {

@@ -24,13 +24,13 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.parser;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.github.tartaricacid.touhoulittlemaid.molang.lexer.Cursor;
 import com.github.tartaricacid.touhoulittlemaid.molang.lexer.MolangLexer;
 import com.github.tartaricacid.touhoulittlemaid.molang.lexer.TokenKind;
 import com.github.tartaricacid.touhoulittlemaid.molang.parser.ast.Expression;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.binding.ObjectBinding;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;

@@ -189,7 +189,7 @@ public enum TokenKind {
 
         /**
          * A token kind with HAS_VALUE tag will have a variable value,
-         * for example, double or string literal tokens have variable
+         * for example, float or string literal tokens have variable
          * values, but they are still parsed with the same token kind.
          *
          * @since 3.0.0

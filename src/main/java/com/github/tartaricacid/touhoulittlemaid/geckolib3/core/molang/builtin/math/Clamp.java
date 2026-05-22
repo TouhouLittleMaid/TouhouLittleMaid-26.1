@@ -7,9 +7,9 @@ import net.minecraft.util.Mth;
 public class Clamp implements Function {
     @Override
     public Object evaluate(ExecutionContext<?> context, ArgumentCollection arguments) {
-        return Mth.clamp(arguments.getAsDouble(context, 0),
-                arguments.getAsDouble(context, 1),
-                arguments.getAsDouble(context, 2));
+        return Mth.clamp(arguments.getAsFloat(context, 0),
+                arguments.getAsFloat(context, 1),
+                arguments.getAsFloat(context, 2));
     }
 
     @Override

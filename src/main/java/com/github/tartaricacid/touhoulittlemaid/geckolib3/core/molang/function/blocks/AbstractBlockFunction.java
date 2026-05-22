@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.blocks;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.IContext;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.ContextFunction;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.IContext;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 public abstract class AbstractBlockFunction extends ContextFunction<BlockBehaviour> {

@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.f
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.i18n.MavenVersionTranslator;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ public class ModVersion implements Function {
         }
 
         return ModList.get().getModContainerById(modId)
-                .map(modContainer -> MavenVersionTranslator.artifactVersionToString((modContainer.getModInfo().getVersion())))
+                .map(modContainer -> modContainer.getModInfo().getVersion().toString())
                 .orElse(null);
     }
 

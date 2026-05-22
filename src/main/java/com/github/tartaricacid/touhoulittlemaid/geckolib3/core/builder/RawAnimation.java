@@ -10,12 +10,12 @@ import java.util.Objects;
 
 public class RawAnimation {
     public final String animationName;
-    public final ILoopType loopType;
+    public final LoopType loopType;
 
     /**
      * 仅存储名称和播放循环类型的类
      */
-    public RawAnimation(String animationName, ILoopType loop) {
+    public RawAnimation(String animationName, LoopType loop) {
         this.animationName = animationName;
         this.loopType = loop;
     }

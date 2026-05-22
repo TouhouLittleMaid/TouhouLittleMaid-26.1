@@ -32,7 +32,10 @@
     "client.HumanoidModelMixin",
     "client.ItemPropertiesMixin",
     "client.LanguageMixin",
-    "client.LivingEntityRendererMixin"
+    "client.LivingEntityRendererMixin",
+    "client.Matrix4fMixin",
+    "client.InventoryScreenMixin",
+    "client.LevelRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

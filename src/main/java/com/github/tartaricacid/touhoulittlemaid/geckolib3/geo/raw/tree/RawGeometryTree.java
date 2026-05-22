@@ -1,68 +1,88 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.tree;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.Bone;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.MinecraftGeometry;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.ModelProperties;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo.RawGeoModel;
-import com.google.common.collect.Maps;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoLocatorType;
+import it.unimi.dsi.fastutil.bytes.Byte2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class RawGeometryTree {
-    public Map<String, RawBoneGroup> topLevelBones = new Object2ObjectOpenHashMap<>();
-    public ModelProperties properties;
+public record RawGeometryTree(ReferenceArrayList<RawBoneGroup> flatBoneList,
+                              ReferenceArrayList<RawBoneGroup> topLevelBones,
+                              Int2ReferenceOpenHashMap<RawBoneGroup> boneMap,
+                              Byte2ReferenceOpenHashMap<List<RawBoneGroup>> locatorMap,
+                              ModelProperties properties,
+                              int height) {
+    public static RawGeometryTree build(RawGeoModel model) {
+        var flatBoneList = new ReferenceArrayList<RawBoneGroup>();
+        var topLevelBones = new ReferenceArrayList<RawBoneGroup>();
+        var boneMap = new Int2ReferenceOpenHashMap<RawBoneGroup>();
+        var locatorMap = new Byte2ReferenceOpenHashMap<List<RawBoneGroup>>();
+        var nodeQueue = new ReferenceArrayList<RawBoneGroup>();
+        var geo = model.getMinecraftGeometry()[0];
+        var treeHeight = 0;
 
-    public static RawGeometryTree parseHierarchy(RawGeoModel model) {
-        RawGeometryTree hierarchy = new RawGeometryTree();
-        MinecraftGeometry geometry = model.getMinecraftGeometry()[0];
-        hierarchy.properties = geometry.getProperties();
-        List<Bone> bones = new ObjectArrayList<>(geometry.getBones());
-        int index = bones.size() - 1;
-        while (true) {
-            Bone bone = bones.get(index);
-            if (!hasParent(bone)) {
-                hierarchy.topLevelBones.put(bone.getName(), new RawBoneGroup(bone));
-                bones.remove(bone);
-            } else {
-                RawBoneGroup groupFromHierarchy = getGroupFromHierarchy(hierarchy, bone.getParent());
-                if (groupFromHierarchy != null) {
-                    groupFromHierarchy.children.put(bone.getName(), new RawBoneGroup(bone));
-                    bones.remove(bone);
+        for (var bone : geo.getBones()) {
+            boneMap.put(bone.getPooledName(), new RawBoneGroup(bone));
+        }
+        for (var boneNode : boneMap.values()) {
+            var parentName = boneNode.bone.getPooledParentName();
+            if (parentName == 0) {
+                topLevelBones.add(boneNode);
+                continue;
+            }
+            var parentNode = boneMap.get(parentName);
+            if (parentNode == null) {
+                throw new RuntimeException("Invalid geo model");
+            }
+
+            parentNode.children.add(boneNode);
+            boneNode.parent = parentNode;
+        }
+
+        flatBoneList.ensureCapacity(boneMap.size());
+        nodeQueue.ensureCapacity(16);
+        nodeQueue.addAll(topLevelBones);
+        while (!nodeQueue.isEmpty()) {
+            var node = nodeQueue.pop();
+            if (!node.children.isEmpty()) {
+                node.subTreeSize = node.children.size();
+                var parent = node.parent;
+                while (parent != null) {
+                    parent.subTreeSize += node.children.size();
+                    parent = parent.parent;
+                }
+
+                var childDepth = node.depth + 1;
+                if (treeHeight < childDepth) {
+                    treeHeight = childDepth;
+                }
+
+                for (var child : node.children) {
+                    child.depth = childDepth;
+                    nodeQueue.add(child);
                 }
             }
-            if (index == 0) {
-                index = bones.size() - 1;
-                if (index == -1) {
-                    break;
-                }
-            } else {
-                index--;
+            node.traverseOrder = flatBoneList.size();
+            flatBoneList.add(node);
+
+            node.locatorType = GeoLocatorType.getByName(stripNumSuffix(node.bone.getName()));
+        }
+
+        return new RawGeometryTree(flatBoneList, topLevelBones, boneMap, locatorMap, geo.getProperties(), treeHeight);
+    }
+
+    private static String stripNumSuffix(String input) {
+        if (!Character.isDigit(input.charAt(input.length() - 1))) {
+            return input;
+        }
+        for (int i = input.length() - 2; i >= 0; i--) {
+            if (!Character.isDigit(input.charAt(i))) {
+                return input.substring(0, i + 1);
             }
         }
-        return hierarchy;
-    }
-
-    public static boolean hasParent(Bone bone) {
-        return bone.getParent() != null;
-    }
-
-    public static RawBoneGroup getGroupFromHierarchy(RawGeometryTree hierarchy, String bone) {
-        HashMap<String, RawBoneGroup> flatList = Maps.newHashMap();
-        for (RawBoneGroup group : hierarchy.topLevelBones.values()) {
-            flatList.put(group.selfBone.getName(), group);
-            traverse(flatList, group);
-        }
-        return flatList.get(bone);
-    }
-
-    public static void traverse(HashMap<String, RawBoneGroup> flatList, RawBoneGroup group) {
-        for (RawBoneGroup child : group.children.values()) {
-            flatList.put(child.selfBone.getName(), child);
-            traverse(flatList, child);
-        }
+        return input;
     }
 }

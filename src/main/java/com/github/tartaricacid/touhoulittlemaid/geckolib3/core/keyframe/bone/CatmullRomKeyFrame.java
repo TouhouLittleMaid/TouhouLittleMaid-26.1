@@ -10,7 +10,7 @@ public class CatmullRomKeyFrame extends BoneKeyFrame {
     private final Vector3v rightPoint;
     private final Vector3v postPoint;
 
-    public CatmullRomKeyFrame(double startTick, double totalTick, Vector3v leftPoint, Vector3v current, Vector3v endPoint, Vector3v postRight, Vector3v postPoint) {
+    public CatmullRomKeyFrame(float startTick, float totalTick, Vector3v leftPoint, Vector3v current, Vector3v endPoint, Vector3v postRight, Vector3v postPoint) {
         super(startTick, totalTick, current);
         this.leftPoint = leftPoint;
         this.endPoint = endPoint;
@@ -19,7 +19,7 @@ public class CatmullRomKeyFrame extends BoneKeyFrame {
     }
 
     @Override
-    public Vector3f getLerpPoint(ExpressionEvaluator<?> evaluator, double percentCompleted) {
+    public Vector3f getLerpPoint(ExpressionEvaluator<?> evaluator, float percentCompleted) {
         if (isBegin(percentCompleted)) {
             return beginPoint.eval(evaluator);
         }

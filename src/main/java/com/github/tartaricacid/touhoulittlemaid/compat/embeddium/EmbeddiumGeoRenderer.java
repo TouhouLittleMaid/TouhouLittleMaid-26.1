@@ -46,10 +46,7 @@ class EmbeddiumGeoRenderer {
         if (writer == null) {
             return false;
         }
-        if (bone.isHidden()) {
-            return true;
-        }
-        if (bone.cubesAreHidden()) {
+        if (bone.areCubesHidden()) {
             return true;
         }
 

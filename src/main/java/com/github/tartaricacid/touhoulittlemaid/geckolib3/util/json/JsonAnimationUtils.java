@@ -6,7 +6,7 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.util.json;
 
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.Animation;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.ILoopType;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.LoopType;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.BoneAnimation;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.bone.BoneKeyFrame;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.keyframe.bone.BoneKeyFrameProcessor;
@@ -39,6 +39,11 @@ public class JsonAnimationUtils {
         return bones == null ? List.of() : new ArrayList<>(bones.entrySet());
     }
 
+    public static List<Map.Entry<String, JsonElement>> getSoundKeyFrames(JsonObject json) {
+        JsonObject sounds = json.getAsJsonObject("sound_effects");
+        return sounds == null ? List.of() : new ArrayList<>(sounds.entrySet());
+    }
+
     public static List<Map.Entry<String, JsonElement>> getCustomInstructionKeyFrames(JsonObject json) {
         JsonObject customInstructions = json.getAsJsonObject("timeline");
         return customInstructions == null ? List.of() : new ArrayList<>(customInstructions.entrySet());
@@ -67,26 +72,47 @@ public class JsonAnimationUtils {
         var animationName = element.getKey();
         JsonElement animationLength = animationJsonObject.get("animation_length");
         var animationLengthTicks = animationLength == null ? -1
-                : AnimationUtils.convertSecondsToTicks(animationLength.getAsDouble());
+                : AnimationUtils.convertSecondsToTicks(animationLength.getAsFloat());
 
-        var loop = ILoopType.fromJson(animationJsonObject.get("loop"));
+        var loop = LoopType.fromJson(animationJsonObject.get("loop"));
+        var blendWeightNode = animationJsonObject.get("blend_weight");
+        IValue blendWeight = null;
+        if (blendWeightNode != null && blendWeightNode.isJsonPrimitive()) {
+            var primitive = blendWeightNode.getAsJsonPrimitive();
+            if (primitive.isNumber()) {
+                blendWeight = parser.getConstant(primitive.getAsNumber().floatValue());
+            } else if (primitive.isString()) {
+                blendWeight = parser.parseExpression(primitive.getAsString(), false);
+            }
+        }
+
         var boneAnimations = new ReferenceArrayList<BoneAnimation>();
+        var soundKeyframes = new ReferenceArrayList<EventKeyFrame<String>>();
         var customInstructionKeyframes = new ReferenceArrayList<EventKeyFrame<IValue[]>>();
+
+        // 处理音频关键帧
+        for (Map.Entry<String, JsonElement> keyFrame : getSoundKeyFrames(animationJsonObject)) {
+            float startTick = Float.parseFloat(keyFrame.getKey()) * 20;
+            String value = keyFrame.getValue().getAsString();
+            soundKeyframes.add(new EventKeyFrame<>(startTick, value));
+        }
+        // 排序，因为 json 读取是乱序的
+        soundKeyframes.sort(Comparator.comparingDouble(EventKeyFrame::getStartTick));
 
         // 处理自定义指令关键帧
         for (Map.Entry<String, JsonElement> keyFrame : getCustomInstructionKeyFrames(animationJsonObject)) {
-            double startTick = Double.parseDouble(keyFrame.getKey()) * 20;
+            float startTick = Float.parseFloat(keyFrame.getKey()) * 20;
             JsonElement value = keyFrame.getValue();
             if (value.isJsonArray()) {
                 JsonArray array = value.getAsJsonArray();
                 IValue[] values = new IValue[array.size()];
                 for (int i = 0; i < array.size(); i++) {
                     String parserText = array.get(i).getAsString();
-                    values[i] = parser.parseExpression(parserText);
+                    values[i] = parser.parseExpression(parserText, false);
                 }
                 customInstructionKeyframes.add(new EventKeyFrame<>(startTick, values));
             } else if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
-                IValue[] values = new IValue[]{parser.parseExpression(value.getAsString())};
+                IValue[] values = new IValue[]{parser.parseExpression(value.getAsString(), false)};
                 customInstructionKeyframes.add(new EventKeyFrame<>(startTick, values));
             }
         }
@@ -115,30 +141,30 @@ public class JsonAnimationUtils {
         if (animationLengthTicks == -1) {
             animationLengthTicks = calculateLength(boneAnimations);
         }
-        return new Animation(animationName, animationLengthTicks, loop, boneAnimations, customInstructionKeyframes);
+        return new Animation(animationName, animationLengthTicks, loop, blendWeight, boneAnimations, soundKeyframes, customInstructionKeyframes);
     }
 
-    private static double calculateLength(List<BoneAnimation> boneAnimations) {
-        double longestLength = 0;
+    private static float calculateLength(List<BoneAnimation> boneAnimations) {
+        float longestLength = 0;
         for (BoneAnimation animation : boneAnimations) {
-            double xKeyframeTime = calculateKeyFrameListLength(animation.rotationKeyFrames);
-            double yKeyframeTime = calculateKeyFrameListLength(animation.positionKeyFrames);
-            double zKeyframeTime = calculateKeyFrameListLength(animation.scaleKeyFrames);
+            float xKeyframeTime = calculateKeyFrameListLength(animation.rotationKeyFrames);
+            float yKeyframeTime = calculateKeyFrameListLength(animation.positionKeyFrames);
+            float zKeyframeTime = calculateKeyFrameListLength(animation.scaleKeyFrames);
             longestLength = maxAll(longestLength, xKeyframeTime, yKeyframeTime, zKeyframeTime);
         }
-        return longestLength == 0 ? Double.MAX_VALUE : longestLength;
+        return longestLength == 0 ? Float.MAX_VALUE : longestLength;
     }
 
-    private static double calculateKeyFrameListLength(List<BoneKeyFrame> boneKeyFrames) {
+    private static float calculateKeyFrameListLength(List<BoneKeyFrame> boneKeyFrames) {
         if (boneKeyFrames.isEmpty()) {
             return 0;
         }
-        return boneKeyFrames.get(boneKeyFrames.size() - 1).getStartTick();
+        return boneKeyFrames.getLast().getStartTick();
     }
 
-    public static double maxAll(double... values) {
-        double max = 0;
-        for (double value : values) {
+    public static float maxAll(float... values) {
+        float max = 0;
+        for (float value : values) {
             max = Math.max(value, max);
         }
         return max;

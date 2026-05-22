@@ -1,58 +1,41 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.snapshot.BoneSnapshot;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.snapshot.BoneTopLevelSnapshot;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoBone;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectLists;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 public class GeoBone {
     private static final String GLOWING_PREFIX = "ysmGlow";
 
-    private GeoBone parent;
-    private final List<GeoBone> children;
-
     private final String name;
+    private final int pooledName;
+
     private final Vector3f pivot;
-    private final Vector3f rotation;
+    private final Vector3f initialRotation;
     private final GeoMesh cubes;
 
-    private final Boolean mirror;
-    private final Double inflate;
-    private final Boolean dontRender;
-    /**
-     * 我也不知道这个参数有啥用，但是 json 里面就有
-     */
-    private final Boolean reset;
+    private final int traverseOrder;
+    private final int depth;
+    private final int subTreeSize;
+    private final GeoLocatorType locatorType;
 
-    private final BoneSnapshot initialSnapshot;
     private final boolean glow;
 
-    public GeoBone(List<GeoBone> children, String name, Vector3f pivot, Vector3f rotation, GeoMesh mesh, Boolean mirror, Double inflate, Boolean dontRender, Boolean reset) {
-        this.children = ObjectLists.unmodifiable(new ObjectArrayList<>(children));
+    public GeoBone(String name, Vector3f pivot, Vector3f initialRotation, GeoMesh mesh,
+                   int traverseOrder, int depth, int subTreeSize, @Nullable GeoLocatorType locatorType) {
         this.name = name;
+        this.pooledName = StringPool.computeIfAbsent(name);
+
         this.pivot = pivot;
-        this.rotation = rotation;
+        this.initialRotation = initialRotation;
         this.cubes = mesh;
 
-        this.mirror = mirror;
-        this.inflate = inflate;
-        this.dontRender = dontRender;
-        this.reset = reset;
+        this.traverseOrder = traverseOrder;
+        this.depth = depth;
+        this.subTreeSize = subTreeSize;
+        this.locatorType = locatorType;
 
-        this.initialSnapshot = new BoneTopLevelSnapshot(new AnimatedGeoBone(this, null));
         this.glow = name.startsWith(GLOWING_PREFIX);
-    }
-
-    public GeoBone parent() {
-        return parent;
-    }
-
-    public List<GeoBone> children() {
-        return children;
     }
 
     public GeoMesh cubes() {
@@ -63,39 +46,36 @@ public class GeoBone {
         return name;
     }
 
+    public int pooledName() {
+        return this.pooledName;
+    }
+
     public Vector3f pivot() {
         return pivot;
     }
 
-    public Vector3f rotation() {
-        return rotation;
-    }
-
-    public Boolean mirror() {
-        return mirror;
-    }
-
-    public Double inflate() {
-        return inflate;
-    }
-
-    public Boolean dontRender() {
-        return dontRender;
-    }
-
-    public Boolean reset() {
-        return reset;
-    }
-
-    public BoneSnapshot initialSnapshot() {
-        return initialSnapshot;
+    public Vector3f initialRotation() {
+        return initialRotation;
     }
 
     public boolean glow() {
         return glow;
     }
 
-    public void setParent(GeoBone parent) {
-        this.parent = parent;
+    public int traverseOrder() {
+        return traverseOrder;
+    }
+
+    public int depth() {
+        return depth;
+    }
+
+    public int subTreeSize() {
+        return subTreeSize;
+    }
+
+    @Nullable
+    public GeoLocatorType locatorType() {
+        return locatorType;
     }
 }

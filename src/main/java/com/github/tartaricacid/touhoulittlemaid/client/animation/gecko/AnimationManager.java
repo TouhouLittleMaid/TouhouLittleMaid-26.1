@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingAnima
 import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingState;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition.*;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.controller.IAnimationPredicate;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.magic.MagicCastingAnimationManager;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
@@ -11,15 +12,14 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidGameRecordManager;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.PlayState;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.AnimationBuilder;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.ILoopType;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.predicate.AnimationEvent;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.LoopType;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.network.message.MaidAnimationPackage;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -35,45 +35,43 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 public final class AnimationManager {
-    private static AnimationManager MANAGER;
+    public static final IAnimationPredicate<?> EMPTY = e -> PlayState.STOP;
     @SuppressWarnings("unchecked")
-    private final ReferenceArrayList<AnimationState>[] data = new ReferenceArrayList[Priority.LOWEST + 1];
+    private static final ReferenceArrayList<AnimationState>[] data = new ReferenceArrayList[Priority.LOWEST + 1];
 
-    public AnimationManager() {
+    static {
         for (int i = 0; i < data.length; i++) {
             data[i] = new ReferenceArrayList<>(6);
         }
     }
 
-    public static AnimationManager getInstance() {
-        if (MANAGER == null) {
-            MANAGER = new AnimationManager();
-        }
-        return MANAGER;
+    @SuppressWarnings("unchecked")
+    public static <T extends AnimatableEntity<?>> IAnimationPredicate<T> empty(){
+        return (IAnimationPredicate<T>) EMPTY;
     }
 
     @Nonnull
     public static PlayState playLoopAnimation(AnimationEvent<?> event, String animationName) {
-        return playAnimation(event, animationName, ILoopType.EDefaultLoopTypes.LOOP);
+        return playAnimation(event, animationName, LoopType.LOOP);
     }
 
     @Nonnull
-    private static PlayState playAnimation(AnimationEvent<?> event, String animationName, ILoopType loopType) {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation(animationName, loopType));
+    private static PlayState playAnimation(AnimationEvent<?> event, String animationName, LoopType loopType) {
+        event.getCodedController().setAnimation(animationName, loopType);
         return PlayState.CONTINUE;
     }
 
     @Nonnull
     private static PlayState playAnimation(AnimationEvent<?> event, String animationName) {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation(animationName));
+        event.getCodedController().setAnimation(animationName);
         return PlayState.CONTINUE;
     }
 
-    public void register(AnimationState state) {
+    public static void register(AnimationState state) {
         data[state.getPriority()].add(state);
     }
 
-    public PlayState predicateParallel(AnimationEvent<?> event, String animationName) {
+    public static PlayState predicateParallel(AnimationEvent<?> event, String animationName) {
         if (Minecraft.getInstance().isPaused()) {
             return PlayState.STOP;
         }
@@ -81,7 +79,7 @@ public final class AnimationManager {
     }
 
     @NotNull
-    public PlayState predicateMain(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicateMain(AnimationEvent<GeckoMaidEntity<?>> event) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
@@ -97,7 +95,7 @@ public final class AnimationManager {
             for (AnimationState state : data[i]) {
                 if (state.getPredicate().test(maid, event)) {
                     String animationName = state.getAnimationName();
-                    ILoopType loopType = state.getLoopType();
+                    LoopType loopType = state.getLoopType();
                     PlayState gunMainAnimation = GunClientUtil.playGunMainAnimation(maid, event, animationName, loopType);
                     return Objects.requireNonNullElseGet(gunMainAnimation, () -> playAnimation(event, animationName, loopType));
                 }
@@ -106,7 +104,7 @@ public final class AnimationManager {
         return PlayState.STOP;
     }
 
-    public PlayState predicateOffhandHold(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicateOffhandHold(AnimationEvent<GeckoMaidEntity<?>> event) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
@@ -115,29 +113,26 @@ public final class AnimationManager {
         if (!entity.swinging && !entity.isUsingItem()) {
             ItemStack offhandItem = entity.getItemInHand(InteractionHand.OFF_HAND);
             if (offhandItem.is(Items.CROSSBOW) && CrossbowItem.isCharged(offhandItem)) {
-                return playAnimation(event, "hold_offhand:charged_crossbow", ILoopType.EDefaultLoopTypes.LOOP);
+                return playAnimation(event, "hold_offhand:charged_crossbow", LoopType.LOOP);
             }
         }
         if (checkSwingAndUse(maid, InteractionHand.OFF_HAND)) {
             ItemStack offhandItem = entity.getItemInHand(InteractionHand.OFF_HAND);
             if (!isSameItem(maid, offhandItem, InteractionHand.OFF_HAND)) {
                 maid.getHandItemsForAnimation()[InteractionHand.OFF_HAND.ordinal()] = offhandItem;
-                playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.LOOP);
+                playAnimation(event, "empty", LoopType.LOOP);
             }
 
-            Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
-            ConditionalHold conditionalHold = ConditionManager.getHoldOffhand(id);
-            if (conditionalHold != null) {
-                String name = conditionalHold.doTest(maid, InteractionHand.OFF_HAND);
-                if (StringUtils.isNoneBlank(name)) {
-                    return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-                }
+            ConditionalHold conditionalHold = event.getAnimatableEntity().getGeckoContainer().conditionManager().holdOffhand;
+            String name = conditionalHold.doTest(maid);
+            if (StringUtils.isNoneBlank(name)) {
+                return playAnimation(event, name, LoopType.LOOP);
             }
         }
         return PlayState.STOP;
     }
 
-    public PlayState predicateMainhandHold(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicateMainhandHold(AnimationEvent<GeckoMaidEntity<?>> event) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
@@ -149,10 +144,10 @@ public final class AnimationManager {
                 return gunHoldAnimation;
             }
             if (mainHandItem.is(Items.CROSSBOW) && CrossbowItem.isCharged(mainHandItem)) {
-                return playAnimation(event, "hold_mainhand:charged_crossbow", ILoopType.EDefaultLoopTypes.LOOP);
+                return playAnimation(event, "hold_mainhand:charged_crossbow", LoopType.LOOP);
             }
             if (maid.hasFishingHook()) {
-                return playAnimation(event, "hold_mainhand:fishing", ILoopType.EDefaultLoopTypes.LOOP);
+                return playAnimation(event, "hold_mainhand:fishing", LoopType.LOOP);
             }
         }
 
@@ -160,22 +155,19 @@ public final class AnimationManager {
             ItemStack mainHandItem = maid.asEntity().getItemInHand(InteractionHand.MAIN_HAND);
             if (!isSameItem(maid, mainHandItem, InteractionHand.MAIN_HAND)) {
                 maid.getHandItemsForAnimation()[InteractionHand.MAIN_HAND.ordinal()] = mainHandItem;
-                playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.LOOP);
+                playAnimation(event, "empty", LoopType.LOOP);
             }
 
-            Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
-            ConditionalHold conditionalHold = ConditionManager.getHoldMainhand(id);
-            if (conditionalHold != null) {
-                String name = conditionalHold.doTest(maid, InteractionHand.MAIN_HAND);
-                if (StringUtils.isNoneBlank(name)) {
-                    return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-                }
+            ConditionalHold conditionalHold = event.getAnimatableEntity().getGeckoContainer().conditionManager().holdMainhand;
+            String name = conditionalHold.doTest(maid);
+            if (StringUtils.isNoneBlank(name)) {
+                return playAnimation(event, name, LoopType.LOOP);
             }
         }
         return PlayState.STOP;
     }
 
-    private boolean isSameItem(IMaid maid, ItemStack maidItem, InteractionHand hand) {
+    private static boolean isSameItem(IMaid maid, ItemStack maidItem, InteractionHand hand) {
         ItemStack preItem = maid.getHandItemsForAnimation()[hand.ordinal()];
         if (preItem.isDamaged()) {
             return ItemStack.isSameItem(maidItem, preItem);
@@ -183,7 +175,7 @@ public final class AnimationManager {
         return ItemStack.matches(maidItem, preItem);
     }
 
-    public PlayState predicateSwing(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicateSwing(AnimationEvent<GeckoMaidEntity<?>> event) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
@@ -191,57 +183,50 @@ public final class AnimationManager {
         if (maid.asEntity().swinging && !maid.asEntity().isSleeping()) {
             if (maid.asEntity().swingTime == 0) {
                 // 空动画用于重置 PLAY_ONCE 动画
-                playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+                playAnimation(event, "empty", LoopType.PLAY_ONCE);
             }
-            Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
-            ConditionalSwing conditionalSwing = (maid.asEntity().swingingArm == InteractionHand.MAIN_HAND) ? ConditionManager.getSwingMainhand(id) : ConditionManager.getSwingOffhand(id);
-            if (conditionalSwing != null) {
-                String name = conditionalSwing.doTest(maid, maid.asEntity().swingingArm);
-                if (StringUtils.isNoneBlank(name)) {
-                    return playAnimation(event, name, ILoopType.EDefaultLoopTypes.PLAY_ONCE);
-                }
+            var manager = event.getAnimatableEntity().getGeckoContainer().conditionManager();
+            ConditionalSwing conditionalSwing = (maid.asEntity().swingingArm == InteractionHand.MAIN_HAND) ? manager.swing : manager.swingOffhand;
+            String name = conditionalSwing.doTest(maid);
+            if (StringUtils.isNoneBlank(name)) {
+                return playAnimation(event, name, LoopType.PLAY_ONCE);
             }
             String defaultSwing = (maid.asEntity().swingingArm == InteractionHand.MAIN_HAND) ? "swing_hand" : "swing_offhand";
-            return playAnimation(event, defaultSwing, ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+            return playAnimation(event, defaultSwing, LoopType.PLAY_ONCE);
         }
         return PlayState.CONTINUE;
     }
 
-    public PlayState predicateUse(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicateUse(AnimationEvent<GeckoMaidEntity<?>> event) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
         }
         if (maid.asEntity().isUsingItem() && !maid.asEntity().isSleeping()) {
             if (maid.asEntity().getTicksUsingItem() == 1) {
-                playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+                playAnimation(event, "empty", LoopType.PLAY_ONCE);
             }
+            var manager = event.getAnimatableEntity().getGeckoContainer().conditionManager();
             if (maid.asEntity().getUsedItemHand() == InteractionHand.MAIN_HAND) {
-                Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
-                ConditionalUse conditionalUse = ConditionManager.getUseMainhand(id);
-                if (conditionalUse != null) {
-                    String name = conditionalUse.doTest(maid, InteractionHand.MAIN_HAND);
-                    if (StringUtils.isNoneBlank(name)) {
-                        return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-                    }
+                ConditionalUse conditionalUse = manager.useMainhand;
+                String name = conditionalUse.doTest(maid);
+                if (StringUtils.isNoneBlank(name)) {
+                    return playAnimation(event, name, LoopType.LOOP);
                 }
-                return playAnimation(event, "use_mainhand", ILoopType.EDefaultLoopTypes.LOOP);
+                return playAnimation(event, "use_mainhand", LoopType.LOOP);
             } else {
-                Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
-                ConditionalUse conditionalUse = ConditionManager.getUseOffhand(id);
-                if (conditionalUse != null) {
-                    String name = conditionalUse.doTest(maid, InteractionHand.OFF_HAND);
-                    if (StringUtils.isNoneBlank(name)) {
-                        return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-                    }
+                ConditionalUse conditionalUse = manager.useOffhand;
+                String name = conditionalUse.doTest(maid);
+                if (StringUtils.isNoneBlank(name)) {
+                    return playAnimation(event, name, LoopType.LOOP);
                 }
-                return playAnimation(event, "use_offhand", ILoopType.EDefaultLoopTypes.LOOP);
+                return playAnimation(event, "use_offhand", LoopType.LOOP);
             }
         }
         return PlayState.STOP;
     }
 
-    public PlayState predicateMisc(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicateMisc(AnimationEvent<GeckoMaidEntity<?>> event) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
@@ -250,15 +235,15 @@ public final class AnimationManager {
         if (maid instanceof EntityMaid entityMaid && entityMaid.getVehicle() instanceof EntitySit) {
             MaidGameRecordManager manager = entityMaid.getGameRecordManager();
             if (manager.isWin()) {
-                return playAnimation(event, "game_win", ILoopType.EDefaultLoopTypes.LOOP);
+                return playAnimation(event, "game_win", LoopType.LOOP);
             }
             if (manager.isLost()) {
-                return playAnimation(event, "game_lost", ILoopType.EDefaultLoopTypes.LOOP);
+                return playAnimation(event, "game_lost", LoopType.LOOP);
             }
         }
         // 祈求动画
         if (maid.isBegging()) {
-            return playAnimation(event, "beg", ILoopType.EDefaultLoopTypes.LOOP);
+            return playAnimation(event, "beg", LoopType.LOOP);
         }
         // 其他杂项动画，目前仅捡雪球
         if (maid instanceof EntityMaid entityMaid) {
@@ -268,15 +253,15 @@ public final class AnimationManager {
                     entityMaid.animationId = MaidAnimationPackage.NONE;
                     entityMaid.animationRecordTime = -1L;
                     // 利用空动画重置 PLAY_ONCE 动画
-                    return playAnimation(event, "empty", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+                    return playAnimation(event, "empty", LoopType.PLAY_ONCE);
                 }
-                return playAnimation(event, "pick_up_snowball", ILoopType.EDefaultLoopTypes.PLAY_ONCE);
+                return playAnimation(event, "pick_up_snowball", LoopType.PLAY_ONCE);
             }
         }
         return PlayState.STOP;
     }
 
-    public <T extends Mob> PlayState predicateArmor(AnimationEvent<GeckoMaidEntity<T>> event, EquipmentSlot slot) {
+    public static <T extends Mob> PlayState predicateArmor(AnimationEvent<GeckoMaidEntity<T>> event, EquipmentSlot slot) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
@@ -286,25 +271,21 @@ public final class AnimationManager {
             return PlayState.STOP;
         }
 
-        Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
-        ConditionArmor conditionArmor = ConditionManager.getArmor(id);
-        if (conditionArmor != null) {
-            String name = conditionArmor.doTest(maid, slot);
-            if (StringUtils.isNoneBlank(name)) {
-                return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-            }
+        ConditionArmor conditionArmor = event.getAnimatableEntity().getGeckoContainer().conditionManager().armor;
+        String name = conditionArmor.doTest(maid, slot);
+        if (StringUtils.isNoneBlank(name)) {
+            return playAnimation(event, name, LoopType.LOOP);
         }
 
-        Identifier animation = event.getAnimatableEntity().getAnimationFileLocation();
         String defaultName = slot.getName() + ":default";
-        if (GeckoLibCache.getInstance().getAnimations().get(animation).animations().containsKey(defaultName)) {
-            return playAnimation(event, defaultName, ILoopType.EDefaultLoopTypes.LOOP);
+        if (event.getAnimatableEntity().getAnimation(defaultName) != null) {
+            return playAnimation(event, defaultName, LoopType.LOOP);
         }
         return PlayState.STOP;
     }
 
     @Nullable
-    public PlayState getVehicleAnimation(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState getVehicleAnimation(AnimationEvent<GeckoMaidEntity<?>> event) {
         Mob mob = event.getAnimatableEntity().getMaid().asEntity();
         if (mob == null) {
             return null;
@@ -313,31 +294,28 @@ public final class AnimationManager {
         if (vehicle == null || !vehicle.isAlive()) {
             return null;
         }
-        Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
+
+        var manager = event.getAnimatableEntity().getGeckoContainer().conditionManager();
 
         // 如果是坐垫
         if (vehicle instanceof EntityChair) {
-            ConditionalChair conditionalChair = ConditionManager.getChair(id);
-            if (conditionalChair != null) {
-                String name = conditionalChair.doTest(mob);
-                if (StringUtils.isNoneBlank(name)) {
-                    return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-                }
+            ConditionalChair conditionalChair = manager.chair;
+            String name = conditionalChair.doTest(mob);
+            if (StringUtils.isNoneBlank(name)) {
+                return playAnimation(event, name, LoopType.LOOP);
             }
         }
 
         // 其他情况
-        ConditionalVehicle vehicleCondition = ConditionManager.getVehicle(id);
-        if (vehicleCondition != null) {
-            String name = vehicleCondition.doTest(mob);
-            if (StringUtils.isNoneBlank(name)) {
-                return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-            }
+        ConditionalVehicle vehicleCondition = manager.vehicle;
+        String name = vehicleCondition.doTest(mob);
+        if (StringUtils.isNoneBlank(name)) {
+            return playAnimation(event, name, LoopType.LOOP);
         }
         return null;
     }
 
-    public PlayState predicatePassengerAnimation(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicatePassengerAnimation(AnimationEvent<GeckoMaidEntity<?>> event) {
         Mob mob = event.getAnimatableEntity().getMaid().asEntity();
         if (mob == null) {
             return PlayState.STOP;
@@ -347,24 +325,21 @@ public final class AnimationManager {
             return PlayState.STOP;
         }
 
-        Identifier id = event.getAnimatableEntity().getAnimationFileLocation();
-        ConditionalPassenger conditionalPassenger = ConditionManager.getPassenger(id);
-        if (conditionalPassenger != null) {
-            String name = conditionalPassenger.doTest(mob);
-            if (StringUtils.isNoneBlank(name)) {
-                return playAnimation(event, name, ILoopType.EDefaultLoopTypes.LOOP);
-            }
+        ConditionalPassenger conditionalPassenger = event.getAnimatableEntity().getGeckoContainer().conditionManager().passenger;
+        String name = conditionalPassenger.doTest(mob);
+        if (StringUtils.isNoneBlank(name)) {
+            return playAnimation(event, name, LoopType.LOOP);
         }
         return PlayState.STOP;
     }
 
-    public PlayState predicateMagicCastingAnimation(AnimationEvent<GeckoMaidEntity<?>> event) {
+    public static PlayState predicateMagicCastingAnimation(AnimationEvent<GeckoMaidEntity<?>> event) {
         IMaid maid = event.getAnimatableEntity().getMaid();
         if (maid == null) {
             return PlayState.STOP;
         }
 
-        var controller = event.getController();
+        var controller = event.getCodedController();
         var geckoEntity = event.getAnimatableEntity();
         var lastPhase = geckoEntity.getLastCastingPhase();
 
@@ -386,8 +361,9 @@ public final class AnimationManager {
             if (currentPhase == IMagicCastingState.CastingPhase.NONE) {
                 // 当前 phase 为 NONE，检查是否需要让动画播放完毕
                 // 从 INSTANT 或 END 过渡到 NONE 时，继续播放直到动画结束
+                // TODO: 待验证
                 if ((lastPhase == IMagicCastingState.CastingPhase.INSTANT || lastPhase == IMagicCastingState.CastingPhase.END)
-                    && controller.getAnimationState() != com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimationState.STOPPED) {
+                    && !controller.isAnimFinished()) {
                     return PlayState.CONTINUE;
                 }
                 // 从 START 或 CASTING 过渡到 NONE 时，允许终止
@@ -400,27 +376,27 @@ public final class AnimationManager {
 
             // 尝试获取自定义动画
             AnimationBuilder builder = provider.getAnimationBuilder(maid, state);
-            if (builder != null) {
+            if (builder != null && !builder.isEmpty()) {
                 if (lastPhase != IMagicCastingState.CastingPhase.START && lastPhase != IMagicCastingState.CastingPhase.CASTING) {
-                    controller.markNeedsReload();
+                    controller.indicateReload();
                 }
-                controller.setAnimation(builder);
+                controller.setAnimation(builder.animationName(), builder.loopType());
                 return PlayState.CONTINUE;
             }
 
             // builder 为 null，但 phase 有效，继续播放当前动画
-            if (controller.getAnimationState() != com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimationState.STOPPED) {
+            if (!controller.isAnimFinished()) {
                 return PlayState.CONTINUE;
             }
         }
 
         // 没有任何附属提供有效的动画
         geckoEntity.setLastCastingPhase(IMagicCastingState.CastingPhase.NONE);
-        controller.clearAnimationCache();
+        controller.reset();
         return PlayState.STOP;
     }
 
-    private boolean checkSwingAndUse(IMaid maid, InteractionHand hand) {
+    private static boolean checkSwingAndUse(IMaid maid, InteractionHand hand) {
         if (maid.asEntity().swinging && maid.asEntity().swingingArm == hand) {
             return false;
         }

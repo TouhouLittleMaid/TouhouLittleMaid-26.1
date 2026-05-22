@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.api.animation;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -65,21 +64,5 @@ public interface ICustomAnimation<T extends LivingEntity> {
     default void setRotationAngles(T entity, HashMap<String, ? extends IModelRenderer> models,
                                    float limbSwing, float limbSwingAmount, float ageInTicks,
                                    float netHeadYaw, float headPitch) {
-    }
-
-    /**
-     * 需要添加的动画（GeckoLib 版模型）
-     *
-     * @param entity          实体
-     * @param model           所有的骨骼
-     * @param limbSwing       实体行走的里程，可以理解为汽车的里程表
-     * @param limbSwingAmount 实体行走的速度，可以理解为汽车的速度表
-     * @param ageInTicks      实体的 tick 时间，从 0 开始一直增大
-     * @param netHeadYaw      实体的头部 Y Rot，单位为角度
-     * @param headPitch       实体的头部 X Rot，单位为角度
-     */
-    default void setGeckoRotationAngles(T entity, AnimatedGeoModel model,
-                                        float limbSwing, float limbSwingAmount, float ageInTicks,
-                                        float netHeadYaw, float headPitch) {
     }
 }

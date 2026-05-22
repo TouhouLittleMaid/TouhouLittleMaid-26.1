@@ -4,19 +4,19 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockMod
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.world.entity.Mob;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
-public class EasterEggModel extends BedrockModel<Mob> {
+public class EasterEggModel extends BedrockModel<EntityMaidRenderState> {
     private static final Identifier MODEL = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/easter_egg_model.json");
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/easter_egg_model.png");
     private static EasterEggModel INSTANCE;

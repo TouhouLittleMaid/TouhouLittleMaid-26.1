@@ -24,7 +24,10 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.parser.ast;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -37,11 +40,13 @@ import java.util.Objects;
  * @since 3.0.0
  */
 public final class StringExpression implements Expression {
-
     private final String value;
+    private final int pooledValue;
+    private Identifier cachedValue;
 
     public StringExpression(final @NotNull String value) {
         this.value = Objects.requireNonNull(value, "value");
+        this.pooledValue = StringPool.computeIfAbsent(value);
     }
 
     /**
@@ -54,21 +59,40 @@ public final class StringExpression implements Expression {
         return value;
     }
 
+    public int pooledValue() {
+        return pooledValue;
+    }
+
     @Override
     public <R> R visit(final @NotNull ExpressionVisitor<R> visitor) {
         return visitor.visitString(this);
     }
+
     @Override
     public String toString() {
-        return "String('" + value + "')";
+        return value;
+    }
+
+    @Nullable
+    public Identifier getCachedValue() {
+        return cachedValue;
+    }
+
+    public void setCachedValue(@Nullable final Identifier cachedValue) {
+        this.cachedValue = cachedValue;
     }
 
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StringExpression that = (StringExpression) o;
-        return value.equals(that.value);
+        if (o == null) return false;
+        if (o instanceof String str) {
+            return value.equals(str);
+        }
+        if (o instanceof StringExpression expr) {
+            return pooledValue == expr.pooledValue;
+        }
+        return false;
     }
 
     @Override

@@ -12,6 +12,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.LegacyPackReposi
 import com.github.tartaricacid.touhoulittlemaid.client.resource.listener.EmojiReloadListener;
 import com.github.tartaricacid.touhoulittlemaid.compat.embeddium.EmbeddiumCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.client.ImmersiveMelodiesCompat;
+import com.github.tartaricacid.touhoulittlemaid.compat.iris.IrisCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.oculus.OculusCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.patpat.PatPatCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.ponder.PonderCompat;
@@ -49,6 +50,7 @@ public class ClientSetupEvent {
         OculusCompat.init();
         SodiumCompat.init();
         EmbeddiumCompat.init();
+        IrisCompat.init();
         PatPatCompat.init();
         event.enqueueWork(PonderCompat::register);
     }

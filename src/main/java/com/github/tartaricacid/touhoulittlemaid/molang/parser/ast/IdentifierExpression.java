@@ -24,9 +24,11 @@
 
 package com.github.tartaricacid.touhoulittlemaid.molang.parser.ast;
 
+import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
+import org.jetbrains.annotations.NotNull;
+
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.AssignableVariable;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Variable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -55,9 +57,12 @@ public final class IdentifierExpression implements Expression {
 
     public static Expression get(String name, Object target) {
         if(target instanceof Number) {
-            return new DoubleExpression(((Number) target).doubleValue());
+            return new FloatExpression(((Number) target).floatValue());
         } else if(target instanceof String) {
             return new StringExpression((String) target);
+        }
+        if (target instanceof Function) {
+            return new CallExpression((Function) target);
         } else if(target instanceof AssignableVariable) {
             return new AssignableVariableExpression((AssignableVariable) target);
         } else if(target instanceof Variable) {

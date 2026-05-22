@@ -307,5 +307,16 @@
       "touhou_little_maid:ui/recording_end"
     ],
     "subtitle": "subtitle.touhou_little_maid.ui.recording_end"
+  },
+  "gecko_custom": {
+    "category": "voice",
+    "subtitle": "subtitle.touhou_little_maid.gecko_custom",
+    "sounds": [
+      {
+        "name": "touhou_little_maid:maid/empty",
+        "preload": false,
+        "stream": true
+      }
+    ]
   }
 }

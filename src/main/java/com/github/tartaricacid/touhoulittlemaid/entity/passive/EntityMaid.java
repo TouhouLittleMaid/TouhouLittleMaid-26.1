@@ -1824,10 +1824,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     @Nullable
     @OnlyIn(Dist.CLIENT)
     private Vec3 getLegacyLeashOffset(String modelId) {
-        Optional<BedrockModel<Mob>> modelOptional = CustomPackLoader.MAID_MODELS.getModel(modelId);
+        var modelOptional = CustomPackLoader.MAID_MODELS.getModel(modelId);
         Optional<MaidModelInfo> infoOptional = CustomPackLoader.MAID_MODELS.getInfo(modelId);
         if (modelOptional.isPresent() && infoOptional.isPresent()) {
-            BedrockModel<Mob> model = modelOptional.get();
+            var model = modelOptional.get();
             float renderEntityScale = infoOptional.get().getRenderEntityScale();
 
             BedrockPart arm = null;

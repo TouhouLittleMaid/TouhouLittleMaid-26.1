@@ -4,15 +4,15 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.fu
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.functions.physics.SecondOrder;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.IContext;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.function.entity.EntityFunction;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import net.minecraft.world.entity.Entity;
-import org.apache.commons.lang3.StringUtils;
 
 public class SecondOrderFunction extends EntityFunction {
     @Override
     protected Object eval(ExecutionContext<IContext<Entity>> context, ArgumentCollection arguments) {
-        String key = arguments.getAsString(context, 0);
-        if (StringUtils.isBlank(key)) {
+        int key = arguments.getAsPooledString(context, 0);
+        if (key == StringPool.EMPTY) {
             return 0;
         }
         float input = arguments.getAsFloat(context, 1);
@@ -29,7 +29,7 @@ public class SecondOrderFunction extends EntityFunction {
             response = arguments.getAsFloat(context, 4);
         }
 
-        var manager = context.entity().geoInstance().getPhysicsManager();
+        var manager = context.entity().animatableEntity().getPhysicsManager(context.entity().animationEvent());
         IPhysics physicsValue = manager.get(key);
         if (physicsValue == null) {
             SecondOrder secondOrder = new SecondOrder(input, frequency, coefficient, response);

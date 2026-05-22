@@ -5,7 +5,6 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockVer
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.CubesItem;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.CustomJsAnimationManger;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition.ConditionManager;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
@@ -16,9 +15,10 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.models.ChairMode
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.IModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.CustomSoundLoader;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierAdapter;
 import com.github.tartaricacid.touhoulittlemaid.util.ZipFileCheck;
 import com.google.common.collect.Sets;
@@ -70,7 +70,6 @@ public class CustomPackLoader {
     public static void reloadPacks() {
         // 清除
         CustomJsAnimationManger.clearAll();
-        ConditionManager.clear();
         MAID_MODELS.clearAll();
         CHAIR_MODELS.clearAll();
         TMP_REGISTER_TEXTURE.clear();
@@ -205,6 +204,20 @@ public class CustomPackLoader {
     }
 
     private static void loadGeckoMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) throws IOException {
+        loadGeckoModelElement(rootPath, maidModelItem, GeckoContainer.Type.MAID);
+        if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
+            putMaidEasterEggData(maidModelItem, null, null);
+        } else {
+            MAID_MODELS.putInfo(maidModelItem.getModelId().toString(), maidModelItem);
+        }
+    }
+
+    private static void loadGeckoChairModelElement(Path rootPath, ChairModelInfo chairModelItem) throws IOException {
+        loadGeckoModelElement(rootPath, chairModelItem, GeckoContainer.Type.CHAIR);
+        CHAIR_MODELS.putInfo(chairModelItem.getModelId().toString(), chairModelItem);
+    }
+
+    private static void loadGeckoModelElement(Path rootPath, IModelInfo maidModelItem, GeckoContainer.Type type) throws IOException {
         Identifier uid = maidModelItem.getModelId();
         // 尝试加载模型
         Identifier modelLocation = maidModelItem.getModel();
@@ -212,76 +225,22 @@ public class CustomPackLoader {
         if (!modelFile.isFile()) {
             return;
         }
-        try (InputStream fileInputStream = Files.newInputStream(modelFile.toPath())) {
-            GeckoModelLoader.registerGeo(uid, fileInputStream);
-        }
         // 加载贴图
         registerFilePackTexture(rootPath, maidModelItem.getTexture());
-        // 加载动画
-        List<Identifier> animation = maidModelItem.getAnimation();
-        if (animation == null || animation.isEmpty()) {
-            return;
-        }
-        AnimationFile animationData = new AnimationFile();
-        for (Identifier animationPath : animation) {
-            if (animationPath.equals(GeckoModelLoader.DEFAULT_MAID_ANIMATION)) {
-                break;
-            }
-            File animationFile = rootPath.resolve("assets").resolve(animationPath.getNamespace()).resolve(animationPath.getPath()).toFile();
-            if (!animationFile.isFile()) {
-                continue;
-            }
-            try (InputStream fileInputStream = Files.newInputStream(animationFile.toPath())) {
-                GeckoModelLoader.mergeAnimationFile(fileInputStream, animationData);
-            }
-        }
-        GeckoModelLoader.registerMaidAnimations(uid, animationData);
-        if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-            putMaidEasterEggData(maidModelItem, null, null);
-        } else {
-            MAID_MODELS.putInfo(uid.toString(), maidModelItem);
-        }
+        GeckoContainerBuilder.registerModelContainer(uid, () -> Files.newInputStream(modelFile.toPath()),
+                id -> {
+                    File animationFile = rootPath.resolve("assets").resolve(id.getNamespace()).resolve(id.getPath()).toFile();
+                    if (!animationFile.isFile()) {
+                        return null;
+                    }
+                    return Files.newInputStream(animationFile.toPath());
+                },
+                maidModelItem.getAnimation(),
+                maidModelItem.getTexture(),
+                type);
         // 打印日志
         LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
     }
-
-    private static void loadGeckoChairModelElement(Path rootPath, ChairModelInfo chairModelItem) throws IOException {
-        Identifier uid = chairModelItem.getModelId();
-        // 尝试加载模型
-        Identifier modelLocation = chairModelItem.getModel();
-        File modelFile = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
-        if (!modelFile.isFile()) {
-            return;
-        }
-        try (InputStream fileInputStream = Files.newInputStream(modelFile.toPath())) {
-            GeckoModelLoader.registerGeo(uid, fileInputStream);
-        }
-        // 加载贴图
-        registerFilePackTexture(rootPath, chairModelItem.getTexture());
-        // 加载动画
-        List<Identifier> animation = chairModelItem.getAnimation();
-        if (animation == null || animation.isEmpty()) {
-            return;
-        }
-        AnimationFile animationData = new AnimationFile();
-        for (Identifier animationPath : animation) {
-            if (animationPath.equals(GeckoModelLoader.DEFAULT_CHAIR_ANIMATION)) {
-                break;
-            }
-            File animationFile = rootPath.resolve("assets").resolve(animationPath.getNamespace()).resolve(animationPath.getPath()).toFile();
-            if (!animationFile.isFile()) {
-                continue;
-            }
-            try (InputStream fileInputStream = Files.newInputStream(animationFile.toPath())) {
-                GeckoModelLoader.mergeAnimationFile(fileInputStream, animationData);
-            }
-        }
-        GeckoModelLoader.registerChairAnimations(uid, animationData);
-        CHAIR_MODELS.putInfo(uid.toString(), chairModelItem);
-        // 打印日志
-        LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
-    }
-
 
     private static void loadMaidModelPack(ZipFile zipFile, String domain) {
         LOGGER.debug(MARKER, "Touhou little maid mod's model is loading...");
@@ -334,6 +293,20 @@ public class CustomPackLoader {
     }
 
     private static void loadGeckoMaidModelElement(ZipFile zipFile, MaidModelInfo maidModelItem) throws IOException {
+        loadGeckoModelElement(zipFile, maidModelItem, GeckoContainer.Type.MAID);
+        if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
+            putMaidEasterEggData(maidModelItem, null, null);
+        } else {
+            MAID_MODELS.putInfo(maidModelItem.getModelId().toString(), maidModelItem);
+        }
+    }
+
+    private static void loadGeckoChairModelElement(ZipFile zipFile, ChairModelInfo chairModelItem) throws IOException {
+        loadGeckoModelElement(zipFile, chairModelItem, GeckoContainer.Type.CHAIR);
+        CHAIR_MODELS.putInfo(chairModelItem.getModelId().toString(), chairModelItem);
+    }
+
+    private static void loadGeckoModelElement(ZipFile zipFile, IModelInfo maidModelItem, GeckoContainer.Type type) throws IOException {
         Identifier uid = maidModelItem.getModelId();
         // 尝试加载模型
         Identifier modelLocation = maidModelItem.getModel();
@@ -342,75 +315,21 @@ public class CustomPackLoader {
         if (modelZipEntry == null) {
             return;
         }
-        try (InputStream zipFileInputStream = zipFile.getInputStream(modelZipEntry)) {
-            GeckoModelLoader.registerGeo(uid, zipFileInputStream);
-        }
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), maidModelItem.getTexture());
-        // 加载动画
-        List<Identifier> animation = maidModelItem.getAnimation();
-        if (animation == null || animation.isEmpty()) {
-            return;
-        }
-        AnimationFile animationData = new AnimationFile();
-        for (Identifier animationPath : animation) {
-            if (animationPath.equals(GeckoModelLoader.DEFAULT_MAID_ANIMATION)) {
-                break;
-            }
-            ZipEntry animationZipEntry = zipFile.getEntry(String.format("assets/%s/%s", animationPath.getNamespace(), animationPath.getPath()));
-            if (animationZipEntry == null) {
-                continue;
-            }
-            try (InputStream zipFileInputStream = zipFile.getInputStream(animationZipEntry)) {
-                GeckoModelLoader.mergeAnimationFile(zipFileInputStream, animationData);
-            }
-        }
-        GeckoModelLoader.registerMaidAnimations(uid, animationData);
-        if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-            putMaidEasterEggData(maidModelItem, null, null);
-        } else {
-            MAID_MODELS.putInfo(uid.toString(), maidModelItem);
-        }
+        GeckoContainerBuilder.registerModelContainer(uid, () -> zipFile.getInputStream(modelZipEntry),
+                id -> {
+                    ZipEntry animationZipEntry = zipFile.getEntry(String.format("assets/%s/%s", id.getNamespace(), id.getPath()));
+                    if (animationZipEntry == null) {
+                        return null;
+                    }
+                    return zipFile.getInputStream(animationZipEntry);
+                },
+                maidModelItem.getAnimation(),
+                maidModelItem.getTexture(),
+                type);
         // 打印日志
         LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
-    }
-
-    private static void loadGeckoChairModelElement(ZipFile zipFile, ChairModelInfo chairModelItem) throws IOException {
-        Identifier uid = chairModelItem.getModelId();
-        // 尝试加载模型
-        Identifier modelLocation = chairModelItem.getModel();
-        String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
-        ZipEntry modelZipEntry = zipFile.getEntry(path);
-        if (modelZipEntry == null) {
-            return;
-        }
-        try (InputStream zipFileInputStream = zipFile.getInputStream(modelZipEntry)) {
-            GeckoModelLoader.registerGeo(uid, zipFileInputStream);
-        }
-        // 加载贴图
-        registerZipPackTexture(zipFile.getName(), chairModelItem.getTexture());
-        // 加载动画
-        List<Identifier> animation = chairModelItem.getAnimation();
-        if (animation == null || animation.isEmpty()) {
-            return;
-        }
-        AnimationFile animationData = new AnimationFile();
-        for (Identifier animationPath : animation) {
-            if (animationPath.equals(GeckoModelLoader.DEFAULT_CHAIR_ANIMATION)) {
-                break;
-            }
-            ZipEntry animationZipEntry = zipFile.getEntry(String.format("assets/%s/%s", animationPath.getNamespace(), animationPath.getPath()));
-            if (animationZipEntry == null) {
-                continue;
-            }
-            try (InputStream zipFileInputStream = zipFile.getInputStream(animationZipEntry)) {
-                GeckoModelLoader.mergeAnimationFile(zipFileInputStream, animationData);
-            }
-        }
-        GeckoModelLoader.registerChairAnimations(uid, animationData);
-        CHAIR_MODELS.putInfo(uid.toString(), chairModelItem);
-        // 打印日志
-        LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
     }
 
     @SuppressWarnings("all")

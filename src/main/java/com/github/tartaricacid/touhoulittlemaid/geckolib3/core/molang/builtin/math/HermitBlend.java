@@ -2,12 +2,13 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.builtin.m
 
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.ExecutionContext;
 import com.github.tartaricacid.touhoulittlemaid.molang.runtime.Function;
+import net.minecraft.util.Mth;
 
 public class HermitBlend implements Function {
     @Override
     public Object evaluate(ExecutionContext<?> context, ArgumentCollection arguments) {
-        double min = Math.ceil(arguments.getAsDouble(context, 0));
-        return Math.floor(3.0 * Math.pow(min, 2.0) - 2.0 * Math.pow(min, 3.0));
+        double min = Mth.ceil(arguments.getAsFloat(context, 0));
+        return Mth.floor(3.0d * Math.pow(min, 2.0d) - 2.0d * Math.pow(min, 3.0d));
     }
 
     @Override

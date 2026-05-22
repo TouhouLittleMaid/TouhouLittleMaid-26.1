@@ -1,29 +1,25 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo;
 
-import com.github.tartaricacid.touhoulittlemaid.compat.embeddium.EmbeddiumCompat;
-import com.github.tartaricacid.touhoulittlemaid.compat.sodium.SodiumCompat;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.util.Color;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoBone;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoBone;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoMesh;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.EModelRenderCycle;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.IRenderCycle;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.mojang.blaze3d.vertex.VertexMultiConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface IGeoRenderer<T> {
+public interface IGeoRenderer<TData extends GeckoRenderData> {
     Vector3f C000 = new Vector3f();
     Vector3f C100 = new Vector3f();
     Vector3f C110 = new Vector3f();
@@ -39,63 +35,46 @@ public interface IGeoRenderer<T> {
     Vector3f ny = new Vector3f();
     Vector3f nz = new Vector3f();
 
-    MultiBufferSource getCurrentRTB();
-
-    default void setCurrentRTB(MultiBufferSource bufferSource) {
+    default void preSubmit(TData data, RenderContext ctx, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+        if (getCurrentModelRenderCycle() == EModelRenderCycle.INITIAL) {
+            if (data.transform != null) {
+                poseStack.mulPose(data.transform);
+            }
+            poseStack.scale(data.widthScale, data.heightScale, data.widthScale);
+        }
     }
 
-    Identifier getTextureLocation(T animatable);
-
-    default void render(AnimatedGeoModel model, T animatable, float partialTick, RenderTypes type, PoseStack poseStack,
-                        @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight,
-                        int packedOverlay, float red, float green, float blue, float alpha) {
-        setCurrentRTB(bufferSource);
-        renderEarly(animatable, poseStack, partialTick, bufferSource, buffer, packedLight,
-                packedOverlay, red, green, blue, alpha);
-        if (bufferSource != null) {
-            buffer = bufferSource.getBuffer(type);
-        }
-        renderLate(animatable, poseStack, partialTick, bufferSource, buffer, packedLight,
-                packedOverlay, red, green, blue, alpha);
-        // 渲染所有根骨骼
-        for (AnimatedGeoBone group : model.topLevelBones()) {
-            renderRecursively(group, poseStack, buffer, packedLight, packedOverlay, red, green, blue,
-                    alpha);
-        }
+    default void submit(TData data, RenderContext ctx, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, RenderType type) {
+        submitNodeCollector.submitCustomGeometry(poseStack, type, (pose, vertexConsumer) -> {
+            if (ctx.level() && !ctx.irisShadow()
+                    && data.outlineColor != 0 && (type.outline().isPresent() || type.isOutline())) {
+                var outlineBufferSource = Minecraft.getInstance().renderBuffers().outlineBufferSource();
+                outlineBufferSource.setColor(data.outlineColor);
+                var outlineBuffer = outlineBufferSource.getBuffer(type);
+                if (type.isOutline()) {
+                    vertexConsumer = outlineBuffer;
+                } else {
+                    vertexConsumer = VertexMultiConsumer.create(vertexConsumer, outlineBuffer);
+                }
+            }
+            VertexConsumer finalVertexConsumer = vertexConsumer;
+            data.modelState.visitRenderBones(pose, (bone, poseState) -> {
+                renderCubesOfBone(bone, poseState, finalVertexConsumer, data);
+            });
+        });
         // 由于此时我们至少渲染了一次，因此让我们将循环设置为重复
         setCurrentModelRenderCycle(EModelRenderCycle.REPEATED);
     }
 
-    default void renderRecursively(AnimatedGeoBone bone, PoseStack poseStack, VertexConsumer buffer, int packedLight,
-                                   int packedOverlay, float red, float green, float blue, float alpha) {
-        int cubePackedLight = bone.geoBone().glow() ? LightCoordsUtil.pack(15, 15) : packedLight;
-        if ((bone.getScaleX() == 0 ? 0 : 1) + (bone.getScaleY() == 0 ? 0 : 1) + (bone.getScaleZ() == 0 ? 0 : 1) < 2) {
-            return;
-        }
-        poseStack.pushPose();
-        RenderUtils.prepMatrixForBone(poseStack, bone);
-        if (!SodiumCompat.sodiumRenderCubesOfBone(bone, poseStack, buffer, cubePackedLight, packedOverlay, red, green, blue, alpha)
-                && !EmbeddiumCompat.embeddiumRenderCubesOfBone(bone, poseStack, buffer, cubePackedLight, packedOverlay, red, green, blue, alpha)
-        ) {
-            renderCubesOfBone(bone, poseStack, buffer, cubePackedLight, packedOverlay, red, green, blue, alpha);
-        }
-        renderChildBones(bone, poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        poseStack.popPose();
-    }
-
-    default void renderCubesOfBone(AnimatedGeoBone bone, PoseStack poseStack, VertexConsumer buffer, int packedLight,
-                                   int packedOverlay, float red, float green, float blue, float alpha) {
-        if (bone.isHidden()) {
-            return;
-        }
-        if (bone.cubesAreHidden()) {
-            return;
-        }
-
-        GeoMesh mesh = bone.geoBone().cubes();
+    default void renderCubesOfBone(GeoBone bone, PoseStack.Pose poseState, VertexConsumer buffer, GeckoRenderData data) {
+        GeoMesh mesh = bone.cubes();
+        
+        var packedLight = data.lightUV;
+        var packedOverlay = data.overlayUV;
+        var color = data.color;
 
         for (int i = 0; i < mesh.getCubeCount(); i++) {
-            Matrix4f pose = poseStack.last().pose();
+            Matrix4f pose = poseState.pose();
             mesh.position(i).mulPosition(pose, C000);
             mesh.dx(i).mulDirection(pose, dx);
             mesh.dy(i).mulDirection(pose, dy);
@@ -116,7 +95,7 @@ public interface IGeoRenderer<T> {
             int faces = mesh.faces(i);
             boolean mirrored = (faces & 0b1000000) != 0;
             if (RenderSystem.getModelViewMatrix().m32() != 0) {
-                Matrix3f normal = poseStack.last().normal();
+                Matrix3f normal = poseState.normal();
                 mesh.dx(i).cross(mesh.dy(i), nz);
                 mesh.dy(i).cross(mesh.dz(i), nx);
                 mesh.dz(i).cross(mesh.dx(i), ny);
@@ -134,25 +113,25 @@ public interface IGeoRenderer<T> {
             if ((faces & 0b000001) != 0) // DOWN
             {
                 buffer.addVertex(C101.x, C101.y, C101.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.downU0(i), mesh.downV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-ny.x, -ny.y, -ny.z);
                 buffer.addVertex(C001.x, C001.y, C001.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.downU1(i), mesh.downV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-ny.x, -ny.y, -ny.z);
                 buffer.addVertex(C000.x, C000.y, C000.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.downU1(i), mesh.downV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-ny.x, -ny.y, -ny.z);
                 buffer.addVertex(C100.x, C100.y, C100.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.downU0(i), mesh.downV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
@@ -161,25 +140,25 @@ public interface IGeoRenderer<T> {
             if ((faces & 0b000010) != 0) // UP
             {
                 buffer.addVertex(C110.x, C110.y, C110.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.upU0(i), mesh.upV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(ny.x, ny.y, ny.z);
                 buffer.addVertex(C010.x, C010.y, C010.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.upU1(i), mesh.upV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(ny.x, ny.y, ny.z);
                 buffer.addVertex(C011.x, C011.y, C011.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.upU1(i), mesh.upV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(ny.x, ny.y, ny.z);
                 buffer.addVertex(C111.x, C111.y, C111.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.upU0(i), mesh.upV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
@@ -188,25 +167,25 @@ public interface IGeoRenderer<T> {
             if ((faces & 0b000100) != 0) // NORTH
             {
                 buffer.addVertex(C100.x, C100.y, C100.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.northU0(i), mesh.northV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-nz.x, -nz.y, -nz.z);
                 buffer.addVertex(C000.x, C000.y, C000.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.northU1(i), mesh.northV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-nz.x, -nz.y, -nz.z);
                 buffer.addVertex(C010.x, C010.y, C010.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.northU1(i), mesh.northV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-nz.x, -nz.y, -nz.z);
                 buffer.addVertex(C110.x, C110.y, C110.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.northU0(i), mesh.northV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
@@ -215,25 +194,25 @@ public interface IGeoRenderer<T> {
             if ((faces & 0b001000) != 0) // SOUTH
             {
                 buffer.addVertex(C001.x, C001.y, C001.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.southU0(i), mesh.southV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(nz.x, nz.y, nz.z);
                 buffer.addVertex(C101.x, C101.y, C101.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.southU1(i), mesh.southV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(nz.x, nz.y, nz.z);
                 buffer.addVertex(C111.x, C111.y, C111.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.southU1(i), mesh.southV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(nz.x, nz.y, nz.z);
                 buffer.addVertex(C011.x, C011.y, C011.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.southU0(i), mesh.southV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
@@ -241,25 +220,25 @@ public interface IGeoRenderer<T> {
             }
             if ((faces & 0b010000) != 0) { // WEST
                 buffer.addVertex(C000.x, C000.y, C000.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.westU0(i), mesh.westV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-nx.x, -nx.y, -nx.z);
                 buffer.addVertex(C001.x, C001.y, C001.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.westU1(i), mesh.westV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-nx.x, -nx.y, -nx.z);
                 buffer.addVertex(C011.x, C011.y, C011.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.westU1(i), mesh.westV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(-nx.x, -nx.y, -nx.z);
                 buffer.addVertex(C010.x, C010.y, C010.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.westU0(i), mesh.westV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
@@ -267,25 +246,25 @@ public interface IGeoRenderer<T> {
             }
             if ((faces & 0b100000) != 0) { // EAST
                 buffer.addVertex(C101.x, C101.y, C101.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.eastU0(i), mesh.eastV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(nx.x, nx.y, nx.z);
                 buffer.addVertex(C100.x, C100.y, C100.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.eastU1(i), mesh.eastV1(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(nx.x, nx.y, nx.z);
                 buffer.addVertex(C110.x, C110.y, C110.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.eastU1(i), mesh.eastV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
                         .setNormal(nx.x, nx.y, nx.z);
                 buffer.addVertex(C111.x, C111.y, C111.z)
-                        .setColor(red, green, blue, alpha)
+                        .setColor(color)
                         .setUv(mesh.eastU0(i), mesh.eastV0(i))
                         .setOverlay(packedOverlay)
                         .setLight(packedLight)
@@ -294,55 +273,23 @@ public interface IGeoRenderer<T> {
         }
     }
 
-    default void renderChildBones(AnimatedGeoBone bone, PoseStack poseStack, VertexConsumer buffer, int packedLight,
-                                  int packedOverlay, float red, float green, float blue, float alpha) {
-        if (bone.childBonesAreHiddenToo()) {
-            return;
+    @Nullable
+    default RenderType getRenderType(GeckoRenderData data, boolean visible, boolean glowing) {
+        var ctx = data.ctx;
+        if (visible || (!ctx.level()) || ctx.irisShadow()) {
+            return RenderTypes.entityCutout(data.texture);
         }
-        for (AnimatedGeoBone childBone : bone.children()) {
-            renderRecursively(childBone, poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        if (glowing) {
+            return RenderTypes.outline(data.texture);
         }
+        return null;
     }
 
-    default void renderEarly(T animatable, PoseStack poseStack, float partialTick,
-                             @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight,
-                             int packedOverlayIn, float red, float green, float blue, float alpha) {
-        if (getCurrentModelRenderCycle() == EModelRenderCycle.INITIAL) {
-            float width = getWidthScale(animatable);
-            float height = getHeightScale(animatable);
-            poseStack.scale(width, height, width);
-        }
-    }
-
-    default void renderLate(T animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource,
-                            VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue,
-                            float alpha) {
-    }
-
-    default RenderTypes getRenderType(T animatable, float partialTick, PoseStack poseStack,
-                                     @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight,
-                                     Identifier texture) {
-        return RenderTypes.entityCutoutNoCull(texture);
-    }
-
-    default Color getRenderColor(T animatable, float partialTick, PoseStack poseStack,
-                                 @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight) {
-        return Color.WHITE;
-    }
-
-    @Nonnull
+    @NotNull
     default IRenderCycle getCurrentModelRenderCycle() {
         return EModelRenderCycle.INITIAL;
     }
 
     default void setCurrentModelRenderCycle(IRenderCycle cycle) {
-    }
-
-    default float getWidthScale(T animatable) {
-        return 1F;
-    }
-
-    default float getHeightScale(T entity) {
-        return 1F;
     }
 }

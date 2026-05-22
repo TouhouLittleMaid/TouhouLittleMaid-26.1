@@ -25,7 +25,7 @@ public final class TouhouLittleMaid {
     public static final String MOD_ID = "touhou_little_maid";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
     public static List<ILittleMaid> EXTENSIONS = Lists.newArrayList();
-    public static boolean DEBUG = !FMLEnvironment.production;
+    public static boolean DEBUG = !FMLEnvironment.isProduction();
 
     public TouhouLittleMaid(IEventBus modEventBus, ModContainer modContainer) {
         initRegister(modEventBus);
