@@ -9,7 +9,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -96,13 +99,13 @@ public final class InitItems {
     public static DeferredItem<Item> SNACK_CABINET = ITEMS.register("snack_cabinet", ItemSnackCabinet::new);
 
     public static DeferredItem<Item> MAID_SPAWN_EGG = ITEMS.register("maid_spawn_egg", id ->
-            new DeferredSpawnEggItem(() -> EntityMaid.TYPE, 0xffffff, 0xffffff,
-                    new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id)))
+            new SpawnEggItem(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))
+                    .component(DataComponents.ENTITY_DATA, TypedEntityData.of(EntityMaid.TYPE, new CompoundTag())))
     );
 
     public static DeferredItem<Item> FAIRY_SPAWN_EGG = ITEMS.register("fairy_spawn_egg", ItemFairySpawnEgg::new);
 
-    public static final Identifier MEMORIZABLE_GENSOKYO_LOCATION = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "memorizable_gensokyo");
+    // public static final Identifier MEMORIZABLE_GENSOKYO_LOCATION = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "memorizable_gensokyo");
 
     // 成就图标
     public static DeferredItem<Item> CHANGE_CHAIR_MODEL = ITEMS.register("change_chair_model", ItemAdvancementIcon::new);

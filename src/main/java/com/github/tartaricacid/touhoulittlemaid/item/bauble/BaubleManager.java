@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public final class BaubleManager {
-    private static Map<DeferredHolder<Item,Item>, IMaidBauble> BAUBLES;
+    private static Map<DeferredHolder<Item, Item>, IMaidBauble> BAUBLES;
 
     private BaubleManager() {
         BAUBLES = Maps.newHashMap();
@@ -46,21 +46,21 @@ public final class BaubleManager {
     }
 
     @Nullable
-    public static IMaidBauble getBauble(DeferredHolder<Item,Item> item) {
+    public static IMaidBauble getBauble(DeferredHolder<Item, Item> item) {
         return BAUBLES.get(item);
     }
 
     @Nullable
     public static IMaidBauble getBauble(ItemStack stack) {
         Item item = stack.getItem();
-        return getBauble(DeferredHolder.create(Registries.ITEM,BuiltInRegistries.ITEM.getKey(item)));
+        return getBauble(DeferredHolder.create(Registries.ITEM, BuiltInRegistries.ITEM.getKey(item)));
     }
 
-    public void bind(DeferredHolder<Item,Item> item, IMaidBauble bauble) {
+    public void bind(DeferredHolder<Item, Item> item, IMaidBauble bauble) {
         BAUBLES.put(item, bauble);
     }
 
     public void bind(Item item, IMaidBauble bauble) {
-        BAUBLES.put(DeferredHolder.create(Registries.ITEM,BuiltInRegistries.ITEM.getKey(item)), bauble);
+        BAUBLES.put(DeferredHolder.create(Registries.ITEM, BuiltInRegistries.ITEM.getKey(item)), bauble);
     }
 }

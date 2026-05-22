@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.item.DyeColor;
@@ -19,7 +20,7 @@ import java.util.*;
 
 @SuppressWarnings({"removal", "deprecation"})
 public class InitDataComponent {
-    public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(TouhouLittleMaid.MOD_ID);
+    public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, TouhouLittleMaid.MOD_ID);
 
     public static final String ENTITY_ID_TAG_NAME = "id";
     public static final String OWNER_UUID_TAG_NAME = "owner_uuid";

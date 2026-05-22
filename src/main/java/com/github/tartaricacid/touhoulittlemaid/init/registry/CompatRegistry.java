@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.server.
 import com.github.tartaricacid.touhoulittlemaid.compat.patchouli.PatchouliCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.sbackpack.SBackpackCompat;
 import com.github.tartaricacid.touhoulittlemaid.compat.tbackpack.TBackpackCompat;
-import com.github.tartaricacid.touhoulittlemaid.compat.top.TheOneProbeInfo;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.InterModComms;
 import net.neoforged.fml.ModList;
@@ -24,7 +24,7 @@ public final class CompatRegistry {
 
     @SubscribeEvent
     public static void onEnqueue(final InterModEnqueueEvent event) {
-        event.enqueueWork(() -> checkModLoad(TOP, () -> InterModComms.sendTo(TOP, "getTheOneProbe", TheOneProbeInfo::new)));
+        // TODO: TheOneProbe 兼容已移除，后续迁移
         event.enqueueWork(() -> checkModLoad(PATCHOULI, PatchouliCompat::init));
         event.enqueueWork(() -> checkModLoad(CURIOS, CuriosCompat::init));
         event.enqueueWork(() -> checkModLoad(SBACKPACK, SBackpackCompat::init));

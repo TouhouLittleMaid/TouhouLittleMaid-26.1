@@ -9,15 +9,13 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import vazkii.patchouli.common.item.ItemModBook;
 
 import java.util.Optional;
 
@@ -30,9 +28,10 @@ public class InitCreativeTabs {
             .title(Component.translatable("item_group.touhou_little_maid.main"))
             .icon(() -> InitItems.HAKUREI_GOHEI.get().getDefaultInstance())
             .displayItems((par, output) -> {
-                if (ModList.get().isLoaded("patchouli")) {
-                    output.accept(ItemModBook.forBook(MEMORIZABLE_GENSOKYO_LOCATION));
-                }
+                // TODO: Patchouli 暂无
+                // if (ModList.get().isLoaded("patchouli")) {
+                //     output.accept(ItemModBook.forBook(MEMORIZABLE_GENSOKYO_LOCATION));
+                // }
                 output.accept(MAID_SPAWN_EGG.get());
                 output.accept(FAIRY_SPAWN_EGG.get());
                 output.accept(HAKUREI_GOHEI.get());
@@ -92,7 +91,7 @@ public class InitCreativeTabs {
                 output.accept(SCARECROW.get());
                 output.accept(ENTITY_ID_COPY.get());
                 output.accept(OWNER_CONVERSION_TOOL.get());
-                if (FMLEnvironment.dist == Dist.CLIENT) {
+                if (FMLEnvironment.getDist() == Dist.CLIENT) {
                     ItemEntityPlaceholder.fillItemCategory(output);
                 }
                 par.holders().lookup(Registries.ENCHANTMENT).ifPresent(reg -> {
@@ -123,7 +122,7 @@ public class InitCreativeTabs {
     private static void addEnchantmentBook(Optional<Holder.Reference<Enchantment>> holder, CreativeModeTab.Output output) {
         holder.ifPresent(ref -> {
             EnchantmentInstance instance = new EnchantmentInstance(ref, ref.value().getMaxLevel());
-            output.accept(EnchantedBookItem.createForEnchantment(instance));
+            output.accept(EnchantmentHelper.createBook(instance));
         });
     }
 }

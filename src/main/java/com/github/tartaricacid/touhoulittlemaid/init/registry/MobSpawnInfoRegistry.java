@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -17,7 +18,7 @@ import static com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConf
 
 @EventBusSubscriber
 public final class MobSpawnInfoRegistry {
-    private static MobSpawnSettings.SpawnerData SPAWNER_DATA;
+    private static Weighted<MobSpawnSettings.SpawnerData> SPAWNER_DATA;
 
     @SubscribeEvent
     public static void addMobSpawnInfo(LevelEvent.PotentialSpawns event) {
@@ -27,12 +28,13 @@ public final class MobSpawnInfoRegistry {
                 // 优先判断等于 0 的情况，减少性能消耗
                 return;
             }
-            Identifier dimension = level.dimension().location();
+            Identifier dimension = level.dimension().identifier();
             if (event.getMobCategory() == MobCategory.MONSTER && dimensionIsOkay(dimension)) {
-                List<MobSpawnSettings.SpawnerData> spawnerData = event.getSpawnerDataList();
-                boolean canZombieSpawn = spawnerData.stream().anyMatch(data -> data.type.equals(EntityType.ZOMBIE));
-                if (SPAWNER_DATA == null || SPAWNER_DATA.getWeight().asInt() != spawnProbability) {
-                    SPAWNER_DATA = new MobSpawnSettings.SpawnerData(InitEntities.FAIRY.get(), spawnProbability, 2, 4);
+                List<Weighted<MobSpawnSettings.SpawnerData>> spawnerData = event.getSpawnerDataList();
+                boolean canZombieSpawn = spawnerData.stream().anyMatch(data -> data.value().type().equals(EntityType.ZOMBIE));
+                if (SPAWNER_DATA == null || SPAWNER_DATA.weight() != spawnProbability) {
+                    var data = new MobSpawnSettings.SpawnerData(InitEntities.FAIRY.get(), 2, 4);
+                    SPAWNER_DATA = new Weighted<>(data, spawnProbability);
                 }
                 if (canZombieSpawn) {
                     event.addSpawnerData(SPAWNER_DATA);
