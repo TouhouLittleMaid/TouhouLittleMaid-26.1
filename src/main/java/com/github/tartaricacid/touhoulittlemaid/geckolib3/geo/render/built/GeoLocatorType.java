@@ -15,16 +15,15 @@ public class GeoLocatorType {
     public static final GeoLocatorType TAC_PISTOL = new GeoLocatorType("PistolLocator");
     public static final GeoLocatorType TAC_RIFLE = new GeoLocatorType("RifleLocator");
 */
-    private static final Object2ReferenceOpenHashMap<String, GeoLocatorType> NAME_MAP = new Object2ReferenceOpenHashMap<>(16);
 
     private final String name;
     private final byte seq;
 
     public GeoLocatorType(String name) {
         this.name = name;
-        synchronized (NAME_MAP) {
-            this.seq = (byte) NAME_MAP.size();
-            NAME_MAP.put(name, this);
+        synchronized (Inner.NAME_MAP) {
+            this.seq = (byte) Inner.NAME_MAP.size();
+            Inner.NAME_MAP.put(name, this);
         }
     }
 
@@ -37,11 +36,15 @@ public class GeoLocatorType {
     }
 
     public static int size() {
-        return NAME_MAP.size();
+        return Inner.NAME_MAP.size();
     }
 
     @Nullable
     public static GeoLocatorType getByName(String name) {
-        return NAME_MAP.get(name);
+        return Inner.NAME_MAP.get(name);
+    }
+
+    private static class Inner {
+        private static final Object2ReferenceOpenHashMap<String, GeoLocatorType> NAME_MAP = new Object2ReferenceOpenHashMap<>(16);
     }
 }
