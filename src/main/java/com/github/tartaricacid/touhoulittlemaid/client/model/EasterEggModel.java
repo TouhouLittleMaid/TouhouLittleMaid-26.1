@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
+import com.github.tartaricacid.simplebedrockmodel.client.bedrock.LegacyModelReader;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockModelPOJO;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
@@ -25,7 +26,7 @@ public class EasterEggModel extends BedrockModel<EntityMaidRenderState> {
     public EasterEggModel() {
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
         try (InputStream stream = manager.open(MODEL)) {
-            loadLegacyModel(CustomPackLoader.GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class));
+            LegacyModelReader.load(CustomPackLoader.GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class));
         } catch (IOException exception) {
             TouhouLittleMaid.LOGGER.error("Failed to load easter egg model", exception);
         }

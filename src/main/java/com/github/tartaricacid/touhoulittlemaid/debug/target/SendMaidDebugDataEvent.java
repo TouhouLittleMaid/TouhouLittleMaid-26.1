@@ -2,12 +2,8 @@ package com.github.tartaricacid.touhoulittlemaid.debug.target;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.common.custom.GameTestAddMarkerDebugPayload;
-import net.minecraft.network.protocol.common.custom.PathfindingDebugPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.VisibleForDebug;
-import net.minecraft.world.level.pathfinder.Path;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -40,18 +36,19 @@ public class SendMaidDebugDataEvent {
         if (maid == null) {
             return;
         }
+        // TODO
 
-        if (!maid.getNavigation().isDone()) {
-            Path path = maid.getNavigation().getPath();
-            if (path != null) {
-                player.connection.send(new ClientboundCustomPayloadPacket(new PathfindingDebugPayload(maid.getId(), path, 0.5f)));
-            }
-        }
-
-        DebugMaidManager.getDebugTargets(maid).forEach(target -> {
-            GameTestAddMarkerDebugPayload payload = new GameTestAddMarkerDebugPayload(
-                    target.pos(), target.color(), target.text(), target.lifeTime());
-            player.connection.send(new ClientboundCustomPayloadPacket(payload));
-        });
+//        if (!maid.getNavigation().isDone()) {
+//            Path path = maid.getNavigation().getPath();
+//            if (path != null) {
+//                player.connection.send(new ClientboundCustomPayloadPacket(new PathfindingDebugPayload(maid.getId(), path, 0.5f)));
+//            }
+//        }
+//
+//        DebugMaidManager.getDebugTargets(maid).forEach(target -> {
+//            GameTestAddMarkerDebugPayload payload = new GameTestAddMarkerDebugPayload(
+//                    target.pos(), target.color(), target.text(), target.lifeTime());
+//            player.connection.send(new ClientboundCustomPayloadPacket(payload));
+//        });
     }
 }

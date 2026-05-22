@@ -19,7 +19,7 @@ public class GeckoEntityMaidRenderer<T extends Mob> extends GeoReplacedEntityRen
         addLayer(new GeckoLayerMaidBipedHead(beRenderer));
         addLayer(new GeckoLayerMaidBackpack());
         addLayer(new GeckoLayerMaidBackItem());
-        addLayer(new GeckoLayerMaidBanner(beRenderer));
+        // addLayer(new GeckoLayerMaidBanner(beRenderer));
         addAdditionGeckoEntityMaidRenderer(renderManager);
     }
 

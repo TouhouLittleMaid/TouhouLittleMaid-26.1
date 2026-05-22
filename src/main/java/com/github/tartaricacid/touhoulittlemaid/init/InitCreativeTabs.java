@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.datagen.EnchantmentKeys;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemChair;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemEntityPlaceholder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -92,7 +91,7 @@ public class InitCreativeTabs {
                 output.accept(ENTITY_ID_COPY.get());
                 output.accept(OWNER_CONVERSION_TOOL.get());
                 if (FMLEnvironment.getDist() == Dist.CLIENT) {
-                    ItemEntityPlaceholder.fillItemCategory(output);
+                    //ItemEntityPlaceholder.fillItemCategory(output);
                 }
                 par.holders().lookup(Registries.ENCHANTMENT).ifPresent(reg -> {
                     addEnchantmentBook(reg.get(EnchantmentKeys.IMPEDING), output);

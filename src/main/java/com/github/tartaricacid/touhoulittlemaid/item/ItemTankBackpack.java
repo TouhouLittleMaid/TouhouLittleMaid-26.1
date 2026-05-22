@@ -10,11 +10,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 
@@ -50,7 +52,8 @@ public class ItemTankBackpack extends ItemMaidBackpack {
             tags = new CompoundTag();
             backpack.set(InitDataComponent.TANK_BACKPACK_TAG, tags);
         }
-        data.loadTank(tags, maid);
+        var tag = TagValueInput.create(ProblemReporter.DISCARDING, maid.level.registryAccess(), tags);
+        data.loadTank(tag, maid);
     }
 
     @Override

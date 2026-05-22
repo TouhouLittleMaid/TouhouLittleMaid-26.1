@@ -9,7 +9,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 
 import javax.annotation.Nullable;
 
@@ -18,9 +18,9 @@ public class ClientItemContainerTooltip implements ClientTooltipComponent {
     private @Nullable MutableComponent emptyTip = null;
 
     public ClientItemContainerTooltip(ItemContainerTooltip containerTooltip) {
-        IItemHandler handler = containerTooltip.handler();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        var handler = containerTooltip.handler();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = ItemUtil.getStack(handler, i);
             if (!stack.isEmpty()) {
                 this.items.add(stack);
             }
@@ -31,7 +31,7 @@ public class ClientItemContainerTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(Font font) {
         if (emptyTip != null) {
             return 10;
         }
@@ -47,15 +47,15 @@ public class ClientItemContainerTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font font, int pX, int pY, GuiGraphicsExtractor guiGraphics) {
+    public void extractImage(Font font, int pX, int pY, int w, int h, GuiGraphicsExtractor guiGraphics) {
         if (emptyTip != null) {
             guiGraphics.text(font, emptyTip, pX, pY, ChatFormatting.GRAY.getColor());
         } else {
             int i = 0;
             for (ItemStack stack : this.items) {
                 int xOffset = pX + i * 20;
-                guiGraphics.renderFakeItem(stack, xOffset, pY);
-                guiGraphics.renderItemDecorations(font, stack, xOffset, pY);
+                guiGraphics.item(stack, xOffset, pY);
+                guiGraphics.itemDecorations(font, stack, xOffset, pY);
                 i++;
             }
         }

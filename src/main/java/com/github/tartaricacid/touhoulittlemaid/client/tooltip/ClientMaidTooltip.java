@@ -9,21 +9,22 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemMaidToolti
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.YsmMaidInfo;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
+import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -67,7 +68,7 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(Font font) {
         return 70;
     }
 
@@ -77,7 +78,7 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font font, int pX, int pY, GuiGraphicsExtractor guiGraphics) {
+    public void extractImage(Font font, int pX, int pY, int w, int h, GuiGraphicsExtractor guiGraphics) {
         if (info == null) {
             return;
         }
@@ -86,13 +87,12 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
             return;
         }
 
-        RegistryAccess access = Minecraft.getInstance().level.registryAccess();
 
-        MutableComponent customNameComponent = null;
+        Component customNameComponent = null;
         if (StringUtils.isNotBlank(customName)) {
-            customNameComponent = Component.Serializer.fromJson(customName, access);
-            if (customNameComponent != null) {
-                guiGraphics.text(font, customNameComponent.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
+            customNameComponent = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive(customName)).getOrThrow();
+            if (customNameComponent instanceof MutableComponent mutableComponent) {
+                guiGraphics.text(font, mutableComponent.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
             }
         } else {
             guiGraphics.text(font, name.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
@@ -108,7 +108,7 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
         EntityMaid maid;
         try {
             maid = (EntityMaid) EntityCacheUtil.ENTITY_CACHE.get(EntityMaid.TYPE, () -> {
-                Entity e = EntityMaid.TYPE.create(world);
+                Entity e = EntityMaid.TYPE.create(world, EntitySpawnReason.EVENT);
                 return Objects.requireNonNullElseGet(e, () -> new EntityMaid(world));
             });
         } catch (ExecutionException | ClassCastException e) {
@@ -134,7 +134,7 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
         }
 
         guiGraphics.enableScissor(pX, posY - 50, pX + width, posY);
-        InventoryScreen.renderEntityInInventory(guiGraphics, posX, posY, (int) (25 * info.getRenderItemScale()), new Vector3f(), pose, null, maid);
+        //InventoryScreen.renderEntityInInventory(guiGraphics, posX, posY, (int) (25 * info.getRenderItemScale()), new Vector3f(), pose, null, maid);
         guiGraphics.disableScissor();
     }
 }

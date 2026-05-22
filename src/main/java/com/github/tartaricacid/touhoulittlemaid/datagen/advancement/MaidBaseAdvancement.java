@@ -1,11 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.advancement;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.advancements.altar.AltarCraftTrigger;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.MaidEventTrigger;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemEntityPlaceholder;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
@@ -149,14 +147,14 @@ public class MaidBaseAdvancement {
     }
 
     private static void generateReborn(AdvancementHolder root, Consumer<AdvancementHolder> saver) {
-        ItemStack stack = ItemEntityPlaceholder.setRecipeId(new ItemStack(InitItems.ENTITY_PLACEHOLDER.get()), "reborn_maid");
-        AdvancementHolder rebornRoot = make(stack, "reborn_maid").parent(root)
-                .addCriterion("altar_craft", AltarCraftTrigger.Instance.recipe(id("altar_recipe/reborn_maid")))
-                .save(saver, id("maid_base/reborn_maid").toString());
+//        ItemStack stack = ItemEntityPlaceholder.setRecipeId(new ItemStack(InitItems.ENTITY_PLACEHOLDER.get()), "reborn_maid");
+//        AdvancementHolder rebornRoot = make(stack, "reborn_maid").parent(root)
+//                .addCriterion("altar_craft", AltarCraftTrigger.Instance.recipe(id("altar_recipe/reborn_maid")))
+//                .save(saver, id("maid_base/reborn_maid").toString());
 
-        makeGoal(InitItems.SHRINE.get(), "shrine_reborn_maid").parent(rebornRoot)
-                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.SHRINE_REBORN_MAID))
-                .save(saver, id("maid_base/shrine_reborn_maid").toString());
+//        makeGoal(InitItems.SHRINE.get(), "shrine_reborn_maid").parent(rebornRoot)
+//                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.SHRINE_REBORN_MAID))
+//                .save(saver, id("maid_base/shrine_reborn_maid").toString());
     }
 
     private static Advancement.Builder make(ItemLike item, String key) {

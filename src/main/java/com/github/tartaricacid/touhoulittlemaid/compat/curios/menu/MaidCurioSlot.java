@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -43,7 +42,7 @@ public class MaidCurioSlot extends SlotItemHandler {
         this.maid = maid;
         this.canToggleRender = canToggleRender;
         this.slotContext = new SlotContext(identifier, maid, index, false, renders.get(index));
-        CuriosApi.getSlot(identifier, maid.level()).ifPresent(slotType -> this.setBackground(InventoryMenu.BLOCK_ATLAS, slotType.getIcon()));
+        // CuriosApi.getSlot(identifier, maid.level()).ifPresent(slotType -> this.setBackground(InventoryMenu.BLOCK_ATLAS, slotType.getIcon()));
     }
 
     public String getIdentifier() {

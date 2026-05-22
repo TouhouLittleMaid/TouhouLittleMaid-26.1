@@ -9,22 +9,17 @@ import com.github.tartaricacid.touhoulittlemaid.item.ItemFilm;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.storage.TagValueInput;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -40,10 +35,10 @@ public class AltarRecipe extends ShapelessRecipe {
 
     public AltarRecipe(String group, CraftingBookCategory category, NonNullList<Ingredient> ingredients, float power, ItemStack result, Identifier entityType, String langKey) {
         super(
-            new Recipe.CommonInfo(true),
-            new CraftingRecipe.CraftingBookInfo(category, group),
-            ItemStackTemplate.fromNonEmptyStack(result),
-            List.copyOf(ingredients)
+                new Recipe.CommonInfo(true),
+                new CraftingRecipe.CraftingBookInfo(category, group),
+                ItemStackTemplate.fromNonEmptyStack(result),
+                List.copyOf(ingredients)
         );
         this.ingredients = ingredients;
         this.power = power;
@@ -98,8 +93,8 @@ public class AltarRecipe extends ShapelessRecipe {
         EntityMaid maid = new EntityMaid(world);
         CustomData compoundData = itemFilm.get(InitDataComponent.MAID_INFO);
         if (compoundData != null) {
-            CompoundTag maidCompound = compoundData.copyTag();
-            maid.readAdditionalSaveData(maidCompound);
+            var input = TagValueInput.create(ProblemReporter.DISCARDING, world.registryAccess(), compoundData.copyTag());
+            maid.readAdditionalSaveData(input);
         } else {
             // TODO: 也许换成 EventHooks.finalizeMobSpawn？另外，我寻思 EntitySpawnReason.Event 更贴切？
             maid.finalizeSpawn(world, world.getCurrentDifficultyAt(pos), EntitySpawnReason.SPAWN_ITEM_USE, null);

@@ -2,12 +2,14 @@ package com.github.tartaricacid.touhoulittlemaid.compat.curios.client;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+
+import java.util.Collections;
+import java.util.Optional;
 
 public class CuriosButton extends Button implements ITooltipButton {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/bauble_button.png");
@@ -25,8 +27,8 @@ public class CuriosButton extends Button implements ITooltipButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderTexture(guiGraphics, TEXTURE, this.getX(), this.getY(),
+    protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        this.renderTexture(graphics, TEXTURE, this.getX(), this.getY(),
                 108, this.vStart, 0, this.getWidth(), this.getHeight(),
                 256, 256);
     }
@@ -38,7 +40,7 @@ public class CuriosButton extends Button implements ITooltipButton {
 
     @Override
     public void renderTooltip(GuiGraphicsExtractor graphics, Minecraft mc, int mouseX, int mouseY) {
-        graphics.renderTooltip(mc.font, this.tooltip, mouseX, mouseY);
+        graphics.setTooltipForNextFrame(mc.font, Collections.singletonList(this.tooltip), Optional.empty(), mouseX, mouseY);
     }
 
     public void renderTexture(GuiGraphicsExtractor pGuiGraphics, Identifier pTexture, int pX, int pY, int uOffset,
@@ -50,7 +52,7 @@ public class CuriosButton extends Button implements ITooltipButton {
             i = vOffset + yDiff;
         }
 
-        RenderSystem.enableDepthTest();
-        pGuiGraphics.blit(pTexture, pX, pY, (float) uOffset, (float) i, pWidth, pHeight, pTextureWidth, pTextureHeight);
+        // RenderSystem.enableDepthTest();
+        pGuiGraphics.blit(pTexture, pX, pY, uOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);
     }
 }

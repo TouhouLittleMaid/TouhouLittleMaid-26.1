@@ -53,7 +53,7 @@ public class DataGenerator {
         DatapackBuiltinEntriesProvider datapackProvider = new RegistryDataGenerator(pack, registries);
         generator.addProvider(true, datapackProvider);
 
-        generator.addProvider(true, new ItemModelGenerator(pack));
+        // generator.addProvider(true, new ItemModelGenerator(pack));
 
         generator.addProvider(true, new DataMapGenerator(pack, registries));
     }

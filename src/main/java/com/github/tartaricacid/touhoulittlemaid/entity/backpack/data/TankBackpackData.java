@@ -3,27 +3,22 @@ package com.github.tartaricacid.touhoulittlemaid.entity.backpack.data;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.MaidFluidUtil;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.TagValueInput;
-import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.ResourceHandler;
 
 public class TankBackpackData extends SimpleContainer implements IBackpackData {
     public static final int CAPACITY = 10 * FluidType.BUCKET_VOLUME;
@@ -98,24 +93,22 @@ public class TankBackpackData extends SimpleContainer implements IBackpackData {
     }
 
     @Override
-    public void load(CompoundTag tag, EntityMaid maid) {
+    public void load(ValueInput tag, EntityMaid maid) {
         this.clearContent();
-        tag.getCompound("Tanks").ifPresent(t -> this.readTankNbt(t, maid.registryAccess()));
-        ValueInput itemsInput = TagValueInput.create(ProblemReporter.DISCARDING, maid.registryAccess(), tag);
-        ContainerHelper.loadAllItems(itemsInput, this.getItems());
+        tag.child("Tanks").ifPresent(this::readTankNbt);
+        ContainerHelper.loadAllItems(tag, this.getItems());
     }
 
     @Override
-    public void save(CompoundTag tag, EntityMaid maid) {
+    public void save(ValueOutput tag, EntityMaid maid) {
         FluidStack fluidStack = FluidUtil.getStack(this.tank, 0);
         if (fluidStack.isEmpty()) {
-            tag.remove("Tanks");
+            tag.discard("Tanks");
         } else {
-            tag.put("Tanks", this.writeTankCompound(maid.registryAccess()));
+            ValueOutput tanks = tag.child("Tanks");
+            this.writeTankCompound(tanks);
         }
-        TagValueOutput itemsOut = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, maid.registryAccess());
-        ContainerHelper.saveAllItems(itemsOut, this.getItems());
-        tag.merge(itemsOut.buildResult());
+        ContainerHelper.saveAllItems(tag, this.getItems());
     }
 
     @Override
@@ -126,8 +119,8 @@ public class TankBackpackData extends SimpleContainer implements IBackpackData {
         return this.tank;
     }
 
-    public void loadTank(CompoundTag nbt, EntityMaid maid) {
-        this.readTankNbt(nbt, maid.registryAccess());
+    public void loadTank(ValueInput tag, EntityMaid maid) {
+        this.readTankNbt(tag);
         this.tankFluidCount = FluidUtil.getStack(this.tank, 0).getAmount();
         FluidStack fluidStack = FluidUtil.getStack(this.tank, 0);
         if (fluidStack.isEmpty()) {
@@ -138,28 +131,25 @@ public class TankBackpackData extends SimpleContainer implements IBackpackData {
         }
     }
 
-    private void readTankNbt(CompoundTag tanksTag, HolderLookup.Provider registries) {
-        ValueInput in = TagValueInput.create(ProblemReporter.DISCARDING, registries, tanksTag);
-        in.read("Fluid", FluidStack.CODEC).ifPresentOrElse(
-            s -> {
-                if (s.isEmpty()) {
-                    this.tank.set(0, FluidResource.EMPTY, 0);
-                } else {
-                    this.tank.set(0, FluidResource.of(s), s.getAmount());
-                }
-            },
-            () -> this.tank.deserialize(in)
+    private void readTankNbt(ValueInput tag) {
+        tag.read("Fluid", FluidStack.CODEC).ifPresentOrElse(
+                s -> {
+                    if (s.isEmpty()) {
+                        this.tank.set(0, FluidResource.EMPTY, 0);
+                    } else {
+                        this.tank.set(0, FluidResource.of(s), s.getAmount());
+                    }
+                },
+                () -> this.tank.deserialize(tag)
         );
     }
 
-    private CompoundTag writeTankCompound(HolderLookup.Provider registries) {
+    private void writeTankCompound(ValueOutput tag) {
         FluidStack fluidStack = FluidUtil.getStack(this.tank, 0);
         if (fluidStack.isEmpty()) {
-            return new CompoundTag();
+            return;
         }
-        CompoundTag out = new CompoundTag();
-        out.store("Fluid", FluidStack.CODEC, registries.createSerializationContext(NbtOps.INSTANCE), fluidStack);
-        return out;
+        tag.store("Fluid", FluidStack.CODEC, fluidStack);
     }
 
     private FluidStacksResourceHandler createTankFluidSlotView() {

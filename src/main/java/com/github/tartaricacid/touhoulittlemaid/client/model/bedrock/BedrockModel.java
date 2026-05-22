@@ -61,19 +61,19 @@ public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBed
 
         if (animations != null) {
             // TODO 需要彻底移除 JS 动画
-            Invocable invocable = (Invocable) CustomJsAnimationManger.NASHORN;
-            if (state instanceof EntityMaidRenderState maidState && maidState.entity instanceof Mob mob) {
-                IMaid maid = IMaid.convert(mob);
-                if (maid != null) {
-                    setupMaidAnim(maid, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
-                    // 硬编码动画
-                    HardcodedAnimationManger.playMaidAnimation(maid, modelMapWrapper, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-                }
-                return;
-            }
-            if (state instanceof EntityChairRenderState chairState && chairState.chair != null) {
-                setupChairAnim(chairState.chair, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
-            }
+//            Invocable invocable = (Invocable) CustomJsAnimationManger.NASHORN;
+//            if (state instanceof EntityMaidRenderState maidState && maidState.entity instanceof Mob mob) {
+//                IMaid maid = IMaid.convert(mob);
+//                if (maid != null) {
+//                    setupMaidAnim(maid, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
+//                    // 硬编码动画
+//                    HardcodedAnimationManger.playMaidAnimation(maid, modelMapWrapper, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+//                }
+//                return;
+//            }
+//            if (state instanceof EntityChairRenderState chairState && chairState.chair != null) {
+//                setupChairAnim(chairState.chair, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
+//            }
         }
     }
 

@@ -171,13 +171,13 @@ public class CuriosContainer extends MaidMainContainer {
             // 用来修正护甲值不变化的问题
             if (PLAYER_INVENTORY_SIZE <= index && index < PLAYER_INVENTORY_SIZE + 4) {
                 EquipmentSlot equipmentSlot = SLOT_IDS[index - PLAYER_INVENTORY_SIZE];
-                maid.setLastArmorItem(equipmentSlot, stack1);
+                //maid.setLastArmorItem(equipmentSlot, stack1);
             }
             // 还有主副手
             if (PLAYER_INVENTORY_SIZE + 4 <= index && index < PLAYER_INVENTORY_SIZE + 6) {
                 int slotIndex = index - PLAYER_INVENTORY_SIZE - 4;
                 EquipmentSlot equipmentSlot = slotIndex == 0 ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-                maid.setLastHandItem(equipmentSlot, stack1);
+                //maid.setLastHandItem(equipmentSlot, stack1);
             }
         }
         return stack1;

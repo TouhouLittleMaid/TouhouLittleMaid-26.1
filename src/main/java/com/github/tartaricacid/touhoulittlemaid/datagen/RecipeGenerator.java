@@ -296,41 +296,41 @@ public class RecipeGenerator extends RecipeProvider {
                 .requires(2, Tags.Items.RODS_WOODEN)
                 .save(recipeOutput);
 
-        ItemStack entityPlaceholder = new ItemStack(InitItems.ENTITY_PLACEHOLDER.asItem());
-        entityPlaceholder.set(InitDataComponent.RECIPES_ID_TAG, "reborn_maid");
-        AltarRecipeBuilder.shapeless(items, RecipeCategory.MISC, entityPlaceholder)
-                .power(0.5F)
-                .requires(InitItems.FILM)
-                .requires(Tags.Items.GEMS_LAPIS)
-                .requires(Tags.Items.INGOTS_GOLD)
-                .requires(Tags.Items.DUSTS_REDSTONE)
-                .requires(Tags.Items.INGOTS_IRON)
-                .requires(Items.COAL)
-                .entity(EntityType.getKey(InitEntities.MAID.get()))
-                .langKey("jei.touhou_little_maid.altar_craft.reborn_maid.result")
-                .save(recipeOutput, "reborn_maid");
+//        ItemStack entityPlaceholder = new ItemStack(InitItems.ENTITY_PLACEHOLDER.asItem());
+//        entityPlaceholder.set(InitDataComponent.RECIPES_ID_TAG, "reborn_maid");
+//        AltarRecipeBuilder.shapeless(items, RecipeCategory.MISC, entityPlaceholder)
+//                .power(0.5F)
+//                .requires(InitItems.FILM)
+//                .requires(Tags.Items.GEMS_LAPIS)
+//                .requires(Tags.Items.INGOTS_GOLD)
+//                .requires(Tags.Items.DUSTS_REDSTONE)
+//                .requires(Tags.Items.INGOTS_IRON)
+//                .requires(Items.COAL)
+//                .entity(EntityType.getKey(InitEntities.MAID.get()))
+//                .langKey("jei.touhou_little_maid.altar_craft.reborn_maid.result")
+//                .save(recipeOutput, "reborn_maid");
 
-        entityPlaceholder.set(InitDataComponent.RECIPES_ID_TAG, "spawn_box");
-        AltarRecipeBuilder.shapeless(items, RecipeCategory.MISC, entityPlaceholder)
-                .power(0.5F)
-                .requires(Tags.Items.GEMS_DIAMOND)
-                .requires(Tags.Items.GEMS_LAPIS)
-                .requires(Tags.Items.INGOTS_GOLD)
-                .requires(Tags.Items.DUSTS_REDSTONE)
-                .requires(Tags.Items.INGOTS_IRON)
-                .requires(Items.COAL)
-                .entity(EntityType.getKey(InitEntities.BOX.get()))
-                .langKey("jei.touhou_little_maid.altar_craft.spawn_box.result")
-                .save(recipeOutput, "spawn_box");
-
-        entityPlaceholder.set(InitDataComponent.RECIPES_ID_TAG, "spawn_lightning_bolt");
-        AltarRecipeBuilder.shapeless(items, RecipeCategory.MISC, entityPlaceholder)
-                .power(0.2F)
-                .requires(3, Tags.Items.GUNPOWDERS)
-                .requires(3, Items.BLAZE_POWDER)
-                .entity(EntityType.getKey(EntityType.LIGHTNING_BOLT))
-                .langKey("jei.touhou_little_maid.altar_craft.spawn_lightning_bolt.result")
-                .save(recipeOutput, "spawn_lightning_bolt");
+//        entityPlaceholder.set(InitDataComponent.RECIPES_ID_TAG, "spawn_box");
+//        AltarRecipeBuilder.shapeless(items, RecipeCategory.MISC, entityPlaceholder)
+//                .power(0.5F)
+//                .requires(Tags.Items.GEMS_DIAMOND)
+//                .requires(Tags.Items.GEMS_LAPIS)
+//                .requires(Tags.Items.INGOTS_GOLD)
+//                .requires(Tags.Items.DUSTS_REDSTONE)
+//                .requires(Tags.Items.INGOTS_IRON)
+//                .requires(Items.COAL)
+//                .entity(EntityType.getKey(InitEntities.BOX.get()))
+//                .langKey("jei.touhou_little_maid.altar_craft.spawn_box.result")
+//                .save(recipeOutput, "spawn_box");
+//
+//        entityPlaceholder.set(InitDataComponent.RECIPES_ID_TAG, "spawn_lightning_bolt");
+//        AltarRecipeBuilder.shapeless(items, RecipeCategory.MISC, entityPlaceholder)
+//                .power(0.2F)
+//                .requires(3, Tags.Items.GUNPOWDERS)
+//                .requires(3, Items.BLAZE_POWDER)
+//                .entity(EntityType.getKey(EntityType.LIGHTNING_BOLT))
+//                .langKey("jei.touhou_little_maid.altar_craft.spawn_lightning_bolt.result")
+//                .save(recipeOutput, "spawn_lightning_bolt");
 
         AltarRecipeBuilder.shapeless(items, RecipeCategory.MISC, InitItems.SNACK_CABINET)
                 .power(0.1F)

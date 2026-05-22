@@ -15,13 +15,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 
@@ -98,7 +100,9 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
     }
 
     private void submitHitBox(AABB hitbox, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
-        LevelRenderer.renderLineBox(poseStack, bufferIn.getBuffer(RenderTypes.lines()), hitbox, 1.0F, 0, 0, 1.0F);
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lines(), (pose, buffer) -> {
+            Gizmos.cuboid(hitbox, GizmoStyle.fill(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
+        });
     }
 
     private void submitChair(EntityChairRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {

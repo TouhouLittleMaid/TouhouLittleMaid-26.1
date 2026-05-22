@@ -22,7 +22,7 @@ public class MaidNearestLivingEntitySensor extends Sensor<EntityMaid> {
         list.sort(Comparator.comparingDouble(maid::distanceToSqr));
         Brain<EntityMaid> brain = maid.getBrain();
         brain.setMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES, list);
-        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, new NearestVisibleLivingEntities(maid, list));
+        brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, new NearestVisibleLivingEntities(world, maid, list));
     }
 
     @Override

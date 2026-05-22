@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.BackpackWrapper;
 import net.p3pp3rf1y.sophisticatedbackpacks.backpack.wrapper.IBackpackWrapper;
 import net.p3pp3rf1y.sophisticatedcore.inventory.ITrackedContentsItemHandler;
@@ -75,11 +76,11 @@ public class ExtraContainerRequestHandler {
 
         int targetSlot = -1;
         ItemStack targetStack = ItemStack.EMPTY;
-        for (int i = inv.getSlots() - 1; i >= 0; i--) {
+        for (int i = inv.size() - 1; i >= 0; i--) {
             if (i == MaidBackpackHandler.BACKPACK_ITEM_SLOT) {
                 continue;
             }
-            ItemStack stack = inv.getStackInSlot(i);
+            ItemStack stack = ItemUtil.getStack(inv, i);
             if (stack.isEmpty()) {
                 continue;
             }

@@ -69,7 +69,9 @@ public class EntityGraphics {
     }
 
     public int drawString(Font font, FormattedCharSequence text, float x, float y, int color, boolean dropShadow) {
-        return font.drawInBatch(text, x, y, color, dropShadow, this.pose.last().pose(), this.bufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
+        // TODO
+        // return font.drawInBatch(text, x, y, color, dropShadow, this.pose.last().pose(), this.bufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
+        return 0;
     }
 
     public int drawString(Font font, Component text, int x, int y, int color, boolean dropShadow) {
@@ -166,15 +168,15 @@ public class EntityGraphics {
     }
 
     public void innerBlit(Identifier atlas, int x1, int x2, int y1, int y2, int z, float minU, float maxU, float minV, float maxV) {
-        RenderSystem.setShaderTexture(0, atlas);
-        RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
-        Matrix4f matrix4f = this.pose.last().pose();
-        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
-        bufferBuilder.addVertex(matrix4f, x1, y1, z).setColor(0xFFFFFFFF).setUv(minU, minV).setLight(this.packedLight);
-        bufferBuilder.addVertex(matrix4f, x1, y2, z).setColor(0xFFFFFFFF).setUv(minU, maxV).setLight(this.packedLight);
-        bufferBuilder.addVertex(matrix4f, x2, y2, z).setColor(0xFFFFFFFF).setUv(maxU, maxV).setLight(this.packedLight);
-        bufferBuilder.addVertex(matrix4f, x2, y1, z).setColor(0xFFFFFFFF).setUv(maxU, minV).setLight(this.packedLight);
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+//        RenderSystem.setShaderTexture(0, atlas);
+//        RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
+//        Matrix4f matrix4f = this.pose.last().pose();
+//        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
+//        bufferBuilder.addVertex(matrix4f, x1, y1, z).setColor(0xFFFFFFFF).setUv(minU, minV).setLight(this.packedLight);
+//        bufferBuilder.addVertex(matrix4f, x1, y2, z).setColor(0xFFFFFFFF).setUv(minU, maxV).setLight(this.packedLight);
+//        bufferBuilder.addVertex(matrix4f, x2, y2, z).setColor(0xFFFFFFFF).setUv(maxU, maxV).setLight(this.packedLight);
+//        bufferBuilder.addVertex(matrix4f, x2, y1, z).setColor(0xFFFFFFFF).setUv(maxU, minV).setLight(this.packedLight);
+//        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
     }
 
     public EntityMaid getMaid() {

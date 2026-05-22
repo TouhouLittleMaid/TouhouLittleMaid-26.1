@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.client.model.EntityModel;
@@ -83,7 +82,7 @@ public class BackpackManager {
 
     //FIXME 等待EntityMaidRenderState的实现
     public static Optional<Pair<EntityModel<EntityMaidRenderState>, Identifier>> findBackpackModel(Identifier id) {
-        Pair<EntityModel<EntityMaid>, Identifier> pair = BACKPACK_MODEL_MAP.get(id);
+        Pair<EntityModel<EntityMaidRenderState>, Identifier> pair = BACKPACK_MODEL_MAP.get(id);
         if (pair == null) {
             return Optional.empty();
         }

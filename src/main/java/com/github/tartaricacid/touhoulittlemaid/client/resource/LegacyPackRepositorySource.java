@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource;
 
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -12,8 +11,6 @@ import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.locating.IModFile;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -35,8 +32,10 @@ public class LegacyPackRepositorySource implements RepositorySource {
     }
 
     private PathPackResources.PathResourcesSupplier getLegacyPack() {
-        IModFile file = ModList.get().getModFileById(TouhouLittleMaid.MOD_ID).getFile();
-        return new PathPackResources.PathResourcesSupplier(file.getSecureJar().getRootPath().resolve(LEGACY_PACK_DIR_NAME));
+        // TODO 废弃 legacy 材质包功能
+        return null;
+//        IModFile file = ModList.get().getModFileById(TouhouLittleMaid.MOD_ID).getFile();
+//        return new PathPackResources.PathResourcesSupplier(file.getSecureJar().getRootPath().resolve(LEGACY_PACK_DIR_NAME));
     }
 
     @Override

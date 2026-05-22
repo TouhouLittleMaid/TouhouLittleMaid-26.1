@@ -1,13 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.advancement;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.advancements.altar.AltarCraftTrigger;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.MaidEventTrigger;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.datagen.LootTableGenerator;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemEntityPlaceholder;
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.KilledTrigger;
@@ -56,23 +54,23 @@ public class BaseAdvancement {
     }
 
     private static void generateMaid(Consumer<AdvancementHolder> saver, AdvancementHolder root) {
-        ItemStack stack = ItemEntityPlaceholder.setRecipeId(new ItemStack(InitItems.ENTITY_PLACEHOLDER.get()), "spawn_box");
-        AdvancementHolder spawnMaid = make(stack, "spawn_maid").parent(root)
-                .addCriterion("altar_craft", AltarCraftTrigger.Instance.recipe(id("altar_recipe/spawn_box")))
-                .rewards(AdvancementRewards.Builder.loot(LootTableGenerator.CAKE))
-                .save(saver, id("base/spawn_maid").toString());
-
-        makeGoal(Items.CAKE, "tamed_maid").parent(spawnMaid)
-                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.TAMED_MAID))
-                .save(saver, id("base/tamed_maid").toString());
-
-        make(InitItems.CHANGE_MAID_MODEL.get(), "change_maid_model").parent(spawnMaid)
-                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.CHANGE_MAID_MODEL))
-                .save(saver, id("base/change_maid_model").toString());
-
-        make(Items.JUKEBOX, "change_maid_sound").parent(spawnMaid)
-                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.CHANGE_MAID_SOUND))
-                .save(saver, id("base/change_maid_sound").toString());
+//        ItemStack stack = ItemEntityPlaceholder.setRecipeId(new ItemStack(InitItems.ENTITY_PLACEHOLDER.get()), "spawn_box");
+//        AdvancementHolder spawnMaid = make(stack, "spawn_maid").parent(root)
+//                .addCriterion("altar_craft", AltarCraftTrigger.Instance.recipe(id("altar_recipe/spawn_box")))
+//                .rewards(AdvancementRewards.Builder.loot(LootTableGenerator.CAKE))
+//                .save(saver, id("base/spawn_maid").toString());
+//
+//        makeGoal(Items.CAKE, "tamed_maid").parent(spawnMaid)
+//                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.TAMED_MAID))
+//                .save(saver, id("base/tamed_maid").toString());
+//
+//        make(InitItems.CHANGE_MAID_MODEL.get(), "change_maid_model").parent(spawnMaid)
+//                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.CHANGE_MAID_MODEL))
+//                .save(saver, id("base/change_maid_model").toString());
+//
+//        make(Items.JUKEBOX, "change_maid_sound").parent(spawnMaid)
+//                .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.CHANGE_MAID_SOUND))
+//                .save(saver, id("base/change_maid_sound").toString());
     }
 
     private static void generateAltar(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, AdvancementHolder root) {

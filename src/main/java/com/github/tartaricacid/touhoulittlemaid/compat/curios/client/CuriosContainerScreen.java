@@ -10,18 +10,17 @@ import com.github.tartaricacid.touhoulittlemaid.compat.curios.menu.MaidCurioSlot
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.TabIndex;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import org.anti_ad.mc.ipn.api.IPNButton;
 import org.anti_ad.mc.ipn.api.IPNGuiHint;
 import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
@@ -49,8 +48,6 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
 
     public CuriosContainerScreen(CuriosContainer container, Inventory inv, Component titleIn) {
         super(container, inv, titleIn);
-        this.imageHeight = 256;
-        this.imageWidth = 256;
         this.maid = menu.getMaid();
 
         this.maxSlots = CuriosApi.getCuriosInventory(this.maid).map(ICuriosItemHandler::getVisibleSlots).orElse(0);
@@ -120,23 +117,24 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
     @Override
     protected void renderAdditionTransTooltip(GuiGraphicsExtractor graphics, int x, int y) {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
-        if (clientPlayer != null && clientPlayer.inventoryMenu.getCarried().isEmpty() && this.getSlotUnderMouse() != null) {
-            Slot slot = this.getSlotUnderMouse();
+        if (clientPlayer != null && clientPlayer.inventoryMenu.getCarried().isEmpty() && this.getHoveredSlot() != null) {
+            Slot slot = this.getHoveredSlot();
             if (slot instanceof MaidCurioSlot slotCurio && !slot.hasItem()) {
                 MutableComponent name = Component.literal(slotCurio.getSlotName());
-                graphics.renderTooltip(this.font, name, x, y);
+                graphics.setTooltipForNextFrame(this.font, name, x, y);
             }
         }
     }
 
     @Override
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, CURIOS_BG);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
+
+//        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+//        RenderSystem.setShaderTexture(0, CURIOS_BG);
 
         // 护甲、主手、副手背景
-        graphics.blit(CURIOS_BG, leftPos + 85, topPos + 36, 0, 0, 57, 58);
+        GuiTools.blit(graphics, CURIOS_BG, leftPos + 85, topPos + 36, 0, 0, 57, 58);
 
         // Curios 背景
         if (this.slotCount > 0) {
@@ -145,11 +143,11 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
             if (rows > 0) {
                 // 绘制前 n-1 行完整行
                 int height = rows * 18;
-                graphics.blit(CURIOS_BG, leftPos + 142, topPos + 36, 57, 0, 108, height);
+                GuiTools.blit(graphics, CURIOS_BG, leftPos + 142, topPos + 36, 57, 0, 108, height);
                 // 绘制最后一行
-                graphics.blit(CURIOS_BG, leftPos + 142, topPos + 36 + height, 57, height, width, 18);
+                GuiTools.blit(graphics, CURIOS_BG, leftPos + 142, topPos + 36 + height, 57, height, width, 18);
             } else {
-                graphics.blit(CURIOS_BG, leftPos + 142, topPos + 36, 57, 0, width, 18);
+                GuiTools.blit(graphics, CURIOS_BG, leftPos + 142, topPos + 36, 57, 0, width, 18);
             }
         }
     }

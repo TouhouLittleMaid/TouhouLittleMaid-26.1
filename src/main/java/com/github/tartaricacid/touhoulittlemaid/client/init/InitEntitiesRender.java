@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.init;
 
 import com.github.tartaricacid.touhoulittlemaid.client.model.DebugFloorModel;
-import com.github.tartaricacid.touhoulittlemaid.client.model.NewEntityFairyModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.*;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.*;
@@ -59,7 +58,5 @@ public final class InitEntitiesRender {
     @SubscribeEvent
     public static void onRegisterLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(DebugFloorModel.LAYER, DebugFloorModel::createBodyLayer);
-        // 为了别的模组兼容，暂时保留
-        event.registerLayerDefinition(NewEntityFairyModel.LAYER, NewEntityFairyModel::createBodyLayer);
     }
 }

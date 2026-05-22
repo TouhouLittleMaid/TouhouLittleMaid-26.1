@@ -73,7 +73,7 @@ public final class FallbackIngredient implements ICustomIngredient {
                 return parsed.get();
             }
         }
-        return Ingredient.EMPTY;
+        return Ingredient.of();
     }
 
     public record FallbackEntry(String modid, JsonElement value) {

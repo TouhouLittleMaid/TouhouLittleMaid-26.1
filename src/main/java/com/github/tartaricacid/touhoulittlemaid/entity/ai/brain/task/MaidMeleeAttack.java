@@ -33,7 +33,7 @@ public class MaidMeleeAttack {
             ) {
                 lookTarget.set(new EntityTracker(target, true));
                 maid.swing(InteractionHand.MAIN_HAND);
-                maid.doHurtTarget(target);
+                maid.doHurtTarget(level, target);
                 double attackSpeed = maid.getAttributeValue(Attributes.ATTACK_SPEED);
                 if (attackSpeed > 0) {
                     attackCoolingDown.setWithExpiry(true, (long) (cooldownBetweenAttacks / attackSpeed));

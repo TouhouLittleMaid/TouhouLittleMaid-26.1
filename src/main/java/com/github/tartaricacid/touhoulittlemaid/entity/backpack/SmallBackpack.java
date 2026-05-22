@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -70,7 +71,7 @@ public class SmallBackpack extends IMaidBackpack {
     @Nullable
     @Override
     @OnlyIn(Dist.CLIENT)
-    public EntityModel<EntityMaid> getBackpackModel(EntityModelSet modelSet) {
+    public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
         return BedrockModelLoader.getModel(SMALL_BACKPACK);
     }
 

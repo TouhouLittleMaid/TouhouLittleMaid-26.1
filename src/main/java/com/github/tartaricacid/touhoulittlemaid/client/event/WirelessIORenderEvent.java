@@ -38,7 +38,6 @@ public final class WirelessIORenderEvent {
         }
         Vec3 position = event.getLevelRenderState().cameraRenderState.pos.reverse();
         AABB aabb = new AABB(pos).move(position);
-        VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
         Gizmos.cuboid(aabb, GizmoStyle.fill(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
     }
 }

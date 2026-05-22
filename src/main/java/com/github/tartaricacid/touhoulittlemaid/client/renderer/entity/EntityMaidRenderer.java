@@ -87,7 +87,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         this.addLayer(new LayerMaidBipedHead(this, Minecraft.getInstance().getBlockEntityRenderDispatcher()));
         this.addLayer(new LayerMaidBackpack(this, manager.getModelSet()));
         this.addLayer(new LayerMaidBackItem(this));
-        this.addLayer(new LayerMaidBanner(this));
+        // this.addLayer(new LayerMaidBanner(this));
         this.addAdditionMaidLayer(manager);
         this.geckoEntityMaidRenderer = new GeckoEntityMaidRenderer<>(manager);
         this.initYsmModelRenderer(manager);
@@ -249,8 +249,8 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
             poseStack.scale(-0.025F, -0.025F, 0.025F);
 
             // TODO
-            EntityGraphics graphics = new EntityGraphics(poseStack, maidEntity, state.lightCoords, state.partialTick);
-            this.chatBubbleRenderer2.submit(submitNodeCollector, graphics);
+            // EntityGraphics graphics = new EntityGraphics(poseStack, maidEntity, state.lightCoords, state.partialTick);
+            // this.chatBubbleRenderer2.submit(submitNodeCollector, graphics);
             poseStack.popPose();
         }
 
@@ -269,7 +269,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
 
         // GeckoLib 接管渲染
         if (state.modelType == ModelType.GECKO) {
-            PatPatCompat.renderPat(state, poseStack, state.partialTick);
+            // PatPatCompat.renderPat(state, poseStack, state.partialTick);
             this.geckoEntityMaidRenderer.submit(state, poseStack, submitNodeCollector, camera);
         }
 
@@ -297,7 +297,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         }
 
         // 其他时候的旋转
-        HardcodedAnimationManger.setupRotations(mob, poseStack, state.ageInTicks, state.yRot, state.partialTick, state.mainInfo.isGeckoModel());
+        // HardcodedAnimationManger.setupRotations(mob, poseStack, state.ageInTicks, state.yRot, state.partialTick, state.mainInfo.isGeckoModel());
     }
 
     @Override

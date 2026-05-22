@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.GomokuCodec;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Point;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.BoardStateTooltip;
 import com.github.tartaricacid.touhoulittlemaid.util.CChessUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.github.tartaricacid.touhoulittlemaid.util.WChessUtil;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -55,7 +56,7 @@ public class ClientBoardStateTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(Font font) {
         if (boardGameData == null) {
             return 0;
         }
@@ -81,7 +82,7 @@ public class ClientBoardStateTooltip implements ClientTooltipComponent {
     }
 
     @Override
-    public void renderImage(Font font, int pX, int pY, GuiGraphicsExtractor graphics) {
+    public void extractImage(Font font, int pX, int pY, int w, int h, GuiGraphicsExtractor graphics) {
         if (boardGameData == null) {
             return;
         }
@@ -102,10 +103,10 @@ public class ClientBoardStateTooltip implements ClientTooltipComponent {
     }
 
     private void renderGomoku(int pX, int pY, GuiGraphicsExtractor graphics, byte[][] data) {
-        graphics.pose().pushPose();
-        graphics.pose().scale(0.5f, 0.5f, 1);
-        graphics.pose().translate(pX, pY, 0);
-        graphics.blit(GOMOKU_BG, pX, pY, 0, 0, 151, 151);
+        graphics.pose().pushMatrix();
+        // graphics.pose().scale(0.5f, 0.5f, 1);
+        // graphics.pose().translate(pX, pY, 0);
+        GuiTools.blit(graphics, GOMOKU_BG, pX, pY, 0, 0, 151, 151);
 
         for (int y = 0; y <= 14; y++) {
             for (int x = 0; x <= 14; x++) {
@@ -123,15 +124,15 @@ public class ClientBoardStateTooltip implements ClientTooltipComponent {
                 int offsetX = pX + 1 + x * 10;
                 int offsetY = pY + 1 + y * 10;
 
-                graphics.blit(GOMOKU_BG, offsetX, offsetY, 0, v, 9, 9);
+                GuiTools.blit(graphics, GOMOKU_BG, offsetX, offsetY, 0, v, 9, 9);
             }
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     private void renderXiangqi(int pX, int pY, GuiGraphicsExtractor graphics, byte[] data) {
-        graphics.blit(XIANGQI_BG, pX, pY, 0, 0, 128, 126);
+        GuiTools.blit(graphics, XIANGQI_BG, pX, pY, 0, 0, 128, 126);
 
         for (int y = 3; y <= 12; y++) {
             for (int x = 3; x <= 11; x++) {
@@ -152,16 +153,16 @@ public class ClientBoardStateTooltip implements ClientTooltipComponent {
                 int offsetX = pX - 1 + (x - 3) * 13;
                 int offsetY = pY - 1 + (y - 3) * 13;
 
-                graphics.blit(XIANGQI_BG, offsetX, offsetY, u, v, 11, 11);
+                GuiTools.blit(graphics, XIANGQI_BG, offsetX, offsetY, u, v, 11, 11);
             }
         }
     }
 
     private void renderChess(int pX, int pY, GuiGraphicsExtractor graphics, byte[] data) {
-        graphics.pose().pushPose();
-        graphics.pose().scale(0.5f, 0.5f, 1);
-        graphics.pose().translate(pX, pY, 0);
-        graphics.blit(CHESS_BG, pX, pY, 0, 0, 204, 204);
+        graphics.pose().pushMatrix();
+        //graphics.pose().scale(0.5f, 0.5f, 1);
+        //graphics.pose().translate(pX, pY, 0);
+        GuiTools.blit(graphics, CHESS_BG, pX, pY, 0, 0, 204, 204);
 
         for (int y = 0; y <= 7; y++) {
             for (int x = 4; x <= 11; x++) {
@@ -182,10 +183,10 @@ public class ClientBoardStateTooltip implements ClientTooltipComponent {
                 int offsetX = pX + 6 + (x - 4) * 24;
                 int offsetY = pY + 6 + y * 24;
 
-                graphics.blit(CHESS_BG, offsetX, offsetY, u, v, 24, 24);
+                GuiTools.blit(graphics, CHESS_BG, offsetX, offsetY, u, v, 24, 24);
             }
         }
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 }

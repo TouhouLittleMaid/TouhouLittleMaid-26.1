@@ -115,7 +115,7 @@ public final class MaidBackupsManager {
             LOGGER.error("Cannot access overworld for maid index retrieval: {}", ownerId);
             return new CompoundTag();
         }
-        Path ownerFolder = overWorld.getDataStorage().dataFolder.toPath()
+        Path ownerFolder = overWorld.getDataStorage().dataFolder
                 .resolve(BACKUPS_FOLDER_NAME)
                 .resolve(ownerId.toString());
         File indexFile = ownerFolder.resolve(INDEX_FILE_NAME).toFile();
@@ -163,7 +163,7 @@ public final class MaidBackupsManager {
 
         CompoundTag indexTag = IndexData.CODEC.encodeStart(NbtOps.INSTANCE, indexData)
                 .resultOrPartial(LOGGER::error)
-                .map(tag -> (CompoundTag)tag)
+                .map(tag -> (CompoundTag) tag)
                 .orElse(new CompoundTag());
         ProblemReporter.ScopedCollector problemReporter = new ProblemReporter.ScopedCollector(maid.problemPath(), LOGGER);
         TagValueOutput tagValueOutput = TagValueOutput.createWithContext(problemReporter, maid.registryAccess());
@@ -189,7 +189,7 @@ public final class MaidBackupsManager {
 
     public static List<String> getMaidBackupFiles(ServerPlayer player, UUID maidUuid) {
         List<String> backupFiles = Lists.newArrayList();
-        Path folderPath = player.level().getDataStorage().dataFolder.toPath()
+        Path folderPath = player.level().getDataStorage().dataFolder
                 .resolve(BACKUPS_FOLDER_NAME)
                 .resolve(player.getUUID().toString())
                 .resolve(maidUuid.toString());
@@ -208,7 +208,7 @@ public final class MaidBackupsManager {
     }
 
     public static CompoundTag getMaidBackFile(ServerPlayer player, UUID maidUuid, String fileName) {
-        Path filePath = player.level().getDataStorage().dataFolder.toPath()
+        Path filePath = player.level().getDataStorage().dataFolder
                 .resolve(BACKUPS_FOLDER_NAME)
                 .resolve(player.getUUID().toString())
                 .resolve(maidUuid.toString())
@@ -365,7 +365,7 @@ public final class MaidBackupsManager {
      */
     @NotNull
     private static Path buildBackupFolderPath(@NotNull EntityMaid maid, @NotNull ServerLevel level, @NotNull UUID ownerId) {
-        return level.getDataStorage().dataFolder.toPath()
+        return level.getDataStorage().dataFolder
                 .resolve(BACKUPS_FOLDER_NAME)
                 .resolve(ownerId.toString())
                 .resolve(maid.getStringUUID());
