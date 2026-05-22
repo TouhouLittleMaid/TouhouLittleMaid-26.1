@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,7 +16,7 @@ import net.minecraft.world.entity.Mob;
 
 import java.awt.*;
 
-public class LayerMaidBackpack extends RenderLayer<Mob, BedrockModel<Mob>> {
+public class LayerMaidBackpack extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
     private final EntityMaidRenderer renderer;
 
     public LayerMaidBackpack(EntityMaidRenderer renderer, EntityModelSet modelSet) {
@@ -25,7 +26,11 @@ public class LayerMaidBackpack extends RenderLayer<Mob, BedrockModel<Mob>> {
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, Mob mob, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, EntityMaidRenderState state, float limbSwing, float limbSwingAmount) {
+        Mob mob = state.entity;
+        if (mob == null) {
+            return;
+        }
         EntityMaid maid = IMaid.convertToMaid(mob);
         if (maid == null) {
             return;

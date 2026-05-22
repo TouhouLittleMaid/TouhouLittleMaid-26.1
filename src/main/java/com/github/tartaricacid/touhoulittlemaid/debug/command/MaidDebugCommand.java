@@ -23,7 +23,7 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.level.block.FarmlandBlock;
 import org.apache.commons.lang3.StringUtils;
 
 @VisibleForDebug
@@ -95,14 +95,14 @@ public final class MaidDebugCommand {
                 BlockPos blockPos = serverPlayer.blockPosition();
                 int x = blockPos.getX() + i % 10 + 1;
                 int z = blockPos.getZ() + i / 10 + 1;
-                ServerLevel level = serverPlayer.serverLevel();
+                ServerLevel level = serverPlayer.level();
                 EntityMaid entityMaid = new EntityMaid(level);
                 entityMaid.setPos(x, blockPos.getY(), z);
                 entityMaid.tame(serverPlayer);
                 if (StringUtils.isNotBlank(modelId)) {
                     entityMaid.setModelId(modelId);
                 } else {
-                    entityMaid.finalizeSpawn(level, level.getCurrentDifficultyAt(serverPlayer.blockPosition()), EntitySpawnReason.SPAWN_EGG, null);
+                    entityMaid.finalizeSpawn(level, level.getCurrentDifficultyAt(serverPlayer.blockPosition()), EntitySpawnReason.SPAWN_ITEM_USE, null);
                 }
                 entityMaid.setInSittingPose(true);
                 level.addFreshEntity(entityMaid);
@@ -131,7 +131,7 @@ public final class MaidDebugCommand {
                         level.setBlockAndUpdate(pos.move(Direction.UP), Blocks.LILY_PAD.defaultBlockState());
                     } else {
                         // 放置农田和作物
-                        level.setBlockAndUpdate(pos, Blocks.FARMLAND.defaultBlockState().setValue(FarmBlock.MOISTURE, 7));
+                        level.setBlockAndUpdate(pos, Blocks.FARMLAND.defaultBlockState().setValue(FarmlandBlock.MOISTURE, 7));
                         level.setBlockAndUpdate(pos.move(Direction.UP), Blocks.WHEAT.defaultBlockState().setValue(CropBlock.AGE, 7));
                     }
                 }

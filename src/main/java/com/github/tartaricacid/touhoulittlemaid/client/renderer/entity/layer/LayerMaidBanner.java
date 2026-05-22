@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +22,7 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.DyeColor;
@@ -33,7 +34,7 @@ import java.util.Objects;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.BedrockModelLoader.MAID_BANNER;
 
-public class LayerMaidBanner extends RenderLayer<Mob, BedrockModel<Mob>> {
+public class LayerMaidBanner extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/maid_banner.png");
     private final EntityMaidRenderer renderer;
     private final SimpleBedrockModel<EntityMaid> bannerModel;
@@ -45,7 +46,11 @@ public class LayerMaidBanner extends RenderLayer<Mob, BedrockModel<Mob>> {
     }
 
     @Override
-    public void render(PoseStack matrixStack, MultiBufferSource bufferIn, int packedLightIn, Mob mob, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack matrixStack, MultiBufferSource bufferIn, int packedLightIn, EntityMaidRenderState state, float limbSwing, float limbSwingAmount) {
+        Mob mob = state.entity;
+        if (mob == null) {
+            return;
+        }
         IMaid maid = IMaid.convert(mob);
         if (maid == null) {
             return;
@@ -62,7 +67,7 @@ public class LayerMaidBanner extends RenderLayer<Mob, BedrockModel<Mob>> {
             matrixStack.translate(0, 0.5, 0.025);
             matrixStack.scale(0.5F, 0.5F, 0.5F);
             matrixStack.mulPose(Axis.XN.rotationDegrees(5));
-            VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.entityCutoutNoCull(TEXTURE));
+            VertexConsumer buffer = bufferIn.getBuffer(RenderTypes.entityCutout(TEXTURE));
             this.bannerModel.renderToBuffer(matrixStack, buffer, packedLightIn, OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
             BannerPatternLayers patterns = maid.getBackpackShowItem().get(DataComponents.BANNER_PATTERNS);
             DyeColor dyeColor = ((AbstractBannerBlock) bannerItem.getBlock()).getColor();
@@ -87,9 +92,9 @@ public class LayerMaidBanner extends RenderLayer<Mob, BedrockModel<Mob>> {
 
     private void renderPatternLayer(PoseStack poseStack, MultiBufferSource buffer, int packedLight, BedrockPart banner, Material material, DyeColor color) {
         int packedColor = color.getTextureDiffuseColor();
-        float red = FastColor.ARGB32.red(packedColor) / 255f;
-        float green = FastColor.ARGB32.green(packedColor) / 255f;
-        float blue = FastColor.ARGB32.blue(packedColor) / 255f;
+        float red = ARGB.red(packedColor) / 255f;
+        float green = ARGB.green(packedColor) / 255f;
+        float blue = ARGB.blue(packedColor) / 255f;
         banner.render(poseStack, material.buffer(buffer, RenderTypes::entityNoOutline), packedLight, OverlayTexture.NO_OVERLAY, red, green, blue, 1.0F);
     }
 }

@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.carryon.RenderFixer;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
@@ -16,9 +17,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.SwordItem;
 
-public class LayerMaidBackItem extends RenderLayer<Mob, BedrockModel<Mob>> {
+public class LayerMaidBackItem extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
     private final EntityMaidRenderer renderer;
 
     public LayerMaidBackItem(EntityMaidRenderer renderer) {
@@ -27,7 +28,11 @@ public class LayerMaidBackItem extends RenderLayer<Mob, BedrockModel<Mob>> {
     }
 
     @Override
-    public void render(PoseStack matrixStack, MultiBufferSource bufferIn, int packedLightIn, Mob mob, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack matrixStack, MultiBufferSource bufferIn, int packedLightIn, EntityMaidRenderState state, float limbSwing, float limbSwingAmount) {
+        Mob mob = state.entity;
+        if (mob == null) {
+            return;
+        }
         IMaid maid = IMaid.convert(mob);
         if (maid == null) {
             return;

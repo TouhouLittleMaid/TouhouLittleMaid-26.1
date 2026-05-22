@@ -70,7 +70,7 @@ public class DebugMaidManager {
             return List.of();
         }
         return maidId.stream()
-                .map(uuid -> player.serverLevel().getEntity(uuid))
+                .map(uuid -> player.level().getEntity(uuid))
                 .filter(Objects::nonNull)
                 .filter(EntityMaid.class::isInstance)
                 .map(EntityMaid.class::cast).toList();

@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.carryon.RenderFixer;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -14,7 +15,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
-public class LayerMaidHeldItem extends RenderLayer<Mob, BedrockModel<Mob>> {
+public class LayerMaidHeldItem extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
     private final ItemInHandRenderer itemInHandRenderer;
 
     public LayerMaidHeldItem(EntityMaidRenderer maidRenderer, ItemInHandRenderer pItemInHandRenderer) {
@@ -23,10 +24,14 @@ public class LayerMaidHeldItem extends RenderLayer<Mob, BedrockModel<Mob>> {
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, Mob maid, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, EntityMaidRenderState state, float limbSwing, float limbSwingAmount) {
+        Mob maid = state.entity;
+        if (maid == null) {
+            return;
+        }
         ItemStack mainRightItem = maid.getMainHandItem();
         ItemStack offLeftItem = maid.getOffhandItem();
-        BedrockModel<Mob> model = getParentModel();
+        BedrockModel<EntityMaidRenderState> model = getParentModel();
         if (!mainRightItem.isEmpty() && model.hasRightArm() && !RenderFixer.isCarryOnRender(mainRightItem, bufferIn)) {
             this.renderArmWithItem(maid, mainRightItem, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, HumanoidArm.RIGHT, poseStack, bufferIn, packedLightIn);
         }

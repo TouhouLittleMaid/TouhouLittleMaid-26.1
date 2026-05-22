@@ -14,8 +14,8 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public class DebugClientRenderEvent {
     @SubscribeEvent
-    public static void onRender(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && TouhouLittleMaid.DEBUG) {
+    public static void onRender(RenderLevelStageEvent.AfterOpaqueBlocks event) {
+        if (TouhouLittleMaid.DEBUG) {
             MultiBufferSource.BufferSource bufferSource = event.getLevelRenderer().renderBuffers.bufferSource();
             Minecraft.getInstance().debugRenderer.pathfindingRenderer.render(event.getPoseStack(),
                     bufferSource,

@@ -10,6 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockMode
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.*;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
@@ -43,7 +44,7 @@ import java.util.function.Function;
 
 @OnlyIn(Dist.CLIENT)
 @SuppressWarnings("rawtypes,unchecked")
-public class EntityMaidRenderer extends MobRenderer<Mob, BedrockModel<Mob>> {
+public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
     private static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
     private static final String DEFAULT_MODEL_ID = "touhou_little_maid:hakurei_reimu";
     /**
@@ -96,6 +97,17 @@ public class EntityMaidRenderer extends MobRenderer<Mob, BedrockModel<Mob>> {
     }
 
     @Override
+    public EntityMaidRenderState createRenderState() {
+        return new EntityMaidRenderState();
+    }
+
+    @Override
+    public void extractRenderState(Mob entity, EntityMaidRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.entity = entity;
+    }
+
+    @Override
     public void render(Mob entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn) {
         IMaid maid = IMaid.convert(entity);
         if (maid == null) {
@@ -114,7 +126,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, BedrockModel<Mob>> {
 
         MaidModels.ModelData eventModelData = new MaidModels.ModelData(model, mainInfo, mainAnimations);
         if (NeoForge.EVENT_BUS.post(new RenderMaidEvent(maid, eventModelData)).isCanceled()) {
-            BedrockModel<Mob> bedrockModel = eventModelData.getModel();
+            BedrockModel<EntityMaidRenderState> bedrockModel = eventModelData.getModel();
             if (bedrockModel != null) {
                 this.model = bedrockModel;
             }
@@ -177,14 +189,19 @@ public class EntityMaidRenderer extends MobRenderer<Mob, BedrockModel<Mob>> {
     }
 
     @Override
-    protected void scale(Mob maid, PoseStack poseStack, float partialTickTime) {
+    protected void scale(EntityMaidRenderState state, PoseStack poseStack) {
         float scale = mainInfo.getRenderEntityScale();
         poseStack.scale(scale, scale, scale);
     }
 
     @Override
-    protected void setupRotations(Mob mob, PoseStack poseStack, float pAgeInTicks, float pRotationYaw, float pPartialTicks, float pScale) {
-        super.setupRotations(mob, poseStack, pAgeInTicks, pRotationYaw, pPartialTicks, pScale);
+    protected void setupRotations(EntityMaidRenderState state, PoseStack poseStack, float pRotationYaw, float pPartialTicks) {
+        super.setupRotations(state, poseStack, pRotationYaw, pPartialTicks);
+
+        Mob mob = state.entity;
+        if (mob == null) {
+            return;
+        }
 
         // 抱起女仆时的旋转
         if (mob.getVehicle() instanceof Player && !this.mainInfo.isGeckoModel()) {
@@ -194,11 +211,11 @@ public class EntityMaidRenderer extends MobRenderer<Mob, BedrockModel<Mob>> {
         }
 
         // 其他时候的旋转
-        HardcodedAnimationManger.setupRotations(mob, poseStack, pAgeInTicks, pRotationYaw, pPartialTicks, this.mainInfo.isGeckoModel());
+        HardcodedAnimationManger.setupRotations(mob, poseStack, state.ageInTicks, pRotationYaw, pPartialTicks, this.mainInfo.isGeckoModel());
     }
 
     @Override
-    public Identifier getTextureLocation(Mob maid) {
+    public Identifier getTextureLocation(EntityMaidRenderState state) {
         if (mainInfo == null) {
             return DEFAULT_TEXTURE;
         }

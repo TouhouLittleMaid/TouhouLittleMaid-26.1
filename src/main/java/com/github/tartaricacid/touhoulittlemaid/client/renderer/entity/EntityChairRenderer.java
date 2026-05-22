@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
@@ -23,7 +24,7 @@ import net.minecraft.world.phys.AABB;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, BedrockModel<EntityChair>> {
+public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, EntityChairRenderState, BedrockModel<EntityChairRenderState>> {
     public static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
     private static final String DEFAULT_CHAIR_ID = "touhou_little_maid:cushion";
     public static boolean renderHitBox = true;
@@ -34,6 +35,18 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Bedro
     public EntityChairRenderer(EntityRendererProvider.Context rendererManager) {
         super(rendererManager, new BedrockModel<>(), 0);
         this.geckoEntityChairRenderer = new GeckoEntityChairRenderer(rendererManager);
+    }
+
+    @Override
+    public EntityChairRenderState createRenderState() {
+        return new EntityChairRenderState();
+    }
+
+    @Override
+    public void extractRenderState(EntityChair entity, EntityChairRenderState state, float partialTick) {
+        super.extractRenderState(entity, state, partialTick);
+        state.modelId = entity.getModelId();
+        state.chair = entity;
     }
 
     @Override
@@ -86,13 +99,13 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Bedro
     }
 
     @Override
-    protected void scale(EntityChair chair, PoseStack poseStack, float partialTickTime) {
+    protected void scale(EntityChairRenderState state, PoseStack poseStack) {
         float scale = chairInfo.getRenderEntityScale();
         poseStack.scale(scale, scale, scale);
     }
 
     @Override
-    public Identifier getTextureLocation(EntityChair entity) {
+    public Identifier getTextureLocation(EntityChairRenderState state) {
         if (chairInfo == null) {
             return DEFAULT_TEXTURE;
         }
@@ -100,12 +113,12 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Bedro
     }
 
     @Override
-    protected void setupRotations(EntityChair chair, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTicks, float pScale) {
+    protected void setupRotations(EntityChairRenderState state, PoseStack poseStack, float rotationYaw, float partialTicks) {
         poseStack.mulPose(Axis.YP.rotationDegrees(180 - rotationYaw));
     }
 
     @Override
-    protected boolean shouldShowName(EntityChair entity) {
+    protected boolean shouldShowName(EntityChair entity, double distanceSq) {
         return entity.shouldShowName();
     }
 }

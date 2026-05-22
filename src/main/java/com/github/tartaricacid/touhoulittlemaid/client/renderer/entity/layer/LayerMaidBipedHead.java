@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -27,7 +28,7 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.Map;
 
-public class LayerMaidBipedHead extends RenderLayer<Mob, BedrockModel<Mob>> {
+public class LayerMaidBipedHead extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
     private final EntityMaidRenderer maidRenderer;
     private final Map<SkullBlock.Type, SkullModelBase> skullModels;
 
@@ -38,7 +39,11 @@ public class LayerMaidBipedHead extends RenderLayer<Mob, BedrockModel<Mob>> {
     }
 
     @Override
-    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, Mob mob, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, EntityMaidRenderState state, float limbSwing, float limbSwingAmount) {
+        Mob mob = state.entity;
+        if (mob == null) {
+            return;
+        }
         boolean allowRenderHead = maidRenderer.getMainInfo().isShowCustomHead() && getParentModel().hasHead();
         if (!allowRenderHead) {
             return;
