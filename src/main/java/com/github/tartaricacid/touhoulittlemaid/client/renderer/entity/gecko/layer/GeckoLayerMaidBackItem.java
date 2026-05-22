@@ -15,14 +15,22 @@ public class GeckoLayerMaidBackItem implements GeoLayerRenderer<EntityMaidRender
     @Override
     public void submit(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, AnimationEvent<?> event, EntityMaidRenderState state, GeckoMaidRenderData data, CameraRenderState camera) {
         if (!state.backItem.isEmpty() && state.backpack != null) {
-            data.modelState.visitLocatorGroup(GeoLocatorType.BACKPACK, poseStack, locatorPoseStack -> {
-                // TODO: 判断枪
-                locatorPoseStack.translate(0, 1, 0.25);
-                locatorPoseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
-                locatorPoseStack.translate(0, 0.5, -0.25);
-                state.backpack.offsetBackpackItem(locatorPoseStack);;
-                state.backItem.submit(locatorPoseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
-            });
+            if (data.modelState.locatorGroupSize(GeoLocatorType.BACKPACK) > 0) {
+                data.modelState.visitLocatorGroup(GeoLocatorType.BACKPACK, poseStack, locatorPoseStack -> {
+                    renderBackItem(submitNodeCollector, locatorPoseStack, state);
+                });
+            } else {
+                renderBackItem(submitNodeCollector, poseStack, state);
+            }
         }
+    }
+
+    public void renderBackItem(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, EntityMaidRenderState state) {
+        // TODO: 判断枪
+        poseStack.translate(0, 1, 0.25);
+        poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+        poseStack.translate(0, 0.5, -0.25);
+        state.backpack.offsetBackpackItem(poseStack);;
+        state.backItem.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
     }
 }

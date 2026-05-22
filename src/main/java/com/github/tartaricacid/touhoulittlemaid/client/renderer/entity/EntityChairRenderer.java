@@ -42,18 +42,6 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
     }
 
     @Override
-    public void extractRenderState(EntityChair entity, EntityChairRenderState state, float partialTick) {
-        super.extractRenderState(entity, state, partialTick);
-        state.modelId = entity.getModelId();
-        state.chair = entity;
-    }
-
-    @Override
-    public EntityChairRenderState createRenderState() {
-        return new EntityChairRenderState();
-    }
-
-    @Override
     public void extractRenderState(EntityChair chair, EntityChairRenderState state, float partialTicks) {
         state.clear();
         super.extractRenderState(chair, state, partialTicks);

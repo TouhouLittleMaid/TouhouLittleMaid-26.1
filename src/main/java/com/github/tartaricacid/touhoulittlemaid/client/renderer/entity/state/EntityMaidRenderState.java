@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.blockentity.state.BannerRenderState;
 import net.minecraft.client.renderer.blockentity.state.SkullBlockRenderState;
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,6 +41,8 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
     public final ItemStackRenderState simpleHat = new ItemStackRenderState();
     public final ItemStackRenderState backItem = new ItemStackRenderState();
 
+    public Mob entity;  // TODO
+
     public void clear() {
         modelType = ModelType.NONE;
 
@@ -61,5 +64,7 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
         headBlock.clear();
         simpleHat.clear();
         backItem.clear();
+
+        entity = null;
     }
 }

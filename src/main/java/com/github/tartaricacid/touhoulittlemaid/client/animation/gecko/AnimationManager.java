@@ -181,9 +181,8 @@ public final class AnimationManager {
             return PlayState.STOP;
         }
         if (maid.asEntity().swinging && !maid.asEntity().isSleeping()) {
-            if (maid.asEntity().swingTime == 0) {
-                // 空动画用于重置 PLAY_ONCE 动画
-                playAnimation(event, "empty", LoopType.PLAY_ONCE);
+            if (maid.asEntity().swingTime == 0 && event.getAnimatableEntity().getStateTracker().setEntityTickState(EntityTickStates.SWING)) {
+                event.getCodedController().indicateReload();
             }
             var manager = event.getAnimatableEntity().getGeckoContainer().conditionManager();
             ConditionalSwing conditionalSwing = (maid.asEntity().swingingArm == InteractionHand.MAIN_HAND) ? manager.swing : manager.swingOffhand;
@@ -203,8 +202,8 @@ public final class AnimationManager {
             return PlayState.STOP;
         }
         if (maid.asEntity().isUsingItem() && !maid.asEntity().isSleeping()) {
-            if (maid.asEntity().getTicksUsingItem() == 1) {
-                playAnimation(event, "empty", LoopType.PLAY_ONCE);
+            if (maid.asEntity().getTicksUsingItem() == 1 && event.getAnimatableEntity().getStateTracker().setEntityTickState(EntityTickStates.USING_ITEM)) {
+                event.getCodedController().indicateReload();
             }
             var manager = event.getAnimatableEntity().getGeckoContainer().conditionManager();
             if (maid.asEntity().getUsedItemHand() == InteractionHand.MAIN_HAND) {

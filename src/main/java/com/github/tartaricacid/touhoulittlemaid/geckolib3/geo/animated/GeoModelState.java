@@ -74,4 +74,8 @@ public final class GeoModelState {
             });
         }
     }
+
+    public int locatorGroupSize(GeoLocatorType type) {
+        return activeLocatorGroups.get(type.getSeq()).size();
+    }
 }

@@ -100,21 +100,12 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
     }
 
     @Override
-    public EntityMaidRenderState createRenderState() {
-        return new EntityMaidRenderState();
-    }
-
-    @Override
-    public void extractRenderState(Mob entity, EntityMaidRenderState state, float partialTick) {
-        super.extractRenderState(entity, state, partialTick);
-        state.entity = entity;
-    }
-
-    @Override
     public void extractRenderState(Mob entity, EntityMaidRenderState state, float partialTicks) {
         state.clear();
         super.extractRenderState(entity, state, partialTicks);
         ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, itemModelResolver, partialTicks);
+
+        state.entity = entity;  // TODO
 
         IMaid maid = IMaid.convert(entity);
         if (maid == null) {
@@ -150,7 +141,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         ItemStack headItem = entity.getItemBySlot(EquipmentSlot.HEAD);
         if (headItem.getItem() instanceof BlockItem blockItem) {
             if (blockItem.getBlock() instanceof AbstractSkullBlock) {
-                // TODO: 复刻 SkullBlockRenderer 的逻辑，extract 至 state.backBannerItem
+                // TODO: 复刻 SkullBlockRenderer 的逻辑，extract 至 state.headSkull
             } else {
                 blockModelResolver.update(state.headBlock, blockItem.getBlock().defaultBlockState(), BLOCK_DISPLAY_CONTEXT);
             }
@@ -177,7 +168,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
                 if (GunClientUtil.isGun(backpackShowingItem)) {
                     // 目前 26.1 没有枪械模组
                 } else if (backpackShowingItem.getItem() instanceof BannerItem item) {
-                    // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBannerItem
+                    // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBanner
                 } else {
                     itemModelResolver.updateForLiving(state.backItem, backpackShowingItem, ItemDisplayContext.FIXED, entity);
                 }
