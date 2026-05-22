@@ -7,9 +7,12 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.attachment.AttachmentType;
 
 public class ChatTokensAttachment {
-    public static final AttachmentType<ChatTokensAttachment> TYPE = AttachmentType.builder(() -> new ChatTokensAttachment(0))
-            .serialize(RecordCodecBuilder.create(ins -> ins.group(Codec.INT.fieldOf("num")
-                    .forGetter(o -> o.num)).apply(ins, ChatTokensAttachment::new))).build();
+    public static final AttachmentType<ChatTokensAttachment> TYPE = AttachmentType
+            .builder(() -> new ChatTokensAttachment(0))
+            .serialize(RecordCodecBuilder.mapCodec(ins -> ins.group(
+                    Codec.INT.fieldOf("num").forGetter(o -> o.num)
+            ).apply(ins, ChatTokensAttachment::new))).build();
+
     private int num;
 
     public ChatTokensAttachment(int num) {
