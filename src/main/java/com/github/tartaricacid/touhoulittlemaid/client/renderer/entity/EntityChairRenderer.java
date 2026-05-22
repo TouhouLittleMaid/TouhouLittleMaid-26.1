@@ -1,7 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
+import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoChairEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityChairRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
@@ -46,6 +48,8 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
         state.clear();
         super.extractRenderState(chair, state, partialTicks);
 
+        state.chair = chair;    // TODO
+
         // 读取默认模型，用于清除不存在模型的缓存残留
         CustomPackLoader.CHAIR_MODELS.getModel(DEFAULT_CHAIR_ID).ifPresent(model -> state.bedrockModel = model);
         CustomPackLoader.CHAIR_MODELS.getInfo(DEFAULT_CHAIR_ID).ifPresent(info -> state.chairInfo = info);
@@ -62,9 +66,18 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
 
         if (state.chairInfo.isGeckoModel()) {
             state.modelType = ModelType.GECKO;
+            var geckoEntity = getGeckoEntity(chair);
+            if (geckoEntity != null) {
+                AnimationUpdateManager.createTask(geckoEntity, state);
+            }
         } else {
             state.modelType = ModelType.SIMPLE_BEDROCK;
         }
+    }
+
+    @Nullable
+    public GeckoChairEntity getGeckoEntity(EntityChair entity) {
+        return entity.getAnimatableEntity();
     }
 
     @Override

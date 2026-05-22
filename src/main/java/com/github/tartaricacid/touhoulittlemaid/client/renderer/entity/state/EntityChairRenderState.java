@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state;
 
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.phys.AABB;
@@ -23,6 +24,8 @@ public class EntityChairRenderState extends LivingEntityRenderState {
     @Nullable
     public AABB hitbox;
 
+    public EntityChair chair;   // TODO
+
     public void clear() {
         modelType = ModelType.NONE;
 
@@ -31,5 +34,7 @@ public class EntityChairRenderState extends LivingEntityRenderState {
         chairAnimations = ObjectLists.emptyList();
 
         hitbox = null;
+
+        chair = null;
     }
 }

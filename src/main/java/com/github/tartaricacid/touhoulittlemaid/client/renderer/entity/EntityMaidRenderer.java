@@ -87,7 +87,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         this.addLayer(new LayerMaidBipedHead(this, Minecraft.getInstance().getBlockEntityRenderDispatcher()));
         this.addLayer(new LayerMaidBackpack(this, manager.getModelSet()));
         this.addLayer(new LayerMaidBackItem(this));
-        this.addLayer(new LayerMaidBanner(this, manager.getModelSet()));
+        this.addLayer(new LayerMaidBanner(this));
         this.addAdditionMaidLayer(manager);
         this.geckoEntityMaidRenderer = new GeckoEntityMaidRenderer<>(manager);
         this.initYsmModelRenderer(manager);
@@ -149,8 +149,8 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
             SimpleHatsCompat.extract(state.simpleHat, headItem);
         }
 
-        // 背部物品
         var maidEntity = IMaid.convertToMaid(entity);
+
         // 暂定只能女仆显示
         if (maidEntity != null && MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() && maidEntity.getConfigManager().isChatBubbleShow()) {
             Vec3 vec3 = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getViewYRot(partialTicks));
@@ -160,6 +160,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
             }
         }
 
+        // 背部物品
         if (maidEntity != null) {
             state.showBackpack = maidEntity.getConfigManager().isShowBackpack();
             if (!entity.isSleeping() && !entity.isInvisible()) {

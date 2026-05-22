@@ -27,13 +27,13 @@ public class GeckoLayerMaidBipedHead implements GeoLayerRenderer<EntityMaidRende
         if (headSkull || headBlock || simpleHat) {
             data.modelState.visitLocatorGroup(GeoLocatorType.HEAD, poseStack, locatorPoseStack -> {
                 if (headSkull) {
-                    poseStack.scale(-1.1875F, 1.1875F, -1.1875F);
-                    poseStack.translate(-0.5D, 0.0D, -0.5D);
+                    locatorPoseStack.scale(-1.1875F, 1.1875F, -1.1875F);
+                    locatorPoseStack.translate(-0.5D, 0.0D, -0.5D);
                     beRenderDispatcher.submit(state.headSkull, locatorPoseStack, submitNodeCollector, camera);
                 }
                 if (headBlock) {
-                    poseStack.scale(-0.8F, 0.8F, -0.8F);
-                    poseStack.translate(-0.5, 0.625, -0.5);
+                    locatorPoseStack.scale(-0.8F, 0.8F, -0.8F);
+                    locatorPoseStack.translate(-0.5, 0.625, -0.5);
                     state.headBlock.submit(locatorPoseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
                 }
                 if (simpleHat) {

@@ -22,10 +22,10 @@ public class GeckoLayerMaidBanner implements GeoLayerRenderer<EntityMaidRenderSt
     public void submit(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, AnimationEvent<?> event, EntityMaidRenderState state, GeckoMaidRenderData data, CameraRenderState camera) {
         if (state.backBanner != null && data.showBackpack) {
             data.modelState.visitLocatorGroup(GeoLocatorType.BACKPACK, poseStack, locatorPoseStack -> {
-                poseStack.translate(0, 0.75, 0.3);
-                poseStack.scale(0.65F, -0.65F, -0.65F);
-                poseStack.mulPose(Axis.YN.rotationDegrees(180));
-                poseStack.mulPose(Axis.XN.rotationDegrees(5));
+                locatorPoseStack.translate(0, 0.75, 0.3);
+                locatorPoseStack.scale(0.65F, -0.65F, -0.65F);
+                locatorPoseStack.mulPose(Axis.YN.rotationDegrees(180));
+                locatorPoseStack.mulPose(Axis.XN.rotationDegrees(5));
                 blockEntityRenderDispatcher.submit(state.backBanner, locatorPoseStack, submitNodeCollector, camera);
             });
         }
