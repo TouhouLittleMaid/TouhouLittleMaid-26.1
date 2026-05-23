@@ -6,13 +6,10 @@ import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
-import com.github.tartaricacid.touhoulittlemaid.util.BiomeCacheUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -224,46 +221,5 @@ public interface IMaid {
 
     default boolean onClimbable() {
         return false;
-    }
-
-    // 下方为 Deprecated 方法，仅用于适配旧版本模型，无需 Override
-
-    @Deprecated
-    default String getAtBiomeTemp() {
-        float temp = BiomeCacheUtil.getCacheBiome(asEntity()).getBaseTemperature();
-        if (temp < 0.15) {
-            return "COLD";
-        } else if (temp < 0.55) {
-            return "OCEAN";
-        } else if (temp < 0.95) {
-            return "MEDIUM";
-        } else {
-            return "WARM";
-        }
-    }
-
-    @Deprecated
-    default boolean hasSasimono() {
-        return false;
-    }
-
-    @Deprecated
-    default boolean isSitInJoyBlock() {
-        return false;
-    }
-
-    @Deprecated
-    default int getDim() {
-        ResourceKey<Level> dim = asEntity().level.dimension();
-        if (dim.equals(Level.OVERWORLD)) {
-            return 0;
-        }
-        if (dim.equals(Level.NETHER)) {
-            return -1;
-        }
-        if (dim.equals(Level.END)) {
-            return 1;
-        }
-        return 0;
     }
 }

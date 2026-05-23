@@ -1,214 +1,119 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.inner;
 
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
+import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Mob;
-
-import java.util.HashMap;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation.INNER_ANIMATION;
 
 public final class PlayerMaidAnimation {
-    private static final float[] FIXED_HAND_ROTATION = new float[]{0, 0, 0};
-
     public static void init() {
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/player/arm/default.js"), getPlayerArmDefault());
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/player/sit/default.js"), getPlayerSitDefault());
     }
 
-    public static IAnimation<Mob> getPlayerArmDefault() {
-        return new IAnimation<Mob>() {
-            @Override
-            public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Mob mob, HashMap<String, ModelRendererWrapper> modelMap) {
-                IMaid maid = IMaid.convert(mob);
-                if (maid == null) return;
+    public static IAnimation<EntityMaidRenderState> getPlayerArmDefault() {
+        return (state, models) -> {
+            BedrockPart armLeft = models.get("armLeft");
+            BedrockPart armRight = models.get("armRight");
 
-                ModelRendererWrapper armLeft = modelMap.get("armLeft");
-                ModelRendererWrapper armRight = modelMap.get("armRight");
+            double f1 = 1.0 - Math.pow(1.0 - state.attackAnim, 4);
+            double f2 = Math.sin(f1 * Math.PI);
+            double f3 = Math.sin(state.attackAnim * Math.PI) * -0.7 * 0.75;
+            float limbSwing = state.walkAnimationPos;
+            float limbSwingAmount = state.walkAnimationSpeed;
+            float ageInTicks = state.ageInTicks;
 
-                double f1 = 1.0 - Math.pow(1.0 - mob.attackAnim, 4);
-                double f2 = Math.sin(f1 * Math.PI);
-                double f3 = Math.sin(mob.attackAnim * Math.PI) * -0.7 * 0.75;
-
-                if (armLeft != null) {
-                    if (maid.isSitInJoyBlock()) {
-                        armLeft.setRotateAngleX(-1.8f);
-                    } else if (isHoldTrolley()) {
-                        armLeft.setRotateAngleX(0.5f);
-                        armLeft.setRotateAngleY(0);
-                        armLeft.setRotateAngleZ(-0.395f);
-                    } else if (isHoldVehicle()) {
-                        float[] rotation = getLeftHandRotation();
-                        armLeft.setRotateAngleX(rotation[0]);
-                        armLeft.setRotateAngleY(rotation[1]);
-                        armLeft.setRotateAngleZ(rotation[2]);
-                    } else {
-                        armLeft.setRotateAngleX((float) (-Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount));
-                        armLeft.setRotateAngleY(0);
-                        armLeft.setRotateAngleZ((float) (Math.cos(ageInTicks * 0.05) * 0.025 - 0.05));
-                        // 手部攻击动画
-                        if (mob.attackAnim > 0.0 && isSwingLeftHand(mob)) {
-                            armLeft.setRotateAngleX((float) (armLeft.getRotateAngleX() - (f2 * 1.2 + f3)));
-                            armLeft.setRotateAngleZ((float) (armLeft.getRotateAngleZ() + Math.sin(mob.attackAnim * Math.PI) * -0.4));
-                        }
-                        // 使用动画
-                        if (mob.isUsingItem() && mob.getUsedItemHand() == InteractionHand.OFF_HAND) {
-                            armLeft.setRotateAngleX((float) (armLeft.getInitRotateAngleX() - Math.PI * 80 / 180.0));
-                            armLeft.setRotateAngleY((float) (armLeft.getInitRotateAngleY() + Math.PI * 25 / 180.0));
-                        }
-                    }
+            if (armLeft != null) {
+                armLeft.xRot = (float) (-Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
+                armLeft.yRot = 0;
+                armLeft.zRot = (float) (Math.cos(ageInTicks * 0.05) * 0.025 - 0.05);
+                if (state.attackAnim > 0.0 && isSwingLeftHand(state)) {
+                    armLeft.xRot = (float) (armLeft.xRot - (f2 * 1.2 + f3));
+                    armLeft.zRot = (float) (armLeft.zRot + Math.sin(state.attackAnim * Math.PI) * -0.4);
                 }
+                if (state.usingItem && state.usedItemHand == InteractionHand.OFF_HAND) {
+                    armLeft.xRot = armLeft.getInitRotX() - (float) Math.PI * 80 / 180.0f;
+                    armLeft.yRot = armLeft.getInitRotY() + (float) Math.PI * 25 / 180.0f;
+                }
+            }
 
-                if (armRight != null) {
-                    if (maid.isSitInJoyBlock()) {
-                        armRight.setRotateAngleX(-1.8f);
-                    } else if (isHoldVehicle()) {
-                        float[] rotation = getRightHandRotation();
-                        armRight.setRotateAngleX(rotation[0]);
-                        armRight.setRotateAngleY(rotation[1]);
-                        armRight.setRotateAngleZ(rotation[2]);
-                    } else {
-                        armRight.setRotateAngleX((float) (Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount));
-                        armRight.setRotateAngleY(0);
-                        armRight.setRotateAngleZ((float) (-Math.cos(ageInTicks * 0.05) * 0.025 + 0.05));
-                        // 手部攻击动画
-                        if (mob.attackAnim > 0.0 && !isSwingLeftHand(mob)) {
-                            armRight.setRotateAngleX((float) (armRight.getRotateAngleX() - (f2 * 1.2 + f3)));
-                            armRight.setRotateAngleZ((float) (armRight.getRotateAngleZ() + Math.sin(mob.attackAnim * Math.PI) * -0.4));
-                        }
-                        // 使用动画
-                        if (mob.isUsingItem() && mob.getUsedItemHand() == InteractionHand.MAIN_HAND) {
-                            armRight.setRotateAngleX((float) (armRight.getInitRotateAngleX() - Math.PI * 80 / 180.0));
-                            armRight.setRotateAngleY((float) (armRight.getInitRotateAngleY() - Math.PI * 20 / 180.0));
-                        }
-                    }
+            if (armRight != null) {
+                armRight.xRot = (float) (Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
+                armRight.yRot = 0;
+                armRight.zRot = (float) (-Math.cos(ageInTicks * 0.05) * 0.025 + 0.05);
+                if (state.attackAnim > 0.0 && !isSwingLeftHand(state)) {
+                    armRight.xRot = (float) (armRight.xRot - (f2 * 1.2 + f3));
+                    armRight.zRot = (float) (armRight.zRot + Math.sin(state.attackAnim * Math.PI) * -0.4);
+                }
+                if (state.usingItem && state.usedItemHand == InteractionHand.MAIN_HAND) {
+                    armRight.xRot = armRight.getInitRotX() - (float) Math.PI * 80 / 180.0f;
+                    armRight.yRot = armRight.getInitRotY() - (float) Math.PI * 20 / 180.0f;
                 }
             }
         };
     }
 
-    public static IAnimation<Mob> getPlayerSitDefault() {
-        return new IAnimation<Mob>() {
-            @Override
-            public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Mob mob, HashMap<String, ModelRendererWrapper> modelMap) {
-                IMaid maid = IMaid.convert(mob);
-                if (maid == null) return;
+    public static IAnimation<EntityMaidRenderState> getPlayerSitDefault() {
+        return (state, models) -> {
+            BedrockPart head = models.get("head");
+            BedrockPart legLeft = models.get("legLeft");
+            BedrockPart legRight = models.get("legRight");
+            BedrockPart armLeft = models.get("armLeft");
+            BedrockPart armRight = models.get("armRight");
 
-                ModelRendererWrapper head = modelMap.get("head");
-                ModelRendererWrapper legLeft = modelMap.get("legLeft");
-                ModelRendererWrapper legRight = modelMap.get("legRight");
-                ModelRendererWrapper armLeft = modelMap.get("armLeft");
-                ModelRendererWrapper armRight = modelMap.get("armRight");
+            if (head != null) {
+                head.offsetY = 0;
+            }
 
-                // 头部复位
-                if (head != null) {
-                    head.setOffsetY(0);
-                }
-
-                if (isPassengerMarisaBroom()) {
-                    // 坐在扫帚上时，应用待命的动作
-                    playerRidingBroomPosture(head, armLeft, armRight, legLeft, legRight);
-                } else if (mob.isPassenger()) {
-                    playerRidingPosture(legLeft, legRight);
-                } else if (maid.isMaidInSittingPose()) {
-                    playerSittingPosture(armLeft, armRight, legLeft, legRight);
-                }
+            if (state.passenger) {
+                playerRidingPosture(legLeft, legRight);
+            } else if (state.maidInSittingPose) {
+                playerSittingPosture(armLeft, armRight, legLeft, legRight);
             }
         };
     }
 
-    private static void playerRidingPosture(ModelRendererWrapper legLeft, ModelRendererWrapper legRight) {
+    private static void playerRidingPosture(BedrockPart legLeft, BedrockPart legRight) {
         if (legLeft != null) {
-            legLeft.setRotateAngleX(-1.4f);
-            legLeft.setRotateAngleY(-0.4f);
+            legLeft.xRot = -1.4f;
+            legLeft.yRot = -0.4f;
         }
 
         if (legRight != null) {
-            legRight.setRotateAngleX(-1.4f);
-            legRight.setRotateAngleY(0.4f);
+            legRight.xRot = -1.4f;
+            legRight.yRot = 0.4f;
         }
-
-        GlWrapper.translate(0, 0.3, 0);
     }
 
-    private static void playerSittingPosture(ModelRendererWrapper armLeft, ModelRendererWrapper armRight, ModelRendererWrapper legLeft, ModelRendererWrapper legRight) {
+    private static void playerSittingPosture(BedrockPart armLeft, BedrockPart armRight,
+                                             BedrockPart legLeft, BedrockPart legRight) {
         if (armLeft != null) {
-            armLeft.setRotateAngleX(-0.798f);
-            armLeft.setRotateAngleZ(0.274f);
+            armLeft.xRot = -0.798f;
+            armLeft.zRot = 0.274f;
         }
 
         if (armRight != null) {
-            armRight.setRotateAngleX(-0.798f);
-            armRight.setRotateAngleZ(-0.274f);
+            armRight.xRot = -0.798f;
+            armRight.zRot = -0.274f;
         }
 
         ridingPosture(legLeft, legRight);
     }
 
-    private static void playerRidingBroomPosture(ModelRendererWrapper head, ModelRendererWrapper armLeft, ModelRendererWrapper armRight, ModelRendererWrapper legLeft, ModelRendererWrapper legRight) {
-        sittingPosture(armLeft, armRight, legLeft, legRight);
-        if (head != null) {
-            head.setRotateAngleX((float) (head.getRotateAngleX() - 30 * Math.PI / 180));
-            head.setOffsetY(0.0625f);
-        }
-
-        GlWrapper.rotate(30, 1, 0, 0);
-        GlWrapper.translate(0, -0.45, -0.3);
-    }
-
-    private static void ridingPosture(ModelRendererWrapper legLeft, ModelRendererWrapper legRight) {
+    private static void ridingPosture(BedrockPart legLeft, BedrockPart legRight) {
         if (legLeft != null) {
-            legLeft.setRotateAngleX(-1.134f);
-            legLeft.setRotateAngleZ(-0.262f);
+            legLeft.xRot = -1.134f;
+            legLeft.zRot = -0.262f;
         }
         if (legRight != null) {
-            legRight.setRotateAngleX(-1.134f);
-            legRight.setRotateAngleZ(0.262f);
+            legRight.xRot = -1.134f;
+            legRight.zRot = 0.262f;
         }
-        GlWrapper.translate(0, 0.3, 0);
     }
 
-    private static void sittingPosture(ModelRendererWrapper armLeft, ModelRendererWrapper armRight, ModelRendererWrapper legLeft, ModelRendererWrapper legRight) {
-        if (armLeft != null) {
-            armLeft.setRotateAngleX(-0.798f);
-            armLeft.setRotateAngleZ(0.274f);
-        }
-        if (armRight != null) {
-            armRight.setRotateAngleX(-0.798f);
-            armRight.setRotateAngleZ(-0.274f);
-        }
-        ridingPosture(legLeft, legRight);
-    }
-
-    private static boolean isSwingLeftHand(Mob maid) {
-        return maid.swingingArm == InteractionHand.OFF_HAND;
-    }
-
-    @Deprecated
-    private static boolean isPassengerMarisaBroom() {
-        return false;
-    }
-
-    @Deprecated
-    private static boolean isHoldTrolley() {
-        return false;
-    }
-
-    @Deprecated
-    private static boolean isHoldVehicle() {
-        return false;
-    }
-
-    @Deprecated
-    private static float[] getLeftHandRotation() {
-        return FIXED_HAND_ROTATION;
-    }
-
-    @Deprecated
-    private static float[] getRightHandRotation() {
-        return FIXED_HAND_ROTATION;
+    private static boolean isSwingLeftHand(EntityMaidRenderState state) {
+        return state.swingingArm == InteractionHand.OFF_HAND;
     }
 }

@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import net.minecraft.client.Minecraft;
@@ -34,6 +33,6 @@ public class PlayerMaidModel extends BedrockModel<EntityMaidRenderState> {
                 TouhouLittleMaid.LOGGER.error("Failed to load steve player maid model", exception);
             }
         }
-        this.modelMap.forEach((key, model) -> modelMapWrapper.put(key, new ModelRendererWrapper(model)));
+        // this.modelMap.forEach((key, model) -> modelMapWrapper.put(key, new ModelRendererWrapper(model)));
     }
 }

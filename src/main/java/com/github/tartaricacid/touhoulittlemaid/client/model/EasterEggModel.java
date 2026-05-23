@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
@@ -26,7 +25,7 @@ public class EasterEggModel extends BedrockModel<EntityMaidRenderState> {
         } catch (IOException exception) {
             TouhouLittleMaid.LOGGER.error("Failed to load easter egg model", exception);
         }
-        this.modelMap.forEach((key, model) -> modelMapWrapper.put(key, new ModelRendererWrapper(model)));
+        // this.modelMap.forEach((key, model) -> modelMapWrapper.put(key, new ModelRendererWrapper(model)));
     }
 
     public static EasterEggModel getInstance() {

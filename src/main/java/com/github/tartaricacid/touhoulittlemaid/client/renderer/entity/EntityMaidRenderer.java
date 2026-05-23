@@ -5,7 +5,6 @@ import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.RenderMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
@@ -103,11 +102,38 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, itemModelResolver, partialTicks);
 
         state.entity = entity;  // TODO
+        state.gameTime = entity.level().getGameTime();
+        state.dimension = entity.level().dimension();
+        state.raining = entity.level().isRaining();
+        state.thundering = entity.level().isThundering();
+        state.uuidLeastSignificantBits = entity.getUUID().getLeastSignificantBits();
+        state.attackAnim = entity.attackAnim;
+        state.swingTime = entity.swingTime;
+        state.sleeping = entity.isSleeping();
+        state.passenger = entity.isPassenger();
+        state.usingItem = entity.isUsingItem();
+        state.usedItemHand = entity.getUsedItemHand();
+        state.swingingArm = entity.swingingArm;
+        state.hasMainHandItem = !entity.getMainHandItem().isEmpty();
+        state.armorValue = entity.getArmorValue();
+        state.health = entity.getHealth();
+        state.maxHealth = entity.getMaxHealth();
 
         IMaid maid = IMaid.convert(entity);
         if (maid == null) {
             return;
         }
+
+        state.begging = maid.isBegging();
+        state.swingingArms = maid.isSwingingArms();
+        state.maidInSittingPose = maid.isMaidInSittingPose();
+        state.hasHelmet = maid.hasHelmet();
+        state.hasChestPlate = maid.hasChestPlate();
+        state.hasLeggings = maid.hasLeggings();
+        state.hasBoots = maid.hasBoots();
+        state.hasBackpack = maid.hasBackpack();
+        state.hurt = maid.onHurt();
+        state.taskId = maid.getTask().getUid().getPath();
 
         // 卓越前线实体隐藏
         if (SWarfareCompat.shouldHideLivingRender(entity)) {
@@ -117,21 +143,18 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         // 读取默认模型，用于清除不存在模型的缓存残留
         CustomPackLoader.MAID_MODELS.getModel(DEFAULT_MODEL_ID).ifPresent(model -> state.bedrockModel = model);
         CustomPackLoader.MAID_MODELS.getInfo(DEFAULT_MODEL_ID).ifPresent(mainInfo -> state.mainInfo = mainInfo);
-        CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).ifPresent(animations -> state.mainAnimations = animations);
 
-        MaidModels.ModelData eventModelData = new MaidModels.ModelData(state.bedrockModel, state.mainInfo, state.mainAnimations);
+        MaidModels.ModelData eventModelData = new MaidModels.ModelData(state.bedrockModel, state.mainInfo);
         if (NeoForge.EVENT_BUS.post(new RenderMaidEvent(maid, eventModelData)).isCanceled()) {
             BedrockModel<EntityMaidRenderState> bedrockModel = eventModelData.getModel();
             if (bedrockModel != null) {
                 state.bedrockModel = bedrockModel;
             }
             state.mainInfo = eventModelData.getInfo();
-            state.mainAnimations = eventModelData.getAnimations();
         } else {
             // 通过模型 id 获取对应数据
             CustomPackLoader.MAID_MODELS.getModel(maid.getModelId()).ifPresent(model -> state.bedrockModel = model);
             CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId()).ifPresent(mainInfo -> state.mainInfo = mainInfo);
-            CustomPackLoader.MAID_MODELS.getAnimation(maid.getModelId()).ifPresent(animations -> state.mainAnimations = animations);
         }
 
         // 头部物品
@@ -275,10 +298,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
             this.model = state.bedrockModel;
             // 模型动画设置
             this.model.setAnimations(state.mainAnimations);
-            // 渲染女仆模型本体
-            GlWrapper.setPoseStack(poseStack);
             super.submit(state, poseStack, submitNodeCollector, camera);
-            GlWrapper.clearPoseStack();
         }
     }
 

@@ -26,6 +26,10 @@ public class EntityChairRenderState extends LivingEntityRenderState {
 
     public EntityChair chair;   // TODO
 
+    public boolean hasPassenger;
+    public float passengerXRot;
+    public float passengerYRot;
+
     public void clear() {
         modelType = ModelType.NONE;
 

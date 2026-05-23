@@ -4,33 +4,17 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.AbstractBedrock
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockModelPOJO;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockVersion;
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityChairWrapper;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.EntityMaidWrapper;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
-import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.entity.HumanoidArm;
 import org.jspecify.annotations.NullMarked;
 
 import javax.annotation.Nullable;
-import javax.script.Invocable;
-import java.util.HashMap;
 import java.util.List;
 
 public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBedrockEntityModel<T> {
-    /**
-     * 用于自定义动画的变量
-     */
-    private final EntityMaidWrapper entityMaidWrapper = new EntityMaidWrapper();
-    private final EntityChairWrapper entityChairWrapper = new EntityChairWrapper();
-    protected final HashMap<String, ModelRendererWrapper> modelMapWrapper = Maps.newHashMap();
     private List<Object> animations = Lists.newArrayList();
 
     public BedrockModel() {
@@ -39,70 +23,21 @@ public class BedrockModel<T extends LivingEntityRenderState> extends AbstractBed
 
     public BedrockModel(BedrockModelPOJO pojo, BedrockVersion version) {
         super(pojo, version);
-        this.modelMap.forEach((key, model) -> modelMapWrapper.put(key, new ModelRendererWrapper(model)));
     }
 
     @Override
     @NullMarked
+    @SuppressWarnings("unchecked")
     public void setupAnim(LivingEntityRenderState state) {
-        float limbSwing = state.walkAnimationPos;
-        float limbSwingAmount = state.walkAnimationSpeed;
-        float ageInTicks = state.ageInTicks;
-        float netHeadYaw = state.yRot;
-        float headPitch = state.xRot;
-
-        if (animations != null) {
-            // TODO 需要彻底移除 JS 动画
-//            Invocable invocable = (Invocable) CustomJsAnimationManger.NASHORN;
-//            if (state instanceof EntityMaidRenderState maidState && maidState.entity instanceof Mob mob) {
-//                IMaid maid = IMaid.convert(mob);
-//                if (maid != null) {
-//                    setupMaidAnim(maid, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
-//                    // 硬编码动画
-//                    HardcodedAnimationManger.playMaidAnimation(maid, modelMapWrapper, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-//                }
-//                return;
-//            }
-//            if (state instanceof EntityChairRenderState chairState && chairState.chair != null) {
-//                setupChairAnim(chairState.chair, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, invocable);
-//            }
+        if (animations == null || animations.isEmpty()) {
+            return;
         }
-    }
 
-    @SuppressWarnings("unchecked")
-    private void setupMaidAnim(IMaid entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, Invocable invocable) {
-        try {
-            for (Object animation : animations) {
-                if (animation instanceof IAnimation iAnimation) {
-                    iAnimation.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0, entityIn.asEntity(), modelMapWrapper);
-                } else {
-                    // TODO: attackTime 和 riding 在 26.1.2 RenderState 中不直接可用
-                    entityMaidWrapper.setData(entityIn, 0f, false);
-                    invocable.invokeMethod(animation, "animation", entityMaidWrapper, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625f, modelMapWrapper);
-                    entityMaidWrapper.clearData();
-                }
+        T typedState = (T) state;
+        for (Object animation : animations) {
+            if (animation instanceof IAnimation<?> iAnimation) {
+                ((IAnimation<T>) iAnimation).setupAnimation(typedState, modelMap);
             }
-        } catch (Exception e) {
-            TouhouLittleMaid.LOGGER.error("Failed to apply maid animation for model {}", entityIn.getModelId(), e);
-            CustomPackLoader.MAID_MODELS.removeAnimation(entityIn.getModelId());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void setupChairAnim(EntityChair entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, Invocable invocable) {
-        try {
-            for (Object animation : animations) {
-                if (animation instanceof IAnimation iAnimation) {
-                    iAnimation.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0, entityIn, modelMapWrapper);
-                } else {
-                    entityChairWrapper.setData(entityIn);
-                    invocable.invokeMethod(animation, "animation", entityChairWrapper, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, 0.0625f, modelMapWrapper);
-                    entityChairWrapper.clearData();
-                }
-            }
-        } catch (Exception e) {
-            TouhouLittleMaid.LOGGER.error("Failed to apply chair animation for model {}", entityIn.getModelId(), e);
-            CustomPackLoader.CHAIR_MODELS.removeAnimation(entityIn.getModelId());
         }
     }
 

@@ -1,10 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation;
 
+import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.animation.ICustomAnimation;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.special.SwimAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.special.TridentAnimation;
 import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.client.ImmersiveMelodiesCompat;
@@ -41,7 +41,7 @@ public final class HardcodedAnimationManger {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void playMaidAnimation(IMaid maid, HashMap<String, ModelRendererWrapper> models,
+    public static void playMaidAnimation(IMaid maid, HashMap<String, BedrockPart> models,
                                          float limbSwing, float limbSwingAmount, float ageInTicks,
                                          float netHeadYaw, float headPitch) {
         for (ICustomAnimation animation : ANIMATIONS) {

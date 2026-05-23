@@ -2,7 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.GlWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoChairEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityChairRenderer;
@@ -59,7 +58,6 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
         // 通过模型 id 获取对应数据
         CustomPackLoader.CHAIR_MODELS.getModel(chair.getModelId()).ifPresent(model -> state.bedrockModel = model);
         CustomPackLoader.CHAIR_MODELS.getInfo(chair.getModelId()).ifPresent(info -> state.chairInfo = info);
-        CustomPackLoader.CHAIR_MODELS.getAnimation(chair.getModelId()).ifPresent(animations -> state.chairAnimations = animations);
 
         var player = Minecraft.getInstance().player;
         if (canShowHitBox(player) && renderHitBox) {
@@ -116,10 +114,7 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
             this.model = state.bedrockModel;
             // 模型动画设置
             this.model.setAnimations(state.chairAnimations);
-
-            GlWrapper.setPoseStack(poseStack);
             super.submit(state, poseStack, submitNodeCollector, camera);
-            GlWrapper.clearPoseStack();
         }
     }
 

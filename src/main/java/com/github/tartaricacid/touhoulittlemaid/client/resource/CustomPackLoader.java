@@ -4,7 +4,6 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockMod
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockVersion;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.CubesItem;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.CustomJsAnimationManger;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
@@ -42,7 +41,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,7 +64,6 @@ public class CustomPackLoader {
 
     public static void reloadPacks() {
         // 清除
-        CustomJsAnimationManger.clearAll();
         MAID_MODELS.clearAll();
         CHAIR_MODELS.clearAll();
         TMP_REGISTER_TEXTURE.clear();
@@ -186,14 +183,12 @@ public class CustomPackLoader {
         BedrockModel<EntityMaidRenderState> modelJson = loadMaidModel(rootPath, maidModelItem.getModel());
         // 加载贴图
         registerFilePackTexture(rootPath, maidModelItem.getTexture());
-        // 加载动画
-        @Nullable List<Object> animations = CustomJsAnimationManger.getCustomAnimation(rootPath, maidModelItem);
         if (modelJson != null) {
             // 加载彩蛋，彩蛋不允许为空
             if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-                putMaidEasterEggData(maidModelItem, modelJson, animations);
+                putMaidEasterEggData(maidModelItem, modelJson);
             } else {
-                putMaidModelData(maidModelItem, modelJson, animations);
+                putMaidModelData(maidModelItem, modelJson);
             }
             // 打印日志
             LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
@@ -203,7 +198,7 @@ public class CustomPackLoader {
     private static void loadGeckoMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) throws IOException {
         loadGeckoModelElement(rootPath, maidModelItem, GeckoContainer.Type.MAID);
         if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-            putMaidEasterEggData(maidModelItem, null, null);
+            putMaidEasterEggData(maidModelItem, null);
         } else {
             MAID_MODELS.putInfo(maidModelItem.getModelId().toString(), maidModelItem);
         }
@@ -275,14 +270,12 @@ public class CustomPackLoader {
         BedrockModel<EntityMaidRenderState> modelJson = loadMaidModel(zipFile, maidModelItem.getModel());
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), maidModelItem.getTexture());
-        // 加载动画
-        @Nullable List<Object> animations = CustomJsAnimationManger.getCustomAnimation(zipFile, maidModelItem);
         if (modelJson != null) {
             // 加载彩蛋，彩蛋不允许为空
             if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-                putMaidEasterEggData(maidModelItem, modelJson, animations);
+                putMaidEasterEggData(maidModelItem, modelJson);
             } else {
-                putMaidModelData(maidModelItem, modelJson, animations);
+                putMaidModelData(maidModelItem, modelJson);
             }
             // 打印日志
             LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
@@ -292,7 +285,7 @@ public class CustomPackLoader {
     private static void loadGeckoMaidModelElement(ZipFile zipFile, MaidModelInfo maidModelItem) throws IOException {
         loadGeckoModelElement(zipFile, maidModelItem, GeckoContainer.Type.MAID);
         if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-            putMaidEasterEggData(maidModelItem, null, null);
+            putMaidEasterEggData(maidModelItem, null);
         } else {
             MAID_MODELS.putInfo(maidModelItem.getModelId().toString(), maidModelItem);
         }
@@ -330,9 +323,9 @@ public class CustomPackLoader {
     }
 
     @SuppressWarnings("all")
-    private static void putMaidEasterEggData(MaidModelInfo maidModelItem, @Nullable BedrockModel<EntityMaidRenderState> modelJson, @Nullable List<Object> animations) {
+    private static void putMaidEasterEggData(MaidModelInfo maidModelItem, @Nullable BedrockModel<EntityMaidRenderState> modelJson) {
         MaidModelInfo.EasterEgg easterEgg = maidModelItem.getEasterEgg();
-        MaidModels.ModelData data = new MaidModels.ModelData(modelJson, maidModelItem, animations);
+        MaidModels.ModelData data = new MaidModels.ModelData(modelJson, maidModelItem);
         if (easterEgg.isEncrypt()) {
             MAID_MODELS.putEasterEggEncryptTagModel(easterEgg.getTag(), data);
         } else {
@@ -340,14 +333,11 @@ public class CustomPackLoader {
         }
     }
 
-    private static void putMaidModelData(MaidModelInfo maidModelItem, BedrockModel<EntityMaidRenderState> modelJson, List<Object> animations) {
+    private static void putMaidModelData(MaidModelInfo maidModelItem, BedrockModel<EntityMaidRenderState> modelJson) {
         String id = maidModelItem.getModelId().toString();
         // 如果加载的模型不为空
         MAID_MODELS.putModel(id, modelJson);
         MAID_MODELS.putInfo(id, maidModelItem);
-        if (animations != null && !animations.isEmpty()) {
-            MAID_MODELS.putAnimation(id, animations);
-        }
     }
 
     private static void loadChairModelPack(Path rootPath, String domain) {
@@ -388,16 +378,11 @@ public class CustomPackLoader {
         BedrockModel<EntityChairRenderState> modelJson = loadChairModel(rootPath, chairModelItem.getModel());
         // 加载贴图
         registerFilePackTexture(rootPath, chairModelItem.getTexture());
-        // 加载动画
-        @Nullable List<Object> animations = CustomJsAnimationManger.getCustomAnimation(rootPath, chairModelItem);
         if (modelJson != null) {
             String id = chairModelItem.getModelId().toString();
             // 如果加载的模型不为空
             CHAIR_MODELS.putModel(id, modelJson);
             CHAIR_MODELS.putInfo(id, chairModelItem);
-            if (animations != null && !animations.isEmpty()) {
-                CHAIR_MODELS.putAnimation(id, animations);
-            }
             // 打印日志
             LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
         }
@@ -441,16 +426,11 @@ public class CustomPackLoader {
         BedrockModel<EntityChairRenderState> modelJson = loadChairModel(zipFile, chairModelItem.getModel());
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), chairModelItem.getTexture());
-        // 加载动画
-        @Nullable List<Object> animations = CustomJsAnimationManger.getCustomAnimation(zipFile, chairModelItem);
         if (modelJson != null) {
             String id = chairModelItem.getModelId().toString();
             // 如果加载的模型不为空
             CHAIR_MODELS.putModel(id, modelJson);
             CHAIR_MODELS.putInfo(id, chairModelItem);
-            if (animations != null && !animations.isEmpty()) {
-                CHAIR_MODELS.putAnimation(id, animations);
-            }
             // 打印日志
             LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
         }
