@@ -286,12 +286,7 @@ public final class MaidBackupsManager {
 
         try {
             CompoundTag allIndexData = loadExistingIndexData(indexFile);
-
-            CompoundTag indexDataTag = new CompoundTag();
-            backupData.indexDataOutput().store(indexDataTag);
-
-            allIndexData.put(backupData.saveFolder.getFileName().toString(), indexDataTag);
-
+            allIndexData.put(backupData.saveFolder.getFileName().toString(), backupData.indexDataOutput().buildResult());
 
             NbtIo.writeCompressed(allIndexData, indexFile.toPath());
             return true;
@@ -327,9 +322,7 @@ public final class MaidBackupsManager {
 
         try {
             NbtUtils.addCurrentDataVersion(backupData.entityDataOutput());
-            CompoundTag compoundTag = new CompoundTag();
-            backupData.entityDataOutput().store(compoundTag);
-            NbtIo.writeCompressed(compoundTag, backupFile.toPath());
+            NbtIo.writeCompressed(backupData.entityDataOutput().buildResult(), backupFile.toPath());
 
             // 删除旧备份
             removeOldBackups(backupData.saveFolder, ServerConfig.MAID_BACKUP_MAX_COUNT.get());
@@ -398,8 +391,8 @@ public final class MaidBackupsManager {
     private record BackupData(
             Path saveFolder,
             String saveFileName,
-            ValueOutput entityDataOutput,
-            ValueOutput indexDataOutput,
+            TagValueOutput entityDataOutput,
+            TagValueOutput indexDataOutput,
             String maidUuid) {
     }
 }

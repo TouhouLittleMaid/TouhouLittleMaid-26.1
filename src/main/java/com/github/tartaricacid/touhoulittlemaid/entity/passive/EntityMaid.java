@@ -1493,7 +1493,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             // 需要考虑消失诅咒附魔
             destroyVanishingCursedItems(invWrapper);
             for (int i = 0; i < invWrapper.size(); i++) {
-                int size = invWrapper.getCapacityAsInt(i, invWrapper.getResource(i));
+                ItemResource resource = invWrapper.getResource(i);
+                // TODO resource不能为空，否则会报错
+                if (resource.isEmpty())
+                    continue;
+                int size = invWrapper.getCapacityAsInt(i, resource);
                 tombstone.insertItem(ItemsUtil.extractItem(invWrapper, i, size, false, null));
             }
             // 背包额外数据
