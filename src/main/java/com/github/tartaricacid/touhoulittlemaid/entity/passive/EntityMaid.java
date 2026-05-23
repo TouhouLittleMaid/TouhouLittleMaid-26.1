@@ -324,7 +324,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     private int pickupSoundCount = 5;
     private int backpackDelay = 0;
     private int passiveUseShieldTick = 0;
-    private IBackpackData backpackData = null;
+    private @Nullable IBackpackData backpackData = null;
     private boolean syncTaskDataMaps = false;
     private MaidConfigManager configManager = new MaidConfigManager(this.entityData);
     private MaidGameRecordManager gameRecordManager = new MaidGameRecordManager(this);
@@ -1063,12 +1063,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     @Override
     protected void handlePortal() {
-        if (this.level instanceof ServerLevel && !this.isRemoved()) {
-            final int MAX_RETRY = 16;
-            for (int i = 0; i < MAX_RETRY; ++i) {
-                if (TeleportHelper.teleport(this)) {
-                    this.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 1, true, false));
-                }
+        if (this.level instanceof ServerLevel && !this.isRemoved() && this.portalProcess != null) {
+            if (TeleportHelper.teleport(this)) {
+                this.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 1, true, false));
+                this.setPortalCooldown();
             }
         }
     }
@@ -1385,7 +1383,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.gameRecordManager.addAdditionalSaveData(output);
         this.favorabilityManager.addAdditionalSaveData(output);
         this.schedulePos.save(output);
-        this.backpackData.save(output.child(BACKPACK_DATA_TAG), this);
+        if (this.backpackData != null) {
+            this.backpackData.save(output.child(BACKPACK_DATA_TAG), this);
+        }
         this.taskDataMaps.writeSaveData(output);
         this.killRecordManager.addAdditionalSaveData(output);
         this.aiChatManager.saveValue(output);
@@ -1435,7 +1435,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             Identifier id = Identifier.parse(idStr);
             IMaidBackpack backpack = BackpackManager.findBackpack(id).orElse(BackpackManager.getEmptyBackpack());
             setMaidBackpackType(backpack);
-            this.backpackData.load(input.childOrEmpty(BACKPACK_DATA_TAG), this);
+            if (this.backpackData != null) {
+                this.backpackData.load(input.childOrEmpty(BACKPACK_DATA_TAG), this);
+            }
         });
 
         this.configManager.readAdditionalSaveData(input);

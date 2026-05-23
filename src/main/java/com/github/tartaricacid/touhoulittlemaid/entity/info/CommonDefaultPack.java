@@ -62,7 +62,7 @@ public class CommonDefaultPack {
 
     private static void unpackDefaultPack(File packFolder) {
         // 不管存不存在，强行覆盖
-        String jarDefaultPackPath = "/assets/%s/%s/%s".formatted(TouhouLittleMaid.MOD_ID, CUSTOM_PACK_DIR_NAME, DEFAULT_PACK_NAME);
+        String jarDefaultPackPath = "assets/%s/%s/%s".formatted(TouhouLittleMaid.MOD_ID, CUSTOM_PACK_DIR_NAME, DEFAULT_PACK_NAME);
         try {
             GetJarResources.copyFolder(jarDefaultPackPath, packFolder.toPath());
         } catch (URISyntaxException | IOException e) {

@@ -93,7 +93,7 @@ public class JsonAnimationUtils {
         // 处理音频关键帧
         for (Map.Entry<String, JsonElement> keyFrame : getSoundKeyFrames(animationJsonObject)) {
             float startTick = Float.parseFloat(keyFrame.getKey()) * 20;
-            String value = keyFrame.getValue().getAsString();
+            String value = getSoundEffectValue(keyFrame.getValue());
             soundKeyframes.add(new EventKeyFrame<>(startTick, value));
         }
         // 排序，因为 json 读取是乱序的
@@ -142,6 +142,19 @@ public class JsonAnimationUtils {
             animationLengthTicks = calculateLength(boneAnimations);
         }
         return new Animation(animationName, animationLengthTicks, loop, blendWeight, boneAnimations, soundKeyframes, customInstructionKeyframes);
+    }
+
+    private static String getSoundEffectValue(JsonElement element) {
+        if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            return element.getAsString();
+        }
+        if (element.isJsonObject()) {
+            JsonElement effect = element.getAsJsonObject().get("effect");
+            if (effect != null && effect.isJsonPrimitive() && effect.getAsJsonPrimitive().isString()) {
+                return effect.getAsString();
+            }
+        }
+        throw new IllegalStateException("Unsupported sound_effects keyframe value, expected a string or an object with a string 'effect' field: " + element);
     }
 
     private static float calculateLength(List<BoneAnimation> boneAnimations) {
