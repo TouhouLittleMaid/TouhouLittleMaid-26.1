@@ -1,8 +1,6 @@
 package com.github.tartaricacid.simplebedrockmodel;
 
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

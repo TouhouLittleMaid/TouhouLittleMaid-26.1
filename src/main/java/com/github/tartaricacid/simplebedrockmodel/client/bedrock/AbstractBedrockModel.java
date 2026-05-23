@@ -19,7 +19,7 @@ import java.util.HashMap;
  * <p>
  * 但由于 net.minecraft.client.model.EntityModel 和 net.minecraft.client.model.Model 是继承关系，无法复用，故重复代码
  */
-public abstract class AbstractBedrockModel<T> extends Model<T> implements BedrockModelProvider<AbstractBedrockModel<T>> {
+public abstract class AbstractBedrockModel<T> extends Model<T> implements BedrockModelProvider {
     /**
      * 存储 BedrockPart 的 HashMap
      */

@@ -6,23 +6,21 @@ import net.minecraft.world.phys.AABB;
 import java.util.HashMap;
 
 /**
- * Interface for Bedrock model providers.
- * Provides methods to get the model, render bounding box, and a map of model parts.
- *
- * @param <T> The type of the Bedrock model provider.
+ * Bedrock 模型提供者接口。
+ * 提供获取模型、渲染包围盒以及模型部件映射表的方法。
  */
-public interface BedrockModelProvider<T extends BedrockModelProvider<T>> {
+public interface BedrockModelProvider {
     /**
-     * Gets the render bounding box for the model.
+     * 获取模型的渲染包围盒。
      *
-     * @return The AABB representing the render bounding box.
+     * @return 表示渲染包围盒的 AABB。
      */
     AABB getRenderBoundingBox();
 
     /**
-     * Gets a map of model parts.
+     * 获取模型部件的映射表。
      *
-     * @return A HashMap where the key is a String identifier and the value is a BedrockPart.
+     * @return 以字符串为键、BedrockPart 为值的 HashMap。
      */
     HashMap<String, BedrockPart> getModelMap();
 }

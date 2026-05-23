@@ -1,8 +1,7 @@
 package com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo;
 
 import com.google.gson.annotations.SerializedName;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 
 public class BonesItem {

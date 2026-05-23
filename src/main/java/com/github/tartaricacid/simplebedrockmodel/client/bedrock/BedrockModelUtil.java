@@ -108,12 +108,14 @@ public final class BedrockModelUtil {
         part.zRot = z;
     }
 
-    public static BedrockCube createCubeBox(float texOffX, float texOffY, float x, float y, float z, float width, float height, float depth,
+    public static BedrockCube createCubeBox(float texOffX, float texOffY, float x, float y, float z,
+                                            float width, float height, float depth,
                                             float delta, boolean mirror, float texWidth, float texHeight) {
         return new BedrockCubeBox(texOffX, texOffY, x, y, z, width, height, depth, delta, mirror, texWidth, texHeight);
     }
 
-    public static BedrockCube createCubePerFace(float x, float y, float z, float width, float height, float depth, float delta,
+    public static BedrockCube createCubePerFace(float x, float y, float z, float width,
+                                                float height, float depth, float delta,
                                                 float texWidth, float texHeight, FaceUVsItem faces) {
         return new BedrockCubePerFace(x, y, z, width, height, depth, delta, texWidth, texHeight, faces);
     }
