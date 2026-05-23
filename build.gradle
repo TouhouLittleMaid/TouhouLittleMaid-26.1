@@ -180,6 +180,8 @@ neoForge {
             systemProperty 'forge.logging.markers', 'REGISTRIES'
             // 参考：https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             logLevel = org.slf4j.event.Level.DEBUG
+            // 控制台彩色打印
+            systemProperty 'terminal.jline', 'true'
         }
     }
 

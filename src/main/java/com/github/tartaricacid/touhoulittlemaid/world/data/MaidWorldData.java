@@ -81,7 +81,7 @@ public class MaidWorldData extends SavedData {
     public void addInfo(EntityMaid maid) {
         String dimension = maid.level.dimension().identifier().toString();
         BlockPos chunkPos = maid.blockPosition();
-        UUID ownerId = maid.getOwner().getUUID();
+        UUID ownerId = maid.getOwnerUUID();
         UUID maidId = maid.getUUID();
         long timestamp = System.currentTimeMillis();
         Component name = maid.getDisplayName();
@@ -89,7 +89,7 @@ public class MaidWorldData extends SavedData {
     }
 
     public void removeInfo(EntityMaid maid) {
-        UUID ownerId = maid.getOwner().getUUID();
+        UUID ownerId = maid.getOwnerUUID();
         if (this.infos.containsKey(ownerId)) {
             UUID maidId = maid.getUUID();
             this.infos.get(ownerId).removeIf(info -> info.entityId().equals(maidId));
@@ -117,7 +117,7 @@ public class MaidWorldData extends SavedData {
     public void addTombstones(EntityMaid maid, EntityTombstone tombstone) {
         String dimension = maid.level.dimension().identifier().toString();
         BlockPos chunkPos = tombstone.blockPosition();
-        UUID ownerId = maid.getOwner().getUUID();
+        UUID ownerId = maid.getOwnerUUID();
         UUID tombstoneId = tombstone.getUUID();
         long timestamp = System.currentTimeMillis();
         Component name = maid.getDisplayName();

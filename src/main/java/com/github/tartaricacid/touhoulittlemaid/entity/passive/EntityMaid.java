@@ -2623,6 +2623,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
      * 更加高效的 owner 寻找方式
      */
     @Nullable
+    @Override
     public LivingEntity getOwner() {
         UUID uuid = this.getOwnerUUID();
         if (uuid == null) {
