@@ -6,13 +6,11 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.CubesItem;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.FilePackTexture;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.ZipPackTexture;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.CustomPackTexture;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.ChairModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
@@ -40,7 +38,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -74,7 +71,6 @@ public class CustomPackLoader {
         TMP_REGISTER_TEXTURE.clear();
         LanguageLoader.clear();
         CustomSoundLoader.clear();
-        CacheIconManager.clearCache();
 
         // 读取
         loadPacks(PACK_FOLDER.toFile());
@@ -152,26 +148,33 @@ public class CustomPackLoader {
         }
     }
 
-    private static void loadMaidModelPack(Path rootPath, String domain) {
+    private static String assetPath(Identifier identifier) {
+        return String.format("assets/%s/%s", identifier.getNamespace(), identifier.getPath());
+    }
+
+    private static String assetPath(String domain, String fileName) {
+        return String.format("assets/%s/%s", domain, fileName);
+    }
+
+    private static void loadMaidModelPack(ResourceAccessor accessor, String domain) {
         LOGGER.debug(MARKER, "Touhou little maid mod's model is loading...");
-        File file = rootPath.resolve("assets").resolve(domain).resolve(MAID_MODELS.getJsonFileName()).toFile();
-        if (!file.isFile()) {
+        String path = assetPath(domain, MAID_MODELS.getJsonFileName());
+        if (!accessor.exists(path)) {
             return;
         }
-        try (InputStream stream = Files.newInputStream(file.toPath())) {
+        try (InputStream stream = accessor.open(path)) {
             CustomModelPack<MaidModelInfo> pack = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8),
                     new TypeToken<CustomModelPack<MaidModelInfo>>() {
                     }.getType());
             pack.decorate(domain);
-            // 加载图标贴图
             if (pack.getIcon() != null) {
-                registerFilePackTexture(rootPath, pack.getIcon());
+                registerTexture(accessor, pack.getIcon());
             }
             for (MaidModelInfo maidModelItem : pack.getModelList()) {
                 if (maidModelItem.isGeckoModel()) {
-                    loadGeckoMaidModelElement(rootPath, maidModelItem);
+                    loadGeckoMaidModelElement(accessor, maidModelItem);
                 } else {
-                    loadMaidModelElement(rootPath, maidModelItem);
+                    loadMaidModelElement(accessor, maidModelItem);
                 }
             }
             MAID_MODELS.addPack(pack);
@@ -183,148 +186,123 @@ public class CustomPackLoader {
         LOGGER.debug(MARKER, "Touhou little maid mod's model is loaded");
     }
 
-    private static void loadMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) {
-        // 尝试加载模型
-        EntityMaidModel modelJson = loadMaidModel(rootPath, maidModelItem.getModel());
-        // 加载贴图
-        registerFilePackTexture(rootPath, maidModelItem.getTexture());
+    private static void loadChairModelPack(ResourceAccessor accessor, String domain) {
+        LOGGER.debug(MARKER, "Touhou little maid mod's model is loading...");
+        String path = assetPath(domain, CHAIR_MODELS.getJsonFileName());
+        if (!accessor.exists(path)) {
+            return;
+        }
+        try (InputStream stream = accessor.open(path)) {
+            CustomModelPack<ChairModelInfo> pack = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8),
+                    new TypeToken<CustomModelPack<ChairModelInfo>>() {
+                    }.getType());
+            pack.decorate(domain);
+            if (pack.getIcon() != null) {
+                registerTexture(accessor, pack.getIcon());
+            }
+            for (ChairModelInfo chairModelItem : pack.getModelList()) {
+                if (chairModelItem.isGeckoModel()) {
+                    loadGeckoChairModelElement(accessor, chairModelItem);
+                } else {
+                    loadChairModelElement(accessor, chairModelItem);
+                }
+            }
+            CHAIR_MODELS.addPack(pack);
+        } catch (IOException ignore) {
+            // 忽略错误，因为资源域很多
+        } catch (JsonSyntaxException e) {
+            LOGGER.warn(MARKER, "Fail to parse model pack in domain {}", domain, e);
+        }
+        LOGGER.debug(MARKER, "Touhou little maid mod's model is loaded");
+    }
+
+    private static void loadMaidModelPack(Path rootPath, String domain) {
+        loadMaidModelPack(new FileResourceAccessor(rootPath), domain);
+    }
+
+    private static void loadMaidModelElement(ResourceAccessor accessor, MaidModelInfo maidModelItem) {
+        EntityMaidModel modelJson = loadMaidModel(accessor, maidModelItem.getModel());
+        registerTexture(accessor, maidModelItem.getTexture());
         if (modelJson != null) {
-            // 加载彩蛋，彩蛋不允许为空
             if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
                 putMaidEasterEggData(maidModelItem, modelJson);
             } else {
                 putMaidModelData(maidModelItem, modelJson);
             }
-            // 打印日志
             LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
+        }
+    }
+
+    private static void loadMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) {
+        loadMaidModelElement(new FileResourceAccessor(rootPath), maidModelItem);
+    }
+
+    private static void loadGeckoMaidModelElement(ResourceAccessor accessor, MaidModelInfo maidModelItem) throws IOException {
+        loadGeckoModelElement(accessor, maidModelItem, GeckoContainer.Type.MAID);
+        if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
+            putMaidEasterEggData(maidModelItem, null);
+        } else {
+            MAID_MODELS.putInfo(maidModelItem.getModelId().toString(), maidModelItem);
         }
     }
 
     private static void loadGeckoMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) throws IOException {
-        loadGeckoModelElement(rootPath, maidModelItem, GeckoContainer.Type.MAID);
-        if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-            putMaidEasterEggData(maidModelItem, null);
-        } else {
-            MAID_MODELS.putInfo(maidModelItem.getModelId().toString(), maidModelItem);
-        }
+        loadGeckoMaidModelElement(new FileResourceAccessor(rootPath), maidModelItem);
+    }
+
+    private static void loadGeckoChairModelElement(ResourceAccessor accessor, ChairModelInfo chairModelItem) throws IOException {
+        loadGeckoModelElement(accessor, chairModelItem, GeckoContainer.Type.CHAIR);
+        CHAIR_MODELS.putInfo(chairModelItem.getModelId().toString(), chairModelItem);
     }
 
     private static void loadGeckoChairModelElement(Path rootPath, ChairModelInfo chairModelItem) throws IOException {
-        loadGeckoModelElement(rootPath, chairModelItem, GeckoContainer.Type.CHAIR);
-        CHAIR_MODELS.putInfo(chairModelItem.getModelId().toString(), chairModelItem);
+        loadGeckoChairModelElement(new FileResourceAccessor(rootPath), chairModelItem);
+    }
+
+    private static void loadGeckoModelElement(ResourceAccessor accessor, IModelInfo maidModelItem, GeckoContainer.Type type) throws IOException {
+        Identifier uid = maidModelItem.getModelId();
+        Identifier modelLocation = maidModelItem.getModel();
+        String modelPath = assetPath(modelLocation);
+        if (!accessor.exists(modelPath)) {
+            return;
+        }
+        registerTexture(accessor, maidModelItem.getTexture());
+        GeckoContainerBuilder.registerModelContainer(uid, () -> accessor.open(modelPath),
+                id -> {
+                    String animationPath = assetPath(id);
+                    if (!accessor.exists(animationPath)) {
+                        return null;
+                    }
+                    return accessor.open(animationPath);
+                },
+                maidModelItem.getAnimation(),
+                maidModelItem.getTexture(),
+                type);
+        LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
     }
 
     private static void loadGeckoModelElement(Path rootPath, IModelInfo maidModelItem, GeckoContainer.Type type) throws IOException {
-        Identifier uid = maidModelItem.getModelId();
-        // 尝试加载模型
-        Identifier modelLocation = maidModelItem.getModel();
-        File modelFile = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
-        if (!modelFile.isFile()) {
-            return;
-        }
-        // 加载贴图
-        registerFilePackTexture(rootPath, maidModelItem.getTexture());
-        GeckoContainerBuilder.registerModelContainer(uid, () -> Files.newInputStream(modelFile.toPath()),
-                id -> {
-                    File animationFile = rootPath.resolve("assets").resolve(id.getNamespace()).resolve(id.getPath()).toFile();
-                    if (!animationFile.isFile()) {
-                        return null;
-                    }
-                    return Files.newInputStream(animationFile.toPath());
-                },
-                maidModelItem.getAnimation(),
-                maidModelItem.getTexture(),
-                type);
-        // 打印日志
-        LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
+        loadGeckoModelElement(new FileResourceAccessor(rootPath), maidModelItem, type);
     }
 
     private static void loadMaidModelPack(ZipFile zipFile, String domain) {
-        LOGGER.debug(MARKER, "Touhou little maid mod's model is loading...");
-        ZipEntry entry = zipFile.getEntry(String.format("assets/%s/%s", domain, MAID_MODELS.getJsonFileName()));
-        if (entry == null) {
-            return;
-        }
-        try (InputStream stream = zipFile.getInputStream(entry)) {
-            CustomModelPack<MaidModelInfo> pack = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8),
-                    new TypeToken<CustomModelPack<MaidModelInfo>>() {
-                    }.getType());
-            pack.decorate(domain);
-            // 加载图标贴图
-            if (pack.getIcon() != null) {
-                registerZipPackTexture(zipFile.getName(), pack.getIcon());
-            }
-            for (MaidModelInfo maidModelItem : pack.getModelList()) {
-                if (maidModelItem.isGeckoModel()) {
-                    loadGeckoMaidModelElement(zipFile, maidModelItem);
-                } else {
-                    loadMaidModelElement(zipFile, maidModelItem);
-                }
-            }
-            MAID_MODELS.addPack(pack);
-        } catch (IOException e) {
-            LOGGER.warn(MARKER, "Failed to load maid model pack in domain {}", domain, e);
-        } catch (JsonSyntaxException e) {
-            LOGGER.warn(MARKER, "Fail to parse model pack in domain {}", domain, e);
-        }
-        LOGGER.debug(MARKER, "Touhou little maid mod's model is loaded");
+        loadMaidModelPack(new ZipResourceAccessor(Paths.get(zipFile.getName())), domain);
     }
 
     private static void loadMaidModelElement(ZipFile zipFile, MaidModelInfo maidModelItem) {
-        // 尝试加载模型
-        EntityMaidModel modelJson = loadMaidModel(zipFile, maidModelItem.getModel());
-        // 加载贴图
-        registerZipPackTexture(zipFile.getName(), maidModelItem.getTexture());
-        if (modelJson != null) {
-            // 加载彩蛋，彩蛋不允许为空
-            if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-                putMaidEasterEggData(maidModelItem, modelJson);
-            } else {
-                putMaidModelData(maidModelItem, modelJson);
-            }
-            // 打印日志
-            LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
-        }
+        loadMaidModelElement(new ZipResourceAccessor(Paths.get(zipFile.getName())), maidModelItem);
     }
 
     private static void loadGeckoMaidModelElement(ZipFile zipFile, MaidModelInfo maidModelItem) throws IOException {
-        loadGeckoModelElement(zipFile, maidModelItem, GeckoContainer.Type.MAID);
-        if (maidModelItem.getEasterEgg() != null && StringUtils.isNotBlank(maidModelItem.getEasterEgg().getTag())) {
-            putMaidEasterEggData(maidModelItem, null);
-        } else {
-            MAID_MODELS.putInfo(maidModelItem.getModelId().toString(), maidModelItem);
-        }
+        loadGeckoMaidModelElement(new ZipResourceAccessor(Paths.get(zipFile.getName())), maidModelItem);
     }
 
     private static void loadGeckoChairModelElement(ZipFile zipFile, ChairModelInfo chairModelItem) throws IOException {
-        loadGeckoModelElement(zipFile, chairModelItem, GeckoContainer.Type.CHAIR);
-        CHAIR_MODELS.putInfo(chairModelItem.getModelId().toString(), chairModelItem);
+        loadGeckoChairModelElement(new ZipResourceAccessor(Paths.get(zipFile.getName())), chairModelItem);
     }
 
     private static void loadGeckoModelElement(ZipFile zipFile, IModelInfo maidModelItem, GeckoContainer.Type type) throws IOException {
-        Identifier uid = maidModelItem.getModelId();
-        // 尝试加载模型
-        Identifier modelLocation = maidModelItem.getModel();
-        String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
-        ZipEntry modelZipEntry = zipFile.getEntry(path);
-        if (modelZipEntry == null) {
-            return;
-        }
-        // 加载贴图
-        registerZipPackTexture(zipFile.getName(), maidModelItem.getTexture());
-        GeckoContainerBuilder.registerModelContainer(uid, () -> zipFile.getInputStream(modelZipEntry),
-                id -> {
-                    ZipEntry animationZipEntry = zipFile.getEntry(String.format("assets/%s/%s", id.getNamespace(), id.getPath()));
-                    if (animationZipEntry == null) {
-                        return null;
-                    }
-                    return zipFile.getInputStream(animationZipEntry);
-                },
-                maidModelItem.getAnimation(),
-                maidModelItem.getTexture(),
-                type);
-        // 打印日志
-        LOGGER.debug(MARKER, "Loaded model: {}", maidModelItem.getModel());
+        loadGeckoModelElement(new ZipResourceAccessor(Paths.get(zipFile.getName())), maidModelItem, type);
     }
 
     @SuppressWarnings("all")
@@ -348,287 +326,171 @@ public class CustomPackLoader {
     }
 
     private static void loadChairModelPack(Path rootPath, String domain) {
-        LOGGER.debug(MARKER, "Touhou little maid mod's model is loading...");
-        File file = rootPath.resolve("assets").resolve(domain).resolve(CHAIR_MODELS.getJsonFileName()).toFile();
-        if (!file.isFile()) {
-            return;
+        loadChairModelPack(new FileResourceAccessor(rootPath), domain);
+    }
+
+    private static void loadChairModelElement(ResourceAccessor accessor, ChairModelInfo chairModelItem) {
+        EntityChairModel modelJson = loadChairModel(accessor, chairModelItem.getModel());
+        registerTexture(accessor, chairModelItem.getTexture());
+        if (modelJson != null) {
+            String id = chairModelItem.getModelId().toString();
+            CHAIR_MODELS.putModel(id, modelJson);
+            CHAIR_MODELS.putAnimation(id, resolveChairAnimations(chairModelItem));
+            CHAIR_MODELS.putInfo(id, chairModelItem);
+            LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
         }
-        try (InputStream stream = Files.newInputStream(file.toPath())) {
-            // 将其转换为 pojo 对象
-            // 这个 pojo 是二次修饰的过的对象，所以一部分数据异常已经进行了处理或者抛出
-            CustomModelPack<ChairModelInfo> pack = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8),
-                    new TypeToken<CustomModelPack<ChairModelInfo>>() {
-                    }.getType());
-            pack.decorate(domain);
-            // 加载图标贴图
-            if (pack.getIcon() != null) {
-                registerFilePackTexture(rootPath, pack.getIcon());
-            }
-            for (ChairModelInfo chairModelItem : pack.getModelList()) {
-                if (chairModelItem.isGeckoModel()) {
-                    loadGeckoChairModelElement(rootPath, chairModelItem);
-                } else {
-                    loadChairModelElement(rootPath, chairModelItem);
-                }
-            }
-            CHAIR_MODELS.addPack(pack);
-        } catch (IOException ignore) {
-            // 忽略错误，因为资源域很多
-        } catch (JsonSyntaxException e) {
-            LOGGER.warn(MARKER, "Fail to parse model pack in domain {}", domain, e);
-        }
-        LOGGER.debug(MARKER, "Touhou little maid mod's model is loaded");
     }
 
     private static void loadChairModelElement(Path rootPath, ChairModelInfo chairModelItem) {
-        // 尝试加载模型
-        EntityChairModel modelJson = loadChairModel(rootPath, chairModelItem.getModel());
-        // 加载贴图
-        registerFilePackTexture(rootPath, chairModelItem.getTexture());
-        if (modelJson != null) {
-            String id = chairModelItem.getModelId().toString();
-            // 如果加载的模型不为空
-            CHAIR_MODELS.putModel(id, modelJson);
-            CHAIR_MODELS.putAnimation(id, resolveChairAnimations(chairModelItem));
-            CHAIR_MODELS.putInfo(id, chairModelItem);
-            // 打印日志
-            LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
-        }
+        loadChairModelElement(new FileResourceAccessor(rootPath), chairModelItem);
     }
 
     private static void loadChairModelPack(ZipFile zipFile, String domain) {
-        LOGGER.debug(MARKER, "Touhou little maid mod's model is loading...");
-        ZipEntry entry = zipFile.getEntry(String.format("assets/%s/%s", domain, CHAIR_MODELS.getJsonFileName()));
-        if (entry == null) {
-            return;
-        }
-        try (InputStream stream = zipFile.getInputStream(entry)) {
-            // 将其转换为 pojo 对象
-            // 这个 pojo 是二次修饰的过的对象，所以一部分数据异常已经进行了处理或者抛出
-            CustomModelPack<ChairModelInfo> pack = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8),
-                    new TypeToken<CustomModelPack<ChairModelInfo>>() {
-                    }.getType());
-            pack.decorate(domain);
-            // 加载图标贴图
-            if (pack.getIcon() != null) {
-                registerZipPackTexture(zipFile.getName(), pack.getIcon());
-            }
-            for (ChairModelInfo chairModelItem : pack.getModelList()) {
-                if (chairModelItem.isGeckoModel()) {
-                    loadGeckoChairModelElement(zipFile, chairModelItem);
-                } else {
-                    loadChairModelElement(zipFile, chairModelItem);
-                }
-            }
-            CHAIR_MODELS.addPack(pack);
-        } catch (IOException ignore) {
-            // 忽略错误，因为资源域很多
-        } catch (JsonSyntaxException e) {
-            LOGGER.warn(MARKER, "Fail to parse model pack in domain {}", domain, e);
-        }
-        LOGGER.debug(MARKER, "Touhou little maid mod's model is loaded");
+        loadChairModelPack(new ZipResourceAccessor(Paths.get(zipFile.getName())), domain);
     }
 
     private static void loadChairModelElement(ZipFile zipFile, ChairModelInfo chairModelItem) {
-        // 尝试加载模型
-        EntityChairModel modelJson = loadChairModel(zipFile, chairModelItem.getModel());
-        // 加载贴图
-        registerZipPackTexture(zipFile.getName(), chairModelItem.getTexture());
-        if (modelJson != null) {
-            String id = chairModelItem.getModelId().toString();
-            // 如果加载的模型不为空
-            CHAIR_MODELS.putModel(id, modelJson);
-            CHAIR_MODELS.putAnimation(id, resolveChairAnimations(chairModelItem));
-            CHAIR_MODELS.putInfo(id, chairModelItem);
-            // 打印日志
-            LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
-        }
+        loadChairModelElement(new ZipResourceAccessor(Paths.get(zipFile.getName())), chairModelItem);
     }
 
     @Nullable
-    public static EntityMaidModel loadMaidModel(Path rootPath, Identifier modelLocation) {
-        File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
-        if (!file.isFile()) {
+    public static EntityMaidModel loadMaidModel(ResourceAccessor accessor, Identifier modelLocation) {
+        String path = assetPath(modelLocation);
+        if (!accessor.exists(path)) {
             return null;
         }
-        try (InputStream stream = Files.newInputStream(file.toPath())) {
-            BedrockModelPOJO pojo = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class);
-            // 先判断是不是 1.10.0 版本基岩版模型文件
-            if (BedrockVersion.isLegacyVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelLegacy() != null) {
-                    return new EntityMaidModel(pojo, BedrockVersion.LEGACY);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
-            }
-
-            // 判定是不是 1.12.0 版本基岩版模型文件
-            if (BedrockVersion.isNewVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelNew() != null) {
-                    return new EntityMaidModel(pojo, BedrockVersion.NEW);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
-            }
-
-            LOGGER.warn(MARKER, "{} model version is not 1.10.0 or 1.12.0", modelLocation);
+        try (InputStream stream = accessor.open(path)) {
+            return parseMaidModelFromStream(stream, modelLocation);
         } catch (IOException ioe) {
-            // 可能用来判定错误，打印下
             LOGGER.warn(MARKER, "Failed to load model: {}", modelLocation, ioe);
         }
-        // 如果前面出了错，返回 Null
         return null;
     }
 
     @Nullable
+    public static EntityMaidModel loadMaidModel(Path rootPath, Identifier modelLocation) {
+        return loadMaidModel(new FileResourceAccessor(rootPath), modelLocation);
+    }
+
+    @Nullable
     public static EntityMaidModel loadMaidModel(ZipFile zipFile, Identifier modelLocation) {
-        String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
-        ZipEntry entry = zipFile.getEntry(path);
-        if (entry == null) {
+        return loadMaidModel(new ZipResourceAccessor(Paths.get(zipFile.getName())), modelLocation);
+    }
+
+    @Nullable
+    private static EntityMaidModel parseMaidModelFromStream(InputStream stream, Identifier modelLocation) {
+        BedrockModelPOJO pojo = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class);
+        // 先判断是不是 1.10.0 版本基岩版模型文件
+        if (BedrockVersion.isLegacyVersion(pojo)) {
+            // 如果 model 字段不为空
+            if (pojo.getGeometryModelLegacy() != null) {
+                return new EntityMaidModel(pojo, BedrockVersion.LEGACY);
+            } else {
+                // 否则日志给出提示
+                LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
+                return null;
+            }
+        }
+
+        // 判定是不是 1.12.0 版本基岩版模型文件
+        if (BedrockVersion.isNewVersion(pojo)) {
+            // 如果 model 字段不为空
+            if (pojo.getGeometryModelNew() != null) {
+                return new EntityMaidModel(pojo, BedrockVersion.NEW);
+            } else {
+                // 否则日志给出提示
+                LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
+                return null;
+            }
+        }
+
+        LOGGER.warn(MARKER, "{} model version is not 1.10.0 or 1.12.0", modelLocation);
+        return null;
+    }
+
+    @Nullable
+    public static EntityChairModel loadChairModel(ResourceAccessor accessor, Identifier modelLocation) {
+        String path = assetPath(modelLocation);
+        if (!accessor.exists(path)) {
             return null;
         }
-        try (InputStream stream = zipFile.getInputStream(entry)) {
-            BedrockModelPOJO pojo = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class);
-            // 先判断是不是 1.10.0 版本基岩版模型文件
-            if (BedrockVersion.isLegacyVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelLegacy() != null) {
-                    return new EntityMaidModel(pojo, BedrockVersion.LEGACY);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
-            }
-
-            // 判定是不是 1.12.0 版本基岩版模型文件
-            if (BedrockVersion.isNewVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelNew() != null) {
-                    return new EntityMaidModel(pojo, BedrockVersion.NEW);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
-            }
-
-            LOGGER.warn(MARKER, "{} model version is not 1.10.0 or 1.12.0", modelLocation);
+        try (InputStream stream = accessor.open(path)) {
+            return parseChairModelFromStream(stream, modelLocation);
         } catch (IOException ioe) {
-            // 可能用来判定错误，打印下
             LOGGER.warn(MARKER, "Failed to load model: {}", modelLocation, ioe);
         }
-        // 如果前面出了错，返回 Null
         return null;
     }
 
     @Nullable
     public static EntityChairModel loadChairModel(Path rootPath, Identifier modelLocation) {
-        File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
-        if (!file.isFile()) {
-            return null;
-        }
-        try (InputStream stream = Files.newInputStream(file.toPath())) {
-            BedrockModelPOJO pojo = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class);
-            // 先判断是不是 1.10.0 版本基岩版模型文件
-            if (BedrockVersion.isLegacyVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelLegacy() != null) {
-                    return new EntityChairModel(pojo, BedrockVersion.LEGACY);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
-            }
-
-            // 判定是不是 1.12.0 版本基岩版模型文件
-            if (BedrockVersion.isNewVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelNew() != null) {
-                    return new EntityChairModel(pojo, BedrockVersion.NEW);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
-            }
-
-            LOGGER.warn(MARKER, "{} model version is not 1.10.0 or 1.12.0", modelLocation);
-        } catch (IOException ioe) {
-            // 可能用来判定错误，打印下
-            LOGGER.warn(MARKER, "Failed to load model: {}", modelLocation, ioe);
-        }
-        // 如果前面出了错，返回 Null
-        return null;
+        return loadChairModel(new FileResourceAccessor(rootPath), modelLocation);
     }
 
     @Nullable
     public static EntityChairModel loadChairModel(ZipFile zipFile, Identifier modelLocation) {
-        String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
-        ZipEntry entry = zipFile.getEntry(path);
-        if (entry == null) {
-            return null;
-        }
-        try (InputStream stream = zipFile.getInputStream(entry)) {
-            BedrockModelPOJO pojo = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class);
-            // 先判断是不是 1.10.0 版本基岩版模型文件
-            if (BedrockVersion.isLegacyVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelLegacy() != null) {
-                    return new EntityChairModel(pojo, BedrockVersion.LEGACY);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
-            }
+        return loadChairModel(new ZipResourceAccessor(Paths.get(zipFile.getName())), modelLocation);
+    }
 
-            // 判定是不是 1.12.0 版本基岩版模型文件
-            if (BedrockVersion.isNewVersion(pojo)) {
-                // 如果 model 字段不为空
-                if (pojo.getGeometryModelNew() != null) {
-                    return new EntityChairModel(pojo, BedrockVersion.NEW);
-                } else {
-                    // 否则日志给出提示
-                    LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
-                    return null;
-                }
+    @Nullable
+    private static EntityChairModel parseChairModelFromStream(InputStream stream, Identifier modelLocation) {
+        BedrockModelPOJO pojo = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class);
+        // 先判断是不是 1.10.0 版本基岩版模型文件
+        if (BedrockVersion.isLegacyVersion(pojo)) {
+            // 如果 model 字段不为空
+            if (pojo.getGeometryModelLegacy() != null) {
+                return new EntityChairModel(pojo, BedrockVersion.LEGACY);
+            } else {
+                // 否则日志给出提示
+                LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
+                return null;
             }
-
-            LOGGER.warn(MARKER, "{} model version is not 1.10.0 or 1.12.0", modelLocation);
-        } catch (IOException ioe) {
-            // 可能用来判定错误，打印下
-            LOGGER.warn(MARKER, "Failed to load model: {}", modelLocation, ioe);
         }
-        // 如果前面出了错，返回 Null
+
+        // 判定是不是 1.12.0 版本基岩版模型文件
+        if (BedrockVersion.isNewVersion(pojo)) {
+            // 如果 model 字段不为空
+            if (pojo.getGeometryModelNew() != null) {
+                return new EntityChairModel(pojo, BedrockVersion.NEW);
+            } else {
+                // 否则日志给出提示
+                LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
+                return null;
+            }
+        }
+
+        LOGGER.warn(MARKER, "{} model version is not 1.10.0 or 1.12.0", modelLocation);
         return null;
     }
 
-    public static void registerFilePackTexture(Path rootPath, Identifier texturePath) {
+    /**
+     * Unified texture registration through a {@link ResourceAccessor}.
+     * Replaces the old per-source-type methods internally.
+     */
+    public static void registerTexture(ResourceAccessor accessor, Identifier texturePath) {
         if (!TMP_REGISTER_TEXTURE.contains(texturePath)) {
-            FilePackTexture filePackTexture = new FilePackTexture(rootPath, texturePath);
-            if (filePackTexture.isExist()) {
-                Minecraft.getInstance().getTextureManager().registerAndLoad(texturePath, filePackTexture);
+            CustomPackTexture texture = new CustomPackTexture(accessor, texturePath);
+            if (texture.isExist()) {
+                Minecraft.getInstance().getTextureManager().registerAndLoad(texturePath, texture);
                 TMP_REGISTER_TEXTURE.add(texturePath);
             }
         }
     }
 
+    /**
+     * @deprecated Use {@link #registerTexture(ResourceAccessor, Identifier)} with {@link FileResourceAccessor}.
+     */
+    @Deprecated
+    public static void registerFilePackTexture(Path rootPath, Identifier texturePath) {
+        registerTexture(new FileResourceAccessor(rootPath), texturePath);
+    }
+
+    /**
+     * @deprecated Use {@link #registerTexture(ResourceAccessor, Identifier)} with {@link ZipResourceAccessor}.
+     */
+    @Deprecated
     public static void registerZipPackTexture(String zipFilePath, Identifier texturePath) {
-        if (!TMP_REGISTER_TEXTURE.contains(texturePath)) {
-            ZipPackTexture zipPackTexture = new ZipPackTexture(zipFilePath, texturePath);
-            if (zipPackTexture.isExist()) {
-                Minecraft.getInstance().getTextureManager().registerAndLoad(texturePath, zipPackTexture);
-                TMP_REGISTER_TEXTURE.add(texturePath);
-            }
-        }
+        registerTexture(new ZipResourceAccessor(Paths.get(zipFilePath)), texturePath);
     }
 
     private static List<IAnimation<EntityMaidRenderState>> resolveMaidAnimations(MaidModelInfo maidModelItem) {

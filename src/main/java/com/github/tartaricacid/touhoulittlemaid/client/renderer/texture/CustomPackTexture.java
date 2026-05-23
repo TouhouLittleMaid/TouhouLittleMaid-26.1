@@ -1,46 +1,37 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.texture;
 
+import com.github.tartaricacid.touhoulittlemaid.client.resource.ResourceAccessor;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.TextureContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-public class FilePackTexture extends SizeTexture {
-    private final Path rootPath;
+public class CustomPackTexture extends SizeTexture {
+    private final ResourceAccessor accessor;
     private int width = 16;
     private int height = 16;
 
-    public FilePackTexture(Path rootPath, Identifier texturePath) {
+    public CustomPackTexture(ResourceAccessor accessor, Identifier texturePath) {
         super(texturePath);
-        this.rootPath = rootPath;
+        this.accessor = accessor;
     }
 
     @Override
     public boolean isExist() {
-        return rootPath
-                .resolve("assets")
-                .resolve(resourceId().getNamespace())
-                .resolve(resourceId().getPath())
-                .toFile()
-                .isFile();
+        Identifier id = resourceId();
+        String path = "assets/%s/%s".formatted(id.getNamespace(), id.getPath());
+        return accessor.exists(path);
     }
 
     @Override
     public TextureContents loadContents(ResourceManager resourceManager) throws IOException {
-        File textureFile = rootPath
-                .resolve("assets")
-                .resolve(resourceId().getNamespace())
-                .resolve(resourceId().getPath())
-                .toFile();
-
-        if (textureFile.isFile()) {
-            try (InputStream stream = Files.newInputStream(textureFile.toPath())) {
+        Identifier id = resourceId();
+        String path = "assets/%s/%s".formatted(id.getNamespace(), id.getPath());
+        if (accessor.exists(path)) {
+            try (InputStream stream = accessor.open(path)) {
                 NativeImage imageIn = NativeImage.read(stream);
                 width = imageIn.getWidth();
                 height = imageIn.getHeight();

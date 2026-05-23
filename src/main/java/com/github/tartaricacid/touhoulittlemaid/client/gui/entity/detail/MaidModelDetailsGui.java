@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail;
 
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
+import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model.MaidModelGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.ModelDetailsButton;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
@@ -46,7 +46,7 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
 
     @Override
     protected void applyReturnButtonLogic() {
-        CacheIconManager.openMaidModelGui(sourceEntity);
+        Minecraft.getInstance().setScreen(new MaidModelGui(sourceEntity));
     }
 
     @Override

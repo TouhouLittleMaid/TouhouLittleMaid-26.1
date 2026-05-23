@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTaskEnableEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidContainerGuiEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
+import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model.MaidModelGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.sound.MaidSoundPackGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.*;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
@@ -279,7 +279,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void addStateButton() {
-        skin = new TouhouImageButton(leftPos + 62, topPos + 14, 9, 9, 72, 43, 10, BUTTON, (b) -> CacheIconManager.openMaidModelGui(maid));
+        skin = new TouhouImageButton(leftPos + 62, topPos + 14, 9, 9, 72, 43, 10, BUTTON, (b) -> getMinecraft().setScreen(new MaidModelGui(maid)));
         info = new TouhouImageButton(leftPos + 8, topPos + 14, 9, 9, 72, 65, 10, BUTTON, NO_ACTION);
         this.addRenderableWidget(skin);
         this.addRenderableWidget(info);

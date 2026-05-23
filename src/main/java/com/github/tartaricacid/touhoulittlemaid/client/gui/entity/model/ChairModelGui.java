@@ -4,16 +4,12 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail.ChairModelDetailsGui;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ChairModelPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
-import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
@@ -51,14 +47,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
 
     @Override
     protected void drawRightEntity(GuiGraphicsExtractor graphics, int posX, int posY, ChairModelInfo modelItem) {
-        Identifier cacheIconId = modelItem.getCacheIconId();
-        var allTextures = Minecraft.getInstance().getTextureManager().byPath;
-        if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
-            int textureSize = 24;
-            GuiTools.blit(graphics, cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
-        } else {
-            drawEntity(graphics, posX, posY, modelItem);
-        }
+        drawEntity(graphics, posX, posY, modelItem);
     }
 
     @Override

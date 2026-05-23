@@ -1,6 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.client.sound;
 
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.FileResourceAccessor;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.ZipResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.DefaultPackConstant;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.data.SoundCache;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.data.SoundData;
@@ -10,7 +12,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import net.minecraft.client.sounds.JOrbisAudioStream;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import org.apache.logging.log4j.Marker;
@@ -21,11 +22,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -81,7 +80,7 @@ public class CustomSoundLoader {
             info.decorate();
             // 加载图标贴图
             if (info.getIcon() != null) {
-                CustomPackLoader.registerFilePackTexture(rootPath, info.getIcon());
+                CustomPackLoader.registerTexture(new FileResourceAccessor(rootPath), info.getIcon());
             }
             Path soundsFolder = rootPath.resolve("assets").resolve(id).resolve("sounds").resolve("maid");
             SoundCache soundCache = new SoundCache(info, loadSoundEvent(soundsFolder));
@@ -191,7 +190,7 @@ public class CustomSoundLoader {
             info.decorate();
             // 加载图标贴图
             if (info.getIcon() != null) {
-                CustomPackLoader.registerZipPackTexture(zipFile.getName(), info.getIcon());
+                CustomPackLoader.registerTexture(new ZipResourceAccessor(Path.of(zipFile.getName())), info.getIcon());
             }
             SoundCache soundCache = new SoundCache(info, loadSoundEvent(zipFile, id));
             CACHE.put(id, soundCache);

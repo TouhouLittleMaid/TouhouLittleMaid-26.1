@@ -3,32 +3,27 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail.MaidModelDetailsGui;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.MaidModelPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
-import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.event.SpecialMaidRenderEvent.EASTER_EGG_MODEL;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.models.SpecialMaidModelResolver.EASTER_EGG_MODEL;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
 public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
@@ -60,14 +55,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
 
     @Override
     protected void drawRightEntity(GuiGraphicsExtractor graphics, int posX, int posY, MaidModelInfo modelItem) {
-        Identifier cacheIconId = modelItem.getCacheIconId();
-        var allTextures = Minecraft.getInstance().getTextureManager().byPath;
-        if (MiscConfig.MODEL_ICON_CACHE.get() && allTextures.containsKey(cacheIconId)) {
-            int textureSize = 24;
-            GuiTools.blit(graphics, cacheIconId, posX - textureSize / 2, posY - textureSize, textureSize, textureSize, 0, 0, textureSize, textureSize, textureSize, textureSize);
-        } else {
-            drawEntity(graphics, posX, posY, modelItem);
-        }
+        drawEntity(graphics, posX, posY, modelItem);
     }
 
     @Override

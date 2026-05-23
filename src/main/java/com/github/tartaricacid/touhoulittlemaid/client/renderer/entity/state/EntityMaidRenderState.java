@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.blockentity.state.BannerRenderState;
 import net.minecraft.client.renderer.blockentity.state.SkullBlockRenderState;
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
@@ -21,6 +22,10 @@ import java.util.List;
 
 public class EntityMaidRenderState extends ArmedEntityRenderState {
     public ModelType modelType = ModelType.NONE;
+
+    @Nullable
+    public Component customName;
+    public String modelId;
 
     public MaidModelInfo mainInfo;
     public EntityMaidModel bedrockModel;
@@ -82,6 +87,7 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
     public void clear() {
         modelType = ModelType.NONE;
 
+        customName = null;
         mainInfo = null;
         bedrockModel = null;
         mainAnimations = Collections.emptyList();

@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.block;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.DirectButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.ImageButtonWithId;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
@@ -26,7 +25,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 import java.util.UUID;
@@ -80,7 +78,7 @@ public class ModelSwitcherGui extends Screen {
         TileEntityModelSwitcher.ModeInfo info = this.infoList.get(selectedIndex);
         maid.setModelId(info.getModelId().toString());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.button.skin"), b -> CacheIconManager.openModelSwitcherModelGui(maid, info, this))
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.button.skin"), b -> Minecraft.getInstance().setScreen(new ModelSwitcherModelGui(maid, info, this)))
                 .pos(leftPos + 55, topPos + 15).size(76, 20).build());
 
         this.addRenderableWidget(new DirectButton(leftPos + 55, topPos + 38, 76, 20, info.getDirection(),

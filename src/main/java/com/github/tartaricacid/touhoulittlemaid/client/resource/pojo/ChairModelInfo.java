@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.pojo;
 
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import it.unimi.dsi.fastutil.objects.ReferenceLists;
 import net.minecraft.resources.Identifier;
@@ -55,9 +54,6 @@ public class ChairModelInfo implements IModelInfo {
 
     @SerializedName("is_gecko")
     private boolean isGeckoModel = false;
-
-    @Expose(deserialize = false, serialize = false)
-    private Identifier cacheIconId = null;
 
     @Override
     public Identifier getTexture() {
@@ -121,18 +117,12 @@ public class ChairModelInfo implements IModelInfo {
         return noGravity;
     }
 
-    @Override
-    public Identifier getCacheIconId() {
-        return cacheIconId;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public ChairModelInfo extra(Identifier newModelId, Identifier texture) {
         ChairModelInfo cloneInfo = new ChairModelInfo();
         cloneInfo.modelId = newModelId;
         cloneInfo.texture = texture;
-        cloneInfo.cacheIconId = IModelInfo.createCacheIconId(newModelId);
         cloneInfo.name = this.name;
         cloneInfo.description = this.description;
         cloneInfo.model = this.model;
@@ -157,7 +147,6 @@ public class ChairModelInfo implements IModelInfo {
         if (modelId == null) {
             throw new JsonSyntaxException("Expected \"model_id\" in model");
         }
-        this.cacheIconId = IModelInfo.createCacheIconId(modelId);
         // 如果 model 或 texture 为空，自动生成默认位置的模型
         if (model == null) {
             model = Identifier.fromNamespaceAndPath(modelId.getNamespace(), "models/entity/" + modelId.getPath() + ".json");
