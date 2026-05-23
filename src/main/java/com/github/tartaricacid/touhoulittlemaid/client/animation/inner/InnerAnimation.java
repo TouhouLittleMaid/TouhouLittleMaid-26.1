@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.inner;
 
 import com.google.common.collect.Maps;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
@@ -12,8 +13,9 @@ public final class InnerAnimation {
         return INNER_ANIMATION.containsKey(resourceLocation);
     }
 
-    public static IAnimation<?> get(Identifier resourceLocation) {
-        return INNER_ANIMATION.get(resourceLocation);
+    @SuppressWarnings("unchecked")
+    public static <T extends EntityRenderState> IAnimation<T> get(Identifier resourceLocation) {
+        return (IAnimation<T>) INNER_ANIMATION.get(resourceLocation);
     }
 
     public static void init() {

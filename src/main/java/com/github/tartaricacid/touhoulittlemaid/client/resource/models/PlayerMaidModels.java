@@ -1,9 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.models;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.model.PlayerMaidModel;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.google.common.collect.Lists;
@@ -25,7 +26,7 @@ public final class PlayerMaidModels {
             Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/player/sit/default.js")
     );
     private static final Identifier TEXTURE_ALEX = Identifier.withDefaultNamespace("textures/entity/alex.png");
-    private static final List<Object> PLAYER_MAID_ANIMATIONS = Lists.newArrayList();
+    private static final List<IAnimation<EntityMaidRenderState>> PLAYER_MAID_ANIMATIONS = Lists.newArrayList();
     private static MaidModelInfo playerMaidInfo;
     private static Identifier playerSkin;
 
@@ -48,12 +49,12 @@ public final class PlayerMaidModels {
     // 1. 通过 SkullBlockEntity.getOrCreateProfile() 获取 ResolvableProfile
     // 2. 通过 PlayerSkinRenderCache.getOrDefault(profile) 获取 RenderInfo
     // 3. 从 RenderInfo.playerSkin().model() 判断是否为 SLIM
-    public static BedrockModel<EntityMaidRenderState> getPlayerMaidModel(String name) {
+    public static EntityMaidModel getPlayerMaidModel(String name) {
         // TODO: 实现新的 PlayerSkinRenderCache 获取逻辑
         return PLAYER_MAID_MODEL;
     }
 
-    public static List<Object> getPlayerMaidAnimations() {
+    public static List<IAnimation<EntityMaidRenderState>> getPlayerMaidAnimations() {
         return PLAYER_MAID_ANIMATIONS;
     }
 

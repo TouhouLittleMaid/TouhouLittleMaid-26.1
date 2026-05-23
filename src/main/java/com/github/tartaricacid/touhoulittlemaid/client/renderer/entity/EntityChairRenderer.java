@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoChairEntity;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityChairRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
@@ -27,15 +27,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 
-public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, EntityChairRenderState, BedrockModel<EntityChairRenderState>> {
+public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, EntityChairRenderState, EntityChairModel> {
     public static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
     private static final String DEFAULT_CHAIR_ID = "touhou_little_maid:cushion";
     public static boolean renderHitBox = true;
     private final GeckoEntityChairRenderer geckoEntityChairRenderer;
 
     public EntityChairRenderer(EntityRendererProvider.Context rendererManager) {
-        super(rendererManager, new BedrockModel<>(), 0);
+        super(rendererManager, new EntityChairModel(), 0);
         this.geckoEntityChairRenderer = new GeckoEntityChairRenderer(rendererManager);
     }
 
@@ -50,6 +51,9 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
         super.extractRenderState(chair, state, partialTicks);
 
         state.chair = chair;    // TODO
+        state.hasPassenger = chair.hasPassenger();
+        state.passengerYRot = chair.getPassengerYaw();
+        state.passengerXRot = chair.getPassengerPitch();
 
         // 读取默认模型，用于清除不存在模型的缓存残留
         CustomPackLoader.CHAIR_MODELS.getModel(DEFAULT_CHAIR_ID).ifPresent(model -> state.bedrockModel = model);
@@ -59,12 +63,17 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
         CustomPackLoader.CHAIR_MODELS.getModel(chair.getModelId()).ifPresent(model -> state.bedrockModel = model);
         CustomPackLoader.CHAIR_MODELS.getInfo(chair.getModelId()).ifPresent(info -> state.chairInfo = info);
 
+        if (state.chairInfo != null) {
+            state.chairAnimations = CustomPackLoader.CHAIR_MODELS.getAnimation(state.chairInfo.getModelId().toString())
+                    .orElse(Collections.emptyList());
+        }
+
         var player = Minecraft.getInstance().player;
         if (canShowHitBox(player) && renderHitBox) {
             state.hitbox = chair.getBoundingBox().move(-state.x, -state.y, -state.z);
         }
 
-        if (state.chairInfo.isGeckoModel()) {
+        if (state.chairInfo != null && state.chairInfo.isGeckoModel()) {
             state.modelType = ModelType.GECKO;
             var geckoEntity = getGeckoEntity(chair);
             if (geckoEntity != null) {
@@ -114,6 +123,7 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
             this.model = state.bedrockModel;
             // 模型动画设置
             this.model.setAnimations(state.chairAnimations);
+            this.model.setupAnim(state);
             super.submit(state, poseStack, submitNodeCollector, camera);
         }
     }

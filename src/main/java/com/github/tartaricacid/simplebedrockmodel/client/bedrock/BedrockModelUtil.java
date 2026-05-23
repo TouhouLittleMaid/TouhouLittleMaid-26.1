@@ -15,6 +15,11 @@ import com.google.gson.GsonBuilder;
 import java.util.HashMap;
 
 public final class BedrockModelUtil {
+    /**
+     * 防止命名冲突，故把根 Model 命名为 __root__
+     */
+    public static final String ROOT_NAME = "__root__";
+
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(CubesItem.class, new CubesItem.Deserializer())
             .create();

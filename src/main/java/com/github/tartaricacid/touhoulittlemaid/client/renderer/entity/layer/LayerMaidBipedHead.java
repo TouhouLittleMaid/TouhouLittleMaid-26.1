@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class LayerMaidBipedHead extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
+public class LayerMaidBipedHead extends RenderLayer<EntityMaidRenderState, EntityMaidModel> {
     private final EntityMaidRenderer maidRenderer;
     private final BlockEntityRenderDispatcher beRenderDispatcher;
 

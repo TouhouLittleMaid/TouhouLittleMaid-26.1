@@ -17,6 +17,9 @@ public final class NewModelReader {
         HashMap<String, BedrockPart> modelMap = new HashMap<>();
         HashMap<String, BonesItem> indexBones = new HashMap<>();
 
+        // 根节点
+        modelMap.put(ROOT_NAME, root);
+
         assert pojo.getGeometryModelNew() != null;
         pojo.getGeometryModelNew().deco();
 

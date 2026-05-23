@@ -11,6 +11,10 @@ import java.io.InputStream;
 public class SimpleBedrockEntityModel<T extends EntityRenderState> extends AbstractBedrockEntityModel<T> {
     public static final BedrockPart EMPTY = new BedrockPart();
 
+    public SimpleBedrockEntityModel() {
+        super();
+    }
+
     public SimpleBedrockEntityModel(InputStream stream) {
         super(stream);
     }

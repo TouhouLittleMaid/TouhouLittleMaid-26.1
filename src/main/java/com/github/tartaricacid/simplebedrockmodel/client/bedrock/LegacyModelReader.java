@@ -20,6 +20,9 @@ public final class LegacyModelReader {
         HashMap<String, BedrockPart> modelMap = new HashMap<>();
         HashMap<String, BonesItem> indexBones = new HashMap<>();
 
+        // 根节点
+        modelMap.put(ROOT_NAME, root);
+
         assert pojo.getGeometryModelLegacy() != null;
         pojo.getGeometryModelLegacy().deco();
 

@@ -1,7 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.models;
 
+import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
@@ -15,7 +16,8 @@ public final class MaidModels {
     private static final String JSON_FILE_NAME = "maid_model.json";
     private static @Nullable MaidModels INSTANCE;
     private final List<CustomModelPack<MaidModelInfo>> packList;
-    private final HashMap<String, BedrockModel<EntityMaidRenderState>> idModelMap;
+    private final HashMap<String, EntityMaidModel> idModelMap;
+    private final HashMap<String, List<IAnimation<EntityMaidRenderState>>> idAnimationMap;
     private final HashMap<String, MaidModelInfo> idInfoMap;
     private final HashMap<String, ModelData> easterEggNormalTagModelMap;
     private final HashMap<String, ModelData> easterEggEncryptTagModelMap;
@@ -23,6 +25,7 @@ public final class MaidModels {
     private MaidModels() {
         this.packList = Lists.newArrayList();
         this.idModelMap = Maps.newHashMap();
+        this.idAnimationMap = Maps.newHashMap();
         this.idInfoMap = Maps.newHashMap();
         this.easterEggNormalTagModelMap = Maps.newHashMap();
         this.easterEggEncryptTagModelMap = Maps.newHashMap();
@@ -38,6 +41,7 @@ public final class MaidModels {
     public void clearAll() {
         this.packList.clear();
         this.idModelMap.clear();
+        this.idAnimationMap.clear();
         this.idInfoMap.clear();
         this.easterEggNormalTagModelMap.clear();
         this.easterEggEncryptTagModelMap.clear();
@@ -60,7 +64,7 @@ public final class MaidModels {
         CacheIconManager.addMaidPack(pack);
     }
 
-    public void putModel(String modelId, BedrockModel<EntityMaidRenderState> modelJson) {
+    public void putModel(String modelId, EntityMaidModel modelJson) {
         this.idModelMap.put(modelId, modelJson);
     }
 
@@ -68,7 +72,11 @@ public final class MaidModels {
         this.idInfoMap.put(modelId, maidModelItem);
     }
 
-    public Optional<BedrockModel<EntityMaidRenderState>> getModel(String modelId) {
+    public void putAnimation(String modelId, List<IAnimation<EntityMaidRenderState>> animations) {
+        this.idAnimationMap.put(modelId, animations);
+    }
+
+    public Optional<EntityMaidModel> getModel(String modelId) {
         return Optional.ofNullable(idModelMap.get(modelId));
     }
 
@@ -81,6 +89,10 @@ public final class MaidModels {
 
     public Optional<MaidModelInfo> getInfo(String modelId) {
         return Optional.ofNullable(idInfoMap.get(modelId));
+    }
+
+    public Optional<List<IAnimation<EntityMaidRenderState>>> getAnimation(String modelId) {
+        return Optional.ofNullable(idAnimationMap.get(modelId));
     }
 
     public boolean containsInfo(String modelId) {
@@ -122,20 +134,20 @@ public final class MaidModels {
     }
 
     public static class ModelData {
-        private @Nullable BedrockModel<EntityMaidRenderState> model;
+        private @Nullable EntityMaidModel model;
         private MaidModelInfo info;
 
-        public ModelData(@Nullable BedrockModel<EntityMaidRenderState> model, MaidModelInfo info) {
+        public ModelData(@Nullable EntityMaidModel model, MaidModelInfo info) {
             this.model = model;
             this.info = info;
         }
 
         @Nullable
-        public BedrockModel<EntityMaidRenderState> getModel() {
+        public EntityMaidModel getModel() {
             return model;
         }
 
-        public void setModel(@Nullable BedrockModel<EntityMaidRenderState> model) {
+        public void setModel(@Nullable EntityMaidModel model) {
             this.model = model;
         }
 

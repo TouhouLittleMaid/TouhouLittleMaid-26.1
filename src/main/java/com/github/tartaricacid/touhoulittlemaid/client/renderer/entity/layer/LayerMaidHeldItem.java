@@ -1,8 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -14,7 +13,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 
-public class LayerMaidHeldItem extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
+public class LayerMaidHeldItem extends RenderLayer<EntityMaidRenderState, EntityMaidModel> {
     public LayerMaidHeldItem(EntityMaidRenderer maidRenderer) {
         super(maidRenderer);
     }

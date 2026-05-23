@@ -62,6 +62,7 @@ public final class PlayerMaidAnimation {
             BedrockPart legRight = models.get("legRight");
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
+            BedrockPart root = IAnimation.root(models);
 
             if (head != null) {
                 head.offsetY = 0;
@@ -69,8 +70,12 @@ public final class PlayerMaidAnimation {
 
             if (state.passenger) {
                 playerRidingPosture(legLeft, legRight);
+                root.offsetY = 0.3f;
             } else if (state.maidInSittingPose) {
                 playerSittingPosture(armLeft, armRight, legLeft, legRight);
+                root.offsetY = 0.3f;
+            } else {
+                root.offsetY = 0f;
             }
         };
     }

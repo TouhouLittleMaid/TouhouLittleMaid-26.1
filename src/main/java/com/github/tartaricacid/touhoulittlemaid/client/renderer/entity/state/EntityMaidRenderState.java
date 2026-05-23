@@ -1,9 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state;
 
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
-import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.blockentity.state.BannerRenderState;
 import net.minecraft.client.renderer.blockentity.state.SkullBlockRenderState;
@@ -16,15 +16,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 public class EntityMaidRenderState extends ArmedEntityRenderState {
     public ModelType modelType = ModelType.NONE;
 
     public MaidModelInfo mainInfo;
-    @Nullable
-    public BedrockModel<EntityMaidRenderState> bedrockModel;
-    public List<Object> mainAnimations = ObjectLists.emptyList();
+    public EntityMaidModel bedrockModel;
+    public List<IAnimation<EntityMaidRenderState>> mainAnimations = Collections.emptyList();
 
     public boolean playerVehicle;
     public boolean sitting;
@@ -84,7 +84,7 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
 
         mainInfo = null;
         bedrockModel = null;
-        mainAnimations = ObjectLists.emptyList();
+        mainAnimations = Collections.emptyList();
 
         playerVehicle = false;
         sitting = false;

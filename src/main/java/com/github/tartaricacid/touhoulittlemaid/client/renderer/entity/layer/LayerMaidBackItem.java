@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class LayerMaidBackItem extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
+public class LayerMaidBackItem extends RenderLayer<EntityMaidRenderState, EntityMaidModel> {
     public LayerMaidBackItem(EntityMaidRenderer renderer) {
         super(renderer);
     }

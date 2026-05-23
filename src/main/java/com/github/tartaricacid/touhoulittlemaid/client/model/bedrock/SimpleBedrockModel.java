@@ -10,6 +10,10 @@ import java.io.InputStream;
 public class SimpleBedrockModel<T> extends AbstractBedrockModel<T> {
     public static final BedrockPart EMPTY = new BedrockPart();
 
+    public SimpleBedrockModel() {
+        super();
+    }
+
     public SimpleBedrockModel(InputStream stream) {
         super(stream);
     }

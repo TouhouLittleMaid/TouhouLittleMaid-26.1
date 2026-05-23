@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.RenderMaidEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackItem;
@@ -50,10 +50,11 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.function.Function;
 
 @SuppressWarnings("rawtypes,unchecked")
-public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
+public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, EntityMaidModel> {
     public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
 
     private static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
@@ -76,7 +77,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
     private CameraRenderState cameraRenderState;
 
     public EntityMaidRenderer(EntityRendererProvider.Context manager) {
-        super(manager, new BedrockModel<>(), 0.5f);
+        super(manager, new EntityMaidModel(), 0.5f);
         this.itemModelResolver = manager.getItemModelResolver();
         this.blockModelResolver = manager.getBlockModelResolver();
         this.addLayer(new LayerMaidHeldItem(this));
@@ -146,7 +147,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
 
         MaidModels.ModelData eventModelData = new MaidModels.ModelData(state.bedrockModel, state.mainInfo);
         if (NeoForge.EVENT_BUS.post(new RenderMaidEvent(maid, eventModelData)).isCanceled()) {
-            BedrockModel<EntityMaidRenderState> bedrockModel = eventModelData.getModel();
+            EntityMaidModel bedrockModel = eventModelData.getModel();
             if (bedrockModel != null) {
                 state.bedrockModel = bedrockModel;
             }
@@ -155,6 +156,11 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
             // 通过模型 id 获取对应数据
             CustomPackLoader.MAID_MODELS.getModel(maid.getModelId()).ifPresent(model -> state.bedrockModel = model);
             CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId()).ifPresent(mainInfo -> state.mainInfo = mainInfo);
+        }
+
+        if (state.mainInfo != null) {
+            state.mainAnimations = CustomPackLoader.MAID_MODELS.getAnimation(state.mainInfo.getModelId().toString())
+                    .orElse(Collections.emptyList());
         }
 
         // 头部物品
@@ -208,7 +214,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         }
 
         // Gecko 动画更新要放在最后
-        if (state.mainInfo.isGeckoModel()) {
+        if (state.mainInfo != null && state.mainInfo.isGeckoModel()) {
             state.modelType = ModelType.GECKO;
             var geckoEntity = getGeckoEntity(entity);
             if (geckoEntity != null) {

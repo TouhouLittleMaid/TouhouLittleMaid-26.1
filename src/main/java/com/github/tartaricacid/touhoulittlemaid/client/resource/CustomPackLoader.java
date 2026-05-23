@@ -4,8 +4,11 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockMod
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockVersion;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.CubesItem;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.cache.CacheIconManager;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.FilePackTexture;
@@ -40,7 +43,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -180,7 +185,7 @@ public class CustomPackLoader {
 
     private static void loadMaidModelElement(Path rootPath, MaidModelInfo maidModelItem) {
         // 尝试加载模型
-        BedrockModel<EntityMaidRenderState> modelJson = loadMaidModel(rootPath, maidModelItem.getModel());
+        EntityMaidModel modelJson = loadMaidModel(rootPath, maidModelItem.getModel());
         // 加载贴图
         registerFilePackTexture(rootPath, maidModelItem.getTexture());
         if (modelJson != null) {
@@ -267,7 +272,7 @@ public class CustomPackLoader {
 
     private static void loadMaidModelElement(ZipFile zipFile, MaidModelInfo maidModelItem) {
         // 尝试加载模型
-        BedrockModel<EntityMaidRenderState> modelJson = loadMaidModel(zipFile, maidModelItem.getModel());
+        EntityMaidModel modelJson = loadMaidModel(zipFile, maidModelItem.getModel());
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), maidModelItem.getTexture());
         if (modelJson != null) {
@@ -323,8 +328,9 @@ public class CustomPackLoader {
     }
 
     @SuppressWarnings("all")
-    private static void putMaidEasterEggData(MaidModelInfo maidModelItem, @Nullable BedrockModel<EntityMaidRenderState> modelJson) {
+    private static void putMaidEasterEggData(MaidModelInfo maidModelItem, @Nullable EntityMaidModel modelJson) {
         MaidModelInfo.EasterEgg easterEgg = maidModelItem.getEasterEgg();
+        MAID_MODELS.putAnimation(maidModelItem.getModelId().toString(), resolveMaidAnimations(maidModelItem));
         MaidModels.ModelData data = new MaidModels.ModelData(modelJson, maidModelItem);
         if (easterEgg.isEncrypt()) {
             MAID_MODELS.putEasterEggEncryptTagModel(easterEgg.getTag(), data);
@@ -333,10 +339,11 @@ public class CustomPackLoader {
         }
     }
 
-    private static void putMaidModelData(MaidModelInfo maidModelItem, BedrockModel<EntityMaidRenderState> modelJson) {
+    private static void putMaidModelData(MaidModelInfo maidModelItem, EntityMaidModel modelJson) {
         String id = maidModelItem.getModelId().toString();
         // 如果加载的模型不为空
         MAID_MODELS.putModel(id, modelJson);
+        MAID_MODELS.putAnimation(id, resolveMaidAnimations(maidModelItem));
         MAID_MODELS.putInfo(id, maidModelItem);
     }
 
@@ -375,13 +382,14 @@ public class CustomPackLoader {
 
     private static void loadChairModelElement(Path rootPath, ChairModelInfo chairModelItem) {
         // 尝试加载模型
-        BedrockModel<EntityChairRenderState> modelJson = loadChairModel(rootPath, chairModelItem.getModel());
+        EntityChairModel modelJson = loadChairModel(rootPath, chairModelItem.getModel());
         // 加载贴图
         registerFilePackTexture(rootPath, chairModelItem.getTexture());
         if (modelJson != null) {
             String id = chairModelItem.getModelId().toString();
             // 如果加载的模型不为空
             CHAIR_MODELS.putModel(id, modelJson);
+            CHAIR_MODELS.putAnimation(id, resolveChairAnimations(chairModelItem));
             CHAIR_MODELS.putInfo(id, chairModelItem);
             // 打印日志
             LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
@@ -423,13 +431,14 @@ public class CustomPackLoader {
 
     private static void loadChairModelElement(ZipFile zipFile, ChairModelInfo chairModelItem) {
         // 尝试加载模型
-        BedrockModel<EntityChairRenderState> modelJson = loadChairModel(zipFile, chairModelItem.getModel());
+        EntityChairModel modelJson = loadChairModel(zipFile, chairModelItem.getModel());
         // 加载贴图
         registerZipPackTexture(zipFile.getName(), chairModelItem.getTexture());
         if (modelJson != null) {
             String id = chairModelItem.getModelId().toString();
             // 如果加载的模型不为空
             CHAIR_MODELS.putModel(id, modelJson);
+            CHAIR_MODELS.putAnimation(id, resolveChairAnimations(chairModelItem));
             CHAIR_MODELS.putInfo(id, chairModelItem);
             // 打印日志
             LOGGER.debug(MARKER, "Loaded model: {}", chairModelItem.getModel());
@@ -437,7 +446,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityMaidRenderState> loadMaidModel(Path rootPath, Identifier modelLocation) {
+    public static EntityMaidModel loadMaidModel(Path rootPath, Identifier modelLocation) {
         File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!file.isFile()) {
             return null;
@@ -448,7 +457,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isLegacyVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelLegacy() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.LEGACY);
+                    return new EntityMaidModel(pojo, BedrockVersion.LEGACY);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -460,7 +469,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isNewVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelNew() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.NEW);
+                    return new EntityMaidModel(pojo, BedrockVersion.NEW);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -478,7 +487,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityMaidRenderState> loadMaidModel(ZipFile zipFile, Identifier modelLocation) {
+    public static EntityMaidModel loadMaidModel(ZipFile zipFile, Identifier modelLocation) {
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry entry = zipFile.getEntry(path);
         if (entry == null) {
@@ -490,7 +499,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isLegacyVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelLegacy() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.LEGACY);
+                    return new EntityMaidModel(pojo, BedrockVersion.LEGACY);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -502,7 +511,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isNewVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelNew() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.NEW);
+                    return new EntityMaidModel(pojo, BedrockVersion.NEW);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -520,7 +529,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityChairRenderState> loadChairModel(Path rootPath, Identifier modelLocation) {
+    public static EntityChairModel loadChairModel(Path rootPath, Identifier modelLocation) {
         File file = rootPath.resolve("assets").resolve(modelLocation.getNamespace()).resolve(modelLocation.getPath()).toFile();
         if (!file.isFile()) {
             return null;
@@ -531,7 +540,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isLegacyVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelLegacy() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.LEGACY);
+                    return new EntityChairModel(pojo, BedrockVersion.LEGACY);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -543,7 +552,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isNewVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelNew() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.NEW);
+                    return new EntityChairModel(pojo, BedrockVersion.NEW);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -561,7 +570,7 @@ public class CustomPackLoader {
     }
 
     @Nullable
-    public static BedrockModel<EntityChairRenderState> loadChairModel(ZipFile zipFile, Identifier modelLocation) {
+    public static EntityChairModel loadChairModel(ZipFile zipFile, Identifier modelLocation) {
         String path = String.format("assets/%s/%s", modelLocation.getNamespace(), modelLocation.getPath());
         ZipEntry entry = zipFile.getEntry(path);
         if (entry == null) {
@@ -573,7 +582,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isLegacyVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelLegacy() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.LEGACY);
+                    return new EntityChairModel(pojo, BedrockVersion.LEGACY);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -585,7 +594,7 @@ public class CustomPackLoader {
             if (BedrockVersion.isNewVersion(pojo)) {
                 // 如果 model 字段不为空
                 if (pojo.getGeometryModelNew() != null) {
-                    return new BedrockModel<>(pojo, BedrockVersion.NEW);
+                    return new EntityChairModel(pojo, BedrockVersion.NEW);
                 } else {
                     // 否则日志给出提示
                     LOGGER.warn(MARKER, "{} model file don't have model field", modelLocation);
@@ -620,5 +629,33 @@ public class CustomPackLoader {
                 TMP_REGISTER_TEXTURE.add(texturePath);
             }
         }
+    }
+
+    private static List<IAnimation<EntityMaidRenderState>> resolveMaidAnimations(MaidModelInfo maidModelItem) {
+        List<IAnimation<EntityMaidRenderState>> animations = new ArrayList<>();
+        List<Identifier> animationIds = maidModelItem.getAnimation();
+        if (animationIds == null || animationIds.isEmpty()) {
+            return animations;
+        }
+        for (Identifier animationId : animationIds) {
+            if (InnerAnimation.containsKey(animationId)) {
+                animations.add(InnerAnimation.get(animationId));
+            }
+        }
+        return animations;
+    }
+
+    private static List<IAnimation<EntityChairRenderState>> resolveChairAnimations(ChairModelInfo chairModelItem) {
+        List<IAnimation<EntityChairRenderState>> animations = new ArrayList<>();
+        List<Identifier> animationIds = chairModelItem.getAnimation();
+        if (animationIds == null || animationIds.isEmpty()) {
+            return animations;
+        }
+        for (Identifier animationId : animationIds) {
+            if (InnerAnimation.containsKey(animationId)) {
+                animations.add(InnerAnimation.get(animationId));
+            }
+        }
+        return animations;
     }
 }

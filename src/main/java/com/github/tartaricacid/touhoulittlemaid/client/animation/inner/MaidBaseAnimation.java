@@ -20,7 +20,6 @@ public final class MaidBaseAnimation {
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/default/head/beg.js"), getHeadBeg());
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/default/head/blink.js"), getHeadBlink());
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/default/head/default.js"), getHeadDefault());
-        INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/default/head/music_shake.js"), getHeadMusicShake());
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/default/head/ear_shake.js"), getEarShake());
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/default/head/ear_beg_shake.js"), getEarBegShake());
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/maid/default/head/hair_swing.js"), getHairSwing());
@@ -89,16 +88,6 @@ public final class MaidBaseAnimation {
                     ahoge.zRot = ahoge.getInitRotZ();
                 }
                 setVisible(begShow, false);
-            }
-        };
-    }
-
-
-    public static IAnimation<EntityMaidRenderState> getHeadMusicShake() {
-        return (state, models) -> {
-            BedrockPart head = models.get("head");
-            if (head != null) {
-                head.zRot = (float) (Math.cos(state.ageInTicks * 0.4) * 0.06) + head.getInitRotZ();
             }
         };
     }
@@ -172,6 +161,7 @@ public final class MaidBaseAnimation {
         return (state, models) -> {
             BedrockPart legLeft = models.get("legLeft");
             BedrockPart legRight = models.get("legRight");
+
             boolean isFarm = "farm".equals(state.taskId) && state.swingTime > 0;
             float limbSwing = state.walkAnimationPos;
             float limbSwingAmount = state.walkAnimationSpeed;
@@ -263,6 +253,7 @@ public final class MaidBaseAnimation {
             BedrockPart legRight = models.get("legRight");
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
+            BedrockPart root = IAnimation.root(models);
 
             if (head != null) {
                 head.offsetY = 0;
@@ -270,8 +261,12 @@ public final class MaidBaseAnimation {
 
             if (state.passenger) {
                 ridingPosture(legLeft, legRight);
+                root.offsetY = 0.3f;
             } else if (state.maidInSittingPose) {
                 sittingPosture(armLeft, armRight, legLeft, legRight);
+                root.offsetY = 0.3f;
+            } else {
+                root.offsetY = 0f;
             }
         };
     }
@@ -387,7 +382,6 @@ public final class MaidBaseAnimation {
             getHeadDefault().setupAnimation(state, models);
             getHeadBlink().setupAnimation(state, models);
             getHeadBeg().setupAnimation(state, models);
-            getHeadMusicShake().setupAnimation(state, models);
             getLegDefault().setupAnimation(state, models);
             getArmDefault().setupAnimation(state, models);
             getArmSwing().setupAnimation(state, models);

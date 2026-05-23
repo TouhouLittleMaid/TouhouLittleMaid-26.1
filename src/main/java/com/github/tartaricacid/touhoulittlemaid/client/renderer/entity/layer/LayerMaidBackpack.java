@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.BedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 
 import java.awt.*;
 
-public class LayerMaidBackpack extends RenderLayer<EntityMaidRenderState, BedrockModel<EntityMaidRenderState>> {
+public class LayerMaidBackpack extends RenderLayer<EntityMaidRenderState, EntityMaidModel> {
     public LayerMaidBackpack(EntityMaidRenderer renderer, EntityModelSet modelSet) {
         super(renderer);
         BackpackManager.initClient(modelSet);
