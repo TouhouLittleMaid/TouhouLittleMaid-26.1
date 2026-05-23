@@ -103,7 +103,7 @@ public final class MaidTaskDataMaps {
         ValueInput dataTags = entityTag.childOrEmpty(TAG_NAME);
         for (String key : dataTags.keySet()) {
             Identifier id = Identifier.parse(key);
-            dataMaps.put(id, TaskDataRegister.getCodec(id).map(codec -> dataTags.read(key, codec)));
+            TaskDataRegister.getCodec(id).map(codec -> dataTags.read(key, codec)).ifPresent(t -> dataMaps.put(id, t));
         }
     }
 }
