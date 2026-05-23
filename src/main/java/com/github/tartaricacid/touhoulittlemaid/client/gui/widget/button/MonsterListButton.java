@@ -26,14 +26,14 @@ public class MonsterListButton extends Button {
     protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
         if (deleteClick(mouseX, mouseY)) {
-            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 163, this.width, this.height, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 163, this.width, this.height, 256, 256);
         } else if (leftClick(mouseX, mouseY) || rightClick(mouseX, mouseY)) {
-            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 150, this.width, this.height, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 150, this.width, this.height, 256, 256);
         } else {
-            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 137, this.width, this.height, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 0, 137, this.width, this.height, 256, 256);
         }
-        graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
-        graphics.centeredText(mc.font, this.parents.getAttackGroups().get(entityId).getComponent(), this.getX() + 142, this.getY() + 3, 0xFFFFFF);
+        graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0xFF444444, false);
+        graphics.centeredText(mc.font, this.parents.getAttackGroups().get(entityId).getComponent(), this.getX() + 142, this.getY() + 3, 0xFFFFFFFF);
     }
 
     @Override

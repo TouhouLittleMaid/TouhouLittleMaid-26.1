@@ -92,4 +92,8 @@ public final class GuiTools {
     public static void guiBlit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int uOffset, int vOffset, int width, int height, int textureWidth, int textureHeight) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, uOffset, vOffset, width, height, textureWidth, textureHeight);
     }
+
+    public static void guiBlit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int width, int height, int uOffset, int vOffset, int uWidth, int vHeight, int imageWidth, int imageHeight){
+        guiBlit(graphics, atlasLocation, x, y, uOffset, vOffset, width, height, imageWidth, imageHeight);
+    }
 }

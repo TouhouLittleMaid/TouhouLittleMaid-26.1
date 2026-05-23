@@ -43,12 +43,12 @@ public class FurnaceBackpackContainerScreen extends AbstractMaidContainerGui<Fur
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         super.extractBackground(graphics, mouseX, mouseY, pPartialTick);
-        GuiTools.blit(graphics,BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
+        GuiTools.guiBlit(graphics,BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
         if (this.menu.isLit()) {
             int litProgress = this.menu.getLitProgress();
-            GuiTools.blit(graphics,BACKPACK, leftPos + 161, topPos + 122 + 12 - litProgress, 165, 12 - litProgress, 14, litProgress + 1);
+            GuiTools.guiBlit(graphics,BACKPACK, leftPos + 161, topPos + 122 + 12 - litProgress, 165, 12 - litProgress, 14, litProgress + 1);
         }
         int burnProgress = this.menu.getBurnProgress();
-        GuiTools.blit(graphics,BACKPACK, leftPos + 184, topPos + 120, 165, 14, burnProgress + 1, 16);
+        GuiTools.guiBlit(graphics,BACKPACK, leftPos + 184, topPos + 120, 165, 14, burnProgress + 1, 16);
     }
 }

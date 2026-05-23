@@ -151,14 +151,14 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
         this.inputField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         MutableComponent pageText = Component.literal(String.format("%d/%d", this.page + 1, (this.attackGroupsKey.size() - 1) / 7 + 1));
-        graphics.centeredText(font, pageText, leftPos + 228, topPos + 57, 0xFFFFFF);
-        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.monster_type.title"), leftPos + 147, topPos + 57, 0xFFFFFF);
+        graphics.centeredText(font, pageText, leftPos + 228, topPos + 57, 0xFFFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.monster_type.title"), leftPos + 147, topPos + 57, 0xFFFFFFFF);
     }
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractBackground(graphics, mouseX, mouseY, a);
-        GuiTools.blit(graphics, BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
+        GuiTools.guiBlit(graphics, BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
 
     @Override

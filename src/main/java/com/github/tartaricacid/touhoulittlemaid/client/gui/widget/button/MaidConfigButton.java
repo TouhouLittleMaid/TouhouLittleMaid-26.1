@@ -36,12 +36,12 @@ public class MaidConfigButton extends Button {
     protected void extractContents(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         Minecraft mc = Minecraft.getInstance();
         if (this.isHovered) {
-            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 63, 141, this.width, this.height, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, this.getX(), this.getY(), 63, 141, this.width, this.height);
         } else {
-            GuiTools.blit(graphics, ICON, this.getX(), this.getY(), this.width, this.height, 63, 128, this.width, this.height, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, this.getX(), this.getY(), 63, 128, this.width, this.height);
         }
-        graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0x444444, false);
-        drawCenteredStringWithoutShadow(graphics, mc.font, this.value, this.getX() + 142, this.getY() + 3, ChatFormatting.GREEN.getColor());
+        graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0xFF444444, false);
+        drawCenteredStringWithoutShadow(graphics, mc.font, this.value, this.getX() + 142, this.getY() + 3, ChatFormatting.GREEN.getColor() | 0xFF000000);
     }
 
     public void setValue(Component value) {

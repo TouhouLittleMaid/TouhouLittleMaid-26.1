@@ -36,8 +36,8 @@ public class MaidConfigContainerGui extends AbstractMaidContainerGui<MaidConfigC
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        GuiTools.guiBlit(graphics,ICON, leftPos + 80, topPos + 28, 0, 0, imageWidth, imageHeight);
         super.extractContents(graphics, mouseX, mouseY, a);
-        GuiTools.blit(graphics,ICON, leftPos + 80, topPos + 28, 0, 0, imageWidth, imageHeight);
     }
 
     @Override

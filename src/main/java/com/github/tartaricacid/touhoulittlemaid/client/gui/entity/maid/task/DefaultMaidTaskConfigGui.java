@@ -28,11 +28,11 @@ public class DefaultMaidTaskConfigGui extends MaidTaskConfigGui<TaskConfigContai
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractBackground(graphics, mouseX, mouseY, a);
-        GuiTools.blit(graphics,BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
+        GuiTools.guiBlit(graphics,BG, leftPos + 80, topPos + 28, 0, 0, imageWidth, 137);
     }
 
     @Override
     protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.textWithWordWrap(font, Component.translatable("gui.touhou_little_maid.default_task_config.title"), leftPos + 88, topPos + 38, 160, ChatFormatting.DARK_GRAY.getColor());
+        graphics.textWithWordWrap(font, Component.translatable("gui.touhou_little_maid.default_task_config.title"), leftPos + 88, topPos + 38, 160, ChatFormatting.DARK_GRAY.getColor() | 0xFF000000);
     }
 }
