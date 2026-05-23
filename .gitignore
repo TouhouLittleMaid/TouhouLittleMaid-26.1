@@ -33,3 +33,5 @@ forge*changelog.txt
 /src/generated/resources/.cache/
 .sisyphus
 /.ref/
+
+.claude

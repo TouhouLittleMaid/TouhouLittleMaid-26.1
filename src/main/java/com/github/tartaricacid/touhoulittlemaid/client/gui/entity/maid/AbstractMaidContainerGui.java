@@ -235,7 +235,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        GuiTools.blit(graphics, BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        GuiTools.guiBlit(graphics, BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         SortButtonScreen.renderBackground(graphics, leftPos + 249, topPos + 166);
         this.drawMaidCharacter(graphics, mouseX, mouseY);
         this.drawBaseInfoGui(graphics);
@@ -578,7 +578,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void drawTaskListBg(GuiGraphicsExtractor graphics) {
         if (TASK_LIST_OPEN) {
             Rect2i taskListArea = getTaskListArea();
-            GuiTools.blit(graphics, TASK, taskListArea.getX(), taskListArea.getY(), 0, 0, taskListArea.getWidth(), taskListArea.getHeight());
+            GuiTools.guiBlit(graphics, TASK, taskListArea.getX(), taskListArea.getY(), 0, 0, taskListArea.getWidth(), taskListArea.getHeight());
         }
     }
 
@@ -586,40 +586,40 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void drawBaseInfoGui(GuiGraphicsExtractor graphics) {
         graphics.pose().translate(0, 0);
         {
-            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 113, 0, 0, 9, 9);
-            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 113, 0, 9, 47, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 53, topPos + 113, 0, 0, 9, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 5, topPos + 113, 0, 9, 47, 9);
             double hp = maid.getHealth() / maid.getMaxHealth();
-            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 115, 2, 18, (int) (43 * hp), 5);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 7, topPos + 115, 2, 18, (int) (43 * hp), 5);
             drawNumberScale(graphics, maid.getHealth(), leftPos + 63, topPos + 114);
         }
         {
-            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 124, 9, 0, 9, 9);
-            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 124, 0, 9, 47, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 53, topPos + 124, 9, 0, 9, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 5, topPos + 124, 0, 9, 47, 9);
             double armor = Math.min(maid.getAttributeValue(Attributes.ARMOR) / 20, 1.0);
-            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 126, 2, 23, (int) (43 * armor), 5);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 7, topPos + 126, 2, 23, (int) (43 * armor), 5);
             drawNumberScale(graphics, maid.getArmorValue(), leftPos + 63, topPos + 125);
         }
         {
-            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 135, 18, 0, 9, 9);
-            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 135, 0, 9, 47, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 53, topPos + 135, 18, 0, 9, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 5, topPos + 135, 0, 9, 47, 9);
 
             int exp = maid.getExperience();
             int count = exp / 120;
             double percent = (exp % 120) / 120.0;
-            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 137, 2, 28, (int) (43 * percent), 5);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 7, topPos + 137, 2, 28, (int) (43 * percent), 5);
             drawNumberScale(graphics, count, leftPos + 63, topPos + 136);
         }
         {
-            GuiTools.blit(graphics, SIDE, leftPos + 53, topPos + 146, 27, 0, 9, 9);
-            GuiTools.blit(graphics, SIDE, leftPos + 5, topPos + 146, 0, 9, 47, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 53, topPos + 146, 27, 0, 9, 9);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 5, topPos + 146, 0, 9, 47, 9);
             FavorabilityManager manager = maid.getFavorabilityManager();
             double percent = manager.getLevelPercent();
-            GuiTools.blit(graphics, SIDE, leftPos + 7, topPos + 148, 2, 33, (int) (43 * percent), 5);
+            GuiTools.guiBlit(graphics, SIDE, leftPos + 7, topPos + 148, 2, 33, (int) (43 * percent), 5);
             drawNumberScale(graphics, manager.getLevel(), leftPos + 63, topPos + 147);
         }
 
-        GuiTools.blit(graphics, SIDE, leftPos + 94, topPos + 7, 107, 0, 149, 21);
-        GuiTools.blit(graphics, SIDE, leftPos + 6, topPos + 178, 0, 47, 67, 25);
+        GuiTools.guiBlit(graphics, SIDE, leftPos + 94, topPos + 7, 107, 0, 149, 21);
+        GuiTools.guiBlit(graphics, SIDE, leftPos + 6, topPos + 178, 0, 47, 67, 25);
     }
 
     @SuppressWarnings("all")
@@ -747,6 +747,6 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
 
     // 绘制侧边栏底部贴图
     private void drawSideTabGui(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        GuiTools.blit(graphics, SIDE, leftPos + 251 + 5, topPos + 28 + 9, 235, 107, 21, 50);
+        GuiTools.guiBlit(graphics, SIDE, leftPos + 251 + 5, topPos + 28 + 9, 235, 107, 21, 50);
     }
 }

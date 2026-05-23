@@ -12,11 +12,11 @@ import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -94,16 +94,16 @@ public class MaidBeaconGui extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
-        GuiTools.blit(graphics, BG, leftPos, topPos + 2, 0, 0, 142, 111);
-        GuiTools.blit(graphics,BG, leftPos + 118, topPos + 1, 44, 111, 154, 15);
+        GuiTools.guiBlit(graphics, BG, leftPos, topPos + 2, 0, 0, 142, 111);
+        GuiTools.guiBlit(graphics, BG, leftPos + 118, topPos + 1, 44, 111, 154, 15);
 
-        GuiTools.blit(graphics,BG, leftPos + 224, topPos + 44, 44, 126, 12, 12);
-        GuiTools.blit(graphics,BG, leftPos + 224, topPos + 58, 44, 138, 12, 12);
+        GuiTools.guiBlit(graphics, BG, leftPos + 224, topPos + 44, 44, 126, 12, 12);
+        GuiTools.guiBlit(graphics, BG, leftPos + 224, topPos + 58, 44, 138, 12, 12);
 
-        GuiTools.blit(graphics,BG, leftPos + 146, topPos + 46, 58, 128, 74, 9);
-        GuiTools.blit(graphics,BG, leftPos + 146, topPos + 59, 58, 128, 74, 9);
+        GuiTools.guiBlit(graphics, BG, leftPos + 146, topPos + 46, 58, 128, 74, 9);
+        GuiTools.guiBlit(graphics, BG, leftPos + 146, topPos + 59, 58, 128, 74, 9);
         float percent = beacon.getStoragePower() / beacon.getMaxStorage();
-        GuiTools.blit(graphics,BG, leftPos + 146, topPos + 48, 58, 138, (int) (74 * percent), 5);
+        GuiTools.guiBlit(graphics, BG, leftPos + 146, topPos + 48, 58, 138, (int) (74 * percent), 5);
 
         this.renderPlayerPower(graphics);
         graphics.text(font, DECIMAL_FORMAT.format(beacon.getStoragePower()), leftPos + 240, topPos + 46, 0xffffff);
@@ -135,7 +135,7 @@ public class MaidBeaconGui extends Screen {
         if (player != null) {
             PowerAttachment power = player.getData(InitDataAttachment.POWER_NUM);
             float percent = power.get() / PowerAttachment.MAX_POWER;
-            GuiTools.blit(graphics,BG, leftPos + 146, topPos + 61, 58, 143, (int) (74 * percent), 5);
+            GuiTools.guiBlit(graphics, BG, leftPos + 146, topPos + 61, 58, 143, (int) (74 * percent), 5);
             graphics.text(font, DECIMAL_FORMAT.format(power.get()), leftPos + 240, topPos + 60, 0xffffff);
         }
     }

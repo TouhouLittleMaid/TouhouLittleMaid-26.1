@@ -53,6 +53,6 @@ public class TouhouStateSwitchButton extends AbstractWidget {
             j += this.yDiffTex;
         }
 
-        GuiTools.blit(pGuiGraphics, this.resourceLocation, this.getX(), this.getY(), this.width, this.height, i, j);
+        GuiTools.guiBlit(pGuiGraphics, this.resourceLocation, this.getX(), this.getY(), i, j, this.width, this.height);
     }
 }

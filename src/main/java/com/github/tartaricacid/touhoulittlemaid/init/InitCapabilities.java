@@ -6,14 +6,13 @@ import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public class InitCapabilities {
-    public static final EntityCapability<ResourceHandler<@NotNull ItemResource>, @Nullable Direction> HAND_ITEM = EntityCapability.createSided(getResourceLocation("hand_item"), ResourceHandler.asClass());
-    public static final EntityCapability<ResourceHandler<@NotNull ItemResource>, @Nullable Direction> ARMOR_ITEM = EntityCapability.createSided(getResourceLocation("armor_item"), ResourceHandler.asClass());
+    public static final EntityCapability<ResourceHandler<ItemResource>, @Nullable Direction> HAND_ITEM = EntityCapability.createSided(getResourceLocation("hand_item"), ResourceHandler.asClass());
+    public static final EntityCapability<ResourceHandler<ItemResource>, @Nullable Direction> ARMOR_ITEM = EntityCapability.createSided(getResourceLocation("armor_item"), ResourceHandler.asClass());
 
     public static void registerGenericItemHandlers(RegisterCapabilitiesEvent event) {
         event.registerEntity(HAND_ITEM, InitEntities.MAID.get(), (maid, direction) -> maid.getHandsInvWrapper());

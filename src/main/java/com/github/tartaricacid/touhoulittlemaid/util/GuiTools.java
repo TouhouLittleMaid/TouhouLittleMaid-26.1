@@ -4,6 +4,7 @@ import com.mojang.math.Divisor;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
@@ -82,5 +83,13 @@ public final class GuiTools {
         float v0 = (float) vOffset / imageHeight;
         float v1 = (float) (vOffset + vHeight) / imageHeight;
         graphics.blit(atlasLocation, x, y, x + width, x + height, u0, u1, v0, v1);
+    }
+
+    public static void guiBlit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int uOffset, int vOffset, int width, int height) {
+        graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, uOffset, vOffset, width, height, 256, 256);
+    }
+
+    public static void guiBlit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int uOffset, int vOffset, int width, int height, int textureWidth, int textureHeight) {
+        graphics.blit(RenderPipelines.GUI_TEXTURED, atlasLocation, x, y, uOffset, vOffset, width, height, textureWidth, textureHeight);
     }
 }

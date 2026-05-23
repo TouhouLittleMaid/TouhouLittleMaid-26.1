@@ -50,6 +50,6 @@ public class TouhouImageButton extends Button {
             i = pVOffset + p_283472_;
         }
 
-        GuiTools.blit(pGuiGraphics, pTexture, pX, pY, pWidth, pHeight, pUOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);
+        GuiTools.guiBlit(pGuiGraphics, pTexture, pX, pY, pUOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);
     }
 }

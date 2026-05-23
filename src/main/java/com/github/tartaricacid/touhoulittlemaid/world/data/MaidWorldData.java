@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.datafix.DataFixTypes;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -78,10 +79,15 @@ public class MaidWorldData extends SavedData {
         this.setDirty();
     }
 
+    //TODO : 这里先简单判null
     public void addInfo(EntityMaid maid) {
         String dimension = maid.level.dimension().identifier().toString();
         BlockPos chunkPos = maid.blockPosition();
-        UUID ownerId = maid.getOwnerUUID();
+        LivingEntity owner = maid.getOwner();
+        if (owner == null) {
+            return;
+        }
+        UUID ownerId = owner.getUUID();
         UUID maidId = maid.getUUID();
         long timestamp = System.currentTimeMillis();
         Component name = maid.getDisplayName();
@@ -89,7 +95,11 @@ public class MaidWorldData extends SavedData {
     }
 
     public void removeInfo(EntityMaid maid) {
-        UUID ownerId = maid.getOwnerUUID();
+        LivingEntity owner = maid.getOwner();
+        if (owner == null) {
+            return;
+        }
+        UUID ownerId = owner.getUUID();
         if (this.infos.containsKey(ownerId)) {
             UUID maidId = maid.getUUID();
             this.infos.get(ownerId).removeIf(info -> info.entityId().equals(maidId));
@@ -117,7 +127,11 @@ public class MaidWorldData extends SavedData {
     public void addTombstones(EntityMaid maid, EntityTombstone tombstone) {
         String dimension = maid.level.dimension().identifier().toString();
         BlockPos chunkPos = tombstone.blockPosition();
-        UUID ownerId = maid.getOwnerUUID();
+        LivingEntity owner = maid.getOwner();
+        if (owner == null) {
+            return;
+        }
+        UUID ownerId = owner.getUUID();
         UUID tombstoneId = tombstone.getUUID();
         long timestamp = System.currentTimeMillis();
         Component name = maid.getDisplayName();
