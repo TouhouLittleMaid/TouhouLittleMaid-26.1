@@ -44,7 +44,7 @@ public class ScheduleButton<T extends AbstractMaidContainer> extends Button {
 
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        GuiTools.blit(graphics, BUTTON, this.getX(), this.getY(), this.width, this.height, 82, 43 + 14 * mode.ordinal(), this.width, this.height, 256, 256);
+        GuiTools.guiBlit(graphics, BUTTON, this.getX(), this.getY(), 82, 43 + 14 * mode.ordinal(), this.width, this.height);
     }
 
     public List<Component> getTooltips() {

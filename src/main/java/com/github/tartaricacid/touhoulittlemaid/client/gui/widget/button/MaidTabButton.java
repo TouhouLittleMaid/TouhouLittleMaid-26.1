@@ -31,9 +31,9 @@ public class MaidTabButton extends Button implements ITooltipButton {
     @Override
     public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.active) {
-            GuiTools.blit(graphics, SIDE, this.getX(), this.getY(), this.width, this.height, left, 21, this.width, this.height, 256, 256);
+            GuiTools.guiBlit(graphics, SIDE, this.getX(), this.getY(), left, 21, this.width, this.height);
         }
-        GuiTools.blit(graphics, SIDE, this.getX() + 4, this.getY() + 6, 16, 16, left, 47, 16, 16, 256, 256);
+        GuiTools.guiBlit(graphics, SIDE, this.getX() + 4, this.getY() + 6, left, 47, 16, 16);
     }
 
     @Override

@@ -72,13 +72,14 @@ public class TaskButton extends Button implements ITooltipButton {
         if (this.isHoveredOrFocused()) {
             i += this.yDiffTex;
         }
-        GuiTools.blit(graphics, this.resourceLocation, this.getX(), this.getY(), this.width, this.height, this.xTexStart, i, this.width, this.height, this.textureWidth, this.textureHeight);
+        GuiTools.guiBlit(graphics, this.resourceLocation, this.getX(), this.getY(), this.xTexStart, i, this.width, this.height, this.textureWidth, this.textureHeight);
         if (!enable) {
             graphics.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80000000);
-            GuiTools.blit(graphics, this.resourceLocation, this.getX() + 72, this.getY(), 7, 19, 93, 68, 7, 19, this.textureWidth, this.textureHeight);
+            GuiTools.guiBlit(graphics, this.resourceLocation, this.getX() + 72, this.getY(),93, 68,7, 19, this.textureWidth, this.textureHeight);
+//            GuiTools.blit(graphics, this.resourceLocation, this.getX() + 72, this.getY(), 7, 19, 93, 68, 7, 19, this.textureWidth, this.textureHeight);
         }
         graphics.item(task.getIcon(), this.getX() + 2, this.getY() + 2);
-        graphics.text(minecraft.font, task.getName(), this.getX() + 23, this.getY() + 6, 0x333333, false);
+        graphics.text(minecraft.font, task.getName(), this.getX() + 23, this.getY() + 6, 0xFF333333, false);
     }
 
     @Override

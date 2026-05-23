@@ -48,6 +48,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -234,7 +235,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+    public void extractBackground(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         GuiTools.guiBlit(graphics, BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         SortButtonScreen.renderBackground(graphics, leftPos + 249, topPos + 166);
         this.drawMaidCharacter(graphics, mouseX, mouseY);
@@ -273,7 +274,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     @Override
-    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+    protected void extractLabels(@NonNull GuiGraphicsExtractor graphics, int x, int y) {
         this.drawTaskPageCount(graphics);
     }
 
@@ -488,7 +489,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private void drawTaskPageCount(GuiGraphicsExtractor graphics) {
         if (TASK_LIST_OPEN) {
             String text = String.format("%d/%d", TASK_PAGE + 1, (notHiddenTasks.size() - 1) / TASK_COUNT_PER_PAGE + 1);
-            graphics.text(font, text, -48, 12, 0x333333, false);
+            graphics.text(font, text, -48, 12, 0xFF333333, false);
         }
     }
 
@@ -497,7 +498,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         graphics.item(task.getIcon(), leftPos + 6, topPos + 161);
         List<FormattedCharSequence> splitTexts = font.split(task.getName(), 42);
         if (!splitTexts.isEmpty()) {
-            graphics.text(font, splitTexts.getFirst(), leftPos + 28, topPos + 165, 0x333333, false);
+            graphics.text(font, splitTexts.getFirst(), leftPos + 28, topPos + 165, 0xFF333333, false);
         }
     }
 
