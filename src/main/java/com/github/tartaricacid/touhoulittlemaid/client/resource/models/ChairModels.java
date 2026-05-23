@@ -17,13 +17,11 @@ public final class ChairModels {
     private final List<CustomModelPack<ChairModelInfo>> packList;
     private final HashMap<String, BedrockModel<EntityChairRenderState>> idModelMap;
     private final HashMap<String, ChairModelInfo> idInfoMap;
-    private final HashMap<String, List<Object>> idAnimationMap;
 
     private ChairModels() {
         this.packList = Lists.newArrayList();
         this.idModelMap = Maps.newHashMap();
         this.idInfoMap = Maps.newHashMap();
-        this.idAnimationMap = Maps.newHashMap();
     }
 
     public static ChairModels getInstance() {
@@ -37,7 +35,6 @@ public final class ChairModels {
         this.packList.clear();
         this.idModelMap.clear();
         this.idInfoMap.clear();
-        this.idAnimationMap.clear();
     }
 
     public String getJsonFileName() {
@@ -63,10 +60,6 @@ public final class ChairModels {
 
     public void putInfo(String modelId, ChairModelInfo chairModelItem) {
         this.idInfoMap.put(modelId, chairModelItem);
-    }
-
-    public void putAnimation(String modelId, List<Object> animationJs) {
-        this.idAnimationMap.put(modelId, animationJs);
     }
 
     public void sortPackList() {
@@ -117,14 +110,6 @@ public final class ChairModels {
             return idInfoMap.get(modelId).isNoGravity();
         }
         return false;
-    }
-
-    public Optional<List<Object>> getAnimation(String modelId) {
-        return Optional.ofNullable(idAnimationMap.get(modelId));
-    }
-
-    public void removeAnimation(String modelId) {
-        idAnimationMap.remove(modelId);
     }
 
     public Optional<ChairModelInfo> getInfo(String modelId) {

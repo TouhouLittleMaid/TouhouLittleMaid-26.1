@@ -9,7 +9,10 @@ import net.minecraft.client.renderer.blockentity.state.BannerRenderState;
 import net.minecraft.client.renderer.blockentity.state.SkullBlockRenderState;
 import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +46,39 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
 
     public Mob entity;  // TODO
 
+    public long gameTime;
+    @Nullable
+    public ResourceKey<Level> dimension;
+    public boolean raining;
+    public boolean thundering;
+    public long uuidLeastSignificantBits;
+
+    public float attackAnim;
+    public int swingTime;
+    public boolean sleeping;
+    public boolean passenger;
+    public boolean usingItem;
+    @Nullable
+    public InteractionHand usedItemHand;
+    @Nullable
+    public InteractionHand swingingArm;
+    public boolean hasMainHandItem;
+    public int armorValue;
+    public float health;
+    public float maxHealth;
+
+    public boolean begging;
+    public boolean swingingArms;
+    public boolean maidInSittingPose;
+    public boolean hasHelmet;
+    public boolean hasChestPlate;
+    public boolean hasLeggings;
+    public boolean hasBoots;
+    public boolean hasBackpack;
+    public boolean hurt;
+    @Nullable
+    public String taskId;
+
     public void clear() {
         modelType = ModelType.NONE;
 
@@ -66,5 +102,34 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
         backItem.clear();
 
         entity = null;
+
+        gameTime = 0;
+        dimension = null;
+        raining = false;
+        thundering = false;
+        uuidLeastSignificantBits = 0;
+
+        attackAnim = 0;
+        swingTime = 0;
+        sleeping = false;
+        passenger = false;
+        usingItem = false;
+        usedItemHand = null;
+        swingingArm = null;
+        hasMainHandItem = false;
+        armorValue = 0;
+        health = 0;
+        maxHealth = 0;
+
+        begging = false;
+        swingingArms = false;
+        maidInSittingPose = false;
+        hasHelmet = false;
+        hasChestPlate = false;
+        hasLeggings = false;
+        hasBoots = false;
+        hasBackpack = false;
+        hurt = false;
+        taskId = null;
     }
 }

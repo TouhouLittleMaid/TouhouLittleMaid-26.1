@@ -17,7 +17,6 @@ public final class MaidModels {
     private final List<CustomModelPack<MaidModelInfo>> packList;
     private final HashMap<String, BedrockModel<EntityMaidRenderState>> idModelMap;
     private final HashMap<String, MaidModelInfo> idInfoMap;
-    private final HashMap<String, List<Object>> idAnimationMap;
     private final HashMap<String, ModelData> easterEggNormalTagModelMap;
     private final HashMap<String, ModelData> easterEggEncryptTagModelMap;
 
@@ -25,7 +24,6 @@ public final class MaidModels {
         this.packList = Lists.newArrayList();
         this.idModelMap = Maps.newHashMap();
         this.idInfoMap = Maps.newHashMap();
-        this.idAnimationMap = Maps.newHashMap();
         this.easterEggNormalTagModelMap = Maps.newHashMap();
         this.easterEggEncryptTagModelMap = Maps.newHashMap();
     }
@@ -41,7 +39,6 @@ public final class MaidModels {
         this.packList.clear();
         this.idModelMap.clear();
         this.idInfoMap.clear();
-        this.idAnimationMap.clear();
         this.easterEggNormalTagModelMap.clear();
         this.easterEggEncryptTagModelMap.clear();
     }
@@ -71,10 +68,6 @@ public final class MaidModels {
         this.idInfoMap.put(modelId, maidModelItem);
     }
 
-    public void putAnimation(String modelId, List<Object> animationJs) {
-        this.idAnimationMap.put(modelId, animationJs);
-    }
-
     public Optional<BedrockModel<EntityMaidRenderState>> getModel(String modelId) {
         return Optional.ofNullable(idModelMap.get(modelId));
     }
@@ -84,14 +77,6 @@ public final class MaidModels {
             return idInfoMap.get(modelId).getRenderItemScale();
         }
         return 1.0f;
-    }
-
-    public Optional<List<Object>> getAnimation(String modelId) {
-        return Optional.ofNullable(idAnimationMap.get(modelId));
-    }
-
-    public void removeAnimation(String modelId) {
-        idAnimationMap.remove(modelId);
     }
 
     public Optional<MaidModelInfo> getInfo(String modelId) {
@@ -139,12 +124,10 @@ public final class MaidModels {
     public static class ModelData {
         private @Nullable BedrockModel<EntityMaidRenderState> model;
         private MaidModelInfo info;
-        private @Nullable List<Object> animations;
 
-        public ModelData(@Nullable BedrockModel<EntityMaidRenderState> model, MaidModelInfo info, @Nullable List<Object> animations) {
+        public ModelData(@Nullable BedrockModel<EntityMaidRenderState> model, MaidModelInfo info) {
             this.model = model;
             this.info = info;
-            this.animations = animations;
         }
 
         @Nullable
@@ -162,15 +145,6 @@ public final class MaidModels {
 
         public void setInfo(MaidModelInfo info) {
             this.info = info;
-        }
-
-        @Nullable
-        public List<Object> getAnimations() {
-            return animations;
-        }
-
-        public void setAnimations(List<Object> animations) {
-            this.animations = animations;
         }
     }
 }

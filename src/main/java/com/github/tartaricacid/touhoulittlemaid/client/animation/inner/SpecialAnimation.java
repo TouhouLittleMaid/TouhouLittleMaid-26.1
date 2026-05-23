@@ -1,11 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.inner;
 
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
+import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.Mob;
-
-import java.util.HashMap;
+import net.minecraft.world.level.Level;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation.INNER_ANIMATION;
 
@@ -15,118 +13,118 @@ public final class SpecialAnimation {
         INNER_ANIMATION.put(Identifier.parse("touhou_little_maid:animation/special/wakasagihime_sit.js"), getSpecialWakasagihime());
     }
 
-    public static IAnimation<Mob> getSpecialHecatia() {
-        return new IAnimation<Mob>() {
-            @Override
-            public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Mob mob, HashMap<String, ModelRendererWrapper> modelMap) {
-                IMaid maid = IMaid.convert(mob);
-                if (maid == null) return;
+    public static IAnimation<EntityMaidRenderState> getSpecialHecatia() {
+        return (state, models) -> {
+            var dim = state.dimension;
+            if (dim == null) {
+                return;
+            }
 
-                ModelRendererWrapper earthHair = modelMap.get("earthHair");
-                ModelRendererWrapper logoEarth = modelMap.get("logoEarth");
-                ModelRendererWrapper earthTop = modelMap.get("earthTop");
-                ModelRendererWrapper earthSideLeft = modelMap.get("earthSideLeft");
-                ModelRendererWrapper earthSideRight = modelMap.get("earthSideRight");
+            BedrockPart earthHair = models.get("earthHair");
+            BedrockPart logoEarth = models.get("logoEarth");
+            BedrockPart earthTop = models.get("earthTop");
+            BedrockPart earthSideLeft = models.get("earthSideLeft");
+            BedrockPart earthSideRight = models.get("earthSideRight");
 
-                ModelRendererWrapper moonHair = modelMap.get("moonHair");
-                ModelRendererWrapper logoMoon = modelMap.get("logoMoon");
-                ModelRendererWrapper moonTop = modelMap.get("moonTop");
-                ModelRendererWrapper moonSideLeft = modelMap.get("moonSideLeft");
-                ModelRendererWrapper moonSideRight = modelMap.get("moonSideRight");
+            BedrockPart moonHair = models.get("moonHair");
+            BedrockPart logoMoon = models.get("logoMoon");
+            BedrockPart moonTop = models.get("moonTop");
+            BedrockPart moonSideLeft = models.get("moonSideLeft");
+            BedrockPart moonSideRight = models.get("moonSideRight");
 
-                ModelRendererWrapper otherHair = modelMap.get("otherHair");
-                ModelRendererWrapper logoOther = modelMap.get("logoOther");
-                ModelRendererWrapper otherTop = modelMap.get("otherTop");
-                ModelRendererWrapper otherSideLeft = modelMap.get("otherSideLeft");
-                ModelRendererWrapper otherSideRight = modelMap.get("otherSideRight");
+            BedrockPart otherHair = models.get("otherHair");
+            BedrockPart logoOther = models.get("logoOther");
+            BedrockPart otherTop = models.get("otherTop");
+            BedrockPart otherSideLeft = models.get("otherSideLeft");
+            BedrockPart otherSideRight = models.get("otherSideRight");
 
-                int dim = maid.getDim();
-                if (dim == 0) {
-                    earthHair.setHidden(false);
-                    logoEarth.setHidden(false);
-                    earthTop.setHidden(false);
-                    earthSideLeft.setHidden(true);
-                    earthSideRight.setHidden(true);
+            if (dim.equals(Level.OVERWORLD)) {
+                setVisible(earthHair, true);
+                setVisible(logoEarth, true);
+                setVisible(earthTop, true);
+                setVisible(earthSideLeft, false);
+                setVisible(earthSideRight, false);
 
-                    moonHair.setHidden(true);
-                    logoMoon.setHidden(true);
-                    moonTop.setHidden(true);
-                    moonSideLeft.setHidden(true);
-                    moonSideRight.setHidden(false);
+                setVisible(moonHair, false);
+                setVisible(logoMoon, false);
+                setVisible(moonTop, false);
+                setVisible(moonSideLeft, false);
+                setVisible(moonSideRight, true);
 
-                    otherHair.setHidden(true);
-                    logoOther.setHidden(true);
-                    otherTop.setHidden(true);
-                    otherSideLeft.setHidden(false);
-                    otherSideRight.setHidden(true);
-                } else if (dim == 1) {
-                    earthHair.setHidden(true);
-                    logoEarth.setHidden(true);
-                    earthTop.setHidden(true);
-                    earthSideLeft.setHidden(false);
-                    earthSideRight.setHidden(true);
+                setVisible(otherHair, false);
+                setVisible(logoOther, false);
+                setVisible(otherTop, false);
+                setVisible(otherSideLeft, true);
+                setVisible(otherSideRight, false);
+            } else if (dim.equals(Level.NETHER)) {
+                setVisible(earthHair, false);
+                setVisible(logoEarth, false);
+                setVisible(earthTop, false);
+                setVisible(earthSideLeft, true);
+                setVisible(earthSideRight, false);
 
-                    moonHair.setHidden(false);
-                    logoMoon.setHidden(false);
-                    moonTop.setHidden(false);
-                    moonSideLeft.setHidden(true);
-                    moonSideRight.setHidden(true);
+                setVisible(moonHair, true);
+                setVisible(logoMoon, true);
+                setVisible(moonTop, true);
+                setVisible(moonSideLeft, false);
+                setVisible(moonSideRight, false);
 
-                    otherHair.setHidden(true);
-                    logoOther.setHidden(true);
-                    otherTop.setHidden(true);
-                    otherSideLeft.setHidden(true);
-                    otherSideRight.setHidden(false);
-                } else {
-                    earthHair.setHidden(true);
-                    logoEarth.setHidden(true);
-                    earthTop.setHidden(true);
-                    earthSideLeft.setHidden(false);
-                    earthSideRight.setHidden(true);
+                setVisible(otherHair, false);
+                setVisible(logoOther, false);
+                setVisible(otherTop, false);
+                setVisible(otherSideLeft, false);
+                setVisible(otherSideRight, true);
+            } else {
+                setVisible(earthHair, false);
+                setVisible(logoEarth, false);
+                setVisible(earthTop, false);
+                setVisible(earthSideLeft, true);
+                setVisible(earthSideRight, false);
 
-                    moonHair.setHidden(true);
-                    logoMoon.setHidden(true);
-                    moonTop.setHidden(true);
-                    moonSideLeft.setHidden(true);
-                    moonSideRight.setHidden(false);
+                setVisible(moonHair, false);
+                setVisible(logoMoon, false);
+                setVisible(moonTop, false);
+                setVisible(moonSideLeft, false);
+                setVisible(moonSideRight, true);
 
-                    otherHair.setHidden(false);
-                    logoOther.setHidden(false);
-                    otherTop.setHidden(false);
-                    otherSideLeft.setHidden(true);
-                    otherSideRight.setHidden(true);
-                }
+                setVisible(otherHair, true);
+                setVisible(logoOther, true);
+                setVisible(otherTop, true);
+                setVisible(otherSideLeft, false);
+                setVisible(otherSideRight, false);
+            }
 
-                if (maid.hasHelmet()) {
-                    earthTop.setHidden(true);
-                    moonTop.setHidden(true);
-                    otherTop.setHidden(true);
-                }
+            if (state.hasHelmet) {
+                setVisible(earthTop, false);
+                setVisible(moonTop, false);
+                setVisible(otherTop, false);
             }
         };
     }
 
-    public static IAnimation<Mob> getSpecialWakasagihime() {
-        return new IAnimation<Mob>() {
-            @Override
-            public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Mob mob, HashMap<String, ModelRendererWrapper> modelMap) {
-                IMaid maid = IMaid.convert(mob);
-                if (maid == null) return;
+    public static IAnimation<EntityMaidRenderState> getSpecialWakasagihime() {
+        return (state, models) -> {
+            if (!state.maidInSittingPose) {
+                return;
+            }
 
-                ModelRendererWrapper armLeft = modelMap.get("armLeft");
-                ModelRendererWrapper armRight = modelMap.get("armRight");
+            BedrockPart armLeft = models.get("armLeft");
+            if (armLeft != null) {
+                armLeft.xRot = -0.798f;
+                armLeft.zRot = 0.274f;
+            }
 
-                if (maid.isMaidInSittingPose()) {
-                    if (armLeft != null) {
-                        armLeft.setRotateAngleX(-0.798f);
-                        armLeft.setRotateAngleZ(0.274f);
-                    }
-                    if (armRight != null) {
-                        armRight.setRotateAngleX(-0.798f);
-                        armRight.setRotateAngleZ(-0.274f);
-                    }
-                }
+            BedrockPart armRight = models.get("armRight");
+            if (armRight != null) {
+                armRight.xRot = -0.798f;
+                armRight.zRot = -0.274f;
             }
         };
+    }
+
+    private static void setVisible(BedrockPart part, boolean visible) {
+        if (part != null) {
+            part.visible = visible;
+        }
     }
 }

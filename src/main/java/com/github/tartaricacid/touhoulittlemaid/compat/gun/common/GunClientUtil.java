@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.gun.common;
 
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.script.ModelRendererWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.PlayState;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.LoopType;
@@ -15,10 +14,6 @@ import javax.annotation.Nullable;
 // TODO 枪械类模组还没有升级到 26.1
 public class GunClientUtil {
     public static boolean isGun(ItemStack itemStack) {
-        return false;
-    }
-
-    public static boolean onHoldGun(IMaid maid, @Nullable ModelRendererWrapper armLeft, @Nullable ModelRendererWrapper armRight) {
         return false;
     }
 

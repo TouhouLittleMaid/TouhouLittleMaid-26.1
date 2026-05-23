@@ -36,7 +36,6 @@ public final class SpecialMaidRenderEvent {
             String playerName = name.substring(2);
             MaidModels.ModelData data = event.getModelData();
             data.setModel(PlayerMaidModels.getPlayerMaidModel(playerName));
-            data.setAnimations(PlayerMaidModels.getPlayerMaidAnimations());
             data.setInfo(PlayerMaidModels.getPlayerMaidInfo(playerName));
             event.setCanceled(true);
         }
@@ -72,7 +71,6 @@ public final class SpecialMaidRenderEvent {
         if (EASTER_EGG_MODEL.equals(id)) {
             MaidModels.ModelData data = event.getModelData();
             data.setModel(EasterEggModel.getInstance());
-            data.setAnimations(Collections.emptyList());
             data.setInfo(EasterEggModel.getInfo());
             event.setCanceled(true);
         }
@@ -82,9 +80,6 @@ public final class SpecialMaidRenderEvent {
         MaidModels.ModelData rawData = event.getModelData();
         rawData.setModel(data.getModel());
         rawData.setInfo(data.getInfo());
-        if (data.getAnimations() != null && !data.getAnimations().isEmpty()) {
-            rawData.setAnimations(data.getAnimations());
-        }
         event.setCanceled(true);
     }
 }
