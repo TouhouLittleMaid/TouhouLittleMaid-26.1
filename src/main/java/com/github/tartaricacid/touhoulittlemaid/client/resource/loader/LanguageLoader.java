@@ -1,4 +1,4 @@
-package com.github.tartaricacid.touhoulittlemaid.client.resource;
+package com.github.tartaricacid.touhoulittlemaid.client.resource.loader;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.download.InfoGetManager;

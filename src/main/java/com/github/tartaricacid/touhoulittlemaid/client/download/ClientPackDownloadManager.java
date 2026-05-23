@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.download;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.config.ServerConfig;
 import com.github.tartaricacid.touhoulittlemaid.util.HttpUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ZipFileCheck;

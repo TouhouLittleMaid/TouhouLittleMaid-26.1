@@ -1,10 +1,11 @@
-package com.github.tartaricacid.touhoulittlemaid.client.resource;
+package com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.DefaultGeckoAnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.controller.ControllerResource;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.controller.collection.ChairControllerCollection;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.controller.collection.MaidControllerCollection;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.Animation;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.MolangParser;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
@@ -29,6 +30,7 @@ import net.minecraft.server.ChainedJsonException;
 import net.minecraft.util.GsonHelper;
 import net.neoforged.neoforge.common.NeoForge;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,11 +51,11 @@ public class GeckoContainerBuilder {
                     CHAIR
             },
             new Identifier[]{
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid.animation.json"),
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/tac.animation.json"),
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/iss.animation.json"),
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/im.animation.json"),
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/chair.animation.json")
+                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid.animation.json"),
+                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/tac.animation.json"),
+                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/iss.animation.json"),
+                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/im.animation.json"),
+                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/chair.animation.json")
             });
 
     public static final Object2ReferenceOpenHashMap<String, Animation> DEFAULT_MAID_ANIMATIONS = new Object2ReferenceOpenHashMap<>();
@@ -65,10 +67,10 @@ public class GeckoContainerBuilder {
     }
 
     public static <T> void registerModelContainer(Identifier id, InputStreamSupplier geoStreamGetter,
-                                              InputStreamGetter<T> animStreamGetter,
-                                              List<T> animationFileIds,
-                                              Identifier texture,
-                                              GeckoContainer.Type type) throws IOException {
+                                                  InputStreamGetter<T> animStreamGetter,
+                                                  List<T> animationFileIds,
+                                                  Identifier texture,
+                                                  GeckoContainer.Type type) throws IOException {
         GeoModel geo;
         try (InputStream geoStream = geoStreamGetter.get()) {
             geo = GeckoContainerBuilder.registerGeo(geoStream);
@@ -162,6 +164,7 @@ public class GeckoContainerBuilder {
 
     @FunctionalInterface
     public interface InputStreamGetter<T> {
+        @Nullable
         InputStream get(T id) throws IOException;
     }
 

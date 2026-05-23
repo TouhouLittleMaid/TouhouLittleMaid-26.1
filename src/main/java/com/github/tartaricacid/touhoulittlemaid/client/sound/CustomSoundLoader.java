@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.client.sound;
 
-import com.github.tartaricacid.touhoulittlemaid.client.resource.CustomPackLoader;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.FileResourceAccessor;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.ZipResourceAccessor;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.FileResourceAccessor;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ZipResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.DefaultPackConstant;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.data.SoundCache;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.data.SoundData;

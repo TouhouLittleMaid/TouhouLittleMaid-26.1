@@ -1,4 +1,4 @@
-package com.github.tartaricacid.touhoulittlemaid.client.resource;
+package com.github.tartaricacid.touhoulittlemaid.client.resource.accessor;
 
 import java.io.IOException;
 import java.io.InputStream;

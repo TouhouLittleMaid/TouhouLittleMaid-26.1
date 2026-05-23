@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.mixin.client;
 
-import com.github.tartaricacid.touhoulittlemaid.client.resource.LanguageLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.LanguageLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.ClientLanguage;
 import org.spongepowered.asm.mixin.Mixin;

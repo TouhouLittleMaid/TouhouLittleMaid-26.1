@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.api.event.client;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.GeckoContainerBuilder;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.GeckoContainerBuilder;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;

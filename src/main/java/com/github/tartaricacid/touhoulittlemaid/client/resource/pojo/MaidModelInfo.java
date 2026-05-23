@@ -95,6 +95,7 @@ public class MaidModelInfo implements IModelInfo {
     }
 
     @Override
+    @Nullable
     public List<Identifier> getAnimation() {
         return animation;
     }
