@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.GarageKitRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemGarageKit;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -19,7 +19,7 @@ import org.joml.Vector3fc;
 
 import java.util.function.Consumer;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.STATUE_BASE;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.STATUE_BASE;
 
 /**
  * GarageKit 物品的特殊模型渲染器，替代旧版 BlockEntityWithoutLevelRenderer
@@ -34,7 +34,7 @@ public class TileEntityItemStackGarageKitRenderer implements SpecialModelRendere
     ;
 
     public TileEntityItemStackGarageKitRenderer() {
-        this.baseModel = BedrockModelLoader.getModel(STATUE_BASE);
+        this.baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
     }
 
     @Override

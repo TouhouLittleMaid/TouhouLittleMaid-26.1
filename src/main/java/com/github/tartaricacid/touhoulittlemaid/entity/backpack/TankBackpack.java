@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.data.TankBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -31,7 +31,7 @@ import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 
 import javax.annotation.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.TANK_BACKPACK;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.TANK_BACKPACK;
 
 public class TankBackpack extends IMaidBackpack {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "tank");
@@ -123,7 +123,7 @@ public class TankBackpack extends IMaidBackpack {
     @Override
     //FIXME 等待EntityMaidRenderState的实现
     public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
-        return BedrockModelLoader.getEntityModel(TANK_BACKPACK);
+        return InternalBedrockModelRegistry.getEntityModel(TANK_BACKPACK);
     }
 
     @Nullable

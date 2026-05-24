@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.data.FurnaceBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -29,7 +29,7 @@ import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
 
 import javax.annotation.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.FURNACE_BACKPACK;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.FURNACE_BACKPACK;
 
 public class FurnaceBackpack extends IMaidBackpack {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "furnace_backpack");
@@ -98,7 +98,7 @@ public class FurnaceBackpack extends IMaidBackpack {
     @Override
     //FIXME 等待EntityMaidRenderState的实现
     public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
-        return BedrockModelLoader.getEntityModel(FURNACE_BACKPACK);
+        return InternalBedrockModelRegistry.getEntityModel(FURNACE_BACKPACK);
     }
 
     @Nullable

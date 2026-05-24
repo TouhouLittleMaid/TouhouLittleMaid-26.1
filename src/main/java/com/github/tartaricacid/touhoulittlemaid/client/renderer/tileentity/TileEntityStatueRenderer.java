@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.StatueRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
@@ -35,7 +35,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.STATUE_BASE;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.STATUE_BASE;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
 public class TileEntityStatueRenderer implements BlockEntityRenderer<TileEntityStatue, StatueRenderState> {
@@ -43,7 +43,7 @@ public class TileEntityStatueRenderer implements BlockEntityRenderer<TileEntityS
     private final SimpleBedrockModel<Unit> baseModel;
 
     public TileEntityStatueRenderer(BlockEntityRendererProvider.Context context) {
-        baseModel = BedrockModelLoader.getModel(STATUE_BASE);
+        baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
     }
 
     @Override

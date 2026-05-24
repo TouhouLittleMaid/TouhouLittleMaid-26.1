@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.function.Function;
 
-public class BedrockModelSet<T> extends SimplePreparableReloadListener<Void> {
+public class InternalBedrockModelSet<T> extends SimplePreparableReloadListener<Void> {
     private Map<Identifier, T> models = ImmutableMap.of();
     private Map<Identifier, Function<InputStream, ? extends T>> knowLocations = Maps.newHashMap();
 

@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.CChessPiecesModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.CChessRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityCChess;
 import com.github.tartaricacid.touhoulittlemaid.util.CChessUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
@@ -44,7 +44,7 @@ public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityC
     private final CChessPiecesModel selectedModels;
 
     public TileEntityCChessRenderer(BlockEntityRendererProvider.Context context) {
-        chessModel = BedrockModelLoader.getModel(BedrockModelLoader.CCHESS);
+        chessModel = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.CCHESS);
         chessPiecesModels = CChessPiecesModel.initModel();
         selectedModels = CChessPiecesModel.getSelectedModel();
         font = context.font();

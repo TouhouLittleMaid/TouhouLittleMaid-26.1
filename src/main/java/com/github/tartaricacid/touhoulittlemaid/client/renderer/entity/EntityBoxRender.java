@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityBoxRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBox;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +19,7 @@ import net.minecraft.resources.Identifier;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.CAKE_BOX;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.CAKE_BOX;
 
 public class EntityBoxRender extends EntityRenderer<EntityBox, EntityBoxRenderState> {
     private final List<Identifier> texturesGroup = Lists.newArrayList();
@@ -27,7 +27,7 @@ public class EntityBoxRender extends EntityRenderer<EntityBox, EntityBoxRenderSt
 
     public EntityBoxRender(EntityRendererProvider.Context manager) {
         super(manager);
-        this.boxModel = BedrockModelLoader.getEntityModel(CAKE_BOX);
+        this.boxModel = InternalBedrockModelRegistry.getEntityModel(CAKE_BOX);
         IntStream.range(0, EntityBox.MAX_TEXTURE_SIZE).forEach(this::addBoxTexture);
     }
 

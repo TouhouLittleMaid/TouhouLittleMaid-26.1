@@ -18,7 +18,7 @@ public class PlayerMaidModel extends EntityMaidModel {
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
         if (smallArms) {
             // TODO: loadNewModel(BedrockModelPOJO) 方法签名已变更，需要传入 BedrockPart 参数
-            // 等待 BedrockModelLoader API 更新后恢复加载逻辑
+            // 等待内部 Bedrock 模型加载 API 更新后恢复加载逻辑
             try (InputStream stream = manager.open(ALEX)) {
                 // TODO: loadNewModel API 签名已变更，需要适配新版本的 BedrockModelPOJO 参数
                 // loadNewModel(CustomPackLoader.GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), BedrockModelPOJO.class));

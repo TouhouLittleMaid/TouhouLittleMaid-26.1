@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.resource.loader;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelParser;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.CustomPackBedrockModelParser;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
@@ -40,7 +40,7 @@ final class MaidPackLoader {
     }
 
     private static void loadMaidModelElement(ResourceAccessor accessor, MaidModelInfo info) {
-        EntityMaidModel modelJson = BedrockModelParser.loadMaidModel(accessor, info.getModel());
+        EntityMaidModel modelJson = CustomPackBedrockModelParser.loadMaidModel(accessor, info.getModel());
         CustomPackLoader.registerTexture(accessor, info.getTexture());
         if (modelJson != null) {
             MaidModelInfo.EasterEgg easterEgg = info.getEasterEgg();
@@ -53,7 +53,7 @@ final class MaidPackLoader {
     }
 
     private static void loadGeckoMaidModelElement(ResourceAccessor accessor, MaidModelInfo info) throws IOException {
-        BedrockModelParser.loadGeckoModelElement(accessor, info, GeckoContainer.Type.MAID);
+        CustomPackBedrockModelParser.loadGeckoModelElement(accessor, info, GeckoContainer.Type.MAID);
         if (info.getEasterEgg() != null && StringUtils.isNotBlank(info.getEasterEgg().getTag())) {
             putEasterEggData(info, null);
         } else {

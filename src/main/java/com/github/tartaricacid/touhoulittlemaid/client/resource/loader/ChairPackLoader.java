@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.resource.loader;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityChairRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelParser;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.CustomPackBedrockModelParser;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
@@ -37,7 +37,7 @@ final class ChairPackLoader {
     }
 
     private static void loadChairModelElement(ResourceAccessor accessor, ChairModelInfo info) {
-        EntityChairModel modelJson = BedrockModelParser.loadChairModel(accessor, info.getModel());
+        EntityChairModel modelJson = CustomPackBedrockModelParser.loadChairModel(accessor, info.getModel());
         CustomPackLoader.registerTexture(accessor, info.getTexture());
         if (modelJson != null) {
             String id = info.getModelId().toString();
@@ -49,7 +49,7 @@ final class ChairPackLoader {
     }
 
     private static void loadGeckoChairModelElement(ResourceAccessor accessor, ChairModelInfo info) throws IOException {
-        BedrockModelParser.loadGeckoModelElement(accessor, info, GeckoContainer.Type.CHAIR);
+        CustomPackBedrockModelParser.loadGeckoModelElement(accessor, info, GeckoContainer.Type.CHAIR);
         CustomPackLoader.CHAIR_MODELS.putInfo(info.getModelId().toString(), info);
     }
 }
