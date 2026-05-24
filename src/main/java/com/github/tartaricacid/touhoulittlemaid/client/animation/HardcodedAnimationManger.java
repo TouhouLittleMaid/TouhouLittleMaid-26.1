@@ -4,10 +4,10 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPa
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.animation.ICustomAnimation;
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.special.SwimAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.special.TridentAnimation;
 import com.github.tartaricacid.touhoulittlemaid.compat.immersivemelodies.client.ImmersiveMelodiesCompat;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,11 +41,11 @@ public final class HardcodedAnimationManger {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void playMaidAnimation(IMaid maid, HashMap<String, BedrockPart> models,
-                                         float limbSwing, float limbSwingAmount, float ageInTicks,
-                                         float netHeadYaw, float headPitch) {
+    public static void playMaidAnimation(EntityMaid maid, HashMap<String, BedrockPart> models,
+                                          float limbSwing, float limbSwingAmount, float ageInTicks,
+                                          float netHeadYaw, float headPitch) {
         for (ICustomAnimation animation : ANIMATIONS) {
-            animation.setRotationAngles(maid.asEntity(), models, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            animation.setRotationAngles(maid, models, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         }
     }
 

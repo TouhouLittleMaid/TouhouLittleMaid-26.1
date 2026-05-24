@@ -81,6 +81,8 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
     public boolean hasBoots;
     public boolean hasBackpack;
     public boolean hurt;
+    public boolean hasFishingHook;
+    public boolean onClimbable;
     @Nullable
     public String taskId;
 
@@ -136,6 +138,8 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
         hasBoots = false;
         hasBackpack = false;
         hurt = false;
+        hasFishingHook = false;
+        onClimbable = false;
         taskId = null;
     }
 }

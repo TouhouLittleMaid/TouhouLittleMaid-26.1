@@ -2,7 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
@@ -22,6 +21,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsComp
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -51,7 +51,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 @SuppressWarnings("rawtypes,unchecked")
-public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, EntityMaidModel> {
+public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRenderState, EntityMaidModel> {
     public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
 
     private static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
@@ -59,7 +59,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
     /**
      * YSM 到时候会把渲染器加入其中
      */
-    public static @Nullable Function<EntityRendererProvider.Context, IGeoEntityRenderer<Mob>> YSM_ENTITY_MAID_RENDERER;
+    public static @Nullable Function<EntityRendererProvider.Context, IGeoEntityRenderer<EntityMaid>> YSM_ENTITY_MAID_RENDERER;
     private final ItemModelResolver itemModelResolver;
     private final BlockModelResolver blockModelResolver;
     /**
@@ -94,7 +94,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
     }
 
     @Override
-    public void extractRenderState(Mob entity, EntityMaidRenderState state, float partialTicks) {
+    public void extractRenderState(EntityMaid entity, EntityMaidRenderState state, float partialTicks) {
         state.clear();
         super.extractRenderState(entity, state, partialTicks);
         ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, itemModelResolver, partialTicks);
@@ -118,22 +118,19 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         state.health = entity.getHealth();
         state.maxHealth = entity.getMaxHealth();
 
-        IMaid maid = IMaid.convert(entity);
-        if (maid == null) {
-            return;
-        }
-
-        state.begging = maid.isBegging();
-        state.swingingArms = maid.isSwingingArms();
-        state.maidInSittingPose = maid.isMaidInSittingPose();
-        state.hasHelmet = maid.hasHelmet();
-        state.hasChestPlate = maid.hasChestPlate();
-        state.hasLeggings = maid.hasLeggings();
-        state.hasBoots = maid.hasBoots();
-        state.hasBackpack = maid.hasBackpack();
-        state.hurt = maid.onHurt();
-        state.taskId = maid.getTask().getUid().getPath();
-        state.modelId = maid.getModelId();
+        state.begging = entity.isBegging();
+        state.swingingArms = entity.isSwingingArms();
+        state.maidInSittingPose = entity.isMaidInSittingPose();
+        state.hasHelmet = !entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty();
+        state.hasChestPlate = !entity.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
+        state.hasLeggings = !entity.getItemBySlot(EquipmentSlot.LEGS).isEmpty();
+        state.hasBoots = !entity.getItemBySlot(EquipmentSlot.FEET).isEmpty();
+        state.hasBackpack = entity.hasBackpack();
+        state.hurt = entity.hurtTime > 0;
+        state.hasFishingHook = entity.hasFishingHook();
+        state.onClimbable = entity.onClimbable();
+        state.taskId = entity.getTask().getUid().getPath();
+        state.modelId = entity.getModelId();
 
         // 卓越前线实体隐藏
         if (SWarfareCompat.shouldHideLivingRender(entity)) {
@@ -148,7 +145,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         // 直接特殊模型解析（替代 RenderMaidEvent 事件流）
         if (!SpecialMaidModelResolver.resolveSpecialModel(state, CustomPackLoader.MAID_MODELS)) {
             // 通过模型 id 获取对应数据
-            String modelId = maid.getModelId();
+            String modelId = state.modelId;
             CustomPackLoader.MAID_MODELS.getModel(modelId).ifPresent(model -> state.bedrockModel = model);
             CustomPackLoader.MAID_MODELS.getInfo(modelId).ifPresent(mainInfo -> state.mainInfo = mainInfo);
             CustomPackLoader.MAID_MODELS.getAnimation(modelId).ifPresent(animations -> state.mainAnimations = animations);
@@ -166,10 +163,8 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
             SimpleHatsCompat.extract(state.simpleHat, headItem);
         }
 
-        var maidEntity = IMaid.convertToMaid(entity);
-
         // 暂定只能女仆显示
-        if (maidEntity != null && MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() && maidEntity.getConfigManager().isChatBubbleShow()) {
+        if (MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() && entity.getConfigManager().isChatBubbleShow()) {
             Vec3 vec3 = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getViewYRot(partialTicks));
             if (vec3 != null) {
                 state.showBubble = true;
@@ -178,28 +173,24 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         }
 
         // 背部物品
-        if (maidEntity != null) {
-            state.showBackpack = maidEntity.getConfigManager().isShowBackpack();
-            if (!entity.isSleeping() && !entity.isInvisible()) {
-                state.backpack = state.showBackpack ? maidEntity.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
-                ItemStack backpackShowingItem = maidEntity.getBackpackShowItem();
-                if (GunClientUtil.isGun(backpackShowingItem)) {
-                    // 目前 26.1 没有枪械模组
-                } else if (backpackShowingItem.getItem() instanceof BannerItem item) {
-                    // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBanner
-                } else {
-                    itemModelResolver.updateForLiving(state.backItem, backpackShowingItem, ItemDisplayContext.FIXED, entity);
-                }
+        state.showBackpack = entity.getConfigManager().isShowBackpack();
+        if (!entity.isSleeping() && !entity.isInvisible()) {
+            state.backpack = state.showBackpack ? entity.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
+            ItemStack backpackShowingItem = entity.getBackpackShowItem();
+            if (GunClientUtil.isGun(backpackShowingItem)) {
+                // 目前 26.1 没有枪械模组
+            } else if (backpackShowingItem.getItem() instanceof BannerItem item) {
+                // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBanner
+            } else {
+                itemModelResolver.updateForLiving(state.backItem, backpackShowingItem, ItemDisplayContext.FIXED, entity);
             }
         }
 
         state.playerVehicle = entity.getVehicle() instanceof Player;
-        if (maidEntity != null) {
-            state.sitting = maidEntity.isMaidInSittingPose();
-        }
+        state.sitting = entity.isMaidInSittingPose();
 
         // 准备各模型类型的状态
-        if (maidEntity != null && maidEntity.isYsmModel()) {
+        if (entity.isYsmModel()) {
             // 还没想好需要什么
             state.modelType = ModelType.YSM;
         }
@@ -219,7 +210,7 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
     }
 
     @Nullable
-    public GeckoMaidEntity<? extends Mob> getGeckoEntity(Mob entity) {
+    public GeckoMaidEntity<? extends EntityMaid> getGeckoEntity(Mob entity) {
         return entity.getData(GeckoMaidEntity.TYPE);
     }
 

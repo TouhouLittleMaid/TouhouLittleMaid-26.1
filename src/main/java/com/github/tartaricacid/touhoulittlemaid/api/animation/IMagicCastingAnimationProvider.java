@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.api.animation;
 
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.AnimationBuilder;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ public interface IMagicCastingAnimationProvider {
      * @return 如果应该播放魔法动画则返回状态对象，否则返回 null
      */
     @Nullable
-    IMagicCastingState getMagicCastingState(IMaid maid);
+    IMagicCastingState getMagicCastingState(EntityMaid maid);
 
     /**
      * 根据当前咏唱状态获取对应的动画构建器
@@ -43,7 +43,7 @@ public interface IMagicCastingAnimationProvider {
      * @return 动画构建器，如果返回 null 则跳过此动画
      */
     @Nullable
-    AnimationBuilder getAnimationBuilder(IMaid maid, IMagicCastingState state);
+    AnimationBuilder getAnimationBuilder(EntityMaid maid, IMagicCastingState state);
 
     /**
      * 获取此 provider 的优先级

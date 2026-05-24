@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatMana
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.data.TaskDataKey;
 import com.github.tartaricacid.touhoulittlemaid.api.event.*;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
@@ -173,7 +172,7 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.MO
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre;
 
-public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMaid {
+public class EntityMaid extends TamableAnimal implements CrossbowAttackMob {
     public static final EntityType<EntityMaid> TYPE = EntityType.Builder.<EntityMaid>of(EntityMaid::new, MobCategory.CREATURE)
             .sized(0.6f, 1.5f).clientTrackingRange(10)
             .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid")));
@@ -1915,7 +1914,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return backpackDelay > 0;
     }
 
-    @Override
     public String getModelId() {
         return this.entityData.get(DATA_MODEL_ID);
     }
@@ -1924,17 +1922,14 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_MODEL_ID, modelId);
     }
 
-    @Override
     public boolean isYsmModel() {
         return this.entityData.get(DATA_IS_YSM_MODEL);
     }
 
-    @Override
     public void setIsYsmModel(boolean isYsmModel) {
         this.entityData.set(DATA_IS_YSM_MODEL, isYsmModel);
     }
 
-    @Override
     public String getYsmModelId() {
         return this.entityData.get(DATA_YSM_MODEL_ID);
     }
@@ -1943,7 +1938,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_YSM_MODEL_ID, modelId);
     }
 
-    @Override
     public String getYsmModelTexture() {
         return this.entityData.get(DATA_YSM_MODEL_TEXTURE);
     }
@@ -1952,7 +1946,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_YSM_MODEL_TEXTURE, texture);
     }
 
-    @Override
     public Component getYsmModelName() {
         return this.entityData.get(DATA_YSM_MODEL_NAME);
     }
@@ -1961,7 +1954,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_YSM_MODEL_NAME, name);
     }
 
-    @Override
     public void setYsmModel(String modelId, String texture, Component name) {
         if (!modelId.equals(this.getYsmModelId())) {
             this.roamingVars = new Object2FloatOpenHashMap<>();
@@ -1972,14 +1964,12 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.setYsmModelName(name);
     }
 
-    @Override
     public void playRouletteAnim(String rouletteAnim) {
         this.rouletteAnimPlaying = true;
         this.rouletteAnim = rouletteAnim;
         this.rouletteAnimDirty = true;
     }
 
-    @Override
     public void stopRouletteAnim() {
         this.rouletteAnimPlaying = false;
         this.rouletteAnimDirty = true;
@@ -1993,12 +1983,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_SOUND_PACK_ID, soundPackId);
     }
 
-    @Override
     public boolean isMaidInSittingPose() {
         return super.isInSittingPose();
     }
 
-    @Override
     public boolean isBegging() {
         return this.entityData.get(DATA_BEGGING);
     }
@@ -2095,7 +2083,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_HUNGER, hunger);
     }
 
-    @Override
     public int getFavorability() {
         return this.entityData.get(DATA_FAVORABILITY);
     }
@@ -2104,7 +2091,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_FAVORABILITY, favorability);
     }
 
-    @Override
     public int getExperience() {
         return this.entityData.get(DATA_EXPERIENCE);
     }
@@ -2121,7 +2107,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_STRUCK_BY_LIGHTNING, isStruck);
     }
 
-    @Override
     public boolean isSwingingArms() {
         return this.entityData.get(DATA_ARM_RISE);
     }
@@ -2159,7 +2144,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return schedulePos;
     }
 
-    @Override
     public ItemStack getBackpackShowItem() {
         return this.entityData.get(BACKPACK_ITEM_SHOW);
     }
@@ -2168,10 +2152,13 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(BACKPACK_ITEM_SHOW, stack);
     }
 
-    @Override
     public IMaidBackpack getMaidBackpackType() {
         Identifier id = Identifier.parse(entityData.get(BACKPACK_TYPE));
         return BackpackManager.findBackpack(id).orElse(BackpackManager.getEmptyBackpack());
+    }
+
+    public boolean hasBackpack() {
+        return !(this.getMaidBackpackType() instanceof EmptyBackpack);
     }
 
     public void setMaidBackpackType(IMaidBackpack backpack) {
@@ -2253,7 +2240,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_INVULNERABLE, isInvulnerable);
     }
 
-    @Override
     public IMaidTask getTask() {
         Identifier uid = Identifier.parse(entityData.get(DATA_TASK));
         return TaskManager.findTask(uid).orElse(TaskManager.getIdleTask());
@@ -2297,7 +2283,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return killRecordManager;
     }
 
-    @Override
     public boolean hasFishingHook() {
         return this.fishing != null;
     }
@@ -2430,17 +2415,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return Ingredient.of(defaultItem);
     }
 
-    @Override
-    public EntityMaid asStrictMaid() {
-        return this;
-    }
-
-    @Override
-    public Mob asEntity() {
-        return this;
-    }
-
-    @Override
     public ItemStack[] getHandItemsForAnimation() {
         return handItemsForAnimation;
     }
