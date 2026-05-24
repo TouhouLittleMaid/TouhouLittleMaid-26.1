@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidM
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.CustomPackBedrockModelParser;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
@@ -63,15 +62,20 @@ final class MaidPackLoader {
 
     @SuppressWarnings("all")
     private static void putEasterEggData(MaidModelInfo info, @Nullable EntityMaidModel modelJson) {
+        String id = info.getModelId().toString();
         var animations = PackLoaderHelper.<EntityMaidRenderState>resolveAnimations(info);
-        CustomPackLoader.MAID_MODELS.putAnimation(info.getModelId().toString(), animations);
 
-        MaidModels.ModelData data = new MaidModels.ModelData(modelJson, info);
+        if (modelJson != null) {
+            CustomPackLoader.MAID_MODELS.putModel(id, modelJson);
+        }
+        CustomPackLoader.MAID_MODELS.putAnimation(id, animations);
+        CustomPackLoader.MAID_MODELS.putInfo(id, info);
+
         var easterEgg = info.getEasterEgg();
         if (easterEgg.isEncrypt()) {
-            CustomPackLoader.MAID_MODELS.putEasterEggEncryptTagModel(easterEgg.getTag(), data);
+            CustomPackLoader.MAID_MODELS.putEasterEggEncryptTagModelId(easterEgg.getTag(), id);
         } else {
-            CustomPackLoader.MAID_MODELS.putEasterEggNormalTagModel(easterEgg.getTag(), data);
+            CustomPackLoader.MAID_MODELS.putEasterEggNormalTagModelId(easterEgg.getTag(), id);
         }
     }
 

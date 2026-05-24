@@ -15,7 +15,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.Lay
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.SpecialMaidModelResolver;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.swarfare.SWarfareCompat;
@@ -49,8 +48,6 @@ import net.minecraft.world.level.block.AbstractSkullBlock;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.function.Function;
 
 @SuppressWarnings("rawtypes,unchecked")
@@ -146,25 +143,15 @@ public class EntityMaidRenderer extends MobRenderer<Mob, EntityMaidRenderState, 
         // 读取默认模型，用于清除不存在模型的缓存残留
         CustomPackLoader.MAID_MODELS.getModel(DEFAULT_MODEL_ID).ifPresent(model -> state.bedrockModel = model);
         CustomPackLoader.MAID_MODELS.getInfo(DEFAULT_MODEL_ID).ifPresent(mainInfo -> state.mainInfo = mainInfo);
+        CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).ifPresent(animations -> state.mainAnimations = animations);
 
         // 直接特殊模型解析（替代 RenderMaidEvent 事件流）
-        Optional<MaidModels.ModelData> resolved = SpecialMaidModelResolver.resolveSpecialModel(state, CustomPackLoader.MAID_MODELS);
-        if (resolved.isPresent()) {
-            MaidModels.ModelData data = resolved.get();
-            EntityMaidModel bedrockModel = data.model();
-            if (bedrockModel != null) {
-                state.bedrockModel = bedrockModel;
-            }
-            state.mainInfo = data.info();
-        } else {
+        if (!SpecialMaidModelResolver.resolveSpecialModel(state, CustomPackLoader.MAID_MODELS)) {
             // 通过模型 id 获取对应数据
-            CustomPackLoader.MAID_MODELS.getModel(maid.getModelId()).ifPresent(model -> state.bedrockModel = model);
-            CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId()).ifPresent(mainInfo -> state.mainInfo = mainInfo);
-        }
-
-        if (state.mainInfo != null) {
-            state.mainAnimations = CustomPackLoader.MAID_MODELS.getAnimation(state.mainInfo.getModelId().toString())
-                    .orElse(Collections.emptyList());
+            String modelId = maid.getModelId();
+            CustomPackLoader.MAID_MODELS.getModel(modelId).ifPresent(model -> state.bedrockModel = model);
+            CustomPackLoader.MAID_MODELS.getInfo(modelId).ifPresent(mainInfo -> state.mainInfo = mainInfo);
+            CustomPackLoader.MAID_MODELS.getAnimation(modelId).ifPresent(animations -> state.mainAnimations = animations);
         }
 
         // 头部物品
