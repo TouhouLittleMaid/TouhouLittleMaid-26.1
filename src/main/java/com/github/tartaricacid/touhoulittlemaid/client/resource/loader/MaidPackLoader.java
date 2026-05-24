@@ -5,22 +5,28 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.Ent
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelParser;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 final class MaidPackLoader {
     private static final Marker MARKER = MarkerManager.getMarker("MaidPackLoader");
+    private static final Type PACK_TYPE = new TypeToken<CustomModelPack<MaidModelInfo>>() {
+    }.getType();
 
     static void loadPack(ResourceAccessor accessor, String domain) {
         PackLoaderHelper.loadPack(
                 CustomPackLoader.MAID_MODELS,
-                accessor, domain, MARKER,
+                accessor, domain,
+                PACK_TYPE, MARKER,
                 MaidPackLoader::loadMaidElement
         );
     }

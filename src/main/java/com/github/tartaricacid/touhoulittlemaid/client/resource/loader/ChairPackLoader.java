@@ -5,19 +5,25 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.Ent
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelParser;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
+import com.google.gson.reflect.TypeToken;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 final class ChairPackLoader {
     private static final Marker MARKER = MarkerManager.getMarker("ChairPackLoader");
+    private static final Type PACK_TYPE = new TypeToken<CustomModelPack<ChairModelInfo>>() {
+    }.getType();
 
     static void loadPack(ResourceAccessor accessor, String domain) {
         PackLoaderHelper.loadPack(
                 CustomPackLoader.CHAIR_MODELS,
-                accessor, domain, MARKER,
+                accessor, domain,
+                PACK_TYPE, MARKER,
                 ChairPackLoader::loadChairElement
         );
     }

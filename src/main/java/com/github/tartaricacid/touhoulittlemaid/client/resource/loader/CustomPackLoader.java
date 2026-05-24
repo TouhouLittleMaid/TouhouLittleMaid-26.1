@@ -10,27 +10,24 @@ import com.github.tartaricacid.touhoulittlemaid.util.IdentifierAdapter;
 import com.github.tartaricacid.touhoulittlemaid.util.ZipFileCheck;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
+import net.neoforged.fml.loading.FMLPaths;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 
 public class CustomPackLoader {
     public static final Gson GSON = new GsonBuilder()
-            .registerTypeHierarchyAdapter(Identifier.class, new IdentifierAdapter())
+            .registerTypeAdapter(Identifier.class, new IdentifierAdapter())
             .registerTypeAdapter(CubesItem.class, new CubesItem.Deserializer())
             .create();
 
-    public static final Path PACK_FOLDER = Paths
-            .get(Minecraft.getInstance().gameDirectory.toURI())
-            .resolve("tlm_custom_pack");
+    public static final Path PACK_FOLDER = FMLPaths.GAMEDIR.get().resolve("tlm_custom_pack");
 
     public static final MaidModels MAID_MODELS = MaidModels.getInstance();
     public static final ChairModels CHAIR_MODELS = ChairModels.getInstance();

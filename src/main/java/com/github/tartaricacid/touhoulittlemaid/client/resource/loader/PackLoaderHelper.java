@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.models.AbstractC
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.IModelInfo;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.Marker;
@@ -15,6 +14,7 @@ import org.apache.logging.log4j.Marker;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ final class PackLoaderHelper {
             AbstractClientModels<M, I, A> models,
             ResourceAccessor accessor,
             String domain,
+            Type packType,
             Marker marker,
             ModelElementConsumer<I> elementConsumer
     ) {
@@ -45,8 +46,8 @@ final class PackLoaderHelper {
         try (InputStream stream = accessor.open(path)) {
             CustomModelPack<I> pack = CustomPackLoader.GSON.fromJson(
                     new InputStreamReader(stream, StandardCharsets.UTF_8),
-                    new TypeToken<CustomModelPack<I>>() {
-                    }.getType());
+                    packType
+            );
 
             pack.decorate(domain);
 
