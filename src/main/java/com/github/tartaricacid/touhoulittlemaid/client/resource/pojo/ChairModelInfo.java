@@ -9,6 +9,7 @@ import net.minecraft.util.Mth;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ChairModelInfo implements IModelInfo {
@@ -16,63 +17,39 @@ public class ChairModelInfo implements IModelInfo {
     private static final float RENDER_ENTITY_SCALE_MAX = 2.0f;
     private static final String GECKO_ANIMATION = ".json";
 
-    @SerializedName("name")
-    private String name;
-
-    @SerializedName("description")
-    private List<String> description;
-
-    @SerializedName("model")
-    private Identifier model;
-
-    @SerializedName("texture")
-    private Identifier texture;
-
-    @SerializedName("extra_textures")
-    private List<Identifier> extraTextures;
-
-    @SerializedName("model_id")
-    private Identifier modelId;
-
-    @SerializedName("render_item_scale")
-    private float renderItemScale = 1.0f;
-
-    @SerializedName("render_entity_scale")
-    private float renderEntityScale = 1.0f;
-
-    @SerializedName("animation")
-    private List<Identifier> animation;
-
-    @SerializedName("mounted_height")
-    private float mountedYOffset;
-
-    @SerializedName("tameable_can_ride")
-    private boolean tameableCanRide = true;
-
-    @SerializedName("no_gravity")
-    private boolean noGravity = false;
-
-    @SerializedName("is_gecko")
-    private boolean isGeckoModel = false;
+    private @SerializedName("name") @Nullable String name;
+    private @SerializedName("description") @Nullable List<String> description;
+    private @SerializedName("model") @Nullable Identifier model;
+    private @SerializedName("texture") @Nullable Identifier texture;
+    private @SerializedName("extra_textures") @Nullable List<Identifier> extraTextures;
+    private @SerializedName("model_id") @Nullable Identifier modelId;
+    private @SerializedName("render_item_scale") float renderItemScale = 1.0f;
+    private @SerializedName("render_entity_scale") float renderEntityScale = 1.0f;
+    private @SerializedName("animation") @Nullable List<Identifier> animation;
+    private @SerializedName("mounted_height") float mountedYOffset;
+    private @SerializedName("tameable_can_ride") boolean tameableCanRide = true;
+    private @SerializedName("no_gravity") boolean noGravity = false;
+    private @SerializedName("is_gecko") boolean isGeckoModel = false;
 
     @Override
     public Identifier getTexture() {
-        return texture;
+        return Objects.requireNonNull(texture, "texture must be decorated before access");
     }
 
     @Override
+    @Nullable
     public List<Identifier> getExtraTextures() {
         return extraTextures;
     }
 
     @Override
     public String getName() {
-        return name;
+        return Objects.requireNonNull(name, "name must be decorated before access");
     }
 
     @Override
     public List<String> getDescription() {
-        return description;
+        return Objects.requireNonNull(description, "description must be decorated before access");
     }
 
     @Override
@@ -83,12 +60,12 @@ public class ChairModelInfo implements IModelInfo {
 
     @Override
     public Identifier getModelId() {
-        return modelId;
+        return Objects.requireNonNull(modelId, "modelId must be decorated before access");
     }
 
     @Override
     public Identifier getModel() {
-        return model;
+        return Objects.requireNonNull(model, "model must be decorated before access");
     }
 
     @Override

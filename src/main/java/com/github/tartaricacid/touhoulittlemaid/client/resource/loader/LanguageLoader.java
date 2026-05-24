@@ -30,19 +30,20 @@ public class LanguageLoader {
     private static final String REMOVE_KEY = "subtitle.touhou_little_maid.other.credit";
     private static final Gson GSON = new Gson();
 
-    public static void clear() {
-        LANG_CACHE.clear();
-    }
-
     public static Map<String, String> getLanguages(String code) {
         return LANG_CACHE.get(code);
     }
 
-    public static void loadDownloadInfoLanguages() {
-        InfoGetManager.DOWNLOAD_INFO_LIST_ALL.forEach(info -> LanguageLoader.getLanguageMap(info.getLanguages()));
+    static void clear() {
+        LANG_CACHE.clear();
     }
 
-    public static void readLanguageFile(ZipFile zipFile, String filePath) throws IOException {
+    static void loadDownloadInfoLanguages() {
+        InfoGetManager.DOWNLOAD_INFO_LIST_ALL.forEach(info ->
+                LanguageLoader.getLanguageMap(info.getLanguages()));
+    }
+
+    static void readLanguageFile(ZipFile zipFile, String filePath) throws IOException {
         Matcher matcher = LANG_PATTERN.matcher(filePath);
         if (matcher.find()) {
             String languageCode = matcher.group(1);
@@ -51,8 +52,12 @@ public class LanguageLoader {
         }
     }
 
-    public static void readLanguageFile(Path rootPath, String namespace) throws IOException {
-        File[] languageFiles = rootPath.resolve("assets").resolve(namespace).resolve("lang").toFile().listFiles((dir, name) -> true);
+    static void readLanguageFile(Path rootPath, String namespace) throws IOException {
+        File[] languageFiles = rootPath.resolve("assets")
+                .resolve(namespace)
+                .resolve("lang")
+                .toFile()
+                .listFiles((dir, name) -> true);
         if (languageFiles == null) {
             return;
         }
@@ -63,7 +68,7 @@ public class LanguageLoader {
         }
     }
 
-    public static void getLanguageMap(HashMap<String, HashMap<String, String>> langMap) {
+    private static void getLanguageMap(HashMap<String, HashMap<String, String>> langMap) {
         for (String languageCode : langMap.keySet()) {
             LANG_CACHE.putIfAbsent(languageCode, Maps.newHashMap());
             Map<String, String> languages = LANG_CACHE.get(languageCode);
@@ -71,7 +76,8 @@ public class LanguageLoader {
         }
     }
 
-    private static void getLanguageMap(ZipFile zipFile, Map<String, String> langData, String filePath, boolean newFormat) throws IOException {
+    private static void getLanguageMap(ZipFile zipFile, Map<String, String> langData,
+                                       String filePath, boolean newFormat) throws IOException {
         ZipEntry entry = zipFile.getEntry(filePath);
         if (entry == null) {
             return;
@@ -92,12 +98,17 @@ public class LanguageLoader {
         }
     }
 
-    private static void readLanguages(Map<String, String> langData, InputStream stream, boolean newFormat) throws IOException {
+    private static void readLanguages(Map<String, String> langData, InputStream stream,
+                                      boolean newFormat) throws IOException {
+        // 新格式，即 json 格式，直接读取成键值对
         if (newFormat) {
-            Map<String, String> result = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), new TypeToken<>() {
-            });
+            Map<String, String> result = GSON.fromJson(
+                    new InputStreamReader(stream, StandardCharsets.UTF_8),
+                    new TypeToken<>() {
+                    });
             langData.putAll(result);
         } else {
+            // 旧格式，也就是 1.12.2 之前的 = 分割的语言文件
             List<String> lines = IOUtils.readLines(stream, StandardCharsets.UTF_8);
             for (String str : lines) {
                 if (str.startsWith(COMMENT_SYMBOL)) {

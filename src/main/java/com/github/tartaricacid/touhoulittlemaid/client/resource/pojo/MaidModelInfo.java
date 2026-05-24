@@ -11,87 +11,52 @@ import net.minecraft.util.Mth;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MaidModelInfo implements IModelInfo {
     public static final String ENCRYPT_EGG_NAME = "{gui.touhou_little_maid.model_gui.easter_egg.encrypt}";
     public static final String NORMAL_EGG_NAME = "{gui.touhou_little_maid.model_gui.easter_egg.normal}";
+
     private static final float RENDER_ENTITY_SCALE_MIN = 0.2f;
     private static final float RENDER_ENTITY_SCALE_MAX = 2.0f;
+
     private static final String GECKO_ANIMATION = ".json";
 
-    @SerializedName("name")
-    private String name;
-
-    @SerializedName("description")
-    private List<String> description;
-
-    @SerializedName("model")
-    private Identifier model;
-
-    @SerializedName("texture")
-    private Identifier texture;
-
-    @SerializedName("extra_textures")
-    private List<Identifier> extraTextures;
-
-    @SerializedName("model_id")
-    private Identifier modelId;
-
-    @SerializedName("use_sound_pack_id")
-    private String useSoundPackId;
-
-    @SerializedName("render_item_scale")
-    private float renderItemScale = 1.0f;
-
-    @SerializedName("render_entity_scale")
-    private float renderEntityScale = 1.0f;
-
-    @SerializedName("animation")
-    private List<Identifier> animation;
-
-    @SerializedName("show_hata")
-    private boolean showHata = true;
-
-    @SerializedName("show_backpack")
-    private boolean showBackpack = true;
-
-    @SerializedName("show_custom_head")
-    private boolean showCustomHead = true;
-
-    @SerializedName("can_hold_trolley")
-    private boolean canHoldTrolley = true;
-
-    @SerializedName("can_hold_vehicle")
-    private boolean canHoldVehicle = true;
-
-    @SerializedName("can_riding_broom")
-    private boolean canRidingBroom = true;
-
-    @SerializedName("easter_egg")
-    private EasterEgg easterEgg = null;
-
-    @SerializedName("is_gecko")
-    private boolean isGeckoModel = false;
+    private @SerializedName("name") @Nullable String name;
+    private @SerializedName("description") @Nullable List<String> description;
+    private @SerializedName("model") @Nullable Identifier model;
+    private @SerializedName("texture") @Nullable Identifier texture;
+    private @SerializedName("extra_textures") @Nullable List<Identifier> extraTextures;
+    private @SerializedName("model_id") @Nullable Identifier modelId;
+    private @SerializedName("use_sound_pack_id") @Nullable String useSoundPackId;
+    private @SerializedName("render_item_scale") float renderItemScale = 1.0f;
+    private @SerializedName("render_entity_scale") float renderEntityScale = 1.0f;
+    private @SerializedName("animation") @Nullable List<Identifier> animation;
+    private @SerializedName("show_backpack") boolean showBackpack = true;
+    private @SerializedName("show_custom_head") boolean showCustomHead = true;
+    private @SerializedName("easter_egg") @Nullable EasterEgg easterEgg = null;
+    private @SerializedName("is_gecko") boolean isGeckoModel = false;
 
     @Override
     public Identifier getTexture() {
-        return texture;
+        return Objects.requireNonNull(texture, "texture must be decorated before access");
     }
 
     @Override
+    @Nullable
     public List<Identifier> getExtraTextures() {
         return extraTextures;
     }
 
     @Override
     public String getName() {
-        return name;
+        return Objects.requireNonNull(name, "name must be decorated before access");
     }
 
     @Override
     public List<String> getDescription() {
-        return description;
+        return Objects.requireNonNull(description, "description must be decorated before access");
     }
 
     @Override
@@ -102,7 +67,7 @@ public class MaidModelInfo implements IModelInfo {
 
     @Override
     public Identifier getModelId() {
-        return modelId;
+        return Objects.requireNonNull(modelId, "modelId must be decorated before access");
     }
 
     @Nullable
@@ -112,7 +77,7 @@ public class MaidModelInfo implements IModelInfo {
 
     @Override
     public Identifier getModel() {
-        return model;
+        return Objects.requireNonNull(model, "model must be decorated before access");
     }
 
     @Override
@@ -129,32 +94,12 @@ public class MaidModelInfo implements IModelInfo {
         return renderEntityScale;
     }
 
-    @Deprecated
-    public boolean isShowHata() {
-        return showHata;
-    }
-
     public boolean isShowBackpack() {
         return showBackpack;
     }
 
     public boolean isShowCustomHead() {
         return showCustomHead;
-    }
-
-    @Deprecated
-    public boolean isCanHoldTrolley() {
-        return canHoldTrolley;
-    }
-
-    @Deprecated
-    public boolean isCanHoldVehicle() {
-        return canHoldVehicle;
-    }
-
-    @Deprecated
-    public boolean isCanRidingBroom() {
-        return canRidingBroom;
     }
 
     @Nullable
@@ -175,12 +120,8 @@ public class MaidModelInfo implements IModelInfo {
         cloneInfo.renderItemScale = this.renderItemScale;
         cloneInfo.renderEntityScale = this.renderEntityScale;
         cloneInfo.animation = this.animation;
-        cloneInfo.showHata = this.showHata;
         cloneInfo.showBackpack = this.showBackpack;
         cloneInfo.showCustomHead = this.showCustomHead;
-        cloneInfo.canHoldTrolley = this.canHoldTrolley;
-        cloneInfo.canHoldVehicle = this.canHoldVehicle;
-        cloneInfo.canRidingBroom = this.canRidingBroom;
         cloneInfo.easterEgg = this.easterEgg;
         cloneInfo.isGeckoModel = this.isGeckoModel;
         return cloneInfo;
@@ -191,7 +132,7 @@ public class MaidModelInfo implements IModelInfo {
     public MaidModelInfo decorate() {
         // description 设置为空列表
         if (description == null) {
-            description = Collections.EMPTY_LIST;
+            description = Collections.emptyList();
         }
         // 如果 model_id 为空，抛出异常
         if (modelId == null) {
@@ -220,7 +161,9 @@ public class MaidModelInfo implements IModelInfo {
             if (animation == null || animation.isEmpty()) {
                 animation = ReferenceLists.emptyList();
             } else {
-                animation = animation.stream().filter(res -> res.getPath().endsWith(GECKO_ANIMATION)).collect(Collectors.toList());
+                animation = animation.stream()
+                        .filter(res -> res.getPath().endsWith(GECKO_ANIMATION))
+                        .collect(Collectors.toList());
             }
         } else {
             if (animation == null || animation.isEmpty()) {
@@ -248,11 +191,8 @@ public class MaidModelInfo implements IModelInfo {
     }
 
     public static class EasterEgg {
-        @SerializedName("encrypt")
-        private boolean encrypt = false;
-
-        @SerializedName("tag")
-        private String tag = "";
+        private @SerializedName("encrypt") boolean encrypt = false;
+        private @SerializedName("tag") String tag = "";
 
         public boolean isEncrypt() {
             return encrypt;

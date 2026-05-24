@@ -13,37 +13,20 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class CustomModelPack<T extends IModelInfo> {
-    @Expose(serialize = false, deserialize = false)
-    private String id = "";
-
-    @SerializedName("date")
-    private String date;
-
-    @SerializedName("model_list")
-    private List<T> modelList;
-
-    @SerializedName("pack_name")
-    private String packName;
-
-    @SerializedName("author")
-    private List<String> author;
-
-    @SerializedName("description")
-    private List<String> description;
-
-    @SerializedName("version")
-    private String version;
-
-    @SerializedName("icon")
-    private Identifier icon;
-    @SerializedName("icon_delay")
-    private int iconDelay = 2;
-    @Expose(deserialize = false)
-    private AnimationState iconAnimation = AnimationState.UNCHECK;
-    @Expose(deserialize = false)
-    private int iconAspectRatio = 1;
+    private @Expose(serialize = false, deserialize = false) String id = "";
+    private @SerializedName("date") @Nullable String date;
+    private @SerializedName("model_list") @Nullable List<T> modelList;
+    private @SerializedName("pack_name") @Nullable String packName;
+    private @SerializedName("author") @Nullable List<String> author;
+    private @SerializedName("description") @Nullable List<String> description;
+    private @SerializedName("version") @Nullable String version;
+    private @SerializedName("icon") @Nullable Identifier icon;
+    private @SerializedName("icon_delay") int iconDelay = 2;
+    private @Expose(deserialize = false) AnimationState iconAnimation = AnimationState.UNCHECK;
+    private @Expose(deserialize = false) int iconAspectRatio = 1;
 
     public String getId() {
         return id;
@@ -55,19 +38,19 @@ public class CustomModelPack<T extends IModelInfo> {
     }
 
     public List<T> getModelList() {
-        return modelList;
+        return Objects.requireNonNull(modelList, "modelList must be decorated before access");
     }
 
     public String getPackName() {
-        return packName;
+        return Objects.requireNonNull(packName, "packName must be decorated before access");
     }
 
     public List<String> getAuthor() {
-        return author;
+        return Objects.requireNonNull(author, "author must be decorated before access");
     }
 
     public List<String> getDescription() {
-        return description;
+        return Objects.requireNonNull(description, "description must be decorated before access");
     }
 
     @Nullable
@@ -130,6 +113,7 @@ public class CustomModelPack<T extends IModelInfo> {
 
         // 为此包的模型对象进行二次修饰
         modelList.forEach(T::decorate);
+
         // 多材质模型拆分
         List<T> newModelList = Lists.newArrayList();
         for (T item : modelList) {
