@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.transfer.IndexModifier;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.StacksResourceHandler;
@@ -76,6 +77,9 @@ public final class ItemsUtil {
     public static ItemStack extractItem(ResourceHandler<ItemResource> itemHandler, int index, int amount, boolean simulate, @Nullable TransactionContext parent) {
         try (Transaction tx = Transaction.open(parent)) {
             ItemResource resource = itemHandler.getResource(index);
+            if (resource.isEmpty()) {
+                return ItemStack.EMPTY;
+            }
             int extracted = itemHandler.extract(index, resource, amount, tx);
             if (!simulate) {
                 tx.commit();
@@ -315,5 +319,10 @@ public final class ItemsUtil {
 
     public static ItemStacksResourceHandler createDummyHandler(List<ItemStack> stack) {
         return new ItemStacksResourceHandler(NonNullList.copyOf(stack));
+    }
+
+    public static IndexModifier<ItemResource> createIndexModifier(ResourceHandler<ItemResource> handler) {
+        return (index, resource, amount) ->
+                setStackInSlot(handler, index, resource.isEmpty() || amount <= 0 ? ItemStack.EMPTY : resource.toStack(amount));
     }
 }
