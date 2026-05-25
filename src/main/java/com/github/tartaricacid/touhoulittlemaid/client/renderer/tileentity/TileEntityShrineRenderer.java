@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.ShrineRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityShrine;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -31,7 +31,7 @@ public class TileEntityShrineRenderer implements BlockEntityRenderer<TileEntityS
     private final ItemModelResolver itemModelResolver;
 
     public TileEntityShrineRenderer(BlockEntityRendererProvider.Context context) {
-        model = BedrockModelLoader.getModel(BedrockModelLoader.SHRINE);
+        model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.SHRINE);
         itemModelResolver = context.itemModelResolver();
     }
 

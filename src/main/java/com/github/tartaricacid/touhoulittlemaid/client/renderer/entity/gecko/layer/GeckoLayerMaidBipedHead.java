@@ -3,7 +3,6 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.la
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeoLayerRenderer;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoLocatorType;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,7 +19,7 @@ public class GeckoLayerMaidBipedHead implements GeoLayerRenderer<EntityMaidRende
     }
 
     @Override
-    public void submit(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, AnimationEvent<?> event, EntityMaidRenderState state, GeckoMaidRenderData data, CameraRenderState camera) {
+    public void submit(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, EntityMaidRenderState state, GeckoMaidRenderData data, CameraRenderState camera) {
         var headSkull = state.headSkull != null;
         var headBlock = !state.headBlock.isEmpty();
         var simpleHat = !state.simpleHat.isEmpty();

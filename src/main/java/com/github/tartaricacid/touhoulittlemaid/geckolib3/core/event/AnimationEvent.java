@@ -2,13 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event;
 
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.controller.CodedAnimationController;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContext;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.model.provider.data.EntityModelData;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import org.jetbrains.annotations.NotNull;
 
-public class AnimationEvent<T extends AnimatableEntity<?>> implements AutoCloseable {
+public class AnimationEvent<T extends AnimatableEntity<?>>  {
     private final T animatable;
     private final float limbSwing;
     private final float limbSwingAmount;
@@ -20,8 +19,6 @@ public class AnimationEvent<T extends AnimatableEntity<?>> implements AutoClosea
     private final EntityModelData extraData;
     private final EntityRenderState renderState;
     protected CodedAnimationController<T> codedController;
-    private GeckoRenderData data;
-    private boolean closed;
 
     public AnimationEvent(T animatable,
                           float limbSwing, float limbSwingAmount,
@@ -96,26 +93,5 @@ public class AnimationEvent<T extends AnimatableEntity<?>> implements AutoClosea
     @NotNull
     public EntityModelData getExtraData() {
         return extraData;
-    }
-
-    public GeckoRenderData getRenderData() {
-        return data;
-    }
-
-    public void setRenderData(GeckoRenderData data) {
-        this.data = data;
-    }
-
-    @Override
-    public void close() {
-        if (data != null) {
-            animatable.returnModelState(renderContext, data.modelState);
-            data = null;
-            closed = true;
-        }
-    }
-
-    public boolean isClosed() {
-        return closed;
     }
 }

@@ -1,9 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
+import org.jetbrains.annotations.Debug;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
+@Debug.Renderer(text = "name + (locatorType != null ? (\" \" + locatorType.name) : \"\")")
 public class GeoBone {
     private static final String GLOWING_PREFIX = "ysmGlow";
 
@@ -17,14 +18,15 @@ public class GeoBone {
     private final int traverseOrder;
     private final int depth;
     private final int subTreeSize;
+    @Nullable
     private final GeoLocatorType locatorType;
 
     private final boolean glow;
 
-    public GeoBone(String name, Vector3f pivot, Vector3f initialRotation, GeoMesh mesh,
+    public GeoBone(String name, int pooledName, Vector3f pivot, Vector3f initialRotation, GeoMesh mesh,
                    int traverseOrder, int depth, int subTreeSize, @Nullable GeoLocatorType locatorType) {
         this.name = name;
-        this.pooledName = StringPool.computeIfAbsent(name);
+        this.pooledName = pooledName;
 
         this.pivot = pivot;
         this.initialRotation = initialRotation;

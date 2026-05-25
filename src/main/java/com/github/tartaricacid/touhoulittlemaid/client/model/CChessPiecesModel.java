@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.util.Unit;
@@ -13,7 +13,7 @@ public class CChessPiecesModel {
     private final BedrockPart main;
 
     public CChessPiecesModel(String name) {
-        SimpleBedrockModel<Unit> model = BedrockModelLoader.getModel(BedrockModelLoader.CCHESS_PIECES);
+        SimpleBedrockModel<Unit> model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.CCHESS_PIECES);
         this.main = Objects.requireNonNull(model).getPart(name);
     }
 

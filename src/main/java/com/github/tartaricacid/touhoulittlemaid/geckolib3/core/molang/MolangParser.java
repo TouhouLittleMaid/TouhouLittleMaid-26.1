@@ -28,19 +28,7 @@ public class MolangParser {
         try {
             return parseExpressionUnsafe(molangExpression, isUserFunc);
         } catch (Exception e) {
-            /* 暂时没有调试屏幕
-            if (DebugAnimationScreen.isEnabled()) {
-                YesSteveModel.LOGGER.error("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
-                CustomDebugSource.INSTANCE.print(Component.translatable("error.yes_steve_model.parse_molang_exp")
-                                .append(e.getMessage())
-                                .append("\n----------------------\n")
-                                .append(molangExpression.replace("\r\n", "\n").replace("\r", "\n"))
-                                .append("\n----------------------"));
-            } else
-            */
-            {
-                TouhouLittleMaid.LOGGER.debug("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
-            }
+            TouhouLittleMaid.LOGGER.debug("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
             return FloatValue.ZERO;
         }
     }

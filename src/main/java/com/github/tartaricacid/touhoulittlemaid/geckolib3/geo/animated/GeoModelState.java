@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.extended.Matrix4fAccessor;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoBone;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoLocatorType;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoModel;
@@ -47,7 +46,7 @@ public final class GeoModelState {
         for (var boneIndex : boneIndices) {
             var bone = bones.get(Short.toUnsignedInt(boneIndex));
             var offset = bone.traverseOrder() * GeoModelStateExtractor.STRIDE;
-            ((Matrix4fAccessor) transform).tlm$readTransform(data, offset);
+            transform.set(data, offset);
             visitor.accept(bone, transform);
         }
     }
@@ -66,9 +65,11 @@ public final class GeoModelState {
     public void visitLocatorGroup(GeoLocatorType type, PoseStack poseStack, Consumer<PoseStack> visitor) {
         var group = activeLocatorGroups.get(type.getSeq());
         if (!group.isEmpty()) {
-            visit(renderBoneIndices, (_, transform) -> {
+            visit(renderBoneIndices, (bone, transform) -> {
                 poseStack.pushPose();
                 poseStack.mulPose(transform);
+                var pivot = bone.pivot();
+                poseStack.translate(pivot.x / 16, pivot.y / 16, pivot.z / 16);
                 visitor.accept(poseStack);
                 poseStack.popPose();
             });

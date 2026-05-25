@@ -12,15 +12,15 @@ import java.util.Optional;
 public final class MaidModels extends AbstractClientModels<EntityMaidModel, MaidModelInfo, EntityMaidRenderState> {
     private static @Nullable MaidModels INSTANCE;
     /**
-     * 彩蛋模型
+     * 彩蛋模型，用彩蛋的 tag 命中某个已有模型
      */
-    private final HashMap<String, ModelData> easterEggNormalTagModelMap;
-    private final HashMap<String, ModelData> easterEggEncryptTagModelMap;
+    private final HashMap<String, String> easterEggNormalTagModelIdMap;
+    private final HashMap<String, String> easterEggEncryptTagModelIdMap;
 
     private MaidModels() {
         super("maid_model.json", DefaultPackConstant.MAID_SORT);
-        this.easterEggNormalTagModelMap = Maps.newHashMap();
-        this.easterEggEncryptTagModelMap = Maps.newHashMap();
+        this.easterEggNormalTagModelIdMap = Maps.newHashMap();
+        this.easterEggEncryptTagModelIdMap = Maps.newHashMap();
     }
 
     public static MaidModels getInstance() {
@@ -33,30 +33,27 @@ public final class MaidModels extends AbstractClientModels<EntityMaidModel, Maid
     @Override
     public void clearAll() {
         super.clearAll();
-        this.easterEggNormalTagModelMap.clear();
-        this.easterEggEncryptTagModelMap.clear();
+        this.easterEggNormalTagModelIdMap.clear();
+        this.easterEggEncryptTagModelIdMap.clear();
     }
 
     public boolean containsInfo(String modelId) {
         return idInfoMap.containsKey(modelId);
     }
 
-    public Optional<ModelData> getEasterEggNormalTagModel(String tag) {
-        return Optional.ofNullable(this.easterEggNormalTagModelMap.get(tag));
+    public Optional<String> getEasterEggNormalTagModelId(String tag) {
+        return Optional.ofNullable(this.easterEggNormalTagModelIdMap.get(tag));
     }
 
-    public Optional<ModelData> getEasterEggEncryptTagModel(String tag) {
-        return Optional.ofNullable(this.easterEggEncryptTagModelMap.get(tag));
+    public Optional<String> getEasterEggEncryptTagModelId(String tag) {
+        return Optional.ofNullable(this.easterEggEncryptTagModelIdMap.get(tag));
     }
 
-    public void putEasterEggNormalTagModel(String tag, ModelData data) {
-        this.easterEggNormalTagModelMap.put(tag, data);
+    public void putEasterEggNormalTagModelId(String tag, String modelId) {
+        this.easterEggNormalTagModelIdMap.put(tag, modelId);
     }
 
-    public void putEasterEggEncryptTagModel(String tag, ModelData data) {
-        this.easterEggEncryptTagModelMap.put(tag, data);
-    }
-
-    public record ModelData(@Nullable EntityMaidModel model, MaidModelInfo info) {
+    public void putEasterEggEncryptTagModelId(String tag, String modelId) {
+        this.easterEggEncryptTagModelIdMap.put(tag, modelId);
     }
 }

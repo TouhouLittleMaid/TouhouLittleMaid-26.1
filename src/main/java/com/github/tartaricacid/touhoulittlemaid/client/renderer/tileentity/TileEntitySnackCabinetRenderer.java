@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockSnackCabinet;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.SnackCabinetRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntitySnackCabinet;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -28,7 +28,7 @@ public class TileEntitySnackCabinetRenderer implements BlockEntityRenderer<TileE
     private final BedrockPart half;
 
     public TileEntitySnackCabinetRenderer(BlockEntityRendererProvider.Context context) {
-        this.model = BedrockModelLoader.getModel(BedrockModelLoader.SNACK_CABINET);
+        this.model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.SNACK_CABINET);
         this.full = this.model.getPart("full");
         this.half = this.model.getPart("half");
     }

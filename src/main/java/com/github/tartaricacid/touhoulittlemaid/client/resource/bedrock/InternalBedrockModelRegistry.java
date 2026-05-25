@@ -18,13 +18,13 @@ import java.util.function.Function;
 /**
  * 把所有硬编码的模型全部资源包化，方便资源包替换模型
  */
-public class BedrockModelLoader {
+public final class InternalBedrockModelRegistry {
     // 普通模型，即继承了 Model 的类，主要用于方块实体渲染
     public static final Map<Identifier, Function<InputStream, ? extends SimpleBedrockModel<?>>> MODELS = Maps.newHashMap();
     // 实体模型，即继承了 EntityModel 的类，主要用于实体渲染
     public static final Map<Identifier, Function<InputStream, ? extends SimpleBedrockEntityModel<? extends EntityRenderState>>> ENTITY_MODELS = Maps.newHashMap();
 
-    // 注册数据
+    // 方块类基岩版模型数据
     public static final Identifier ALTAR = addModel("altar");
     public static final Identifier BOOKSHELF = addModel("bookshelf");
     public static final Identifier COMPUTER = addModel("computer");
@@ -41,6 +41,15 @@ public class BedrockModelLoader {
     public static final Identifier WCHESS_PIECES = addModel("wchess_pieces");
     public static final Identifier SNACK_CABINET = addModel("snack_cabinet");
 
+    public static final Identifier PINK_MAID_BED = addModel("maid_bed/pink");
+    public static final Identifier WHITE_MAID_BED = addModel("maid_bed/white");
+    public static final Identifier BLACK_MAID_BED = addModel("maid_bed/black");
+    public static final Identifier YELLOW_MAID_BED = addModel("maid_bed/yellow");
+    public static final Identifier BLUE_MAID_BED = addModel("maid_bed/blue");
+    public static final Identifier GREEN_MAID_BED = addModel("maid_bed/green");
+    public static final Identifier PURPLE_MAID_BED = addModel("maid_bed/purple");
+
+    // 实体类基岩版模型
     public static final Identifier CAKE_BOX = addEntityModel("cake_box", EntityBoxModel::new);
     public static final Identifier MAID_FAIRY = addEntityModel("maid_fairy", EntityFairyModel::new);
     public static final Identifier NEW_MAID_FAIRY = addEntityModel("new_maid_fairy", NewEntityFairyModel::new);
@@ -59,14 +68,6 @@ public class BedrockModelLoader {
     public static final Identifier MIDDLE_BACKPACK = addEntityModel("backpack/middle_backpack");
     public static final Identifier SMALL_BACKPACK = addEntityModel("backpack/small_backpack");
     public static final Identifier TANK_BACKPACK = addEntityModel("backpack/tank_backpack");
-
-    public static final Identifier PINK_MAID_BED = addModel("maid_bed/pink");
-    public static final Identifier WHITE_MAID_BED = addModel("maid_bed/white");
-    public static final Identifier BLACK_MAID_BED = addModel("maid_bed/black");
-    public static final Identifier YELLOW_MAID_BED = addModel("maid_bed/yellow");
-    public static final Identifier BLUE_MAID_BED = addModel("maid_bed/blue");
-    public static final Identifier GREEN_MAID_BED = addModel("maid_bed/green");
-    public static final Identifier PURPLE_MAID_BED = addModel("maid_bed/purple");
 
     public static Identifier addModel(String name) {
         Identifier location = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/" + name);
@@ -94,11 +95,17 @@ public class BedrockModelLoader {
 
     @SuppressWarnings("unchecked")
     public static <T> SimpleBedrockModel<T> getModel(Identifier location) {
-        return (SimpleBedrockModel<T>) BedrockEntityModelRegister.INSTANCE.getModel(location);
+        if (InternalBedrockModelManager.INSTANCE == null) {
+            throw new IllegalStateException("Internal bedrock model manager is not initialized yet");
+        }
+        return (SimpleBedrockModel<T>) InternalBedrockModelManager.INSTANCE.getModel(location);
     }
 
     @SuppressWarnings("unchecked")
     public static <T extends EntityRenderState> SimpleBedrockEntityModel<T> getEntityModel(Identifier location) {
-        return (SimpleBedrockEntityModel<T>) BedrockEntityModelRegister.INSTANCE.getEntityModel(location);
+        if (InternalBedrockModelManager.INSTANCE == null) {
+            throw new IllegalStateException("Internal bedrock model manager is not initialized yet");
+        }
+        return (SimpleBedrockEntityModel<T>) InternalBedrockModelManager.INSTANCE.getEntityModel(location);
     }
 }

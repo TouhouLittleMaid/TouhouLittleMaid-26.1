@@ -38,7 +38,6 @@ public record MaidModelPackage(int id, Identifier modelId) implements CustomPack
                 Entity entity = sender.level.getEntity(message.id);
                 if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
                     if (sender.isCreative() || MaidConfig.MAID_CHANGE_MODEL.get()) {
-                        maid.setIsYsmModel(false);
                         maid.setModelId(message.modelId.toString());
                         InitTrigger.MAID_EVENT.get().trigger(sender, TriggerType.CHANGE_MAID_MODEL);
                     } else {

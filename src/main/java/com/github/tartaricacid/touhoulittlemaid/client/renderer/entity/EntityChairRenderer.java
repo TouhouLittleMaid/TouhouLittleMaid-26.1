@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoChairEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityChairRenderer;
@@ -9,6 +8,8 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.Ent
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -46,11 +47,11 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void extractRenderState(EntityChair chair, EntityChairRenderState state, float partialTicks) {
         state.clear();
         super.extractRenderState(chair, state, partialTicks);
 
-        state.chair = chair;    // TODO
         state.hasPassenger = chair.hasPassenger();
         state.passengerYRot = chair.getPassengerYaw();
         state.passengerXRot = chair.getPassengerPitch();
@@ -77,7 +78,8 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
             state.modelType = ModelType.GECKO;
             var geckoEntity = getGeckoEntity(chair);
             if (geckoEntity != null) {
-                AnimationUpdateManager.createTask(geckoEntity, state);
+                geckoEntity.setChair(state.chairInfo);
+                state.geckoUpdateTask = (GeckoUpdateTask<GeckoRenderData>) geckoEntity.createUpdateTask(state);
             }
         } else {
             state.modelType = ModelType.SIMPLE_BEDROCK;

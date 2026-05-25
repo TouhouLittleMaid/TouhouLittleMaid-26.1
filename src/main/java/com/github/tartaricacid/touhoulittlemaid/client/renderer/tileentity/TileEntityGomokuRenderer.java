@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Statue;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.GomokuRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -44,8 +44,8 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
     private final Font font;
 
     public TileEntityGomokuRenderer(BlockEntityRendererProvider.Context context) {
-        checkerBoardModel = BedrockModelLoader.getModel(BedrockModelLoader.GOMOKU);
-        pieceModel = BedrockModelLoader.getModel(BedrockModelLoader.GOMOKU_PIECE);
+        checkerBoardModel = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.GOMOKU);
+        pieceModel = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.GOMOKU_PIECE);
         this.font = context.font();
     }
 

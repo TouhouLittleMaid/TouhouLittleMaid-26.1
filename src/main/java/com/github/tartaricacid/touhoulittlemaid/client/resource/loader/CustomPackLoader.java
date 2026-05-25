@@ -2,62 +2,47 @@ package com.github.tartaricacid.touhoulittlemaid.client.resource.loader;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.CubesItem;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.CustomPackTexture;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.FileResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ZipResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.ChairModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.CustomSoundLoader;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoLocatorType;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierAdapter;
 import com.github.tartaricacid.touhoulittlemaid.util.ZipFileCheck;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
+import net.neoforged.fml.loading.FMLPaths;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Enumeration;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 
 public class CustomPackLoader {
     public static final Gson GSON = new GsonBuilder()
-            .registerTypeHierarchyAdapter(Identifier.class, new IdentifierAdapter())
+            .registerTypeAdapter(Identifier.class, new IdentifierAdapter())
             .registerTypeAdapter(CubesItem.class, new CubesItem.Deserializer())
             .create();
 
-    public static final Path PACK_FOLDER = Paths
-            .get(Minecraft.getInstance().gameDirectory.toURI())
-            .resolve("tlm_custom_pack");
+    public static final Path PACK_FOLDER = FMLPaths.GAMEDIR.get().resolve("tlm_custom_pack");
 
     public static final MaidModels MAID_MODELS = MaidModels.getInstance();
     public static final ChairModels CHAIR_MODELS = ChairModels.getInstance();
 
-    /**
-     * 用于标记已经注册过的材质，避免反复注册同一个材质
-     */
-    private static final Set<Identifier> TMP_REGISTER_TEXTURE = Sets.newHashSet();
-
     private static final Marker MARKER = MarkerManager.getMarker("CustomPackLoader");
-    private static final Pattern DOMAIN = Pattern.compile("^assets/([\\w.]+)/$");
 
     public static void reloadPacks() {
+        // 冻结相关类型注册
+        freezeRegistry();
+
         // 清除
         MAID_MODELS.clearAll();
         CHAIR_MODELS.clearAll();
-        TMP_REGISTER_TEXTURE.clear();
+        CustomPackTextureLoader.clear();
         LanguageLoader.clear();
         CustomSoundLoader.clear();
 
@@ -70,6 +55,10 @@ public class CustomPackLoader {
         MAID_MODELS.sortPackList();
         CHAIR_MODELS.sortPackList();
         CustomSoundLoader.sortSoundPack();
+    }
+
+    private static void freezeRegistry() {
+        GeoLocatorType.freeze();
     }
 
     private static void loadPacks(File packFolder) {
@@ -96,61 +85,15 @@ public class CustomPackLoader {
     }
 
     public static void readModelFromFolder(File root) {
-        try {
-            File[] domainFiles = root.toPath()
-                    .resolve("assets")
-                    .toFile()
-                    .listFiles((dir, name) -> true);
-            if (domainFiles == null) {
-                return;
-            }
-            Path rootPath = root.toPath();
-            var accessor = new FileResourceAccessor(rootPath);
-            for (File domainDir : domainFiles) {
-                if (domainDir.isDirectory()) {
-                    String domain = domainDir.getName();
-                    MaidPackLoader.loadPack(accessor, domain);
-                    ChairPackLoader.loadPack(accessor, domain);
-                    LanguageLoader.readLanguageFile(rootPath, domain);
-                    CustomSoundLoader.loadSoundPack(rootPath, domain);
-                }
-            }
-        } catch (IOException ioException) {
-            LOGGER.error(MARKER, "Failed to read custom pack folder {}", root, ioException);
-        }
+        CustomPackReader.readFolder(root);
     }
 
     public static void readModelFromZipFile(File file) {
-        try (ZipFile zipFile = new ZipFile(file)) {
-            Enumeration<? extends ZipEntry> iteration = zipFile.entries();
-            while (iteration.hasMoreElements()) {
-                String filePath = iteration.nextElement().getName();
-                Matcher matcher = DOMAIN.matcher(filePath);
-                if (matcher.find()) {
-                    Path path = Paths.get(zipFile.getName());
-                    var accessor = new ZipResourceAccessor(path);
-                    String domain = matcher.group(1);
-                    MaidPackLoader.loadPack(accessor, domain);
-                    ChairPackLoader.loadPack(accessor, domain);
-                    CustomSoundLoader.loadSoundPack(zipFile, domain);
-                    continue;
-                }
-                // 语言文件单独加载
-                LanguageLoader.readLanguageFile(zipFile, filePath);
-            }
-        } catch (IOException ioException) {
-            LOGGER.error(MARKER, "Failed to read custom pack zip {}", file.getName(), ioException);
-        }
+        CustomPackReader.readZip(file);
     }
 
     public static void registerTexture(ResourceAccessor accessor, Identifier texturePath) {
-        if (!TMP_REGISTER_TEXTURE.contains(texturePath)) {
-            CustomPackTexture texture = new CustomPackTexture(accessor, texturePath);
-            if (texture.isExist()) {
-                Minecraft.getInstance().getTextureManager().registerAndLoad(texturePath, texture);
-                TMP_REGISTER_TEXTURE.add(texturePath);
-            }
-        }
+        CustomPackTextureLoader.register(accessor, texturePath);
     }
 
     public static String assetPath(Identifier identifier) {

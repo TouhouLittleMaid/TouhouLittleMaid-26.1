@@ -2,20 +2,20 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityBroomRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.Identifier;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.BROOM;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.BROOM;
 
 public class EntityBroomRender extends LivingEntityRenderer<EntityBroom, EntityBroomRenderState, EntityModel<EntityBroomRenderState>> {
     private static final Identifier BROOM_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/broom.png");
 
     public EntityBroomRender(EntityRendererProvider.Context context) {
-        super(context, BedrockModelLoader.getEntityModel(BROOM), 0.5f);
+        super(context, InternalBedrockModelRegistry.getEntityModel(BROOM), 0.5f);
     }
 
     @Override

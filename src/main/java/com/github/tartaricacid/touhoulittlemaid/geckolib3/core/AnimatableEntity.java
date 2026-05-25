@@ -1,16 +1,16 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core;
 
-import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
+import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.GeckoUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.MolangEventWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.PhysicsManager;
 import com.github.tartaricacid.touhoulittlemaid.event.ClientTickEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.Animation;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.controller.AnimationControllerData;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.controller.IAnimationController;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationAsyncTask;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoAsyncTask;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationSyncTask;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationUpdateTask;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoSyncTask;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.manager.AnimationData;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.DebugSource;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.context.MolangContext;
@@ -30,6 +30,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.data.SoundFormat;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.stream.AudioStreamProvider;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.stream.VorbisAudioStream;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderContextManager;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
@@ -84,7 +85,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     private float seekTime;
 
     @Nullable
-    private AnimationUpdateTask lastAsyncTask;
+    private GeckoUpdateTask<?> lastAsyncTask;
 
     /**
      * 存储 Coded 动画控制器的动画播放状态，用于一些 molang 判断
@@ -99,7 +100,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         this.physicsManager = new PhysicsManager();
         this.rateLimiter.setLimit(getFrameRateLimit());
         if (keepUpdate) {
-            AnimationUpdateManager.add(this);
+            GeckoUpdateManager.add(this);
         }
     }
 
@@ -257,7 +258,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         return ClientTickEvent.getRefreshRate();
     }
 
-    protected @Nullable AnimationEvent<?> updateAnimation(EntityRenderState state, RenderContext renderContext) {
+    protected @Nullable GeckoRenderData updateAnimation(EntityRenderState state, RenderContext renderContext) {
         if (this.currentModel == null) {
             return null;
         }
@@ -327,9 +328,10 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         if (!renderContext.offScreen()) {
             currentFrameRendered = true;
             var data = createRenderData();
+            data.returnFunc = this::returnModelState;
+            data.modelData = event.getExtraData();
             extractRenderData(state, renderContext, data, ticked);
-            event.setRenderData(data);
-            return event;
+            return data;
         }
 
         return null;
@@ -357,9 +359,6 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
 
         data.texture = getTextureLocation();
         data.ctx = ctx;
-
-        data.outlineColor = state.outlineColor;
-        data.lightUV = state.lightCoords;
     }
 
     public void checkGeckoContainerUpdate() {
@@ -512,24 +511,26 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     }
 
     protected void resetGeoModel() {
-        currentModel = null;
-        animationProcessor.clearModel();
-        physicsManager.reset();
-        rateLimiter.reset();
-        manager.reset();
-        stateTracker.reset();
-        lastFrameTime = -1;
-        lastMutableRender = false;
-        currentFrameTicked = false;
-        currentFrameShouldTick = false;
-        lastFrameRendered = true;
-        currentFrameRendered = false;
-        lastFrameUpdated = false;
-        seekTime = 0;
-        codedAnimationStates.clear();
-        modelStateCache.clear();
-        alterPhysicsManager = null;
-        lastCheckUpdateTime = 0;
+        if (currentModel != null) {
+            currentModel = null;
+            animationProcessor.clearModel();
+            physicsManager.reset();
+            rateLimiter.reset();
+            manager.reset();
+            stateTracker.reset();
+            lastFrameTime = -1;
+            lastMutableRender = false;
+            currentFrameTicked = false;
+            currentFrameShouldTick = false;
+            lastFrameRendered = true;
+            currentFrameRendered = false;
+            lastFrameUpdated = false;
+            seekTime = 0;
+            codedAnimationStates.clear();
+            modelStateCache.clear();
+            alterPhysicsManager = null;
+            lastCheckUpdateTime = 0;
+        }
     }
 
     /**
@@ -576,22 +577,32 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         return this.codedAnimationStates.getOrDefault(controllerName, AnimationState.IDLE);
     }
 
-    public AnimationUpdateTask createUpdateTask(EntityRenderState state, RenderContext renderContext) {
+    public GeckoUpdateTask<?> createUpdateTask(EntityRenderState state) {
+        var ctx = RenderContextManager.extract(true);
+        if (!isImmutableRender(ctx)) {
+            ctx = RenderContextManager.extract(false);
+        }
+        return createUpdateTask(state, ctx);
+    }
+
+    public GeckoUpdateTask<?> createUpdateTask(EntityRenderState state, RenderContext renderContext) {
         RenderSystem.assertOnRenderThread();
         waitForAsyncUpdate();
         checkGeckoContainerUpdate();
+        GeckoUpdateManager.recordUpdate(this, renderContext);
 
         if (!isModelPresent()) {
-            return AnimationUpdateTask.NOP;
+            return GeckoUpdateTask.nop();
         }
+
         if (asyncUpdate()) {
-            lastAsyncTask = new AnimationAsyncTask(() -> updateAnimation(state, renderContext));
+            lastAsyncTask = new GeckoAsyncTask<>(() -> updateAnimation(state, renderContext));
             if (isImmediateAsync(renderContext)) {
                 lastAsyncTask.start();
             }
             return lastAsyncTask;
         } else {
-            return new AnimationSyncTask(() -> updateAnimation(state, renderContext));
+            return new GeckoSyncTask<>(() -> updateAnimation(state, renderContext));
         }
     }
 
@@ -600,7 +611,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     }
 
     @Nullable
-    public AnimationUpdateTask getLastUpdateTask() {
+    public GeckoUpdateTask<?> getLastUpdateTask() {
         return lastAsyncTask;
     }
 

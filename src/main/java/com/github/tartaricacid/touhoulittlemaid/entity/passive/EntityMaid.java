@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatMana
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.data.TaskDataKey;
 import com.github.tartaricacid.touhoulittlemaid.api.event.*;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
@@ -16,8 +15,6 @@ import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
-import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
-import com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.YsmMaidClientTickEvent;
 import com.github.tartaricacid.touhoulittlemaid.config.ServerConfig;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
@@ -51,7 +48,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ItemBreakPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.PlayMaidSoundPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackage;
-import com.github.tartaricacid.touhoulittlemaid.network.message.SyncYsmMaidDataPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
@@ -61,6 +58,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -121,6 +119,11 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.RangedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -137,20 +140,11 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.MO
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre;
 
-public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMaid,
+public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         MaidItemManager.View, MaidEffectsManager.View, MaidDataManager.View, MaidActionView.View, MaidModelView.View {
     public static final EntityType<EntityMaid> TYPE = EntityType.Builder.<EntityMaid>of(EntityMaid::new, MobCategory.CREATURE)
             .sized(0.6f, 1.5f).clientTrackingRange(10)
             .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid")));
-
-    // YSM 女仆兼容内容
-    public static final String IS_YSM_MODEL_TAG = "IsYsmModel";
-    public static final String YSM_MODEL_ID_TAG = "YsmModelId";
-    public static final String YSM_MODEL_TEXTURE_TAG = "YsmModelTexture";
-    public static final String YSM_MODEL_NAME_TAG = "YsmModelName";
-    public static final String YSM_ROULETTE_ANIM_TAG = "YsmRouletteAnim";
-    public static final String YSM_ROAMING_VARS_TAG = "YsmRoamingVars";
-    public static final String YSM_ROAMING_UPDATE_FLAG_TAG = "YsmRoamingUpdateFlag";
 
     // 女仆默认属性
     public static final String MODEL_ID_TAG = MODEL_ID_TAG_NAME;
@@ -175,12 +169,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
             _ -> new ArrayList<>()
     ));
 
-
-    // YSM 女仆兼容同步数据
-    private static final EntityDataAccessor<Boolean> DATA_IS_YSM_MODEL = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<String> DATA_YSM_MODEL_ID = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> DATA_YSM_MODEL_TEXTURE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<Component> DATA_YSM_MODEL_NAME = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.COMPONENT);
 
     // 女仆默认同步数据
     private static final EntityDataAccessor<String> DATA_MODEL_ID = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
@@ -268,15 +256,13 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     private final SchedulePos schedulePos;
     private final ItemCooldowns cooldowns;
 
+    // 是否为预览用实体
+    public final boolean previewEntity;
+
     public boolean guiOpening = false;
     public MaidFishingHook fishing = null;
 
     public MaidRenderState renderState = MaidRenderState.ENTITY;
-    public boolean rouletteAnimPlaying = false;
-    public String rouletteAnim = "empty";
-    public boolean rouletteAnimDirty = false;
-    public int roamingVarsUpdateFlag = 0;
-    public Object2FloatOpenHashMap<String> roamingVars = new Object2FloatOpenHashMap<>();
 
     /**
      * 用于方便特殊动画播放的变量，目前仅支持捡雪球
@@ -328,6 +314,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.navigationManager = new MaidNavigationManager(this);
 
         this.cooldowns = new ItemCooldowns();
+
+        this.previewEntity = EntityCacheUtil.creatingPreviewEntity();
 
         // 启用实体持久化，也许能解决难以复现的女仆实体丢失问题
         this.setPersistenceRequired();
@@ -399,11 +387,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-
-        builder.define(DATA_IS_YSM_MODEL, false);
-        builder.define(DATA_YSM_MODEL_ID, StringUtils.EMPTY);
-        builder.define(DATA_YSM_MODEL_TEXTURE, StringUtils.EMPTY);
-        builder.define(DATA_YSM_MODEL_NAME, Component.empty());
 
         builder.define(DATA_MODEL_ID, DEFAULT_MODEL_ID);
         builder.define(DATA_SOUND_PACK_ID, DefaultMaidSoundPack.getInitSoundPackId());
@@ -529,19 +512,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
                 b.onTick(this, s);
                 return false;
             });
-        }
-
-        if (YsmCompat.isInstalled() && this.isYsmModel()) {
-            if (level.isClientSide()) {
-                // 触发 ysm 模型的客户端事件
-                NeoForge.EVENT_BUS.post(new YsmMaidClientTickEvent(this));
-            }
-            // 同步 ysm 轮盘数据
-            if (!level.isClientSide() && this.rouletteAnimDirty) {
-                this.rouletteAnimDirty = false;
-                SyncYsmMaidDataPackage message = new SyncYsmMaidDataPackage(this.getId(), this.rouletteAnim, this.rouletteAnimPlaying, this.roamingVars);
-                PacketDistributor.sendToPlayersTrackingEntity(this, message);
-            }
         }
 
         // 自 1.4.2 版本起强制开启女仆备份机制
@@ -1054,16 +1024,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         super.addAdditionalSaveData(output);
         output.store(MODEL_ID_TAG_NAME, Codec.STRING, getModelId());
 
-        output.store(IS_YSM_MODEL_TAG, Codec.BOOL, isYsmModel());
-        output.store(YSM_MODEL_ID_TAG, Codec.STRING, getYsmModelId());
-        output.store(YSM_MODEL_TEXTURE_TAG, Codec.STRING, getYsmModelTexture());
-        output.store(YSM_MODEL_NAME_TAG, ComponentSerialization.CODEC, getYsmModelName());
-        output.store(YSM_ROULETTE_ANIM_TAG, Codec.STRING, rouletteAnim);
-        output.store(YSM_ROAMING_UPDATE_FLAG_TAG, Codec.INT, roamingVarsUpdateFlag);
-
-        ValueOutput roamingVarsOutput = output.child(YSM_ROAMING_VARS_TAG);
-        roamingVars.forEach((k, v) -> roamingVarsOutput.store(k, Codec.FLOAT, v));
-
         output.store(SOUND_PACK_ID_TAG, Codec.STRING, getSoundPackId());
         output.store(TASK_TAG, Codec.STRING, getTask().getUid().toString());
         itemManager.addAdditionalSaveData(output);
@@ -1094,18 +1054,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.setSyncTaskData();
 
         input.read(MODEL_ID_TAG_NAME, Codec.STRING).ifPresent(this::setModelId);
-        input.read(IS_YSM_MODEL_TAG, Codec.BOOL).ifPresent(this::setIsYsmModel);
-        input.read(YSM_MODEL_ID_TAG, Codec.STRING).ifPresent(this::setYsmModelId);
-        input.read(YSM_MODEL_TEXTURE_TAG, Codec.STRING).ifPresent(this::setYsmModelTexture);
-        input.read(YSM_MODEL_NAME_TAG, ComponentSerialization.CODEC).ifPresent(c -> setYsmModelName(Objects.requireNonNullElse(c, Component.empty())));
-        input.read(YSM_ROULETTE_ANIM_TAG, Codec.STRING).ifPresent(s -> rouletteAnim = s);
-        input.read(YSM_ROAMING_UPDATE_FLAG_TAG, Codec.INT).ifPresent(v -> roamingVarsUpdateFlag = v);
-
-        ValueInput roamingVarsInput = input.childOrEmpty(YSM_ROAMING_VARS_TAG);
-        for (String key : roamingVarsInput.keySet()) {
-            roamingVarsInput.read(key, Codec.FLOAT).ifPresent(v -> roamingVars.put(key, v));
-        }
-
         input.read(SOUND_PACK_ID_TAG, Codec.STRING).ifPresent(this::setSoundPackId);
         input.read(SCHEDULE_MODE_TAG, Codec.STRING).ifPresent(s -> setSchedule(MaidSchedule.valueOf(s)));
         input.read(TASK_TAG, Codec.STRING).ifPresent(uidStr -> {
@@ -1238,14 +1186,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         NeoForge.EVENT_BUS.post(typeNameEvent);
         if (typeNameEvent.getTypeName() != null) {
             return typeNameEvent.getTypeName();
-        }
-        // 优先使用 YSM 模型名称
-        if (YsmCompat.isInstalled() && this.isYsmModel()) {
-            Component name = this.getYsmModelName();
-            if (name.equals(Component.empty())) {
-                return Component.literal(this.getYsmModelId());
-            }
-            return name;
         }
         // 然后才是默认模型名
         Optional<MaidModelInfo> info = ServerCustomPackLoader.SERVER_MAID_MODELS.getInfo(getModelId());
@@ -1539,74 +1479,12 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return backpackDelay > 0;
     }
 
-    @Override
     public String getModelId() {
         return this.entityData.get(DATA_MODEL_ID);
     }
 
     public void setModelId(String modelId) {
         this.entityData.set(DATA_MODEL_ID, modelId);
-    }
-
-    @Override
-    public boolean isYsmModel() {
-        return this.entityData.get(DATA_IS_YSM_MODEL);
-    }
-
-    @Override
-    public void setIsYsmModel(boolean isYsmModel) {
-        this.entityData.set(DATA_IS_YSM_MODEL, isYsmModel);
-    }
-
-    @Override
-    public String getYsmModelId() {
-        return this.entityData.get(DATA_YSM_MODEL_ID);
-    }
-
-    protected void setYsmModelId(String modelId) {
-        this.entityData.set(DATA_YSM_MODEL_ID, modelId);
-    }
-
-    @Override
-    public String getYsmModelTexture() {
-        return this.entityData.get(DATA_YSM_MODEL_TEXTURE);
-    }
-
-    protected void setYsmModelTexture(String texture) {
-        this.entityData.set(DATA_YSM_MODEL_TEXTURE, texture);
-    }
-
-    @Override
-    public Component getYsmModelName() {
-        return this.entityData.get(DATA_YSM_MODEL_NAME);
-    }
-
-    protected void setYsmModelName(Component name) {
-        this.entityData.set(DATA_YSM_MODEL_NAME, name);
-    }
-
-    @Override
-    public void setYsmModel(String modelId, String texture, Component name) {
-        if (!modelId.equals(this.getYsmModelId())) {
-            this.roamingVars = new Object2FloatOpenHashMap<>();
-            this.stopRouletteAnim();
-        }
-        this.setYsmModelId(modelId);
-        this.setYsmModelTexture(texture);
-        this.setYsmModelName(name);
-    }
-
-    @Override
-    public void playRouletteAnim(String rouletteAnim) {
-        this.rouletteAnimPlaying = true;
-        this.rouletteAnim = rouletteAnim;
-        this.rouletteAnimDirty = true;
-    }
-
-    @Override
-    public void stopRouletteAnim() {
-        this.rouletteAnimPlaying = false;
-        this.rouletteAnimDirty = true;
     }
 
     public String getSoundPackId() {
@@ -1617,12 +1495,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_SOUND_PACK_ID, soundPackId);
     }
 
-    @Override
     public boolean isMaidInSittingPose() {
         return super.isInSittingPose();
     }
 
-    @Override
     public boolean isBegging() {
         return this.entityData.get(DATA_BEGGING);
     }
@@ -1719,7 +1595,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_HUNGER, hunger);
     }
 
-    @Override
     public int getFavorability() {
         return this.entityData.get(DATA_FAVORABILITY);
     }
@@ -1728,7 +1603,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_FAVORABILITY, favorability);
     }
 
-    @Override
     public int getExperience() {
         return this.entityData.get(DATA_EXPERIENCE);
     }
@@ -1745,7 +1619,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_STRUCK_BY_LIGHTNING, isStruck);
     }
 
-    @Override
     public boolean isSwingingArms() {
         return this.entityData.get(DATA_ARM_RISE);
     }
@@ -1782,7 +1655,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return schedulePos;
     }
 
-    @Override
     public ItemStack getBackpackShowItem() {
         return this.entityData.get(BACKPACK_ITEM_SHOW);
     }
@@ -1791,10 +1663,13 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(BACKPACK_ITEM_SHOW, stack);
     }
 
-    @Override
     public IMaidBackpack getMaidBackpackType() {
         Identifier id = Identifier.parse(entityData.get(BACKPACK_TYPE));
         return BackpackManager.findBackpack(id).orElse(BackpackManager.getEmptyBackpack());
+    }
+
+    public boolean hasBackpack() {
+        return !(this.getMaidBackpackType() instanceof EmptyBackpack);
     }
 
     public void setMaidBackpackType(IMaidBackpack backpack) {
@@ -1823,7 +1698,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         this.entityData.set(DATA_INVULNERABLE, isInvulnerable);
     }
 
-    @Override
     public IMaidTask getTask() {
         Identifier uid = Identifier.parse(entityData.get(DATA_TASK));
         return TaskManager.findTask(uid).orElse(TaskManager.getIdleTask());
@@ -1867,7 +1741,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return killRecordManager;
     }
 
-    @Override
     public boolean hasFishingHook() {
         return this.fishing != null;
     }
@@ -1924,17 +1797,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         return Ingredient.of(defaultItem);
     }
 
-    @Override
-    public EntityMaid asStrictMaid() {
-        return this;
-    }
-
-    @Override
-    public Mob asEntity() {
-        return this;
-    }
-
-    @Override
     public ItemStack[] getHandItemsForAnimation() {
         return handItemsForAnimation;
     }

@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockPicnicMat;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.PicnicMatRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -32,7 +32,7 @@ public class PicnicMatRender implements BlockEntityRenderer<TileEntityPicnicMat,
     private final ItemModelResolver itemModelResolver;
 
     public PicnicMatRender(BlockEntityRendererProvider.Context context) {
-        this.model = BedrockModelLoader.getModel(BedrockModelLoader.PICNIC_MAT);
+        this.model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.PICNIC_MAT);
         this.itemModelResolver = context.itemModelResolver();
     }
 

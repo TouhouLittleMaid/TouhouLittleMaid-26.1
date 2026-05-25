@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityTombstoneRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ChatFormatting;
@@ -20,7 +20,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
 import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.MOD_ID;
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.TOMBSTONE;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.TOMBSTONE;
 import static net.minecraft.resources.Identifier.fromNamespaceAndPath;
 
 public class EntityTombstoneRenderer extends EntityRenderer<EntityTombstone, EntityTombstoneRenderState> {
@@ -38,7 +38,7 @@ public class EntityTombstoneRenderer extends EntityRenderer<EntityTombstone, Ent
 
     public EntityTombstoneRenderer(EntityRendererProvider.Context manager) {
         super(manager);
-        tombstoneModel = BedrockModelLoader.getEntityModel(TOMBSTONE);
+        tombstoneModel = InternalBedrockModelRegistry.getEntityModel(TOMBSTONE);
     }
 
     @Override

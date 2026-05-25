@@ -4,8 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.GarageKitRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
-import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGarageKit;
@@ -32,10 +31,9 @@ import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader.STATUE_BASE;
+import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.STATUE_BASE;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
 public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEntityGarageKit, GarageKitRenderState> {
@@ -43,7 +41,7 @@ public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEnti
     private final SimpleBedrockModel<Unit> baseModel;
 
     public TileEntityGarageKitRenderer(BlockEntityRendererProvider.Context context) {
-        baseModel = BedrockModelLoader.getModel(STATUE_BASE);
+        baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
     }
 
     @Override
@@ -76,6 +74,7 @@ public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEnti
         });
     }
 
+    @SuppressWarnings("unchecked,rawtypes")
     private void extractEntityRenderState(TileEntityGarageKit te, GarageKitRenderState state, CompoundTag data,
                                           Level world, EntityType<?> type, float partialTick) throws ExecutionException {
         Entity entity;
@@ -83,21 +82,14 @@ public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEnti
             long posId = te.getBlockPos().asLong();
             entity = EntityCacheUtil.STATUE_CACHE.get(posId, () -> new EntityMaid(world));
         } else {
-            entity = EntityCacheUtil.ENTITY_CACHE.get(type, () -> {
-                Entity e = type.create(world, EntitySpawnReason.LOAD);
-                return Objects.requireNonNullElseGet(e, () -> new EntityMaid(world));
-            });
+            entity = EntityCacheUtil.getEntity((EntityType) type, (l, r) -> new EntityMaid(l), world, EntitySpawnReason.LOAD);
         }
 
         entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), data));
         if (entity instanceof EntityMaid maid) {
             clearMaidDataResidue(maid, true);
             maid.renderState = MaidRenderState.GARAGE_KIT;
-            if (YsmCompat.isInstalled() && maid.isYsmModel()) {
-                maid.tickCount = (int) world.getGameTime();
-            } else {
-                maid.tickCount = 0;
-            }
+            maid.tickCount = 0;
         }
 
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();

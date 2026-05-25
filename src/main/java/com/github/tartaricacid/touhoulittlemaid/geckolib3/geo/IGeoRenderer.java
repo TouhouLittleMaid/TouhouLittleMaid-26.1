@@ -10,8 +10,10 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexMultiConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.util.LightCoordsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -19,7 +21,7 @@ import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 
-public interface IGeoRenderer<TData extends GeckoRenderData> {
+public interface IGeoRenderer<TState extends EntityRenderState, TData extends GeckoRenderData> {
     Vector3f C000 = new Vector3f();
     Vector3f C100 = new Vector3f();
     Vector3f C110 = new Vector3f();
@@ -35,7 +37,7 @@ public interface IGeoRenderer<TData extends GeckoRenderData> {
     Vector3f ny = new Vector3f();
     Vector3f nz = new Vector3f();
 
-    default void preSubmit(TData data, RenderContext ctx, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+    default void preSubmit(TState state, TData data, RenderContext ctx, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
         if (getCurrentModelRenderCycle() == EModelRenderCycle.INITIAL) {
             if (data.transform != null) {
                 poseStack.mulPose(data.transform);
@@ -43,12 +45,15 @@ public interface IGeoRenderer<TData extends GeckoRenderData> {
         }
     }
 
-    default void submit(TData data, RenderContext ctx, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, RenderType type) {
+    default void submit(TState state, TData data, RenderContext ctx, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, RenderType type) {
         submitNodeCollector.submitCustomGeometry(poseStack, type, (pose, vertexConsumer) -> {
+            if (data.isClosed()) {
+                return;
+            }
             if (ctx.level() && !ctx.irisShadow()
-                    && data.outlineColor != 0 && (type.outline().isPresent() || type.isOutline())) {
+                    && state.outlineColor != 0 && (type.outline().isPresent() || type.isOutline())) {
                 var outlineBufferSource = Minecraft.getInstance().renderBuffers().outlineBufferSource();
-                outlineBufferSource.setColor(data.outlineColor);
+                outlineBufferSource.setColor(state.outlineColor);
                 var outlineBuffer = outlineBufferSource.getBuffer(type);
                 if (type.isOutline()) {
                     vertexConsumer = outlineBuffer;
@@ -58,17 +63,18 @@ public interface IGeoRenderer<TData extends GeckoRenderData> {
             }
             VertexConsumer finalVertexConsumer = vertexConsumer;
             data.modelState.visitRenderBones(pose, (bone, poseState) -> {
-                renderCubesOfBone(bone, poseState, finalVertexConsumer, data);
+                renderCubesOfBone(bone, poseState, finalVertexConsumer, state, data);
             });
+            data.close();
         });
         // 由于此时我们至少渲染了一次，因此让我们将循环设置为重复
         setCurrentModelRenderCycle(EModelRenderCycle.REPEATED);
     }
 
-    default void renderCubesOfBone(GeoBone bone, PoseStack.Pose poseState, VertexConsumer buffer, GeckoRenderData data) {
+    default void renderCubesOfBone(GeoBone bone, PoseStack.Pose poseState, VertexConsumer buffer, TState state, GeckoRenderData data) {
         GeoMesh mesh = bone.cubes();
         
-        var packedLight = data.lightUV;
+        var packedLight = bone.glow() ? LightCoordsUtil.FULL_BRIGHT : state.lightCoords;
         var packedOverlay = data.overlayUV;
         var color = data.color;
 

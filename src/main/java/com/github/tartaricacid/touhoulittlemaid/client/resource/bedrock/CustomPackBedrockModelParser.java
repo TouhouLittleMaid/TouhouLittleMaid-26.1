@@ -22,8 +22,8 @@ import java.util.Objects;
 
 import static com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid.LOGGER;
 
-public final class BedrockModelParser {
-    private static final Marker MARKER = MarkerManager.getMarker("BedrockModelParser");
+public final class CustomPackBedrockModelParser {
+    private static final Marker MARKER = MarkerManager.getMarker("CustomPackBedrockModelParser");
 
     @Nullable
     public static EntityMaidModel loadMaidModel(ResourceAccessor accessor, Identifier modelLocation) {

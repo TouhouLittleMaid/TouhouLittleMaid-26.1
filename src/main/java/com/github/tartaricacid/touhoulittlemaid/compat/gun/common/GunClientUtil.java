@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.gun.common;
 
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.PlayState;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.LoopType;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
@@ -20,11 +20,11 @@ public class GunClientUtil {
     public static void addItemTranslate(PoseStack poseStack, ItemStack itemStack, boolean isLeft) {
     }
 
-    public static void renderBackGun(PoseStack matrixStack, MultiBufferSource bufferIn, int packedLightIn, ItemStack stack, IMaid maid) {
+    public static void renderBackGun(PoseStack matrixStack, MultiBufferSource bufferIn, int packedLightIn, ItemStack stack, EntityMaid maid) {
     }
 
     @Nullable
-    public static PlayState playGunMainAnimation(IMaid maid, AnimationEvent<GeckoMaidEntity<?>> event, String animationName, LoopType loopType) {
+    public static PlayState playGunMainAnimation(EntityMaid maid, AnimationEvent<GeckoMaidEntity<?>> event, String animationName, LoopType loopType) {
         return null;
     }
 

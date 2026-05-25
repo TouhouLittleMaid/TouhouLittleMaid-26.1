@@ -1,11 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidAndItemTransformEvent;
-import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemMaidTooltip;
-import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.YsmMaidInfo;
 import com.mojang.serialization.Codec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.UUIDUtil;
@@ -88,9 +86,7 @@ public abstract class AbstractStoreMaidItem extends Item {
             return Optional.empty();
         }
         String customName = tag.read(Codec.STRING.fieldOf(CUSTOM_NAME)).orElse(StringUtils.EMPTY);
-        // YSM 渲染相关数据
-        YsmMaidInfo ysmMaidInfo = YsmCompat.getYsmMaidInfo(tag);
-        return Optional.of(new ItemMaidTooltip(modelId.get(), customName, ysmMaidInfo));
+        return Optional.of(new ItemMaidTooltip(modelId.get(), customName));
     }
 
     public InteractionResult spawnFromStore(UseOnContext context, Player player, Level worldIn, EntityMaid maid, Runnable runnable) {

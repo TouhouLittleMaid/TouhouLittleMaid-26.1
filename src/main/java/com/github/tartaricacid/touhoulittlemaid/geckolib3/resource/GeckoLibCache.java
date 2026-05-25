@@ -11,7 +11,7 @@ import java.util.Map;
 public class GeckoLibCache {
     private static final Map<String, Object> EXTRA_BINDING = new HashMap<>();
     private static GeckoLibCache INSTANCE;
-    public final MolangParser parser = createMolangParser();
+    public final ThreadLocal<MolangParser> parser = ThreadLocal.withInitial(GeckoLibCache::createMolangParser);
     private final Map<Identifier, GeckoContainer> models = Maps.newHashMap();
 
     public static GeckoLibCache getInstance() {

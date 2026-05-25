@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityFairyRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -28,7 +28,7 @@ public class EntityBabyFairyRenderer extends MobRenderer<EntityFairy, EntityFair
     );
 
     public EntityBabyFairyRenderer(EntityRendererProvider.Context context) {
-        super(context, BedrockModelLoader.getEntityModel(BedrockModelLoader.BABY_MAID_FAIRY), 0.5f);
+        super(context, InternalBedrockModelRegistry.getEntityModel(InternalBedrockModelRegistry.BABY_MAID_FAIRY), 0.5f);
     }
 
     @Override

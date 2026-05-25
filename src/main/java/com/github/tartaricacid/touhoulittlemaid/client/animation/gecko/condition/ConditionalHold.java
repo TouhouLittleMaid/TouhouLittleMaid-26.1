@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition;
 
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -76,8 +76,8 @@ public class ConditionalHold {
         }
     }
 
-    public String doTest(IMaid maid) {
-        if (maid.asEntity().getItemInHand(hand).isEmpty()) {
+    public String doTest(EntityMaid maid) {
+        if (maid.getItemInHand(hand).isEmpty()) {
             return hand == InteractionHand.MAIN_HAND ? EMPTY_MAINHAND : EMPTY_OFFHAND;
         }
         String result = doIdTest(maid);
@@ -92,11 +92,11 @@ public class ConditionalHold {
     }
 
     @SuppressWarnings("deprecation")
-    private String doIdTest(IMaid maid) {
+    private String doIdTest(EntityMaid maid) {
         if (idTest.isEmpty()) {
             return EMPTY;
         }
-        ItemStack itemInHand = maid.asEntity().getItemInHand(hand);
+        ItemStack itemInHand = maid.getItemInHand(hand);
         Identifier registryName = itemInHand.getItem().builtInRegistryHolder().key().identifier();
         if (idTest.contains(registryName)) {
             return idPre + registryName;
@@ -104,11 +104,11 @@ public class ConditionalHold {
         return EMPTY;
     }
 
-    private String doTagTest(IMaid maid) {
+    private String doTagTest(EntityMaid maid) {
         if (tagTest.isEmpty()) {
             return EMPTY;
         }
-        ItemStack itemInHand = maid.asEntity().getItemInHand(hand);
+        ItemStack itemInHand = maid.getItemInHand(hand);
         return tagTest.stream()
                 .filter(itemInHand::is)
                 .findFirst()
@@ -116,7 +116,7 @@ public class ConditionalHold {
                 .orElse(EMPTY);
     }
 
-    private String doExtraTest(IMaid maid) {
+    private String doExtraTest(EntityMaid maid) {
         if (extraTest.isEmpty() && innerTest.isEmpty()) {
             return EMPTY;
         }
@@ -124,7 +124,7 @@ public class ConditionalHold {
         if (StringUtils.isNotBlank(innerName) && this.innerTest.contains(innerName)) {
             return innerName;
         }
-        ItemUseAnimation anim = maid.asEntity().getItemInHand(hand).getUseAnimation();
+        ItemUseAnimation anim = maid.getItemInHand(hand).getUseAnimation();
         if (this.extraTest.contains(anim)) {
             return extraPre + anim.name().toLowerCase(Locale.US);
         }

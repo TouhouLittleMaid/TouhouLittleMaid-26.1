@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.AltarRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -32,7 +32,7 @@ public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAl
     private final ItemModelResolver itemModelResolver;
 
     public TileEntityAltarRenderer(BlockEntityRendererProvider.Context context) {
-        this.model = BedrockModelLoader.getModel(BedrockModelLoader.ALTAR);
+        this.model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.ALTAR);
         this.itemModelResolver = context.itemModelResolver();
     }
 

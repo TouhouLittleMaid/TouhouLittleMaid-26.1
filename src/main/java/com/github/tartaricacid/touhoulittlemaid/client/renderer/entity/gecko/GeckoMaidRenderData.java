@@ -4,5 +4,4 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 
 public class GeckoMaidRenderData extends GeckoRenderData {
     public float climbRotation = Float.NaN;
-    public boolean showBackpack;
 }

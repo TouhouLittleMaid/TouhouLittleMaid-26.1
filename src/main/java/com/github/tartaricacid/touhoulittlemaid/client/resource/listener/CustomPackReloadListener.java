@@ -1,44 +1,30 @@
-package com.github.tartaricacid.touhoulittlemaid.client.event;
+package com.github.tartaricacid.touhoulittlemaid.client.resource.listener;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.GeckoContainerBuilder;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.PlayerMaidModels;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-
-@EventBusSubscriber(value = Dist.CLIENT)
-public final class ReloadResourceEvent extends SimplePreparableReloadListener<Void> {
-    private static final Identifier MAID_PACK_RELOAD = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid_pack_reload");
-
-    @SubscribeEvent
-    public static void onRegister(AddClientReloadListenersEvent event) {
-        event.addListener(MAID_PACK_RELOAD, new ReloadResourceEvent());
-    }
-
-    public static void asyncReloadAllPack() {
+public final class CustomPackReloadListener extends SimplePreparableReloadListener<Void> {
+    public static void asyncReload() {
         CompletableFuture.supplyAsync(() -> {
-            reloadAllPack();
+            reloadCustomPacks();
             return null;
         }, Util.backgroundExecutor());
     }
 
-    private static void reloadAllPack() {
+    private static void reloadCustomPacks() {
         StopWatch watch = StopWatch.createStarted();
         {
             GeckoContainerBuilder.reload();
@@ -47,20 +33,21 @@ public final class ReloadResourceEvent extends SimplePreparableReloadListener<Vo
             PlayerMaidModels.reload();
         }
         watch.stop();
+
         double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;
         if (Minecraft.getInstance().player != null) {
             Minecraft.getInstance().player.sendSystemMessage(Component.translatable("message.touhou_little_maid.reload.tip", time));
         }
-        TouhouLittleMaid.LOGGER.info("Model loading time: {} ms", time);
+        TouhouLittleMaid.LOGGER.info("Custom pack loading time: {} ms", time);
     }
 
     @Override
-    protected Void prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+    protected Void prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
         return null;
     }
 
     @Override
-    protected void apply(Void pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
-        reloadAllPack();
+    protected void apply(Void unused, ResourceManager resourceManager, ProfilerFiller profiler) {
+        reloadCustomPacks();
     }
 }

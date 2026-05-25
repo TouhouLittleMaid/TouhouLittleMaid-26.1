@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.JoyRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.BedrockModelLoader;
+import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityBookshelf;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -20,7 +20,7 @@ public class TileEntityBookshelfRenderer extends TileEntityJoyRenderer<TileEntit
     private final SimpleBedrockModel<Unit> model;
 
     public TileEntityBookshelfRenderer(BlockEntityRendererProvider.Context context) {
-        model = BedrockModelLoader.getModel(BedrockModelLoader.BOOKSHELF);
+        model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.BOOKSHELF);
     }
 
     @Override

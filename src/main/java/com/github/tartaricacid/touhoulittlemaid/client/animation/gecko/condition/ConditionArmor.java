@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition;
 
-import com.github.tartaricacid.touhoulittlemaid.api.entity.IMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.core.registries.Registries;
@@ -64,8 +64,8 @@ public class ConditionArmor {
         return idTest.containsKey(slot) ||  tagTest.containsKey(slot);
     }
 
-    public String doTest(IMaid maid, EquipmentSlot slot) {
-        ItemStack item = maid.asEntity().getItemBySlot(slot);
+    public String doTest(EntityMaid maid, EquipmentSlot slot) {
+        ItemStack item = maid.getItemBySlot(slot);
         if (item.isEmpty()) {
             return EMPTY;
         }
@@ -77,7 +77,7 @@ public class ConditionArmor {
     }
 
     @SuppressWarnings("deprecation")
-    private String doIdTest(IMaid maid, EquipmentSlot slot) {
+    private String doIdTest(EntityMaid maid, EquipmentSlot slot) {
         if (idTest.isEmpty()) {
             return EMPTY;
         }
@@ -85,7 +85,7 @@ public class ConditionArmor {
             return EMPTY;
         }
         Set<Identifier> idListTest = idTest.get(slot);
-        ItemStack item = maid.asEntity().getItemBySlot(slot);
+        ItemStack item = maid.getItemBySlot(slot);
         Identifier registryName = item.getItem().builtInRegistryHolder().key().identifier();
         if (idListTest.contains(registryName)) {
             return slot.getName() + "$" + registryName;
@@ -93,7 +93,7 @@ public class ConditionArmor {
         return EMPTY;
     }
 
-    private String doTagTest(IMaid maid, EquipmentSlot slot) {
+    private String doTagTest(EntityMaid maid, EquipmentSlot slot) {
         if (tagTest.isEmpty()) {
             return EMPTY;
         }
@@ -101,7 +101,7 @@ public class ConditionArmor {
             return EMPTY;
         }
         Set<TagKey<Item>> tagListTest = tagTest.get(slot);
-        ItemStack item = maid.asEntity().getItemBySlot(slot);
+        ItemStack item = maid.getItemBySlot(slot);
         return tagListTest.stream()
                 .filter(item::is)
                 .findFirst()

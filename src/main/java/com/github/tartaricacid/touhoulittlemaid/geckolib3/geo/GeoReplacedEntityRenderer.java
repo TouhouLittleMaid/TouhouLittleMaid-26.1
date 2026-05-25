@@ -1,7 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo;
 
-import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.extended.LivingEntityRendererAccessor;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.EModelRenderCycle;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.IRenderCycle;
@@ -31,7 +29,7 @@ import java.util.List;
 
 @SuppressWarnings({"unchecked"})
 public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, TState extends LivingEntityRenderState, TData extends GeckoRenderData>
-        extends LivingEntityRenderer<TEntity, TState, EntityModel<TState>> implements IGeoRenderer<TData> {
+        extends LivingEntityRenderer<TEntity, TState, EntityModel<TState>> implements IGeoRenderer<TState, TData> {
     protected final List<GeoLayerRenderer<? super TState, ? super TData>> layerRenderers = new ObjectArrayList<>();
     private IRenderCycle currentModelRenderCycle = EModelRenderCycle.INITIAL;
 
@@ -41,19 +39,17 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, TS
 
     @Override
     public void submit(@NotNull TState state, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector submitNodeCollector, @NotNull CameraRenderState camera) {
-        submit(state, AnimationUpdateManager.getResult(state), poseStack, submitNodeCollector, camera);
+        submit(state, getGeckoRenderData(state), poseStack, submitNodeCollector, camera);
     }
 
-    @SuppressWarnings("unchecked")
-    public void submit(@NotNull TState state, @Nullable AnimationEvent<?> event, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector submitNodeCollector, @NotNull CameraRenderState camera) {
+    public void submit(@NotNull TState state, @Nullable TData data, @NotNull PoseStack poseStack, @NotNull SubmitNodeCollector submitNodeCollector, @NotNull CameraRenderState camera) {
         if (NeoForge.EVENT_BUS.post(new RenderLivingEvent.Pre<>(state, this, state.partialTick, poseStack, submitNodeCollector)).isCanceled()) {
             return;
         }
 
-        if (event != null && !event.isClosed()) {
-            final var data = event.getExtraData();
-            final var renderData = (TData) event.getRenderData();
-            final var ctx = event.getRenderContext();
+        if (data != null && !data.isClosed()) {
+            final var modelData = data.modelData;
+            final var ctx = data.ctx;
 
             setCurrentModelRenderCycle(EModelRenderCycle.INITIAL);
             poseStack.pushPose();
@@ -69,48 +65,37 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, TS
             float scale = state.scale;
             poseStack.scale(scale, scale, scale);
 
-            setupRotations(state, renderData, ctx, poseStack, data.lerpBodyRot, scale);
+            setupRotations(state, poseStack, modelData.lerpBodyRot, scale);
+            scale(state, poseStack);
             poseStack.translate(0, 0.01f, 0);
 
             var bodyVisible = this.isBodyVisible(state);
             var glowing = state.appearsGlowing();
-            var renderType = getRenderType(renderData, bodyVisible, glowing);
+            var renderType = getRenderType(data, bodyVisible, glowing);
             var isSpectator = state instanceof AvatarRenderState avatarRenderState && avatarRenderState.isSpectator;
 
-            preSubmit(renderData, ctx, poseStack, submitNodeCollector);
+            preSubmit(state, data, ctx, poseStack, submitNodeCollector);
             if (renderType != null) {
-                submit(renderData, ctx, poseStack, submitNodeCollector, renderType);
+                submit(state, data, ctx, poseStack, submitNodeCollector, renderType);
             }
             if (!isSpectator) {
-                renderLayer(submitNodeCollector, poseStack, event, state, renderData, camera);
+                renderLayer(submitNodeCollector, poseStack, state, data, camera);
             }
             poseStack.popPose();
-
-            event.close();
         }
         ((LivingEntityRendererAccessor) this).tlm$renderNameTag(state, poseStack, submitNodeCollector, camera);
         NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.client.event.RenderLivingEvent.Post<>(state, this, state.partialTick, poseStack, submitNodeCollector));
     }
 
 
-    protected void renderLayer(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, AnimationEvent<?> event, TState state, TData data, CameraRenderState camera) {
+    protected void renderLayer(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, TState state, TData data, CameraRenderState camera) {
         for (var layerRenderer : this.layerRenderers) {
-            layerRenderer.submit(submitNodeCollector, poseStack, event, state, data, camera);
+            layerRenderer.submit(submitNodeCollector, poseStack, state, data, camera);
         }
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setupRotations(@NonNull TState state, @NonNull PoseStack poseStack, float bodyRot, float entityScale) {
-        var event = AnimationUpdateManager.getResult(state);
-        if (event != null) {
-            setupRotations(state, (TData) event.getRenderData(), event.getRenderContext(), poseStack, bodyRot, entityScale);
-        } else {
-            super.setupRotations(state, poseStack, bodyRot, entityScale);
-        }
-    }
-
-    protected void setupRotations(TState state, TData data, RenderContext ctx, PoseStack poseStack, float bodyRot, float entityScale) {
         var deathTime = state.deathTime;
         boolean autoSpineAttach = state.isAutoSpinAttack;
         if (deathTime > 0) {
@@ -119,8 +104,6 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, TS
         if (autoSpineAttach) {
             state.isAutoSpinAttack = false;
         }
-
-        // 爬梯时锁定 yaw 的逻辑暂时没搬来
 
         super.setupRotations(state, poseStack, bodyRot, entityScale);
 
@@ -132,11 +115,14 @@ public abstract class GeoReplacedEntityRenderer<TEntity extends LivingEntity, TS
         }
     }
 
+    @Nullable
+    public abstract TData getGeckoRenderData(TState state);
+
     @Override
     public @NonNull Identifier getTextureLocation(@NonNull TState state) {
-        var result = AnimationUpdateManager.getResult(state);
+        var result = getGeckoRenderData(state);
         if (result != null) {
-            return result.getRenderData().texture;
+            return result.texture;
         }
         return MissingTextureAtlasSprite.getLocation();
     }
