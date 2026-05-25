@@ -33,7 +33,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
-import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskIdle;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import com.github.tartaricacid.touhoulittlemaid.init.InitAttribute;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
@@ -126,19 +125,22 @@ import java.util.function.Supplier;
 
 import static com.github.tartaricacid.touhoulittlemaid.config.ServerConfig.MAID_AI_TIME_DEBUG;
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.MAID_NUM;
-import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.MODEL_ID_TAG_NAME;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre;
 
 public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
-        MaidConfigManager.View, MaidItemManager.View, MaidEffectsManager.View, MaidDataManager.View, MaidActionView.View, MaidModelView.View {
+        MaidConfigManager.View,
+        MaidItemManager.View,
+        MaidEffectsManager.View,
+        MaidDataManager.View,
+        MaidActionView.View,
+        MaidModelView.View {
+
     public static final EntityType<EntityMaid> TYPE = EntityType.Builder.<EntityMaid>of(EntityMaid::new, MobCategory.CREATURE)
             .sized(0.6f, 1.5f).clientTrackingRange(10)
             .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid")));
 
     // 女仆默认属性
-    public static final String MODEL_ID_TAG = MODEL_ID_TAG_NAME;
-    public static final String SOUND_PACK_ID_TAG = "SoundPackId";
     public static final String MAID_BACKPACK_TYPE = "MaidBackpackType";
     public static final String EXPERIENCE_TAG = "MaidExperience";
     public static final String MAID_INVENTORY_TAG = "MaidInventory";
@@ -161,9 +163,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
 
     // 女仆默认同步数据
-    private static final EntityDataAccessor<String> DATA_MODEL_ID = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> DATA_SOUND_PACK_ID = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<String> DATA_TASK = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> DATA_BEGGING = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_INVULNERABLE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_HUNGER = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.INT);
@@ -200,7 +199,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     static final EntityDataAccessor<Boolean> OPEN_FENCE_GATE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     static final EntityDataAccessor<Boolean> ACTIVE_CLIMBING = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
 
-    private static final String TASK_TAG = "MaidTask";
     private static final String STRUCK_BY_LIGHTNING_TAG = "StruckByLightning";
     private static final String INVULNERABLE_TAG = "Invulnerable";
     private static final String HUNGER_TAG = "MaidHunger";
@@ -257,7 +255,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     public boolean shouldReset = false;
 
     private List<SendEffectPackage.EffectData> effects = Lists.newArrayList();
-    private IMaidTask task = TaskManager.getIdleTask();
+    IMaidTask task = TaskManager.getIdleTask();
     private IMaidBackpack backpack = BackpackManager.getEmptyBackpack();
     private int playerHurtSoundCount = 120;
     private int backpackDelay = 0;
@@ -377,9 +375,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
 
-        builder.define(DATA_MODEL_ID, DEFAULT_MODEL_ID);
-        builder.define(DATA_SOUND_PACK_ID, DefaultMaidSoundPack.getInitSoundPackId());
-        builder.define(DATA_TASK, TaskIdle.UID.toString());
         builder.define(DATA_BEGGING, false);
         builder.define(DATA_INVULNERABLE, false);
         builder.define(DATA_HUNGER, 0);
@@ -969,10 +964,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
-        output.store(MODEL_ID_TAG_NAME, Codec.STRING, getModelId());
 
-        output.store(SOUND_PACK_ID_TAG, Codec.STRING, getSoundPackId());
-        output.store(TASK_TAG, Codec.STRING, getTask().getUid().toString());
         itemManager.addAdditionalSaveData(output);
         output.store(STRUCK_BY_LIGHTNING_TAG, Codec.BOOL, isStruckByLightning());
         output.store(INVULNERABLE_TAG, Codec.BOOL, getIsInvulnerable());
@@ -997,15 +989,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
 
-        input.read(MODEL_ID_TAG_NAME, Codec.STRING).ifPresent(this::setModelId);
-        input.read(SOUND_PACK_ID_TAG, Codec.STRING).ifPresent(this::setSoundPackId);
         input.read(SCHEDULE_MODE_TAG, Codec.STRING).ifPresent(s -> setSchedule(MaidSchedule.valueOf(s)));
-        input.read(TASK_TAG, Codec.STRING).ifPresent(uidStr -> {
-            Identifier uid = Identifier.parse(uidStr);
-            IMaidTask task = TaskManager.findTask(uid).orElse(TaskManager.getIdleTask());
-            setTask(task);
-        });
-
         itemManager.readAdditionalSaveData(input);
 
         input.read(STRUCK_BY_LIGHTNING_TAG, Codec.BOOL).ifPresent(this::setStruckByLightning);
@@ -1424,22 +1408,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return backpackDelay > 0;
     }
 
-    public String getModelId() {
-        return this.entityData.get(DATA_MODEL_ID);
-    }
-
-    public void setModelId(String modelId) {
-        this.entityData.set(DATA_MODEL_ID, modelId);
-    }
-
-    public String getSoundPackId() {
-        return this.entityData.get(DATA_SOUND_PACK_ID);
-    }
-
-    public void setSoundPackId(String soundPackId) {
-        this.entityData.set(DATA_SOUND_PACK_ID, soundPackId);
-    }
-
     public boolean isMaidInSittingPose() {
         return super.isInSittingPose();
     }
@@ -1613,22 +1581,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     public void setEntityInvulnerable(boolean isInvulnerable) {
         super.setInvulnerable(isInvulnerable);
         this.entityData.set(DATA_INVULNERABLE, isInvulnerable);
-    }
-
-    public IMaidTask getTask() {
-        Identifier uid = Identifier.parse(entityData.get(DATA_TASK));
-        return TaskManager.findTask(uid).orElse(TaskManager.getIdleTask());
-    }
-
-    public void setTask(IMaidTask task) {
-        if (task == this.task) {
-            return;
-        }
-        this.task = task;
-        this.entityData.set(DATA_TASK, task.getUid().toString());
-        if (level instanceof ServerLevel) {
-            refreshBrain((ServerLevel) level);
-        }
     }
 
     @Override
