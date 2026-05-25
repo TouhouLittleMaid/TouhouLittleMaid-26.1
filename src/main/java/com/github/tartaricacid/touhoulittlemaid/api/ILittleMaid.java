@@ -14,7 +14,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.ExtraMaidBrainMa
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlockManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleRegister;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.TaskDataRegister;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.control.BroomControlManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
@@ -77,14 +76,6 @@ public interface ILittleMaid {
      * @param manager 注册器
      */
     default void addMaidMeal(MaidMealManager manager) {
-    }
-
-    /**
-     * 注册任务数据，任务数据是一种可以自定义添加到女仆上的数据
-     *
-     * @param register 注册器
-     */
-    default void registerTaskData(TaskDataRegister register) {
     }
 
     /**

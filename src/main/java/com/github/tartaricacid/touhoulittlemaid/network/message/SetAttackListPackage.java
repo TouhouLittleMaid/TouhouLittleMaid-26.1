@@ -1,9 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.data.inner.AttackListData;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitTaskData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -44,7 +42,8 @@ public record SetAttackListPackage(int entityId,
     private static void writeList(SetAttackListPackage message, Player sender) {
         Entity entity = sender.level.getEntity(message.entityId);
         if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
-            maid.setAndSyncData(InitTaskData.ATTACK_LIST, new AttackListData(message.attackGroups));
+            // TODO
+            // maid.setAndSyncData(InitTaskData.ATTACK_LIST, new AttackListData(message.attackGroups));
         }
     }
 

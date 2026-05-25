@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatMana
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IBackpackData;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.api.entity.data.TaskDataKey;
 import com.github.tartaricacid.touhoulittlemaid.api.event.*;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
@@ -29,7 +28,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.backpack.EmptyBackpack;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleDataCollection;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleRegister;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.MaidTaskDataMaps;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
@@ -57,8 +55,6 @@ import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -118,12 +114,6 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.transfer.CombinedResourceHandler;
-import net.neoforged.neoforge.transfer.RangedResourceHandler;
-import net.neoforged.neoforge.transfer.ResourceHandler;
-import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -210,10 +200,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     static final EntityDataAccessor<Boolean> OPEN_FENCE_GATE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     static final EntityDataAccessor<Boolean> ACTIVE_CLIMBING = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
 
-    /**
-     * 开辟空间给任务存储使用,也便于附属模组存储数据
-     */
-    private static final EntityDataAccessor<MaidTaskDataMaps> TASK_DATA_SYNC = SynchedEntityData.defineId(EntityMaid.class, MaidTaskDataMaps.SERIALIZER_INSTANCE);
     private static final String TASK_TAG = "MaidTask";
     private static final String STRUCK_BY_LIGHTNING_TAG = "StruckByLightning";
     private static final String INVULNERABLE_TAG = "Invulnerable";
@@ -247,7 +233,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     private final MaidKillRecordManager killRecordManager = new MaidKillRecordManager();
     private final ChatBubbleManager chatBubbleManager = new ChatBubbleManager(this);
-    private final MaidTaskDataMaps taskDataMaps = new MaidTaskDataMaps();
     private final FavorabilityManager favorabilityManager;
     private final MaidSwimManager swimManager;
     // 控制不同的 navigation 切换的条件以及切换后变更女仆相关的 AI 控制参数
@@ -278,7 +263,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     private int backpackDelay = 0;
     private int passiveUseShieldTick = 0;
     private @Nullable IBackpackData backpackData = null;
-    private boolean syncTaskDataMaps = false;
     MaidConfigManager configManager = new MaidConfigManager(this.entityData);
     private MaidGameRecordManager gameRecordManager = new MaidGameRecordManager(this);
 
@@ -325,6 +309,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         this(TYPE, worldIn);
     }
 
+    @Override
     public MaidConfigManager getConfigManager() {
         return configManager;
     }
@@ -410,7 +395,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         builder.define(BACKPACK_TYPE, EmptyBackpack.ID.toString());
         builder.define(BACKPACK_ITEM_SHOW, ItemStack.EMPTY);
         builder.define(BACKPACK_FLUID, StringUtils.EMPTY);
-        builder.define(TASK_DATA_SYNC, new MaidTaskDataMaps());
 
         builder.define(DATA_IS_AIMING, false);
 
@@ -428,36 +412,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         super.onSyncedDataUpdated(key);
-    }
-
-    /**
-     * 获取注册的数据
-     */
-    @Nullable
-    public <T> T getData(TaskDataKey<T> dataKey) {
-        return this.taskDataMaps.getData(dataKey);
-    }
-
-    /**
-     * 创建或获取注册的数据
-     */
-    public <T> T getOrCreateData(TaskDataKey<T> dataKey, T defaultValue) {
-        return this.taskDataMaps.getOrCreateData(dataKey, defaultValue);
-    }
-
-    /**
-     * 设置数据
-     */
-    public <T> void setData(TaskDataKey<T> dataKey, T value) {
-        this.taskDataMaps.setData(dataKey.id(), value);
-    }
-
-    /**
-     * 设置数据，并将其同步到客户端
-     */
-    public <T> void setAndSyncData(TaskDataKey<T> dataKey, T value) {
-        this.setData(dataKey, value);
-        this.syncTaskDataMaps = true;
     }
 
     @Override
@@ -543,7 +497,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         this.effectsManager.spawnPortalParticle();
         this.randomRestoreHealth();
         this.onMaidSleep();
-        this.syncData();
         this.gameRecordManager.tick();
     }
 
@@ -554,16 +507,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         if (vehicle != null && !vehicle.is(TagEntity.MAID_VEHICLE_ROTATE_BLOCKLIST)) {
             this.setYHeadRot(vehicle.getYRot());
             this.setYBodyRot(vehicle.getYRot());
-        }
-    }
-
-    /**
-     * 把数据同步到客户端
-     */
-    private void syncData() {
-        if (!this.level.isClientSide() && this.syncTaskDataMaps) {
-            this.setSyncTaskData();
-            this.syncTaskDataMaps = false;
         }
     }
 
@@ -632,8 +575,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
             InteractMaidEvent event = new InteractMaidEvent(playerIn, this, stack);
             // 利用短路原理，逐个触发对应的交互事件
             if (NeoForge.EVENT_BUS.post(event).isCanceled()
-                    || stack.interactLivingEntity(playerIn, this, hand).consumesAction()
-                    || openMaidGui(playerIn)) {
+                || stack.interactLivingEntity(playerIn, this, hand).consumesAction()
+                || openMaidGui(playerIn)) {
                 return InteractionResult.SUCCESS;
             }
         } else {
@@ -889,8 +832,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     private void sendMaidPos() {
         if (this.dead && this.level instanceof ServerLevel level
-                && level.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
-                && this.getOwner() instanceof ServerPlayer serverPlayer) {
+            && level.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
+            && this.getOwner() instanceof ServerPlayer serverPlayer) {
             // 支持旅行地图格式
             // [name:"name", x:-136, y:36, z:48, dim:minecraft:the_nether]
             BlockPos blockPos = this.blockPosition();
@@ -1046,7 +989,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         if (this.backpackData != null) {
             this.backpackData.save(output.child(BACKPACK_DATA_TAG), this);
         }
-        this.taskDataMaps.writeSaveData(output);
         this.killRecordManager.addAdditionalSaveData(output);
         this.aiChatManager.saveValue(output);
     }
@@ -1054,8 +996,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        this.taskDataMaps.readSaveData(input);
-        this.setSyncTaskData();
 
         input.read(MODEL_ID_TAG_NAME, Codec.STRING).ifPresent(this::setModelId);
         input.read(SOUND_PACK_ID_TAG, Codec.STRING).ifPresent(this::setSoundPackId);
@@ -1159,8 +1099,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         // TODO: 尝试修复可能存在的目标生成丢失问题，可能会有问题
         if (reason == RemovalReason.KILLED && !alreadyDropped) {
             // 女仆被指令杀后也正常生成墓碑
-            if (this.level instanceof ServerLevel level)
+            if (this.level instanceof ServerLevel level) {
                 this.dropEquipment(level);
+            }
         }
         super.remove(reason);
     }
@@ -1698,14 +1639,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     public MaidGameRecordManager getGameRecordManager() {
         return gameRecordManager;
-    }
-
-    private MaidTaskDataMaps getSyncTaskData() {
-        return this.entityData.get(TASK_DATA_SYNC);
-    }
-
-    private void setSyncTaskData() {
-        this.entityData.set(TASK_DATA_SYNC, this.taskDataMaps, true);
     }
 
     @Override

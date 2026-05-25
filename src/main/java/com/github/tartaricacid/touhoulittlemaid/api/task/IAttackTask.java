@@ -1,12 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.api.task;
 
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.inner.AttackListData;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.AbstractEntityFromItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.DefaultMonsterType;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitTaskData;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.AttackTaskConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.util.TaskEquipUtil;
@@ -69,14 +67,15 @@ public interface IAttackTask extends IMaidTask {
         }
 
         MonsterType monsterType;
-        AttackListData attackListData = maid.getData(InitTaskData.ATTACK_LIST);
-        if (attackListData != null && attackListData.attackGroups().containsKey(id)) {
-            // 获取女仆 Task Data 里设置的
-            monsterType = attackListData.attackGroups().get(id);
-        } else {
-            // 那如果没有呢？走默认配置
-            monsterType = DefaultMonsterType.getMonsterType(target);
-        }
+        //  TODO 已经删除，需要使用 NeoForge 的 DataAttachment
+//        AttackListData attackListData = maid.getData(InitTaskData.ATTACK_LIST);
+//        if (attackListData != null && attackListData.attackGroups().containsKey(id)) {
+//            // 获取女仆 Task Data 里设置的
+//            monsterType = attackListData.attackGroups().get(id);
+//        } else {
+        // 那如果没有呢？走默认配置
+        monsterType = DefaultMonsterType.getMonsterType(target);
+        //}
         return DefaultMonsterType.canAttack(maid, target, monsterType);
     }
 

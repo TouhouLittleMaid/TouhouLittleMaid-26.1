@@ -13,7 +13,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlock
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.fishing.FishingTypeManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleRegister;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.TaskDataRegister;
 import com.github.tartaricacid.touhoulittlemaid.entity.info.ServerCustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.control.BroomControlManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
@@ -58,7 +57,6 @@ public final class CommonRegistry {
         MultiBlockManager.init();
         ChestManager.init();
         MaidMealManager.init();
-        TaskDataRegister.init();
         FishingTypeManager.init();
         SerializerRegister.init();
         // FunctionCallRegister.init();

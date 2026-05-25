@@ -3,9 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.MonsterListButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.inner.AttackListData;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
-import com.github.tartaricacid.touhoulittlemaid.init.InitTaskData;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.TaskConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetAttackListPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
@@ -28,9 +26,9 @@ import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
 
@@ -50,7 +48,8 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
 
     public AttackTaskConfigGui(TaskConfigContainer screenContainer, Inventory inv, Component titleIn) {
         super(screenContainer, inv, titleIn);
-        this.attackGroups = Objects.requireNonNullElse(this.getMaid().getData(InitTaskData.ATTACK_LIST), AttackListData.empty()).attackGroups();
+        // TODO 应该读取实体攻击列表
+        this.attackGroups = Collections.emptyMap();
         this.attackGroupsKey = Lists.newArrayList();
         this.sortKey();
     }
