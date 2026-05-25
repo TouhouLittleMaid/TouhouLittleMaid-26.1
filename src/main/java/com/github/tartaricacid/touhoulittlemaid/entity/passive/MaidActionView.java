@@ -74,7 +74,7 @@ public class MaidActionView {
             }
             if (dropBlock) {
                 BlockEntity blockEntity = blockState.hasBlockEntity() ? level.getBlockEntity(blockPos) : null;
-                maid.itemManager.dropResourcesToMaidInv(blockState, level, blockPos, blockEntity, ItemStack.EMPTY);
+                maid.dropResourcesToMaidInv(blockState, level, blockPos, blockEntity, maid, ItemStack.EMPTY);
             }
             boolean setResult = level.setBlock(blockPos, fluidState.createLegacyBlock(), Block.UPDATE_ALL);
             if (setResult) {

@@ -525,7 +525,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     public void tick() {
         if (!NeoForge.EVENT_BUS.post(new MaidTickEvent(this)).isCanceled()) {
             super.tick();
-            itemManager.maidBauble.fireEvent((b, s) -> {
+            getMaidBauble().fireEvent((b, s) -> {
                 b.onTick(this, s);
                 return false;
             });
@@ -729,7 +729,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         }
 
         // 调用饰品的攻击
-        itemManager.maidBauble.fireEvent((b, s) -> {
+        getMaidBauble().fireEvent((b, s) -> {
             b.onMeleeAttack(this, s, target);
             return false;
         });
@@ -841,7 +841,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
             // 饰品
             MutableFloat newDamage = new MutableFloat(peek.getNewDamage());
-            boolean baubleCancel = itemManager.maidBauble.fireEvent((b, s) -> b.onInjured(this, s, damageSrc, newDamage));
+            boolean baubleCancel = getMaidBauble().fireEvent((b, s) -> b.onInjured(this, s, damageSrc, newDamage));
             float damageAfterAbsorption = newDamage.getValue();
             // 如果饰品取消了事件，那么也不触发后续内容了
             if (baubleCancel || damageAfterAbsorption <= 0) {
@@ -899,7 +899,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     @Override
     public void die(DamageSource cause) {
-        boolean baubleCancel = itemManager.maidBauble.fireEvent((b, s) -> b.onDeath(this, s, cause));
+        boolean baubleCancel = getMaidBauble().fireEvent((b, s) -> b.onDeath(this, s, cause));
         if (!baubleCancel && !NeoForge.EVENT_BUS.post(new MaidDeathEvent(this, cause)).isCanceled()) {
             // 清除死亡时需要清除的内容
             this.clearFire();
@@ -933,7 +933,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     }
 
     public boolean canPickup(Entity pickupEntity) {
-        return itemManager.canPickup(pickupEntity, false);
+        return canPickup(pickupEntity, false);
     }
 
     @Override
@@ -963,7 +963,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         if (!(this.getMainHandItem().getItem() instanceof ProjectileWeaponItem weaponItem)) {
             return ItemStack.EMPTY;
         }
-        var handler = this.itemManager.getAvailableInv(true);
+        var handler = this.getAvailableInv(true);
         int slot = ItemsUtil.findStackSlot(handler, weaponItem.getAllSupportedProjectiles());
         if (slot < 0) {
             // 不存在时，返回空
@@ -1000,7 +1000,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
         IMaidTask maidTask = this.getTask();
         if (maidTask instanceof IRangedAttackTask rangedAttackTask) {
             // 调用饰品的攻击
-            itemManager.maidBauble.fireEvent((b, s) -> {
+            getMaidBauble().fireEvent((b, s) -> {
                 b.onRangedAttack(this, s, rangedAttackTask);
                 return false;
             });
@@ -1045,7 +1045,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     private void randomRestoreHealth() {
         if (this.getHealth() < this.getMaxHealth() && random.nextFloat() < 0.0025) {
             this.heal(1);
-            this.effectsManager.spawnRestoreHealthParticle(random.nextInt(3) + 7);
+            this.spawnRestoreHealthParticle(random.nextInt(3) + 7);
         }
     }
 
@@ -1330,7 +1330,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        if (!effectsManager.mayPlaySound()) {
+        if (!mayPlaySound()) {
             return null;
         }
         return task.getAmbientSound(this);
@@ -1339,7 +1339,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        if (!effectsManager.mayPlaySound()) {
+        if (!mayPlaySound()) {
             return null;
         }
         if (damageSourceIn.is(DamageTypeTags.IS_FIRE)) {
@@ -1358,7 +1358,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob, IMai
 
     @Override
     protected SoundEvent getDeathSound() {
-        if (!effectsManager.mayPlaySound()) {
+        if (!mayPlaySound()) {
             return null;
         }
         return InitSounds.MAID_DEATH.get();

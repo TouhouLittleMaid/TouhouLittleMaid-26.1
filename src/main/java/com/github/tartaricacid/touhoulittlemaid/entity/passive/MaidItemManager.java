@@ -203,7 +203,7 @@ public class MaidItemManager {
             if (!simulate) {
                 // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
                 maid.take(arrow, 1);
-                maid.effectsManager.tryPlayMaidPickupSound();
+                maid.tryPlayMaidPickupSound();
                 arrow.discard();
             }
             return true;
@@ -232,7 +232,7 @@ public class MaidItemManager {
             if (!simulate) {
                 // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
                 maid.take(entityItem, count - itemstack.getCount());
-                maid.effectsManager.tryPlayMaidPickupSound();
+                maid.tryPlayMaidPickupSound();
                 ItemStack copy = new ItemStack(itemstack.getItem(), count - itemstack.getCount());
                 // 如果遍历塞完后发现为空了
                 if (itemstack.isEmpty()) {
@@ -257,7 +257,7 @@ public class MaidItemManager {
         if (!maid.level.isClientSide() && entityXPOrb.isAlive() && entityXPOrb.tickCount > 2) {
             // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
             maid.take(entityXPOrb, 1);
-            maid.effectsManager.tryPlayMaidPickupSound();
+            maid.tryPlayMaidPickupSound();
 
             // 对经验修补的应用，因为全部来自于原版，所以效果也是相同的
             var allItems = new CombinedResourceHandler<>(armorInvWrapper, handsInvWrapper, maidBauble);
@@ -282,7 +282,7 @@ public class MaidItemManager {
         if (!maid.level.isClientSide() && powerPoint.isAlive() && powerPoint.throwTime == 0) {
             // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
             powerPoint.take(maid, 1);
-            maid.effectsManager.tryPlayMaidPickupSound();
+            maid.tryPlayMaidPickupSound();
 
             // 对经验修补的应用，因为全部来自于原版，所以效果也是相同的
             var allItems = getAllInv();
