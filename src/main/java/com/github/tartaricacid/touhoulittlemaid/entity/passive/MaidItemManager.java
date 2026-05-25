@@ -338,7 +338,7 @@ public class MaidItemManager {
             if (checkInWater && pickupEntity.isInWater()) {
                 return false;
             }
-            PickType pickupType = maid.configManager.getPickupType();
+            PickType pickupType = maid.getConfigManager().getPickupType();
             if (pickupType.canPickItem() && pickupEntity instanceof ItemEntity) {
                 return pickupItem((ItemEntity) pickupEntity, true);
             }

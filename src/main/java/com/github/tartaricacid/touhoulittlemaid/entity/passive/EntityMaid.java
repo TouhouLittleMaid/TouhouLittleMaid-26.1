@@ -141,7 +141,7 @@ import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre;
 
 public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
-        MaidItemManager.View, MaidEffectsManager.View, MaidDataManager.View, MaidActionView.View, MaidModelView.View {
+        MaidConfigManager.View, MaidItemManager.View, MaidEffectsManager.View, MaidDataManager.View, MaidActionView.View, MaidModelView.View {
     public static final EntityType<EntityMaid> TYPE = EntityType.Builder.<EntityMaid>of(EntityMaid::new, MobCategory.CREATURE)
             .sized(0.6f, 1.5f).clientTrackingRange(10)
             .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid")));
@@ -236,11 +236,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return stack.getItem().canFitInsideContainerItems();
     }
 
-    public final MaidDataManager dataManager = new MaidDataManager(this);
-    public final MaidItemManager itemManager = new MaidItemManager(this);
-    public final MaidEffectsManager effectsManager = new MaidEffectsManager(this);
-    public final MaidActionView actionView = new MaidActionView(this);
-    public final MaidModelView modelView = new MaidModelView(this);
+    private final MaidDataManager dataManager = new MaidDataManager(this);
+    private final MaidItemManager itemManager = new MaidItemManager(this);
+    private final MaidEffectsManager effectsManager = new MaidEffectsManager(this);
+    private final MaidActionView actionView = new MaidActionView(this);
+    private final MaidModelView modelView = new MaidModelView(this);
 
     public final ItemStack[] handItemsForAnimation = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY};
 
@@ -325,9 +325,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         this(TYPE, worldIn);
     }
 
-    @Override
-    public MaidActionView getActionView() {
-        return actionView;
+    public MaidConfigManager getConfigManager() {
+        return configManager;
     }
 
     @Override
@@ -343,6 +342,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public MaidItemManager getItemManager() {
         return itemManager;
+    }
+
+    @Override
+    public MaidActionView getActionView() {
+        return actionView;
     }
 
     @Override
@@ -1507,18 +1511,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         this.entityData.set(DATA_BEGGING, begging);
     }
 
-    public boolean isHomeModeEnable() {
-        return this.configManager.isHomeModeEnable();
-    }
-
-    public void setHomeModeEnable(boolean enable) {
-        this.configManager.setHomeModeEnable(enable);
-    }
-
-    public MaidConfigManager getConfigManager() {
-        return configManager;
-    }
-
     @Override
     public boolean isWithinHome() {
         return this.isWithinHome(this.blockPosition());
@@ -1569,22 +1561,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     public boolean canBrainMoving() {
         return !this.isMaidInSittingPose() && !this.isPassenger() && !this.isSleeping() && !this.isLeashed();
-    }
-
-    public boolean isPickup() {
-        return this.configManager.isPickup();
-    }
-
-    public void setPickup(boolean isPickup) {
-        this.configManager.setPickup(isPickup);
-    }
-
-    public boolean isRideable() {
-        return this.configManager.isRideable();
-    }
-
-    public void setRideable(boolean rideable) {
-        this.configManager.setRideable(rideable);
     }
 
     public int getHunger() {

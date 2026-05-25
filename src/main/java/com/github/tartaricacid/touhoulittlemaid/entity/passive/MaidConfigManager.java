@@ -179,6 +179,37 @@ public class MaidConfigManager {
         this.entityData.set(ACTIVE_CLIMBING, activeClimbing);
     }
 
+    public interface View {
+
+        MaidConfigManager getConfigManager();
+
+        default boolean isPickup() {
+            return getConfigManager().isPickup();
+        }
+
+        default void setPickup(boolean isPickup) {
+            getConfigManager().setPickup(isPickup);
+        }
+
+        default boolean isRideable() {
+            return getConfigManager().isRideable();
+        }
+
+        default void setRideable(boolean rideable) {
+            getConfigManager().setRideable(rideable);
+        }
+
+        default boolean isHomeModeEnable() {
+            return getConfigManager().isHomeModeEnable();
+        }
+
+        default void setHomeModeEnable(boolean enable) {
+            getConfigManager().setHomeModeEnable(enable);
+        }
+
+
+    }
+
     public static final class SyncNetwork {
         private boolean showBackpack;
         private boolean showBackItem;
