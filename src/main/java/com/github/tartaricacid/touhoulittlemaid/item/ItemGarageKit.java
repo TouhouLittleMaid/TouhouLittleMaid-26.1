@@ -2,24 +2,17 @@ package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
-import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
-import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.YsmMaidInfo;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
-import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -52,8 +45,6 @@ public class ItemGarageKit extends BlockItem {
         CompoundTag data = new CompoundTag();
         data.putString(ENTITY_ID_TAG_NAME, DEFAULT_ENTITY_ID);
         data.putString(MODEL_ID_TAG_NAME, DEFAULT_MODEL_ID);
-        // 默认数据需要强制指定 YSM 渲染为空
-        data.putBoolean(EntityMaid.IS_YSM_MODEL_TAG, false);
         return CustomData.of(data);
     }
 
@@ -74,22 +65,6 @@ public class ItemGarageKit extends BlockItem {
                 return prefix.append(entityType.getDescription());
             }
 
-            // 优先使用 YSM 模型名称
-            if (YsmCompat.isInstalled()) {
-                YsmMaidInfo ysmMaidInfo = YsmCompat.getYsmMaidInfo(data.copyTag());
-                if (ysmMaidInfo.isYsmModel()) {
-                    JsonObject object = GsonHelper.parse(ysmMaidInfo.name());
-                    Component name = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, object)
-                            .result()
-                            .orElse(Component.empty());
-                    if (name.equals(Component.empty())) {
-                        return prefix.append(ysmMaidInfo.modelId());
-                    }
-                    return prefix.append(name);
-                }
-            }
-
-            // 然后才是默认模型名
             String modelId = tag.getStringOr(MODEL_ID_TAG_NAME, DEFAULT_MODEL_ID);
             MaidModelInfo info = CustomPackLoader.MAID_MODELS.getInfo(modelId).orElse(null);
             if (info != null) {

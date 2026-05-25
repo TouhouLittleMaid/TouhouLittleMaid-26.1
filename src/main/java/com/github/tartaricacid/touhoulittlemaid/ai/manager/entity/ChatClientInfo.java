@@ -2,7 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
-import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.google.common.collect.Lists;
@@ -51,11 +50,6 @@ public record ChatClientInfo(String language, String name, List<String> descript
 
     private static List<String> getMaidDescription(EntityMaid maid) {
         List<String> description = Lists.newArrayList();
-        // YSM 模型没有描述文本
-        if (YsmCompat.isInstalled() && maid.isYsmModel()) {
-            return description;
-        }
-        // 然后才是默认描述文本
         Optional<MaidModelInfo> info = CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId());
         if (info.isPresent()) {
             MaidModelInfo maidModelInfo = info.get();

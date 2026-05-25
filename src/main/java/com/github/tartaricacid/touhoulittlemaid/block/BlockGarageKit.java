@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
@@ -77,8 +76,6 @@ public class BlockGarageKit extends Block implements EntityBlock {
             Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get());
             data.putString(InitDataComponent.ENTITY_ID_TAG_NAME, key.toString());
             data.putString(MODEL_ID_TAG_NAME, modelId);
-            // 创造模式物品栏数据需要强制指定 YSM 渲染为空
-            data.putBoolean(EntityMaid.IS_YSM_MODEL_TAG, false);
             stack.set(InitDataComponent.MAID_INFO, CustomData.of(data));
             items.accept(stack);
         }

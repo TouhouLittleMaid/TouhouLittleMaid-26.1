@@ -11,7 +11,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.IValue;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContext;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoLocatorType;
@@ -19,7 +18,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContaine
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
-import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -33,7 +31,7 @@ import org.joml.Math;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> implements IGeoEntity {
+public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static final AttachmentType<GeckoMaidEntity> TYPE = AttachmentType.builder(holder -> {
         if (holder instanceof EntityMaid maid) {
@@ -197,17 +195,14 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> i
         }
     }
 
-    @Override
     public EntityMaid getMaid() {
         return maid;
     }
 
-    @Override
     public MaidModelInfo getMaidInfo() {
         return maidInfo;
     }
 
-    @Override
     public void setMaidInfo(MaidModelInfo info) {
         if (this.maidInfo != info) {
             this.maidInfo = info;
@@ -219,14 +214,6 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> i
     public void reset() {
         super.reset();
         this.maidInfo = null;
-    }
-
-    @Override
-    public void setYsmModel(String modelId, String texture) {
-    }
-
-    @Override
-    public void updateRoamingVars(Object2FloatOpenHashMap<String> roamingVars) {
     }
 
     public IMagicCastingState.CastingPhase getLastCastingPhase() {
