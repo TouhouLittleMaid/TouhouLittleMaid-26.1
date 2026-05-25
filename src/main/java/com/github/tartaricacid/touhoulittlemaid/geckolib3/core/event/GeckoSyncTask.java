@@ -1,13 +1,14 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 
-public class AnimationSyncTask extends AnimationUpdateTask {
-    private AnimationEvent<?> result;
+public class GeckoSyncTask<TData extends GeckoRenderData> extends GeckoUpdateTask<TData> {
+    private TData result;
 
-    public AnimationSyncTask(Callable<@Nullable AnimationEvent<?>> supplier) {
+    public GeckoSyncTask(Callable<@Nullable TData> supplier) {
         super(supplier);
     }
 
@@ -24,7 +25,7 @@ public class AnimationSyncTask extends AnimationUpdateTask {
     }
 
     @Override
-    public @Nullable AnimationEvent<?> getResult() {
+    public @Nullable TData getResult() {
         start();
         return result;
     }

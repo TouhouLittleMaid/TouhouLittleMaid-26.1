@@ -3,6 +3,8 @@ package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 // 不要用枚举
 public class GeoLocatorType {
     public static final GeoLocatorType LEFT_HAND = new GeoLocatorType("LeftHandLocator");
@@ -20,6 +22,9 @@ public class GeoLocatorType {
     private final byte seq;
 
     public GeoLocatorType(String name) {
+        if (Inner.FROZEN.getAcquire()) {
+            throw new IllegalStateException();
+        }
         this.name = name;
         synchronized (Inner.NAME_MAP) {
             this.seq = (byte) Inner.NAME_MAP.size();
@@ -44,7 +49,12 @@ public class GeoLocatorType {
         return Inner.NAME_MAP.get(name);
     }
 
+    public static void freeze() {
+        Inner.FROZEN.setRelease(true);
+    }
+
     private static class Inner {
         private static final Object2ReferenceOpenHashMap<String, GeoLocatorType> NAME_MAP = new Object2ReferenceOpenHashMap<>(16);
+        private static final AtomicBoolean FROZEN = new AtomicBoolean(false);
     }
 }

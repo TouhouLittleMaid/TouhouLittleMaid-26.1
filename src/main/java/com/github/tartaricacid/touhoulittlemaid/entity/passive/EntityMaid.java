@@ -58,6 +58,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.ItemBreakPackage
 import com.github.tartaricacid.touhoulittlemaid.network.message.PlayMaidSoundPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SyncYsmMaidDataPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
@@ -299,6 +300,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob {
     private final SchedulePos schedulePos;
     private final ItemCooldowns cooldowns;
 
+    // 是否为预览用实体
+    public final boolean previewEntity;
+
     public boolean guiOpening = false;
     public MaidFishingHook fishing = null;
 
@@ -360,6 +364,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob {
         this.navigationManager = new MaidNavigationManager(this);
 
         this.cooldowns = new ItemCooldowns();
+
+        this.previewEntity = EntityCacheUtil.creatingPreviewEntity();
 
         // 启用实体持久化，也许能解决难以复现的女仆实体丢失问题
         this.setPersistenceRequired();

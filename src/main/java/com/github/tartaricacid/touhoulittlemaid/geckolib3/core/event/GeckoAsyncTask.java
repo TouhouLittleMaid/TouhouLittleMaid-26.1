@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event;
 
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import com.github.tartaricacid.touhoulittlemaid.util.ThreadTools;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,11 +11,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AnimationAsyncTask extends AnimationUpdateTask {
+public class GeckoAsyncTask<TData extends GeckoRenderData> extends GeckoUpdateTask<TData> {
     private final AtomicBoolean flag = new AtomicBoolean(true);
-    private final AtomicReference<Future<@Nullable AnimationEvent<?>>> future = new AtomicReference<>(null);
+    private final AtomicReference<Future<@Nullable TData>> future = new AtomicReference<>(null);
 
-    public AnimationAsyncTask(Callable<@Nullable AnimationEvent<?>> supplier) {
+    public GeckoAsyncTask(Callable<@Nullable TData> supplier) {
         super(supplier);
     }
 
@@ -26,12 +27,13 @@ public class AnimationAsyncTask extends AnimationUpdateTask {
     }
 
     @Override
+    @SuppressWarnings("DataFlowIssue")
     public void start() {
         if (future.getAcquire() == null) {
             try (var _ = lock()) {
                 if (future.getAcquire() == null) {
-                    VarHandle.releaseFence();
                     final var supplierValue = this.supplier;
+                    VarHandle.releaseFence();
                     future.setRelease(ThreadTools.submit(() -> {
                         try {
                             VarHandle.acquireFence();
@@ -48,7 +50,7 @@ public class AnimationAsyncTask extends AnimationUpdateTask {
 
     @Override
     @Nullable
-    public AnimationEvent<?> getResult() {
+    public TData getResult() {
         try {
             var futureValue = future.getAcquire();
             if (futureValue == null) {

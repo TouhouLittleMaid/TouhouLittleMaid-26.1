@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.client.tooltip;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
@@ -19,15 +18,12 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.StringUtils;
 import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.models.SpecialMaidModelResolver.EASTER_EGG_MODEL;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
@@ -99,16 +95,7 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
         Quaternionf pose = (new Quaternionf()).rotateZ((float) Math.PI);
         Quaternionf rotation = (new Quaternionf()).rotateY((float) Math.toRadians(rot));
         pose.mul(rotation);
-        EntityMaid maid;
-        try {
-            maid = (EntityMaid) EntityCacheUtil.ENTITY_CACHE.get(EntityMaid.TYPE, () -> {
-                Entity e = EntityMaid.TYPE.create(world, EntitySpawnReason.EVENT);
-                return Objects.requireNonNullElseGet(e, () -> new EntityMaid(world));
-            });
-        } catch (ExecutionException | ClassCastException e) {
-            TouhouLittleMaid.LOGGER.error("Failed to render maid tooltip preview", e);
-            return;
-        }
+        EntityMaid maid = EntityCacheUtil.getMaid(world, EntitySpawnReason.EVENT);
         clearMaidDataResidue(maid, false);
         if (StringUtils.isNotBlank(customName)) {
             maid.setCustomName(customNameComponent);

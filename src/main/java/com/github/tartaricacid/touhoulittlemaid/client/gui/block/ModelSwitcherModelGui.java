@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.block;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail.MaidModelDetailsGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model.AbstractModelGui;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
@@ -12,14 +11,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.models.SpecialMaidModelResolver.EASTER_EGG_MODEL;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
@@ -121,16 +117,7 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
             return;
         }
 
-        EntityMaid maid;
-        try {
-            maid = (EntityMaid) EntityCacheUtil.ENTITY_CACHE.get(EntityMaid.TYPE, () -> {
-                Entity e = EntityMaid.TYPE.create(world, EntitySpawnReason.COMMAND);
-                return Objects.requireNonNullElseGet(e, () -> new EntityMaid(world));
-            });
-        } catch (ExecutionException | ClassCastException e) {
-            TouhouLittleMaid.LOGGER.error("Failed to render maid model preview", e);
-            return;
-        }
+        EntityMaid maid = EntityCacheUtil.getMaid(world, EntitySpawnReason.COMMAND);
 
         clearMaidDataResidue(maid, false);
         if (modelItem.getEasterEgg() != null) {

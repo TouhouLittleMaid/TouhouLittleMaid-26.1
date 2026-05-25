@@ -1,9 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.raw.pojo;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.util.StringUtil;
+import org.jetbrains.annotations.Debug;
 
+@Debug.Renderer(text = "name + \" <- \" + parent")
 public class Bone {
     @SerializedName("cubes")
     private Cube[] cubes;
@@ -23,9 +23,6 @@ public class Bone {
     private Boolean reset;
     @SerializedName("rotation")
     private float[] rotation = new float[]{0, 0, 0};
-
-    private transient int pooledName;
-    private transient int pooledParentName;
 
 /*
     @SerializedName("bind_pose_rotation")
@@ -78,26 +75,16 @@ public class Bone {
         return name;
     }
 
-    public int getPooledName() {
-        return pooledName;
-    }
-
     public void setName(String value) {
         this.name = value;
-        this.pooledName = StringPool.computeIfAbsent(value);
     }
 
     public String getParent() {
         return parent;
     }
 
-    public int getPooledParentName() {
-        return pooledParentName;
-    }
-
     public void setParent(String value) {
         this.parent = value;
-        this.pooledParentName = StringUtil.isNullOrEmpty(value) ? 0 : StringPool.computeIfAbsent(value);
     }
 
     public float[] getPivot() {

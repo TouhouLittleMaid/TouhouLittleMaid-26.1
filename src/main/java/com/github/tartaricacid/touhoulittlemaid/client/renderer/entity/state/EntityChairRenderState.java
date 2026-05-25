@@ -3,7 +3,8 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
-import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -24,11 +25,11 @@ public class EntityChairRenderState extends LivingEntityRenderState {
     @Nullable
     public AABB hitbox;
 
-    public EntityChair chair;   // TODO
-
     public boolean hasPassenger;
     public float passengerXRot;
     public float passengerYRot;
+
+    public GeckoUpdateTask<GeckoRenderData> geckoUpdateTask;
 
     public void clear() {
         modelType = ModelType.NONE;
@@ -39,9 +40,10 @@ public class EntityChairRenderState extends LivingEntityRenderState {
 
         hitbox = null;
 
-        chair = null;
         hasPassenger = false;
         passengerXRot = 0;
         passengerYRot = 0;
+
+        geckoUpdateTask = null;
     }
 }

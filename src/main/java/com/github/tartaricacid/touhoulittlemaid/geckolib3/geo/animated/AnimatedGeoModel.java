@@ -1,20 +1,16 @@
 package com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated;
 
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.util.StringPool;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoLocatorType;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoModel;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.*;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class AnimatedGeoModel {
-    private static final int HEAD_NAME = StringPool.computeIfAbsent("Head");
-
     private final GeoModel geoModel;
     private final ReferenceArrayList<AnimatedGeoBone> flatBoneList;
     private final Int2ReferenceOpenHashMap<AnimatedGeoBone> boneMap;
-
-    @Nullable
-    private final AnimatedGeoBone head;
+    private final ReferenceArrayList<ReferenceArrayList<AnimatedGeoBone>> locatorMap;
 
     public AnimatedGeoModel(GeoModel model) {
         this.geoModel = model;
@@ -25,7 +21,14 @@ public class AnimatedGeoModel {
         for (var bone : this.flatBoneList) {
             boneMap.put(bone.getPooledName(), bone);
         }
-        this.head = this.boneMap.get(HEAD_NAME);
+        this.locatorMap = new ReferenceArrayList<>(model.locatorMap().size());
+        for (var rawGroup : model.locatorMap()) {
+            var group = new ReferenceArrayList<AnimatedGeoBone>(rawGroup.size());
+            for (var rawBone : rawGroup) {
+                group.add(this.flatBoneList.get(rawBone.traverseOrder()));
+            }
+            this.locatorMap.add(group);
+        }
     }
 
     public GeoModel geoModel() {
@@ -40,8 +43,8 @@ public class AnimatedGeoModel {
         return boneMap;
     }
 
-    @Nullable
-    public AnimatedGeoBone head() {
-        return head;
+    @NotNull
+    public ReferenceArrayList<AnimatedGeoBone> locatorGroup(GeoLocatorType type) {
+        return locatorMap.get(type.getSeq());
     }
 }

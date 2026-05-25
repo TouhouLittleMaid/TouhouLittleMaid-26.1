@@ -18,14 +18,22 @@ public class GeoBuilder {
     public static GeoModel constructGeoModel(RawGeometryTree geometryTree) {
         var boneMaps = new Int2ReferenceOpenHashMap<GeoBone>(geometryTree.flatBoneList().size());
         var flatBoneList = new ReferenceArrayList<GeoBone>(geometryTree.flatBoneList().size());
+        var locatorMap = new ReferenceArrayList<ReferenceArrayList<GeoBone>>(geometryTree.locatorMap().size());
 
         for (var rawBone : geometryTree.flatBoneList()) {
             var geoBone = constructBone(rawBone, geometryTree.properties());
             flatBoneList.add(geoBone);
             boneMaps.put(geoBone.pooledName(), geoBone);
         }
+        for (var rawGroup : geometryTree.locatorMap()) {
+            var group = new ReferenceArrayList<GeoBone>(rawGroup.size());
+            for (var rawBone : rawGroup) {
+                group.add(flatBoneList.get(rawBone.traverseOrder));
+            }
+            locatorMap.add(group);
+        }
 
-        return new GeoModel(boneMaps, flatBoneList, geometryTree.properties());
+        return new GeoModel(boneMaps, flatBoneList, locatorMap, geometryTree.properties());
     }
 
     public static GeoBone constructBone(RawBoneGroup boneNode, ModelProperties properties) {
@@ -44,7 +52,7 @@ public class GeoBuilder {
         }
         GeoMesh mesh = meshBuilder.build();
 
-        return new GeoBone(rawBone.getName(),
+        return new GeoBone(rawBone.getName(), boneNode.pooledName,
                 new Vector3f(-pivot.x, pivot.y, pivot.z),
                 new Vector3f(Math.toRadians(rotation.x()), Math.toRadians(rotation.y()), Math.toRadians(rotation.z())),
                 mesh,

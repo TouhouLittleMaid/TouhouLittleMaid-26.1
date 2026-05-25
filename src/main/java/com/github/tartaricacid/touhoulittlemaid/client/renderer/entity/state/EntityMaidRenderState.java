@@ -3,7 +3,9 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.blockentity.state.BannerRenderState;
 import net.minecraft.client.renderer.blockentity.state.SkullBlockRenderState;
@@ -12,7 +14,6 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -49,8 +50,6 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
     public final ItemStackRenderState simpleHat = new ItemStackRenderState();
     public final ItemStackRenderState backItem = new ItemStackRenderState();
 
-    public Mob entity;  // TODO
-
     public long gameTime;
     @Nullable
     public ResourceKey<Level> dimension;
@@ -86,6 +85,8 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
     @Nullable
     public String taskId;
 
+    public GeckoUpdateTask<GeckoMaidRenderData> geckoUpdateTask;
+
     public void clear() {
         modelType = ModelType.NONE;
 
@@ -108,8 +109,6 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
         headBlock.clear();
         simpleHat.clear();
         backItem.clear();
-
-        entity = null;
 
         gameTime = 0;
         dimension = null;
@@ -141,5 +140,7 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
         hasFishingHook = false;
         onClimbable = false;
         taskId = null;
+
+        geckoUpdateTask = null;
     }
 }

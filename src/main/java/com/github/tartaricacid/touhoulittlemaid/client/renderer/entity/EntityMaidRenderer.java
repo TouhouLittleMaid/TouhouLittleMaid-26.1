@@ -2,11 +2,11 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.AnimationUpdateManager;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityMaidRenderer;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackItem;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBipedHead;
@@ -21,6 +21,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsComp
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.YsmCompat;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -83,7 +84,7 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         this.addLayer(new LayerMaidBackItem(this));
         // this.addLayer(new LayerMaidBanner(this));
         this.addAdditionMaidLayer(manager);
-        this.geckoEntityMaidRenderer = new GeckoEntityMaidRenderer<>(manager);
+        this.geckoEntityMaidRenderer = new GeckoEntityMaidRenderer(manager);
         this.initYsmModelRenderer(manager);
         this.chatBubbleRenderer2 = new ChatBubbleRenderer(this);
     }
@@ -94,13 +95,13 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void extractRenderState(EntityMaid entity, EntityMaidRenderState state, float partialTicks) {
         state.clear();
         super.extractRenderState(entity, state, partialTicks);
         ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, itemModelResolver, partialTicks);
 
         state.customName = entity.getCustomName();
-        state.entity = entity;  // TODO
         state.gameTime = entity.level().getGameTime();
         state.dimension = entity.level().dimension();
         state.raining = entity.level().isRaining();
@@ -196,11 +197,14 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         }
 
         // Gecko 动画更新要放在最后
-        if (state.mainInfo != null && state.mainInfo.isGeckoModel()) {
-            state.modelType = ModelType.GECKO;
-            var geckoEntity = getGeckoEntity(entity);
-            if (geckoEntity != null) {
-                AnimationUpdateManager.createTask(geckoEntity, state);
+        var geckoEntity = getGeckoEntity(entity);
+        if (geckoEntity != null) {
+            if (state.mainInfo != null && state.mainInfo.isGeckoModel()) {
+                state.modelType = ModelType.GECKO;
+                geckoEntity.setMaidInfo(state.mainInfo);
+                state.geckoUpdateTask = (GeckoUpdateTask<GeckoMaidRenderData>) geckoEntity.createUpdateTask(state);
+            } else {
+                geckoEntity.reset();
             }
         }
 

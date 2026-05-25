@@ -32,7 +32,6 @@
     // "client.ItemPropertiesMixin",
     "client.LanguageMixin",
     "client.LivingEntityRendererMixin",
-    "client.Matrix4fMixin",
     "client.InventoryScreenMixin",
     "client.LevelRendererMixin"
   ],

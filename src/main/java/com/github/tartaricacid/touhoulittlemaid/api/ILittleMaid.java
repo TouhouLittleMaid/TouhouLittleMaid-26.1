@@ -24,7 +24,6 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.chest.ChestManager;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.VisibleForDebug;
-import net.minecraft.world.entity.Mob;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
@@ -183,7 +182,7 @@ public interface ILittleMaid {
     /**
      * 添加 Gecko 风格的实体 layer 渲染
      */
-    default void addAdditionGeckoMaidLayer(GeckoEntityMaidRenderer<? extends Mob> renderer, EntityRendererProvider.Context context) {
+    default void addAdditionGeckoMaidLayer(GeckoEntityMaidRenderer renderer, EntityRendererProvider.Context context) {
     }
 
     /**

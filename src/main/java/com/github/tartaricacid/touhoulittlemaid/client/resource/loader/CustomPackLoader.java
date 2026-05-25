@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.Resourc
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.ChairModels;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.MaidModels;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.CustomSoundLoader;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.render.built.GeoLocatorType;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierAdapter;
 import com.github.tartaricacid.touhoulittlemaid.util.ZipFileCheck;
 import com.google.gson.Gson;
@@ -35,6 +36,9 @@ public class CustomPackLoader {
     private static final Marker MARKER = MarkerManager.getMarker("CustomPackLoader");
 
     public static void reloadPacks() {
+        // 冻结相关类型注册
+        freezeRegistry();
+
         // 清除
         MAID_MODELS.clearAll();
         CHAIR_MODELS.clearAll();
@@ -51,6 +55,10 @@ public class CustomPackLoader {
         MAID_MODELS.sortPackList();
         CHAIR_MODELS.sortPackList();
         CustomSoundLoader.sortSoundPack();
+    }
+
+    private static void freezeRegistry() {
+        GeoLocatorType.freeze();
     }
 
     private static void loadPacks(File packFolder) {

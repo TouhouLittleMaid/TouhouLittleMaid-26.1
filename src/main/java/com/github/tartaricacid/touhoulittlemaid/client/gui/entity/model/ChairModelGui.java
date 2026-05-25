@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail.ChairModelDetailsGui;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelInfo;
@@ -10,13 +9,11 @@ import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo> {
     private static int PAGE_INDEX = 0;
@@ -103,20 +100,7 @@ public class ChairModelGui extends AbstractModelGui<EntityChair, ChairModelInfo>
             return;
         }
 
-        EntityChair chair;
-        try {
-            chair = (EntityChair) EntityCacheUtil.ENTITY_CACHE.get(EntityChair.TYPE, () -> {
-                Entity e = EntityChair.TYPE.create(world, EntitySpawnReason.COMMAND);
-                if (e == null) {
-                    return new EntityChair(world);
-                } else {
-                    return e;
-                }
-            });
-        } catch (ExecutionException | ClassCastException e) {
-            TouhouLittleMaid.LOGGER.error("Failed to render chair model preview", e);
-            return;
-        }
+        EntityChair chair = EntityCacheUtil.getChair(world, EntitySpawnReason.COMMAND);
 
         chair.setModelId(modelItem.getModelId().toString());
         InventoryScreen.extractEntityInInventoryFollowsMouse(

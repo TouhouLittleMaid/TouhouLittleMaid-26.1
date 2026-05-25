@@ -118,17 +118,21 @@ public class GeckoContainerBuilder {
 
     public static AnimationFile getAnimationFile(InputStream stream) {
         AnimationFile animationFile = new AnimationFile();
-        MolangParser parser = GeckoLibCache.getInstance().parser;
-        JsonObject jsonObject = GsonHelper.fromJson(CustomPackLoader.GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
-        for (Map.Entry<String, JsonElement> entry : JsonAnimationUtils.getAnimations(jsonObject)) {
-            String animationName = entry.getKey();
-            Animation animation;
-            try {
-                animation = JsonAnimationUtils.deserializeJsonToAnimation(JsonAnimationUtils.getAnimation(jsonObject, animationName), parser);
-                animationFile.animations().put(animationName, animation);
-            } catch (ChainedJsonException e) {
-                TouhouLittleMaid.LOGGER.error("Failed to load animation {}: {}", animationName, e.getMessage());
+        MolangParser parser = GeckoLibCache.getInstance().parser.get();
+        try {
+            JsonObject jsonObject = GsonHelper.fromJson(CustomPackLoader.GSON, new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
+            for (Map.Entry<String, JsonElement> entry : JsonAnimationUtils.getAnimations(jsonObject)) {
+                String animationName = entry.getKey();
+                Animation animation;
+                try {
+                    animation = JsonAnimationUtils.deserializeJsonToAnimation(JsonAnimationUtils.getAnimation(jsonObject, animationName), parser);
+                    animationFile.animations().put(animationName, animation);
+                } catch (ChainedJsonException e) {
+                    TouhouLittleMaid.LOGGER.error("Failed to load animation {}: {}", animationName, e.getMessage());
+                }
             }
+        } finally {
+            parser.reset();
         }
         return animationFile;
     }
