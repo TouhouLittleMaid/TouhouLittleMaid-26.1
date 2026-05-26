@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.data.ChatTokensAttachment;
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
 import com.github.tartaricacid.touhoulittlemaid.data.PowerAttachment;
+import com.github.tartaricacid.touhoulittlemaid.entity.data.ConfigData;
 import com.github.tartaricacid.touhoulittlemaid.entity.data.ProfileData;
 import com.github.tartaricacid.touhoulittlemaid.entity.data.TaskData;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -26,4 +27,6 @@ public interface InitDataAttachment {
     Supplier<AttachmentType<ProfileData>> PROFILE = ATTACHMENT_TYPES.register("profile", () -> ProfileData.TYPE);
     // 工作模式相关
     Supplier<AttachmentType<TaskData>> TASK = ATTACHMENT_TYPES.register("task", () -> TaskData.TYPE);
+    // 女仆行为配置
+    Supplier<AttachmentType<ConfigData>> CONFIG = ATTACHMENT_TYPES.register("config", () -> ConfigData.TYPE);
 }

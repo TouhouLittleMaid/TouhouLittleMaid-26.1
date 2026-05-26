@@ -1,35 +1,25 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.data.ConfigData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidConfigManager;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.CONFIG;
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
-public record MaidSubConfigPackage(int id, MaidConfigManager.SyncNetwork syncNetwork) implements CustomPacketPayload {
+public record MaidSubConfigPackage(int id, ConfigData configData) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<MaidSubConfigPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("maid_sub_config"));
-    public static final StreamCodec<ByteBuf, MaidSubConfigPackage> STREAM_CODEC = new StreamCodec<>() {
-        @Override
-        public void encode(ByteBuf buffer, MaidSubConfigPackage message) {
-            FriendlyByteBuf buf = new FriendlyByteBuf(buffer);
-            buf.writeVarInt(message.id);
-            MaidConfigManager.SyncNetwork.encode(message.syncNetwork, buf);
-        }
-
-        @Override
-        public MaidSubConfigPackage decode(ByteBuf buffer) {
-            FriendlyByteBuf buf = new FriendlyByteBuf(buffer);
-            int entityId = buf.readVarInt();
-            MaidConfigManager.SyncNetwork network = MaidConfigManager.SyncNetwork.decode(buf);
-            return new MaidSubConfigPackage(entityId, network);
-        }
-    };
+    public static final StreamCodec<RegistryFriendlyByteBuf, MaidSubConfigPackage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.INT, MaidSubConfigPackage::id,
+            ConfigData.STREAM_CODEC, MaidSubConfigPackage::configData,
+            MaidSubConfigPackage::new
+    );
 
     @Override
     public Type<? extends CustomPacketPayload> type() {
@@ -44,7 +34,7 @@ public record MaidSubConfigPackage(int id, MaidConfigManager.SyncNetwork syncNet
                 }
                 Entity entity = sender.level.getEntity(message.id);
                 if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
-                    MaidConfigManager.SyncNetwork.handle(message.syncNetwork, maid);
+                    maid.setData(CONFIG, message.configData);
                 }
             });
         }
