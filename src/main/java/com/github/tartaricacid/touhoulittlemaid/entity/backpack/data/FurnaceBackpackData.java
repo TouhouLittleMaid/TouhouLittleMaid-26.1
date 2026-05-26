@@ -150,8 +150,8 @@ public class FurnaceBackpackData extends SimpleContainer implements IBackpackDat
         ItemStack slotItem = this.getItem(index);
         boolean isSameItem = !stack.isEmpty() && ItemStack.isSameItemSameComponents(slotItem, stack);
         super.setItem(index, stack);
-        if (index == 0 && !isSameItem) {
-            this.cookingTotalTime = getTotalCookTime((ServerLevel) this.level);
+        if (index == 0 && !isSameItem && this.level instanceof ServerLevel serverLevel) {
+            this.cookingTotalTime = getTotalCookTime(serverLevel);
             this.cookingProgress = 0;
         }
     }

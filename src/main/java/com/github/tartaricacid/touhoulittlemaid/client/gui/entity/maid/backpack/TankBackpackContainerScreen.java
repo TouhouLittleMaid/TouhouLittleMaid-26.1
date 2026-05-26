@@ -50,10 +50,10 @@ public class TankBackpackContainerScreen extends AbstractMaidContainerGui<TankBa
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float pPartialTick) {
         super.extractBackground(graphics, mouseX, mouseY, pPartialTick);
-        GuiTools.blit(graphics, BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
+        GuiTools.guiBlit(graphics, BACKPACK, leftPos + 85, topPos + 36, 0, 0, 165, 128);
 
         MaidFluidRender.drawFluid(graphics, leftPos + 200, topPos + 108, 29, 50, maid.getBackpackFluid(), this.menu.getFluidCount(), TankBackpackData.CAPACITY);
-        GuiTools.blit(graphics, BACKPACK, leftPos + 197, topPos + 104, 165, 0, 34, 50);
+        GuiTools.guiBlit(graphics, BACKPACK, leftPos + 197, topPos + 104, 165, 0, 34, 50);
 
         boolean xInRange = leftPos + 196 <= mouseX && mouseX <= leftPos + 196 + 29;
         boolean yInRange = topPos + 108 <= mouseY && mouseY <= topPos + 108 + 50;
