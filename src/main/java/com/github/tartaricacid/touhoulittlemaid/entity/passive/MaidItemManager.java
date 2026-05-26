@@ -11,6 +11,7 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidBackpackHa
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidInvWrapper;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemFilm;
 import com.github.tartaricacid.touhoulittlemaid.mixin.accessor.ArrowAccessor;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityMaidEquipmentWrapper;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
@@ -42,7 +43,6 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
-import net.neoforged.neoforge.transfer.item.LivingEntityEquipmentWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -71,8 +71,10 @@ public class MaidItemManager {
 
     public MaidItemManager(EntityMaid entityMaid) {
         maid = entityMaid;
-        armorInvWrapper = LivingEntityEquipmentWrapper.of(maid, EquipmentSlot.Type.HUMANOID_ARMOR);
-        handsInvWrapper = LivingEntityEquipmentWrapper.of(maid, EquipmentSlot.Type.HAND);
+        // TODO
+        // 原版的LivingEntityEquipmentWrapper限定了实体的主副手槽的装备，这里我们依据其改成EntityMaidEquipmentWrapper专用，需要检查一下是否符合
+        armorInvWrapper = EntityMaidEquipmentWrapper.of(maid, EquipmentSlot.Type.HUMANOID_ARMOR);
+        handsInvWrapper = EntityMaidEquipmentWrapper.of(maid, EquipmentSlot.Type.HAND);
         maidInv = new MaidBackpackHandler(36, maid);
     }
 
