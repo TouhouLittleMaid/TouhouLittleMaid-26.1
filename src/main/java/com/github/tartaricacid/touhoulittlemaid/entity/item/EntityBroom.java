@@ -83,7 +83,7 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
 
     @Override
     protected AABB makeBoundingBox(Vec3 position) {
-        AABB aabb = super.makeBoundingBox();
+        AABB aabb = super.makeBoundingBox(position);
         if (this.getPassengers().size() > 1) {
             // 如果有乘客，扫帚的碰撞盒就变大一点
             this.physicalBoundingBox = new AABB(aabb.minX, aabb.minY, aabb.minZ,
@@ -257,7 +257,7 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
     @Override
     public boolean isPickable() {
         boolean hasPlayer = this.getPassengers().stream().anyMatch(e -> e instanceof Player);
-        return hasPlayer ? false : super.isPickable();
+        return !hasPlayer && super.isPickable();
     }
 
     @Override

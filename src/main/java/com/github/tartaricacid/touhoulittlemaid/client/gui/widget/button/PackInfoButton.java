@@ -46,7 +46,7 @@ public class PackInfoButton extends FlatColorButton {
 
         // 绘制需要更新的提示
         if (info.getStatus() == DownloadStatus.NEED_UPDATE) {
-            GuiTools.blit(graphics, BG, this.getX() + 240, this.getY() + 15, 16, 16, 48, 16);
+            GuiTools.guiBlit(graphics, BG, this.getX() + 240, this.getY() + 15, 48, 16, 16, 16);
         }
 
         // 悬浮或者选中时，显示为蓝色
@@ -60,22 +60,22 @@ public class PackInfoButton extends FlatColorButton {
         // 显示成女仆、坐垫或者声音图标
         int count = info.getTypeCount();
         if (count == 3) {
-            GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 0, 96);
+            GuiTools.guiBlit(graphics, BG, this.getX() + 7, this.getY() + 7,0, 96, 32, 32);
         } else if (count == 2) {
             if (!info.hasType(DownloadInfo.TypeEnum.MAID)) {
-                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 64, 64);
+                GuiTools.guiBlit(graphics, BG, this.getX() + 7, this.getY() + 7, 64, 64, 32, 32);
             } else if (!info.hasType(DownloadInfo.TypeEnum.CHAIR)) {
-                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 32, 64);
+                GuiTools.guiBlit(graphics, BG, this.getX() + 7, this.getY() + 7,32, 64, 32, 32 );
             } else {
-                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 0, 64);
+                GuiTools.guiBlit(graphics, BG, this.getX() + 7, this.getY() + 7, 0, 64, 32, 32);
             }
         } else {
             if (info.hasType(DownloadInfo.TypeEnum.MAID)) {
-                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 0, 32);
+                GuiTools.guiBlit(graphics, BG, this.getX() + 7, this.getY() + 7, 0, 32, 32, 32);
             } else if (info.hasType(DownloadInfo.TypeEnum.CHAIR)) {
-                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 32, 32);
+                GuiTools.guiBlit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 32, 32);
             } else {
-                GuiTools.blit(graphics, BG, this.getX() + 7, this.getY() + 7, 32, 32, 64, 32);
+                GuiTools.guiBlit(graphics, BG, this.getX() + 7, this.getY() + 7, 64, 32, 32, 32);
             }
         }
 
@@ -95,11 +95,11 @@ public class PackInfoButton extends FlatColorButton {
         int startY = this.getY() + 4;
 
         MutableComponent packName = Component.translatable(info.getName());
-        graphics.text(font, packName, startX, startY, ChatFormatting.WHITE.getColor());
-        graphics.text(font, getI18nFormatFileVersion(info.getVersion()), startX + 5 + font.width(packName), startY, ChatFormatting.GREEN.getColor());
-        graphics.text(font, getI18nFormatFileSize(info.getFormatFileSize()), startX, startY + 10, ChatFormatting.GOLD.getColor());
-        graphics.text(font, getI18nFormatAuthor(info.getAuthor()), startX, startY + 20, ChatFormatting.AQUA.getColor());
-        graphics.text(font, getI18nFormatFileTime(info.getFormatData()), startX, startY + 30, ChatFormatting.GRAY.getColor());
+        graphics.text(font, packName, startX, startY, ChatFormatting.WHITE.getColor() | 0xFF000000);
+        graphics.text(font, getI18nFormatFileVersion(info.getVersion()), startX + 5 + font.width(packName), startY, ChatFormatting.GREEN.getColor() | 0xFF000000);
+        graphics.text(font, getI18nFormatFileSize(info.getFormatFileSize()), startX, startY + 10, ChatFormatting.GOLD.getColor() | 0xFF000000);
+        graphics.text(font, getI18nFormatAuthor(info.getAuthor()), startX, startY + 20, ChatFormatting.AQUA.getColor() | 0xFF000000);
+        graphics.text(font, getI18nFormatFileTime(info.getFormatData()), startX, startY + 30, ChatFormatting.GRAY.getColor() | 0xFF000000);
     }
 
     private String getI18nFormatFileVersion(String version) {

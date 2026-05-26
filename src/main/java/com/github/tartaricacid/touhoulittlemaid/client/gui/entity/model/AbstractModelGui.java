@@ -29,6 +29,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,6 +62,10 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
      * 所有 pack 中的模型列表
      */
     private List<E> allModelsList = null;
+    /**
+     * 是否正在拖拽滚动条
+     */
+    private boolean scrolling = false;
 
     public AbstractModelGui(T entity, List<CustomModelPack<E>> listPack) {
         super(Component.literal("Custom Model GUI"));
@@ -326,8 +331,8 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
         int middleY = this.height / 2;
 
         // 绘制 GUI 背景
-        GuiTools.blit(graphics, BG, middleX - 256 / 2, middleY - 80, 0, 0, 256, 180);
-        GuiTools.blit(graphics, SIDE, middleX - 256 / 2 + 250, middleY - 80, 0, 0, 24, 180);
+        GuiTools.guiBlit(graphics, BG, middleX - 256 / 2, middleY - 80, 0, 0, 256, 180);
+        GuiTools.guiBlit(graphics, SIDE, middleX - 256 / 2 + 250, middleY - 80, 0, 0, 24, 180);
 
         // 绘制侧边的滚动条
         drawScrollSide(graphics, middleX, middleY);
@@ -356,11 +361,11 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
 
     private void drawScrollSide(GuiGraphicsExtractor graphics, int middleX, int middleY) {
         if (canScrollCurrentList()) {
-            GuiTools.blit(graphics, SIDE, middleX - 256 / 2 + 254,
-                    middleY - 61 + (int) (127 * getCurrentScrollPosition()),
+            GuiTools.guiBlit(graphics, SIDE, middleX - 256 / 2 + 254,
+                    (middleY - 61) + (int) (127 * getCurrentScrollPosition()),
                     24, 0, 12, 15);
         } else {
-            GuiTools.blit(graphics, SIDE, middleX - 256 / 2 + 254,
+            GuiTools.guiBlit(graphics, SIDE, middleX - 256 / 2 + 254,
                     middleY - 61 + (int) (127 * getCurrentScrollPosition()),
                     36, 0, 12, 15);
         }
@@ -381,12 +386,12 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
                     checkIconAnimation(pack, icon);
                 }
                 if (pack.getIconAnimation() == CustomModelPack.AnimationState.FALSE) {
-                    GuiTools.blit(graphics, icon, middleX - 92 + 28 * index, middleY - 98,
+                    GuiTools.guiBlit(graphics, icon, middleX - 92 + 28 * index, middleY - 98,
                             0, 0, 16, 16, 16, 16);
                 } else {
                     int time = getTickTime() / pack.getIconDelay();
                     int iconIndex = time % pack.getIconAspectRatio();
-                    GuiTools.blit(graphics, icon, middleX - 92 + 28 * index, middleY - 98,
+                    GuiTools.guiBlit(graphics, icon, middleX - 92 + 28 * index, middleY - 98,
                             0, iconIndex * 16, 16,
                             16, 16, 16 * pack.getIconAspectRatio());
                 }
@@ -638,6 +643,11 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
             this.setFocused(this.searchBox);
             return true;
         }
+        // 检测是否点击了滚动条区域，开始拖拽
+        if (canScrollCurrentList() && isOverScrollbar(event.x(), event.y())) {
+            this.scrolling = true;
+            return true;
+        }
         return super.mouseClicked(event, doubleClick);
     }
 
@@ -666,6 +676,40 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
             }
         }
         return super.charTyped(event);
+    }
+
+    @Override
+    public boolean mouseDragged(@NonNull MouseButtonEvent event, double dx, double dy) {
+        if (this.scrolling) {
+            int totalRows = getDisplayRowSize();
+            if (totalRows <= 0) {
+                return true;
+            }
+            // 滚动条区域：middleY - 61 到 middleY + 66，总高 127，滑块高 15
+            int middleY = this.height / 2;
+            int scrollTop = middleY - 61;
+            int trackHeight = 127;
+            int thumbHeight = 15;
+            double dragRange = trackHeight - thumbHeight;
+            if (dragRange <= 0) {
+                return true;
+            }
+            double progress = Mth.clamp((event.y() - scrollTop - thumbHeight / 2.0) / dragRange, 0.0, 1.0);
+            int newRow = Mth.clamp((int) Math.round(progress * totalRows), 0, totalRows);
+            if (newRow != getRowIndex()) {
+                setRowIndex(newRow);
+                this.init();
+            }
+            return true;
+        } else {
+            return super.mouseDragged(event, dx, dy);
+        }
+    }
+
+    @Override
+    public boolean mouseReleased(MouseButtonEvent event) {
+        this.scrolling = false;
+        return super.mouseReleased(event);
     }
 
     /**
@@ -803,6 +847,21 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
         } else {
             return guiNumber.getCurrentScroll(getPackIndex(), getRowIndex());
         }
+    }
+
+    /**
+     * 判断鼠标坐标是否在滚动条区域内
+     */
+    private boolean isOverScrollbar(double mouseX, double mouseY) {
+        int middleX = this.width / 2 + 50;
+        int middleY = this.height / 2;
+        // 滚动条 X：middleX - 256/2 + 254，宽度 12
+        int scrollBarX = middleX - 256 / 2 + 254;
+        // 滚动条 Y：middleY - 61 到 middleY + 66
+        int scrollBarTop = middleY - 61;
+        int scrollBarBottom = middleY + 66;
+        return mouseX >= scrollBarX && mouseX <= scrollBarX + 12
+                && mouseY >= scrollBarTop && mouseY < scrollBarBottom;
     }
 
     protected void onClickCloseButton() {
