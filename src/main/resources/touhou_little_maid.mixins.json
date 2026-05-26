@@ -11,7 +11,7 @@
     "EntityMixin",
     "FishingHookPredicateMixin",
     "MixinCrossbowItem",
-    // "MobInteractMixin",
+    "MobInteractMixin",
     "NavigationMixin",
     "NodeEvaluatorBurningCacher",
     "ParrotMixin",
