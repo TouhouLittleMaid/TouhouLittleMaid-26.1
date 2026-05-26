@@ -1,6 +1,10 @@
 {
+  "oversized_in_gui": true,
   "model": {
-    "type": "minecraft:model",
-    "model": "touhou_little_maid:item/garage_kit"
+    "type": "minecraft:special",
+    "base": "touhou_little_maid:item/garage_kit",
+    "model": {
+      "type": "touhou_little_maid:garage_kit_item"
+    }
   }
 }

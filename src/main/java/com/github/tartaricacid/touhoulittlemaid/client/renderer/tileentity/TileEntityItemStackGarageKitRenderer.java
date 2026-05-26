@@ -29,6 +29,7 @@ import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.I
  * 实体预览渲染暂未迁移，需要适配新的 SubmitNodeCollector API。
  */
 public class TileEntityItemStackGarageKitRenderer implements SpecialModelRenderer<GarageKitRenderState> {
+    public static final Identifier GARAGE_KIT_ITEM_RENDERER = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "garage_kit_item");
     private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/statue_base.png");
     private final SimpleBedrockModel<Unit> baseModel;
     ;
