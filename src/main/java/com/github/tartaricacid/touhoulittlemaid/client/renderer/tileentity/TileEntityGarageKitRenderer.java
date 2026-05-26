@@ -88,6 +88,7 @@ public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEnti
         entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), data));
         if (entity instanceof EntityMaid maid) {
             clearMaidDataResidue(maid, true);
+            maid.setModelId(data.getStringOr("model_id","touhou_little_maid:hakurei_reimu"));
             maid.renderState = MaidRenderState.GARAGE_KIT;
             maid.tickCount = 0;
         }
