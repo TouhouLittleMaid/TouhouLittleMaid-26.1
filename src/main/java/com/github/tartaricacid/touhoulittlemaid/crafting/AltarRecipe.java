@@ -28,16 +28,16 @@ import java.util.Objects;
 
 public class AltarRecipe extends ShapelessRecipe {
     private final float power;
-    private final ItemStack result;
+    private final ItemStackTemplate result;
     private final Identifier entityType;
     private final String langKey;
     private final NonNullList<Ingredient> ingredients;
 
-    public AltarRecipe(String group, CraftingBookCategory category, NonNullList<Ingredient> ingredients, float power, ItemStack result, Identifier entityType, String langKey) {
+    public AltarRecipe(String group, CraftingBookCategory category, NonNullList<Ingredient> ingredients, float power, ItemStackTemplate result, Identifier entityType, String langKey) {
         super(
                 new Recipe.CommonInfo(true),
                 new CraftingRecipe.CraftingBookInfo(category, group),
-                ItemStackTemplate.fromNonEmptyStack(result),
+                result,
                 List.copyOf(ingredients)
         );
         this.ingredients = ingredients;
@@ -118,7 +118,7 @@ public class AltarRecipe extends ShapelessRecipe {
     }
 
     private void spawnItem(ServerLevel world, BlockPos pos) {
-        ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), this.result.copy());
+        ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), this.result.create());
         world.addFreshEntity(itemEntity);
     }
 
@@ -136,7 +136,7 @@ public class AltarRecipe extends ShapelessRecipe {
         return power;
     }
 
-    public ItemStack getResult() {
+    public ItemStackTemplate getResult() {
         return result;
     }
 

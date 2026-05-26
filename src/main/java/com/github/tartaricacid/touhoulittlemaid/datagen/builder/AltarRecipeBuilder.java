@@ -16,6 +16,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
@@ -29,27 +30,27 @@ public class AltarRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category;
     private final Item result;
     private final NonNullList<Ingredient> ingredients;
-    private final ItemStack resultStack;
+    private final ItemStackTemplate resultStack;
     private float power;
     private Identifier entityType;
     private String langKey;
 
     public AltarRecipeBuilder(HolderGetter<Item> items, RecipeCategory recipeCategory, ItemLike resultStack, int count) {
-        this(items, recipeCategory, new ItemStack(resultStack, count));
+        this(items, recipeCategory, new ItemStackTemplate(resultStack.asItem(), count));
     }
 
-    public AltarRecipeBuilder(HolderGetter<Item> items, RecipeCategory recipeCategory, ItemStack result) {
+    public AltarRecipeBuilder(HolderGetter<Item> items, RecipeCategory recipeCategory, ItemStackTemplate result) {
         this.items = items;
         this.category = recipeCategory;
         this.power = 0;
-        this.result = result.getItem();
+        this.result = result.item().value();
         this.resultStack = result;
         this.entityType = BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.ITEM);
         this.ingredients = NonNullList.create();
         this.langKey = "jei.touhou_little_maid.altar_craft.item_craft.result";
     }
 
-    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, RecipeCategory category, ItemStack result) {
+    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, RecipeCategory category, ItemStackTemplate result) {
         return new AltarRecipeBuilder(items, category, result);
     }
 

@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -25,7 +26,7 @@ public class AltarRecipeSerializer {
                     CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(AltarRecipe::category),
                     Ingredient.CODEC.listOf().fieldOf("ingredients").flatXmap(AltarRecipeSerializer::checkIngredients, DataResult::success).forGetter(AltarRecipe::getIngredients),
                     Codec.FLOAT.fieldOf("power").forGetter(AltarRecipe::getPower),
-                    ItemStack.CODEC.fieldOf("result").forGetter(AltarRecipe::getResult),
+                    ItemStackTemplate.CODEC.fieldOf("result").forGetter(AltarRecipe::getResult),
                     Identifier.CODEC.fieldOf("entity").forGetter(AltarRecipe::getEntityType),
                     Codec.STRING.optionalFieldOf("lang", StringUtils.EMPTY).forGetter(AltarRecipe::getLangKey)
             ).apply(instance, AltarRecipe::new)
@@ -57,7 +58,7 @@ public class AltarRecipeSerializer {
         }
         NonNullList<Ingredient> ingredients = NonNullList.copyOf(decoded);
         float power = byteBuf.readFloat();
-        ItemStack result = ItemStack.STREAM_CODEC.decode(byteBuf);
+        ItemStackTemplate result = ItemStackTemplate.STREAM_CODEC.decode(byteBuf);
         Identifier entityType = Identifier.STREAM_CODEC.decode(byteBuf);
         String langKey = byteBuf.readUtf();
         return new AltarRecipe(group, category, ingredients, power, result, entityType, langKey);
@@ -71,7 +72,7 @@ public class AltarRecipeSerializer {
             Ingredient.CONTENTS_STREAM_CODEC.encode(friendlyByteBuf, ingredient);
         }
         friendlyByteBuf.writeFloat(altarRecipe.getPower());
-        ItemStack.STREAM_CODEC.encode(friendlyByteBuf, altarRecipe.getResult());
+        ItemStackTemplate.STREAM_CODEC.encode(friendlyByteBuf, altarRecipe.getResult());
         Identifier.STREAM_CODEC.encode(friendlyByteBuf, altarRecipe.getEntityType());
         friendlyByteBuf.writeUtf(altarRecipe.getLangKey());
     }
