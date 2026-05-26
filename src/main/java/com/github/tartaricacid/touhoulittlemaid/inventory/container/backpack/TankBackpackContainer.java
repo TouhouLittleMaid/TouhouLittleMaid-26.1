@@ -15,8 +15,8 @@ import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 
 public class TankBackpackContainer extends MaidMainContainer {
     public static final MenuType<TankBackpackContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new TankBackpackContainer(windowId, inv, data.readInt()));
-    private static final Identifier INPUT_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/tank_input_slot");
-    private static final Identifier OUTPUT_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/tank_output_slot");
+    private static final Identifier INPUT_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "container/slot/tank_input");
+    private static final Identifier OUTPUT_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "container/slot/tank_output");
     private final ContainerData data;
 
     public TankBackpackContainer(int id, Inventory inventory, int entityId) {

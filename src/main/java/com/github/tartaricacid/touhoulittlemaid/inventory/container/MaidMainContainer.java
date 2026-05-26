@@ -30,8 +30,8 @@ import static net.minecraft.world.inventory.InventoryMenu.*;
 
 public abstract class MaidMainContainer extends AbstractMaidContainer {
     protected static final int PLAYER_INVENTORY_SIZE = 36;
-    protected static final Identifier EMPTY_MAINHAND_SLOT = Identifier.parse("item/empty_slot_sword");
-    protected static final Identifier EMPTY_BACK_SHOW_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "slot/empty_back_show_slot");
+    protected static final Identifier EMPTY_MAINHAND_SLOT = Identifier.parse("container/slot/sword");
+    protected static final Identifier EMPTY_BACK_SHOW_SLOT = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "container/slot/back_show");
     protected static final Identifier[] TEXTURE_EMPTY_SLOTS = new Identifier[]{EMPTY_ARMOR_SLOT_BOOTS, EMPTY_ARMOR_SLOT_LEGGINGS, EMPTY_ARMOR_SLOT_CHESTPLATE, EMPTY_ARMOR_SLOT_HELMET};
     protected static final EquipmentSlot[] SLOT_IDS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
