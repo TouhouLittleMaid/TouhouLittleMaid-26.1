@@ -129,6 +129,7 @@ import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre;
 
 public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
+        MaidAnimationManager.View,
         MaidConfigManager.View,
         MaidItemManager.View,
         MaidEffectsManager.View,
@@ -162,14 +163,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     ));
 
     // 女仆默认同步数据
-    private static final EntityDataAccessor<Boolean> DATA_BEGGING = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_INVULNERABLE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_HUNGER = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_FAVORABILITY = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_EXPERIENCE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_STRUCK_BY_LIGHTNING = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_IS_CHARGING_CROSSBOW = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_ARM_RISE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<MaidSchedule> SCHEDULE_MODE = SynchedEntityData.defineId(EntityMaid.class, MaidSchedule.DATA);
     private static final EntityDataAccessor<BlockPos> RESTRICT_CENTER = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BLOCK_POS);
     private static final EntityDataAccessor<Integer> RESTRICT_RADIUS = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.INT);
@@ -177,10 +175,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     private static final EntityDataAccessor<String> BACKPACK_TYPE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<ItemStack> BACKPACK_ITEM_SHOW = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<String> BACKPACK_FLUID = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
-
-    // 给卓越前线之类的枪械模组使用的，标记女仆是否处于 aim 状态
-    private static final EntityDataAccessor<Boolean> DATA_IS_AIMING = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
-
     // 游戏数据记录，包括赢棋次数和赢棋状态
     static final EntityDataAccessor<Map<String, Integer>> WIN_COUNTS = SynchedEntityData.defineId(EntityMaid.class, MaidGameRecordManager.WIN_COUNT_SERIALIZER);
     static final EntityDataAccessor<Byte> GAME_STATUE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BYTE);
@@ -206,6 +200,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     private final MaidEffectsManager effectsManager = new MaidEffectsManager(this);
     private final MaidActionView actionView = new MaidActionView(this);
     private final MaidModelView modelView = new MaidModelView(this);
+    private final MaidAnimationManager animationManager = new MaidAnimationManager(this);
 
     public final ItemStack[] handItemsForAnimation = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY};
 
@@ -294,6 +289,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     }
 
     @Override
+    public MaidAnimationManager getAnimationManager() {
+        return animationManager;
+    }
+
+    @Override
     public MaidDataManager getDataManager() {
         return dataManager;
     }
@@ -356,14 +356,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
 
-        builder.define(DATA_BEGGING, false);
         builder.define(DATA_INVULNERABLE, false);
         builder.define(DATA_HUNGER, 0);
         builder.define(DATA_FAVORABILITY, 0);
         builder.define(DATA_EXPERIENCE, 0);
         builder.define(DATA_STRUCK_BY_LIGHTNING, false);
-        builder.define(DATA_IS_CHARGING_CROSSBOW, false);
-        builder.define(DATA_ARM_RISE, false);
         builder.define(SCHEDULE_MODE, MaidSchedule.DAY);
         builder.define(RESTRICT_CENTER, BlockPos.ZERO);
         builder.define(RESTRICT_RADIUS, MaidConfig.MAID_NON_HOME_RANGE.get());
@@ -371,8 +368,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         builder.define(BACKPACK_TYPE, EmptyBackpack.ID.toString());
         builder.define(BACKPACK_ITEM_SHOW, ItemStack.EMPTY);
         builder.define(BACKPACK_FLUID, StringUtils.EMPTY);
-
-        builder.define(DATA_IS_AIMING, false);
 
         if (this.gameRecordManager == null) {
             this.gameRecordManager = new MaidGameRecordManager(this);
@@ -826,7 +821,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     @Override
     public void setChargingCrossbow(boolean isCharging) {
-        this.entityData.set(DATA_IS_CHARGING_CROSSBOW, isCharging);
+        this.animationManager.setChargingCrossbow(isCharging);
     }
 
     @Override
@@ -1386,14 +1381,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return super.isInSittingPose();
     }
 
-    public boolean isBegging() {
-        return this.entityData.get(DATA_BEGGING);
-    }
-
-    public void setBegging(boolean begging) {
-        this.entityData.set(DATA_BEGGING, begging);
-    }
-
     @Override
     public boolean isWithinHome() {
         return this.isWithinHome(this.blockPosition());
@@ -1476,14 +1463,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     public void setStruckByLightning(boolean isStruck) {
         this.entityData.set(DATA_STRUCK_BY_LIGHTNING, isStruck);
-    }
-
-    public boolean isSwingingArms() {
-        return this.entityData.get(DATA_ARM_RISE);
-    }
-
-    public void setSwingingArms(boolean swingingArms) {
-        this.entityData.set(DATA_ARM_RISE, swingingArms);
     }
 
     public String getBackpackFluid() {
@@ -1835,13 +1814,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return chatBubbleManager;
     }
 
-    public boolean isAiming() {
-        return this.entityData.get(DATA_IS_AIMING);
-    }
-
-    public void setAiming(boolean aiming) {
-        this.entityData.set(DATA_IS_AIMING, aiming);
-    }
 
     @Override
     public void spawnItemParticles(ItemStack stack, int amount) {
