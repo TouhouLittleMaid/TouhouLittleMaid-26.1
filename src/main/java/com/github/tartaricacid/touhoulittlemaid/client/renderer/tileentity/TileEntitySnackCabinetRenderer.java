@@ -66,7 +66,10 @@ public class TileEntitySnackCabinetRenderer implements BlockEntityRenderer<TileE
         poseStack.mulPose(Axis.YN.rotationDegrees(180 - state.facing.get2DDataValue() * 90));
         submitNodeCollector.submitCustomGeometry(
                 poseStack, RenderTypes.entityCutout(TEXTURE),
-                (pose, buffer) -> this.model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1)
+                (pose, buffer) -> {
+                    poseStack.last().set(pose);
+                    this.model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
+                }
         );
         poseStack.popPose();
     }

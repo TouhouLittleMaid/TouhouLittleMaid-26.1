@@ -166,6 +166,7 @@ public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityC
         RenderType piecesRenderType = RenderTypes.entityCutout(PIECES_TEXTURE);
         submitNodeCollector.submitCustomGeometry(poseStack, piecesRenderType, (pose, buffer) -> {
             poseStack.pushPose();
+            poseStack.last().set(pose);
             for (int y = Position.RANK_TOP; y <= Position.RANK_BOTTOM; y++) {
                 for (int x = Position.FILE_LEFT; x <= Position.FILE_RIGHT; x++) {
                     byte piecesIndex = data[Position.COORD_XY(x, y)];
@@ -194,8 +195,10 @@ public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityC
             poseStack.mulPose(Axis.YN.rotationDegrees(180));
         }
         RenderType renderType = RenderTypes.entityCutout(TEXTURE);
-        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) ->
-                chessModel.renderToBuffer(poseStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY));
+        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            poseStack.last().set(pose);
+            chessModel.renderToBuffer(poseStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY);
+        });
         poseStack.popPose();
     }
 

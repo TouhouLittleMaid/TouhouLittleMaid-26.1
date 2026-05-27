@@ -110,8 +110,10 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
             poseStack.mulPose(Axis.YN.rotationDegrees(180));
         }
         RenderType renderType = RenderTypes.entityCutout(CHECKER_BOARD_TEXTURE);
-        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) ->
-                checkerBoardModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY));
+        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            poseStack.last().set(pose);
+            checkerBoardModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+        });
         poseStack.popPose();
     }
 
@@ -129,6 +131,7 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
         poseStack.translate(0.92, -0.1, -1.055);
         RenderType blackRenderType = RenderTypes.entityCutout(BLACK_PIECE_TEXTURE);
         submitNodeCollector.submitCustomGeometry(poseStack, blackRenderType, (pose, buffer) -> {
+            poseStack.last().set(pose);
             for (byte[] row : chessData) {
                 for (int j = 0; j < chessData[0].length; j++) {
                     poseStack.translate(0, 0, 0.1316);
@@ -146,6 +149,7 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
         poseStack.translate(0.92, -0.1, -1.055);
         RenderType whiteRenderType = RenderTypes.entityCutout(WHITE_PIECE_TEXTURE);
         submitNodeCollector.submitCustomGeometry(poseStack, whiteRenderType, (pose, buffer) -> {
+            poseStack.last().set(pose);
             for (byte[] row : chessData) {
                 for (int j = 0; j < chessData[0].length; j++) {
                     poseStack.translate(0, 0, 0.1316);
