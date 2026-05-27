@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.mixin.client;
 
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.GeckoUpdateManager;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderContextManager;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContextManager;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import net.minecraft.client.Camera;

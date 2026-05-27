@@ -26,13 +26,15 @@ public final class GeoModelState {
     }
 
     public void init(GeoModel model) {
-        var boneSize = model.flatBoneList().size();
-        this.model = model;
-        var size = boneSize * GeoModelStateExtractor.STRIDE;
-        if (data == null || data.length != size) {
-            data = new float[size];
-            renderBoneIndices.size(boneSize);
-            renderBoneIndices.trim();
+        if (this.model != model) {
+            this.model = model;
+            var boneSize = model.flatBoneList().size();
+            var size = boneSize * GeoModelStateExtractor.STRIDE;
+            if (data == null || data.length != size) {
+                data = new float[size];
+                renderBoneIndices.size(boneSize);
+                renderBoneIndices.trim();
+            }
         }
         renderBoneIndices.clear();
         for (var locators : activeLocatorGroups) {

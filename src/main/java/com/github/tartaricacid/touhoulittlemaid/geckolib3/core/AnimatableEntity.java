@@ -20,6 +20,7 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.processor.IBoneVi
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.util.RateLimiter;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContext;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContextManager;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.AnimatedGeoModel;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.GeoModelState;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.GeoModelStateExtractor;
@@ -30,7 +31,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoLibCache
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.data.SoundFormat;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.stream.AudioStreamProvider;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.sound.stream.VorbisAudioStream;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderContextManager;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
@@ -54,7 +54,8 @@ import java.util.function.Consumer;
 
 public abstract class AnimatableEntity<TEntity extends Entity> {
     private final AnimationData manager = new AnimationData();
-    private final GeoModelState mainModelState = new GeoModelState();
+
+    private GeoModelState mainModelState = new GeoModelState();
     private final ConcurrentHashMap<RenderContext, ReferenceArrayList<GeoModelState>> modelStateCache = new ConcurrentHashMap<>();
 
     protected final TEntity entity;
@@ -85,7 +86,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     private float seekTime;
 
     @Nullable
-    private GeckoUpdateTask<?> lastAsyncTask;
+    private GeckoUpdateTask<?> lastUpdateTask;
 
     /**
      * 存储 Coded 动画控制器的动画播放状态，用于一些 molang 判断
@@ -361,7 +362,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         data.ctx = ctx;
     }
 
-    public void checkGeckoContainerUpdate() {
+    protected void checkGeckoContainerUpdate() {
         var tickCount = ClientTickEvent.getTickCount();
         if (lastCheckUpdateTime < tickCount) {
             checkGeckoContainerUpdateInner();
@@ -405,7 +406,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         resetGeoModel();
     }
 
-    public void reset() {
+    protected void reset() {
         modelId = null;
         resetGeckoContainer();
     }
@@ -503,7 +504,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         onLoadGeoModel(this.currentModel);
     }
 
-    public void reloadGeoModel() {
+    protected void reloadGeoModel() {
         if (this.currentModel != null) {
             resetGeoModel();
             loadGeoModel(currentGeckoContainer.model(), currentGeckoContainer.asset().eventHandlers());
@@ -527,6 +528,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
             lastFrameUpdated = false;
             seekTime = 0;
             codedAnimationStates.clear();
+            mainModelState = new GeoModelState();
             modelStateCache.clear();
             alterPhysicsManager = null;
             lastCheckUpdateTime = 0;
@@ -549,9 +551,10 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
 
     /**
      * extract EntityState 之后若不会额外修改其属性，即为 immutable；
-     * 未识别的渲染上下文一律视为 mutable。
+     * mutable 上下文内不会 tick 动画，避免污染状态（但是会重新求值骨骼关键帧 molang）；
+     * 未识别的上下文一律视为 mutable。
      */
-    public boolean isImmutableRender(RenderContext ctx) {
+    public boolean determinImmutableContext(RenderContext ctx) {
         return ctx.level() || ctx.offScreen() || ctx.irisShadow();
     }
 
@@ -578,11 +581,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
     }
 
     public GeckoUpdateTask<?> createUpdateTask(EntityRenderState state) {
-        var ctx = RenderContextManager.extract(true);
-        if (!isImmutableRender(ctx)) {
-            ctx = RenderContextManager.extract(false);
-        }
-        return createUpdateTask(state, ctx);
+        return createUpdateTask(state, RenderContextManager.extract(this));
     }
 
     public GeckoUpdateTask<?> createUpdateTask(EntityRenderState state, RenderContext renderContext) {
@@ -595,37 +594,36 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
             return GeckoUpdateTask.nop();
         }
 
-        if (asyncUpdate()) {
-            lastAsyncTask = new GeckoAsyncTask<>(() -> updateAnimation(state, renderContext));
-            if (isImmediateAsync(renderContext)) {
-                lastAsyncTask.start();
-            }
-            return lastAsyncTask;
-        } else {
-            return new GeckoSyncTask<>(() -> updateAnimation(state, renderContext));
+        var async = asyncUpdate(renderContext);
+        lastUpdateTask = async ?
+                new GeckoAsyncTask<>(() -> updateAnimation(state, renderContext)) :
+                new GeckoSyncTask<>(() -> updateAnimation(state, renderContext));
+        if (immediateUpdate(renderContext, async)) {
+            lastUpdateTask.start();
         }
+        return lastUpdateTask;
     }
 
-    public boolean asyncUpdate() {
+    public boolean asyncUpdate(RenderContext ctx) {
         return true;
     }
 
     @Nullable
     public GeckoUpdateTask<?> getLastUpdateTask() {
-        return lastAsyncTask;
+        return lastUpdateTask;
     }
 
     public void waitForAsyncUpdate() {
-        if (lastAsyncTask != null) {
+        if (lastUpdateTask != null) {
             try {
-                lastAsyncTask.getResult();
+                lastUpdateTask.getResult();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
     }
 
-    protected boolean isImmediateAsync(RenderContext ctx) {
-        return ctx.immutable();
+    protected boolean immediateUpdate(RenderContext ctx, boolean async) {
+        return ctx.immutable() && !ctx.inventory();
     }
 }

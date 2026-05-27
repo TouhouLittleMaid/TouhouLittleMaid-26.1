@@ -85,7 +85,8 @@ public class TileEntityStatueRenderer implements BlockEntityRenderer<TileEntityS
             long posId = te.getBlockPos().asLong();
             entity = EntityCacheUtil.STATUE_CACHE.get(posId, () -> new EntityMaid(world));
         } else {
-            entity = EntityCacheUtil.getEntity((EntityType) type, (l, e) -> new EntityMaid(l), world, EntitySpawnReason.LOAD);
+            entity = EntityCacheUtil.getEntity((EntityType) type, (l, e) ->
+                    new EntityMaid(l), world, EntitySpawnReason.LOAD);
         }
 
         entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), data));

@@ -83,16 +83,17 @@ public class TileEntityItemStackGarageKitRenderer implements SpecialModelRendere
                                           Level world, EntityType<?> type) throws ExecutionException {
         Entity entity;
         if (type.equals(InitEntities.MAID.get())) {
-            entity = EntityCacheUtil.getEntity((EntityType) type, (l, e) -> new EntityMaid(l), world, EntitySpawnReason.LOAD);
+            entity = EntityCacheUtil.getMaid(world, EntitySpawnReason.LOAD);
         } else {
-            entity = EntityCacheUtil.getEntity((EntityType) type, (l, e) -> new EntityMaid(l), world, EntitySpawnReason.LOAD);
+            entity = EntityCacheUtil.getEntity((EntityType) type, (l, e) ->
+                    new EntityMaid(l), world, EntitySpawnReason.LOAD);
         }
 
         entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), data));
         if (entity instanceof EntityMaid maid) {
             clearMaidDataResidue(maid, true);
             maid.setModelId(data.getStringOr("model_id","touhou_little_maid:hakurei_reimu"));
-            maid.renderState = MaidRenderState.GARAGE_KIT;
+            maid.renderState = MaidRenderState.GARAGE_KIT_ITEM;
             maid.tickCount = 0;
         }
 

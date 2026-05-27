@@ -82,7 +82,8 @@ public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEnti
             long posId = te.getBlockPos().asLong();
             entity = EntityCacheUtil.STATUE_CACHE.get(posId, () -> new EntityMaid(world));
         } else {
-            entity = EntityCacheUtil.getEntity((EntityType) type, (l, r) -> new EntityMaid(l), world, EntitySpawnReason.LOAD);
+            entity = EntityCacheUtil.getEntity((EntityType) type, (l, r) ->
+                    new EntityMaid(l), world, EntitySpawnReason.LOAD);
         }
 
         entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), data));

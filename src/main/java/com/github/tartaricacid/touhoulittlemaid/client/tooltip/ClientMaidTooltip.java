@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.tooltip;
 
+import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -83,6 +84,7 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
         Quaternionf rotation = (new Quaternionf()).rotateY((float) Math.toRadians(rot));
         pose.mul(rotation);
         EntityMaid maid = EntityCacheUtil.getMaid(world, EntitySpawnReason.EVENT);
+        maid.renderState = MaidRenderState.GUI;
         clearMaidDataResidue(maid, false);
         if (StringUtils.isNotBlank(customName)) {
             maid.setCustomName(customNameComponent);

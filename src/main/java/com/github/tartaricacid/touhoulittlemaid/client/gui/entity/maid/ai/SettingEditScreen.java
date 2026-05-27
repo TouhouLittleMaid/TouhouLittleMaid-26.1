@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatMana
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.CharacterSetting;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.SettingReader;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.bean.MetaData;
+import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
@@ -192,6 +193,7 @@ public class SettingEditScreen extends Screen {
         MaidModelInfo modelInfo = info.get();
 
         EntityMaid maid = EntityCacheUtil.getMaid(world, EntitySpawnReason.COMMAND);
+        maid.renderState = MaidRenderState.GUI;
 
         clearMaidDataResidue(maid, false);
         if (modelInfo.getEasterEgg() != null) {

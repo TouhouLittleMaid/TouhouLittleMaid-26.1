@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko;
 
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContext;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.RenderContextManager;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContextManager;
 import net.minecraft.client.Minecraft;
 
 import java.util.WeakHashMap;

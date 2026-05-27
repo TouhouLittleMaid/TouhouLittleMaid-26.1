@@ -10,7 +10,15 @@ public enum MaidRenderState {
      */
     STATUE,
     /**
-     * 手办，可以是方块形态，也可以是物品形态
+     * 手办，方块形态
      */
-    GARAGE_KIT
+    GARAGE_KIT,
+    /**
+     * 手办，物品形态
+     */
+    GARAGE_KIT_ITEM,
+    /**
+     * GUI 临时预览
+     */
+    GUI
 }

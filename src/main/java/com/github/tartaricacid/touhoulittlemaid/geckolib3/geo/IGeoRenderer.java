@@ -109,7 +109,7 @@ public interface IGeoRenderer<TState extends EntityRenderState, TData extends Ge
                 nz.mul(normal).normalize();
             }
 
-            if (mirrored) {
+            if (mirrored != data.ctx.inventory()) {
                 nx.mul(-1);
                 ny.mul(-1);
                 nz.mul(-1);

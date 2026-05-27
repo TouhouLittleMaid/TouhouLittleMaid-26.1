@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.block;
 
+import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.detail.MaidModelDetailsGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model.AbstractModelGui;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
@@ -118,6 +119,7 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
         }
 
         EntityMaid maid = EntityCacheUtil.getMaid(world, EntitySpawnReason.COMMAND);
+        maid.renderState = MaidRenderState.GUI;
 
         clearMaidDataResidue(maid, false);
         if (modelItem.getEasterEgg() != null) {

@@ -1,12 +1,14 @@
 package com.github.tartaricacid.touhoulittlemaid.client.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingState;
+import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.MolangEventWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.event.ClientTickEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.molang.value.IValue;
@@ -54,7 +56,7 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> {
     private IMagicCastingState.CastingPhase lastCastingPhase = IMagicCastingState.CastingPhase.NONE;
 
     public GeckoMaidEntity(T maid) {
-        super(maid, !maid.previewEntity);
+        super(maid, maid.renderState == MaidRenderState.ENTITY);
         this.maid = maid;
     }
 
@@ -91,6 +93,37 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> {
                 Optional<Direction> optionalValue = blockState.getOptionalValue(HorizontalDirectionalBlock.FACING);
                 optionalValue.ifPresent(direction -> maidData.climbRotation = direction.getOpposite().get2DDataValue() * 90);
             }
+        }
+    }
+
+    @Override
+    public boolean isPreviewEntity() {
+        return entity.renderState != MaidRenderState.ENTITY;
+    }
+
+    @Override
+    public boolean asyncUpdate(RenderContext ctx) {
+        // 非共享的实体才能异步
+        return entity.renderState == MaidRenderState.ENTITY
+                || entity.renderState == MaidRenderState.STATUE
+                || entity.renderState == MaidRenderState.GARAGE_KIT;
+    }
+
+    @Override
+    public boolean determinImmutableContext(RenderContext ctx) {
+        return entity.renderState != MaidRenderState.ENTITY || super.determinImmutableContext(ctx);
+    }
+
+    @Override
+    public int getFrameRateLimit() {
+        if (entity.renderState == MaidRenderState.ENTITY) {
+            return super.getFrameRateLimit();
+        } else if (entity.renderState == MaidRenderState.GUI) {
+            // gui 预览时使用屏幕刷新率
+            return ClientTickEvent.getRefreshRate();
+        } else {
+            // 雕像和手办固定 30 帧
+            return 30;
         }
     }
 
@@ -204,6 +237,7 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> {
     }
 
     public void setMaidInfo(MaidModelInfo info) {
+        waitForAsyncUpdate();
         if (this.maidInfo != info) {
             this.maidInfo = info;
             setModelId(this.maidInfo.getModelId());
@@ -212,6 +246,7 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> {
 
     @Override
     public void reset() {
+        waitForAsyncUpdate();
         super.reset();
         this.maidInfo = null;
     }
