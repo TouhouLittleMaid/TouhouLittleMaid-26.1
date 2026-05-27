@@ -83,7 +83,7 @@ public class EntityMaidEquipmentWrapper {
 
         @Override
         protected boolean isValid(ItemResource resource) {
-            return true;
+            return EntityMaid.canInsertItem(resource.toStack());
         }
 
         @Override
