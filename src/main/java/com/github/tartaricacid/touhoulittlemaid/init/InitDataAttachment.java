@@ -4,10 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.data.ChatTokensAttachment;
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
 import com.github.tartaricacid.touhoulittlemaid.data.PowerAttachment;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.AnimationData;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.ConfigData;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.ProfileData;
-import com.github.tartaricacid.touhoulittlemaid.entity.data.TaskData;
+import com.github.tartaricacid.touhoulittlemaid.entity.data.*;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -26,6 +23,8 @@ public interface InitDataAttachment {
 
     // 模型和声音包 ID
     Supplier<AttachmentType<ProfileData>> PROFILE = ATTACHMENT_TYPES.register("profile", () -> ProfileData.TYPE);
+    // 饥饿值、好感度、经验和雷击状态
+    Supplier<AttachmentType<StatsData>> STATS = ATTACHMENT_TYPES.register("stats", () -> StatsData.TYPE);
     // 工作模式相关
     Supplier<AttachmentType<TaskData>> TASK = ATTACHMENT_TYPES.register("task", () -> TaskData.TYPE);
     // 动画状态相关
