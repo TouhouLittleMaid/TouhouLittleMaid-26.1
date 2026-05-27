@@ -1,6 +1,21 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "touhou_little_maid:item/snack_cabinet"
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "touhou_little_maid:item/snack_cabinet"
+        },
+        "when": [
+          "gui"
+        ]
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "touhou_little_maid:item/snack_cabinet_in_hand"
+    },
+    "property": "minecraft:display_context"
   }
 }
