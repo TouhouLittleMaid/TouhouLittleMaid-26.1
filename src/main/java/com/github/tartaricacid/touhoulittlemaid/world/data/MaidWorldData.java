@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -21,48 +22,33 @@ import net.minecraft.world.level.storage.SavedDataStorage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
 
 public class MaidWorldData extends SavedData {
-    // TODO 貌似不太优雅，需要检查一下
+    private static final Codec<List<MaidInfo>> MAID_INFO_CODEC_LIST = MaidInfo.MAID_INFO_CODEC.listOf().xmap(Lists::newArrayList, Function.identity());
+    private static final Codec<List<MaidInfo>> TOMBS_STONE_CODEC_LIST = MaidInfo.TOMBS_STONE_CODEC.listOf().xmap(Lists::newArrayList, Function.identity());
+
     public static final Codec<MaidWorldData> CODEC = RecordCodecBuilder.create(ins -> ins.group(
-            Codec.unboundedMap(Codec.STRING, MaidInfo.CODEC.listOf()).fieldOf("MaidInfos").forGetter(o -> {
-                Map<String, List<MaidInfo>> infos = Maps.newHashMap();
-                o.infos.forEach((uuid, value) -> infos.put(uuid.toString(), value));
-                return infos;
-            }),
-            Codec.unboundedMap(Codec.STRING, MaidInfo.TOMBSHSTONE_CODEC.listOf()).fieldOf("MaidTombstones").forGetter(o -> {
-                Map<String, List<MaidInfo>> tombstones = Maps.newHashMap();
-                o.tombstones.forEach((uuid, value) -> tombstones.put(uuid.toString(), value));
-                return tombstones;
-            }),
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, MAID_INFO_CODEC_LIST).xmap(Maps::newHashMap, Function.identity())
+                    .fieldOf("MaidInfos").forGetter(o -> (HashMap<UUID, List<MaidInfo>>) o.infos),
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, TOMBS_STONE_CODEC_LIST).xmap(Maps::newHashMap, Function.identity())
+                    .fieldOf("MaidTombstones").forGetter(o -> (HashMap<UUID, List<MaidInfo>>) o.tombstones),
             Codec.BOOL.fieldOf("dirty").forGetter(SavedData::isDirty)
-    ).apply(ins, ((oInfos, oTombstones, oDirty) -> {
-        Map<UUID, List<MaidInfo>> infos = Maps.newHashMap();
-        oInfos.forEach((uuidString, value) -> {
-            infos.put(UUID.fromString(uuidString), value);
-        });
-        Map<UUID, List<MaidInfo>> tombstones = Maps.newHashMap();
-        oTombstones.forEach((uuidString, value) -> {
-            tombstones.put(UUID.fromString(uuidString), value);
-        });
-        return new MaidWorldData(infos, tombstones, oDirty);
-    })));
+    ).apply(ins, (MaidWorldData::new)));
 
     private static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "world_data");
     private final Map<UUID, List<MaidInfo>> infos;
     private final Map<UUID, List<MaidInfo>> tombstones;
 
     private MaidWorldData(Map<UUID, List<MaidInfo>> infos, Map<UUID, List<MaidInfo>> tombstones) {
-        this.infos = Maps.newHashMap(infos);
-        this.tombstones = Maps.newHashMap(tombstones);
+        this.infos = infos;
+        this.tombstones = tombstones;
     }
 
     private MaidWorldData(Map<UUID, List<MaidInfo>> infos, Map<UUID, List<MaidInfo>> tombstones, boolean dirty) {
-        this.infos = Maps.newHashMap(infos);
-        this.tombstones = Maps.newHashMap(tombstones);
+        this.infos = infos;
+        this.tombstones = tombstones;
         this.setDirty(dirty);
     }
 

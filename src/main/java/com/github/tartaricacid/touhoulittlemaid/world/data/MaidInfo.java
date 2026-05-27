@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public record MaidInfo(String dimension, BlockPos chunkPos, UUID ownerId, UUID entityId, long timestamp,
                        Component name) {
-    public static final Codec<MaidInfo> CODEC = RecordCodecBuilder.create(ins -> ins.group(
+    public static final Codec<MaidInfo> MAID_INFO_CODEC = RecordCodecBuilder.create(ins -> ins.group(
             Codec.STRING.fieldOf("Dimension").forGetter(o -> o.dimension),
             BlockPos.CODEC.fieldOf("ChunkPos").forGetter(o -> o.chunkPos),
             UUIDUtil.CODEC.fieldOf("OwnerId").forGetter(o -> o.ownerId),
@@ -19,7 +19,7 @@ public record MaidInfo(String dimension, BlockPos chunkPos, UUID ownerId, UUID e
             Codec.LONG.fieldOf("Timestamp").forGetter(o -> o.timestamp),
             ComponentSerialization.CODEC.fieldOf("Name").forGetter(o -> o.name)
     ).apply(ins, MaidInfo::new));
-    public static final Codec<MaidInfo> TOMBSHSTONE_CODEC = RecordCodecBuilder.create(ins -> ins.group(
+    public static final Codec<MaidInfo> TOMBS_STONE_CODEC = RecordCodecBuilder.create(ins -> ins.group(
             Codec.STRING.fieldOf("Dimension").forGetter(o -> o.dimension),
             BlockPos.CODEC.fieldOf("ChunkPos").forGetter(o -> o.chunkPos),
             UUIDUtil.CODEC.fieldOf("OwnerId").forGetter(o -> o.ownerId),
