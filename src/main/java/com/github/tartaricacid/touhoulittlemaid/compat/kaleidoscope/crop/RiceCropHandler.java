@@ -36,7 +36,7 @@ public class RiceCropHandler implements ISpecialCropHandler {
     @Override
     public void harvest(EntityMaid maid, BlockPos cropPos, BlockState cropState, boolean isDestroyMode) {
         // 无视 isDestroyMode，直接收获
-        maid.dropResourcesToMaidInv(cropState, maid.level, cropPos, null, maid, maid.getMainHandItem());
+        maid.dropResourcesToMaidInv(cropState, maid.level, cropPos, null, maid.getMainHandItem());
         maid.level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, cropPos, Block.getId(cropState));
         // 直接设置 Age 为 0
         cropState = cropState.setValue(RiceCropBlock.AGE, 0);

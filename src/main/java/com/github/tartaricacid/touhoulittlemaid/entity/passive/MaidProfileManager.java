@@ -4,6 +4,9 @@ import com.github.tartaricacid.touhoulittlemaid.entity.data.ProfileData;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.PROFILE;
 
+/**
+ * 女仆档案管理器，主要管理女仆的模型和音效包等信息
+ */
 public class MaidProfileManager {
     private final EntityMaid maid;
 

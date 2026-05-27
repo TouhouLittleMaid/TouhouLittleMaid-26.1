@@ -37,7 +37,7 @@ public interface ISpecialCropHandler {
             maid.destroyBlock(cropPos);
         } else if (cropState.getBlock() instanceof CropBlockAccessor crop) {
             BlockEntity blockEntity = cropState.hasBlockEntity() ? maid.level.getBlockEntity(cropPos) : null;
-            maid.dropResourcesToMaidInv(cropState, maid.level, cropPos, blockEntity, maid, maid.getMainHandItem());
+            maid.dropResourcesToMaidInv(cropState, maid.level, cropPos, blockEntity, maid.getMainHandItem());
             maid.level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, cropPos, Block.getId(cropState));
             // 直接设置 Age 为 0
             if (cropState.hasProperty(crop.tlmAgeProperty())) {

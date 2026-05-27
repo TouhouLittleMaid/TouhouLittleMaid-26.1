@@ -116,7 +116,7 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
                     && sit.getFirstPassenger() instanceof EntityMaid maid && maid.isOwnedBy(player)) {
                     // TODO: 暂时不加段位系统
                     maid.getFavorabilityManager().apply(Type.CCHESS_WIN);
-                    maid.getGameRecordManager().markStatue(false);
+                    maid.getGameManager().markStatue(false);
                     InitTrigger.MAID_EVENT.get().trigger(player, TriggerType.WIN_CCHESS);
                 }
 
@@ -147,7 +147,7 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
                 && sit.getFirstPassenger() instanceof EntityMaid maid) {
                 maid.swing(InteractionHand.MAIN_HAND);
                 if (playerLost) {
-                    maid.getGameRecordManager().markStatue(true);
+                    maid.getGameManager().markStatue(true);
                 }
             }
             level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
@@ -275,7 +275,7 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
                 Entity sitEntity = serverLevel.getEntity(chess.getSitId());
                 if (sitEntity != null && sitEntity.isAlive()
                     && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
-                    maid.getGameRecordManager().resetStatue();
+                    maid.getGameManager().resetStatue();
                 }
 
                 return InteractionResult.SUCCESS;

@@ -6,12 +6,14 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.pathfinder.PathType;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * 主要管理女仆的游泳逻辑
+ */
 public class MaidSwimManager {
     /**
      * 游泳碰撞箱
      */
     private static final EntityDimensions SWIMMING_DIMENSIONS = EntityDimensions.scalable(0.6F, 0.6F);
-    private final EntityMaid maid;
     /**
      * 正在食用可提供水下呼吸的食物标志位
      */
@@ -24,7 +26,7 @@ public class MaidSwimManager {
     /**
      * 游泳目标点，控制视角用
      */
-    private BlockPos swimTarget = null;
+    private @Nullable BlockPos swimTarget = null;
     /**
      * 是否已经准备登陆，登陆时基于额外的加速度
      */
@@ -33,7 +35,10 @@ public class MaidSwimManager {
      * 是否准备前去呼吸，用于屏蔽距离传送
      */
     private boolean isGoingToBreath = false;
-
+    /**
+     * 女仆对象
+     */
+    private final EntityMaid maid;
 
     public MaidSwimManager(EntityMaid maid) {
         this.maid = maid;
@@ -55,22 +60,6 @@ public class MaidSwimManager {
     public void updateSwimming() {
         if (!maid.level.isClientSide()) {
             this.updatePose();
-        }
-    }
-
-    /**
-     * 更新游泳姿势同时更新碰撞箱
-     */
-    private void updatePose() {
-        if (this.wantToSwim() && !maid.onGround() && !maid.isMaidInSittingPose() && !maid.isPassenger()) {
-            maid.setSwimming(true);
-            maid.setPose(Pose.SWIMMING);
-        } else {
-            maid.setSwimming(false);
-            // 也许有更好的方式?
-            if (!maid.isSleeping()) {
-                maid.setPose(Pose.STANDING);
-            }
         }
     }
 
@@ -120,5 +109,25 @@ public class MaidSwimManager {
 
     public boolean isGoingToBreath() {
         return isGoingToBreath;
+    }
+
+    /**
+     * 更新游泳姿势同时更新碰撞箱
+     */
+    private void updatePose() {
+        if (this.wantToSwim() && !maid.onGround() && !maid.isMaidInSittingPose() && !maid.isPassenger()) {
+            maid.setSwimming(true);
+            maid.setPose(Pose.SWIMMING);
+        } else {
+            maid.setSwimming(false);
+            // 也许有更好的方式?
+            if (!maid.isSleeping()) {
+                maid.setPose(Pose.STANDING);
+            }
+        }
+    }
+
+    interface View {
+        MaidSwimManager getSwimManager();
     }
 }

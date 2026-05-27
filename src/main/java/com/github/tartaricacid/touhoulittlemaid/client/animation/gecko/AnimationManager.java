@@ -10,7 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidGameRecordManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidGameManager;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.PlayState;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.AnimationBuilder;
@@ -213,7 +213,7 @@ public final class AnimationManager {
         EntityMaid maid = event.getAnimatableEntity().getMaid();
         // 赢棋输棋优先
         if (maid.getVehicle() instanceof EntitySit) {
-            MaidGameRecordManager manager = maid.getGameRecordManager();
+            MaidGameManager manager = maid.getGameManager();
             if (manager.isWin()) {
                 return playAnimation(event, "game_win", LoopType.LOOP);
             }

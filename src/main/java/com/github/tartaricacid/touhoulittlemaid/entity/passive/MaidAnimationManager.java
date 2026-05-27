@@ -4,19 +4,14 @@ import com.github.tartaricacid.touhoulittlemaid.entity.data.AnimationData;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.ANIMATION;
 
+/**
+ * 动画管理器，提供一些方法来设置、获取、同步女仆的动画状态
+ */
 public class MaidAnimationManager {
     private final EntityMaid maid;
 
     MaidAnimationManager(EntityMaid maid) {
         this.maid = maid;
-    }
-
-    private AnimationData getAnimationData() {
-        return this.maid.getData(ANIMATION);
-    }
-
-    private void setAnimationData(AnimationData data) {
-        this.maid.setData(ANIMATION, data);
     }
 
     public boolean isBegging() {
@@ -49,6 +44,14 @@ public class MaidAnimationManager {
 
     public void setAiming(boolean aiming) {
         this.setAnimationData(this.getAnimationData().setAiming(aiming));
+    }
+
+    private AnimationData getAnimationData() {
+        return this.maid.getData(ANIMATION);
+    }
+
+    private void setAnimationData(AnimationData data) {
+        this.maid.setData(ANIMATION, data);
     }
 
     public interface View {

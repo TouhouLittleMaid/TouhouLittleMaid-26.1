@@ -305,7 +305,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 // 重置女仆棋类动画
                 Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
                 if (sitEntity != null && sitEntity.isAlive() && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
-                    maid.getGameRecordManager().resetStatue();
+                    maid.getGameManager().resetStatue();
                 }
 
                 return InteractionResult.SUCCESS;
@@ -335,9 +335,9 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 // 但是和其他人的女仆对弈不加好感哦
                 if (statue == Statue.WIN && maid.isOwnedBy(player)) {
                     maid.getFavorabilityManager().apply(Type.GOMOKU_WIN);
-                    maid.getGameRecordManager().markStatue(false);
+                    maid.getGameManager().markStatue(false);
                     int rankBefore = MaidGomokuAI.getRank(maid);
-                    maid.getGameRecordManager().increaseGomokuWinCount();
+                    maid.getGameManager().increaseGomokuWinCount();
                     int rankAfter = MaidGomokuAI.getRank(maid);
                     // 女仆升段啦
                     if (rankBefore < rankAfter) {
@@ -353,7 +353,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
                 if (gomoku.getStatue() == Statue.IN_PROGRESS && player instanceof ServerPlayer serverPlayer) {
                     gomoku.setPlayerTurn(false);
-                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.getGameRecordManager().getGomokuWinCount()));
+                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.getGameManager().getGomokuWinCount()));
                 }
                 gomoku.refresh();
                 return InteractionResult.SUCCESS;

@@ -31,4 +31,6 @@ public interface InitDataAttachment {
     Supplier<AttachmentType<AnimationData>> ANIMATION = ATTACHMENT_TYPES.register("animation", () -> AnimationData.TYPE);
     // 女仆行为配置
     Supplier<AttachmentType<ConfigData>> CONFIG = ATTACHMENT_TYPES.register("config", () -> ConfigData.TYPE);
+    // 对弈记录和当前对弈状态
+    Supplier<AttachmentType<GameData>> GAME = ATTACHMENT_TYPES.register("game", () -> GameData.TYPE);
 }

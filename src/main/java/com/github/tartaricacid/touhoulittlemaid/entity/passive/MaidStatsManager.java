@@ -4,6 +4,9 @@ import com.github.tartaricacid.touhoulittlemaid.entity.data.StatsData;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.STATS;
 
+/**
+ * 女仆状态管理类，主要维护一些非 Attribute 的属性，比如饥饿度、好感度、经验值等
+ */
 public class MaidStatsManager {
     private final EntityMaid maid;
 

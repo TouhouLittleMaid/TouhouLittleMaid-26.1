@@ -4,19 +4,14 @@ import com.github.tartaricacid.touhoulittlemaid.entity.data.ConfigData;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.CONFIG;
 
+/**
+ * 配置管理器，负责管理女仆的各种配置项
+ */
 public class MaidConfigManager {
     private final EntityMaid maid;
 
     MaidConfigManager(EntityMaid maid) {
         this.maid = maid;
-    }
-
-    private ConfigData getConfigData() {
-        return this.maid.getData(CONFIG);
-    }
-
-    private void setConfigData(ConfigData data) {
-        this.maid.setData(CONFIG, data);
     }
 
     public boolean isHomeModeEnable() {
@@ -105,6 +100,14 @@ public class MaidConfigManager {
 
     public void setActiveClimbing(boolean activeClimbing) {
         this.setConfigData(this.getConfigData().setActiveClimbing(activeClimbing));
+    }
+
+    private ConfigData getConfigData() {
+        return this.maid.getData(CONFIG);
+    }
+
+    private void setConfigData(ConfigData data) {
+        this.maid.setData(CONFIG, data);
     }
 
     public interface View {
