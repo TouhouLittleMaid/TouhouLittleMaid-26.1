@@ -49,24 +49,6 @@ public class MenuIntegration {
                     MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.save();
                 }).build());
 
-        maid.addEntry(entryBuilder.startTextField(Component.translatable("config.touhou_little_maid.maid.maid_tamed_item"),
-                        MaidConfig.MAID_TAMED_ITEM.get())
-                .setDefaultValue(MaidConfig.MAID_TAMED_ITEM.getDefault())
-                .setTooltip(Component.translatable("config.touhou_little_maid.maid.maid_tamed_item.tooltip"))
-                .setSaveConsumer(s -> {
-                    MaidConfig.MAID_TAMED_ITEM.set(s);
-                    MaidConfig.MAID_TAMED_ITEM.save();
-                }).build());
-
-        maid.addEntry(entryBuilder.startTextField(Component.translatable("config.touhou_little_maid.maid.maid_temptation_item"),
-                        MaidConfig.MAID_TEMPTATION_ITEM.get())
-                .setDefaultValue(MaidConfig.MAID_TEMPTATION_ITEM.getDefault())
-                .setTooltip(Component.translatable("config.touhou_little_maid.maid.maid_temptation_item.tooltip"))
-                .setSaveConsumer(s -> {
-                    MaidConfig.MAID_TEMPTATION_ITEM.set(s);
-                    MaidConfig.MAID_TEMPTATION_ITEM.save();
-                }).build());
-
         maid.addEntry(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.maid.enable_maid_curios"),
                         MaidConfig.ENABLE_MAID_CURIOS.get())
                 .setDefaultValue(MaidConfig.ENABLE_MAID_CURIOS.getDefault())

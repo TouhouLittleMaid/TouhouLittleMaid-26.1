@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.data.ConfigData;
+import net.minecraft.world.entity.Entity;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.CONFIG;
 

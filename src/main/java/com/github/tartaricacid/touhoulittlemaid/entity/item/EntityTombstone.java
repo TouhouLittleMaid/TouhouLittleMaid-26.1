@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import net.minecraft.core.UUIDUtil;
@@ -21,7 +21,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -62,7 +61,6 @@ public class EntityTombstone extends Entity {
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 position) {
         ItemStack itemInHand = player.getItemInHand(hand);
-        Ingredient ntrItem = EntityMaid.getNtrItem();
 
         // 只能主手触发
         if (hand != InteractionHand.MAIN_HAND) {
@@ -70,7 +68,7 @@ public class EntityTombstone extends Entity {
         }
 
         // NTR 工具可以收回墓碑
-        if (player.getUUID().equals(this.ownerId) || ntrItem.test(itemInHand)) {
+        if (player.getUUID().equals(this.ownerId) || itemInHand.is(InitItems.OWNER_CONVERSION_TOOL.get())) {
             var stacks = this.items.copyToList();
             // 第一步：预检查所有物品是否能被玩家容纳（不实际提取物品）
             // 如果玩家按下了 Shift 键，则强制取出
@@ -104,8 +102,7 @@ public class EntityTombstone extends Entity {
 
         // 其他逻辑...
         if (!player.level.isClientSide()) {
-            ItemStack stack = ntrItem.getValues().stream().findFirst().map(t -> t.value().getDefaultInstance()).orElse(ItemStack.EMPTY);
-            Component displayName = stack.getDisplayName();
+            Component displayName = InitItems.OWNER_CONVERSION_TOOL.toStack().getDisplayName();
             player.sendSystemMessage(Component.translatable("message.touhou_little_maid.tombstone.not_yours.1"));
             player.sendSystemMessage(Component.translatable("message.touhou_little_maid.tombstone.not_yours.2").append(displayName));
         }

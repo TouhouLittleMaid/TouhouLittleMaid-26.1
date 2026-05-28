@@ -100,10 +100,11 @@ public class ItemFilm extends AbstractStoreMaidItem {
     }
 
     private static void removeMaidSomeData(CompoundTag nbt) {
-        nbt.remove(EntityMaid.MAID_BACKPACK_TYPE);
-        nbt.remove(EntityMaid.MAID_INVENTORY_TAG);
-        nbt.remove(EntityMaid.MAID_BAUBLE_INVENTORY_TAG);
-        nbt.remove(EntityMaid.EXPERIENCE_TAG);
+        // TODO 删除部分不需要的内容
+//        nbt.remove(EntityMaid.MAID_BACKPACK_TYPE);
+//        nbt.remove(EntityMaid.MAID_INVENTORY_TAG);
+//        nbt.remove(EntityMaid.MAID_BAUBLE_INVENTORY_TAG);
+//        nbt.remove(EntityMaid.EXPERIENCE_TAG);
         nbt.remove("ArmorItems");
         nbt.remove("HandItems");
         nbt.remove("Leash");

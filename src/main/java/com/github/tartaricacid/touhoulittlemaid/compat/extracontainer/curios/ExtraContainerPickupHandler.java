@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.compat.extracontainer.curios;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidPickupEvent;
 import com.github.tartaricacid.touhoulittlemaid.compat.extracontainer.MaidContainerCache;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidItemManager;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
@@ -36,7 +37,7 @@ public class ExtraContainerPickupHandler {
             return false;
         }
         ItemStack itemStack = itemEntity.getItem();
-        if (!EntityMaid.canInsertItem(itemStack)) {
+        if (!MaidItemManager.canInsertItem(itemStack)) {
             return false;
         }
 

@@ -1,8 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
+import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,6 +37,18 @@ public class MaidTeleportManager {
             }
         }
         return false;
+    }
+
+    /**
+     * 女仆不能穿过传送门，故接触传送门时，会瞬移走
+     */
+    void handlePortal() {
+        if (maid.level instanceof ServerLevel && !maid.isRemoved() && maid.portalProcess != null) {
+            if (TeleportHelper.teleport(maid)) {
+                maid.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 1, true, false));
+                maid.setPortalCooldown();
+            }
+        }
     }
 
     private int randomIntInclusive(RandomSource random, int min, int max) {

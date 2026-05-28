@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.init;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidSchedule;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.sensor.MaidHostilesSensor;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.sensor.MaidNearestLivingEntitySensor;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.sensor.MaidPickupEntitiesSensor;
@@ -10,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleRegi
 import com.github.tartaricacid.touhoulittlemaid.entity.item.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidConstant;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityDanmaku;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityThrowPowerPoint;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
@@ -105,7 +105,7 @@ public final class InitEntities {
 
     @SubscribeEvent
     public static void addEntityAttributeEvent(EntityAttributeCreationEvent event) {
-        event.put(EntityMaid.TYPE, EntityMaid.createAttributes().build());
+        event.put(EntityMaid.TYPE, MaidConstant.createAttributes().build());
         event.put(EntityChair.TYPE, LivingEntity.createLivingAttributes().build());
         event.put(EntityBroom.TYPE, LivingEntity.createLivingAttributes().build());
         event.put(EntityFairy.TYPE, EntityFairy.createFairyAttributes().build());

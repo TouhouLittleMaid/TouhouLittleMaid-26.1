@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.inventory.container.other;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidItemManager;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemWirelessIO;
 import net.minecraft.world.entity.player.Inventory;
@@ -108,7 +109,7 @@ public class WirelessIOContainer extends AbstractContainerMenu {
 
         @Override
         public boolean mayPlace(@NotNull ItemStack stack) {
-            return EntityMaid.canInsertItem(stack) && super.mayPlace(stack);
+            return MaidItemManager.canInsertItem(stack) && super.mayPlace(stack);
         }
     }
 }

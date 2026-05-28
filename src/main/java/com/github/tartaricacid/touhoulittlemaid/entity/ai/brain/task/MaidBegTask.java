@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
+import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
@@ -25,7 +26,7 @@ public class MaidBegTask extends Behavior<EntityMaid> {
                                 .filter(LivingEntity::isAlive)
                                 .filter(e -> e.closerThan(owner, BEG_DISTANCE))
                                 .filter(e -> owner.isWithinHome(e.blockPosition()))
-                                .anyMatch((e) -> holdTemptationItem(owner, e)))
+                                .anyMatch(this::holdTemptationItem))
                 .orElse(false);
     }
 
@@ -57,7 +58,7 @@ public class MaidBegTask extends Behavior<EntityMaid> {
         entityIn.setBegging(false);
     }
 
-    private boolean holdTemptationItem(EntityMaid owner, LivingEntity e) {
-        return owner.getTemptationItem().test(e.getMainHandItem());
+    private boolean holdTemptationItem(LivingEntity e) {
+        return e.getMainHandItem().is(TagItem.MAID_TEMPTATION_ITEM);
     }
 }

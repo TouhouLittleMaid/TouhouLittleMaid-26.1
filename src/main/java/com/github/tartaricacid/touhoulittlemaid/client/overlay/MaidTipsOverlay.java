@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.compat.kubejs.ModKubeJSCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.client.DeltaTracker;
@@ -57,7 +58,10 @@ public class MaidTipsOverlay implements GuiLayer {
         overlay.addTips("overlay.touhou_little_maid.debug_stick.tips", Items.DEBUG_STICK);
         overlay.addTips("overlay.touhou_little_maid.saddle.tips", ENABLE_SADDLE_TIP, Items.SADDLE);
 
-        overlay.addSpecialTips("overlay.touhou_little_maid.ntr_item.tips", (item, maid, player) -> !maid.isOwnedBy(player) && EntityMaid.getNtrItem().test(item));
+        overlay.addSpecialTips("overlay.touhou_little_maid.ntr_item.tips", (item, maid, player) ->
+                !maid.isOwnedBy(player)
+                && item.is(InitItems.OWNER_CONVERSION_TOOL.get())
+        );
         overlay.addSpecialTips("overlay.touhou_little_maid.remove_backpack.tips", MaidTipsOverlay::checkShears);
 
         for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {

@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -67,7 +68,9 @@ public class FavorabilityManager {
     }
 
     public void tick() {
+        Profiler.get().push("maidFavorability");
         counter.values().forEach(Time::tick);
+        Profiler.get().pop();
     }
 
     public void apply(String type) {

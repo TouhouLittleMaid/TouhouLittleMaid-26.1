@@ -11,13 +11,9 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil.getItemId;
 
 public final class MaidConfig {
     private static final String TRANSLATE_KEY = "config.touhou_little_maid.maid";
-    public static final String TAG_PREFIX = "#";
 
     public static ModConfigSpec.IntValue GLOBAL_MAID_SOUND_FREQUENCY;
     public static ModConfigSpec.BooleanValue GLOBAL_MAID_SHOW_CHAT_BUBBLE;
-
-    public static ModConfigSpec.ConfigValue<String> MAID_TAMED_ITEM;
-    public static ModConfigSpec.ConfigValue<String> MAID_TEMPTATION_ITEM;
 
     public static ModConfigSpec.BooleanValue ENABLE_MAID_CURIOS;
 
@@ -70,14 +66,6 @@ public final class MaidConfig {
         builder.comment("This is a global config that applies to all maids: Whether or not to display chat bubbles")
                 .translation(translateKey("global_maid_show_chat_bubble"));
         GLOBAL_MAID_SHOW_CHAT_BUBBLE = builder.define("GlobalMaidShowChatBubble", true);
-
-        builder.comment("The item that can tamed maid", "Use the registered name of the item directly or write tag name with # as prefix")
-                .translation(translateKey("maid_tamed_item"));
-        MAID_TAMED_ITEM = builder.define("MaidTamedItem", "minecraft:cake", MaidConfig::checkItemAndTag);
-
-        builder.comment("The item that can temptation maid", "Use the registered name of the item directly or write tag name with # as prefix")
-                .translation(translateKey("maid_temptation_item"));
-        MAID_TEMPTATION_ITEM = builder.define("MaidTemptationItem", "minecraft:cake", MaidConfig::checkItemAndTag);
 
         builder.comment("When installed Curios mod, whether to enable maid curios slot support");
         ENABLE_MAID_CURIOS = builder.define("EnableMaidCurios", true);
@@ -206,18 +194,6 @@ public final class MaidConfig {
     private static boolean checkItemIds(Object obj) {
         if (obj instanceof List<?> list) {
             return list.stream().allMatch(MaidConfig::checkItemId);
-        }
-        return false;
-    }
-
-    private static boolean checkItemAndTag(Object obj) {
-        if (obj instanceof String text) {
-            if (text.startsWith("#")) {
-                text = text.substring(1);
-                return Identifier.tryParse(text) != null;
-            } else {
-                return checkItemId(text);
-            }
         }
         return false;
     }
