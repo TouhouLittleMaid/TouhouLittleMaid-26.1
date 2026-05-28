@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "c:crops/nether_wart"
-    },
-    {
-      "tag": "c:dyes/cyan"
-    },
-    {
-      "item": "minecraft:sugar"
-    },
-    {
-      "item": "minecraft:sugar"
-    },
-    {
-      "item": "minecraft:sugar"
-    },
-    {
-      "item": "minecraft:sugar"
-    }
+    "#c:crops/nether_wart",
+    "#c:dyes/cyan",
+    "minecraft:sugar",
+    "minecraft:sugar",
+    "minecraft:sugar",
+    "minecraft:sugar"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:magic_protect_bauble"
   }
 }

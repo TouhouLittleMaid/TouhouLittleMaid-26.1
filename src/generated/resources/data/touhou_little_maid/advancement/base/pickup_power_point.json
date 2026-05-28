@@ -14,7 +14,6 @@
       "translate": "advancements.touhou_little_maid.base.pickup_power_point.description"
     },
     "icon": {
-      "count": 1,
       "id": "touhou_little_maid:power_point"
     },
     "title": {

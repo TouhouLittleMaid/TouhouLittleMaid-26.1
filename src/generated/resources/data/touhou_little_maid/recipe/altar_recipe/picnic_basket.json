@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "c:chests/wooden"
-    },
-    {
-      "item": "minecraft:bamboo"
-    },
-    {
-      "item": "minecraft:bamboo"
-    },
-    {
-      "item": "minecraft:bamboo"
-    },
-    {
-      "item": "minecraft:bamboo"
-    },
-    {
-      "tag": "minecraft:wool_carpets"
-    }
+    "#c:chests/wooden",
+    "minecraft:bamboo",
+    "minecraft:bamboo",
+    "minecraft:bamboo",
+    "minecraft:bamboo",
+    "#minecraft:wool_carpets"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:picnic_basket"
   }
 }

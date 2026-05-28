@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "c:crops/nether_wart"
-    },
-    {
-      "tag": "c:dyes/yellow"
-    },
-    {
-      "tag": "c:feathers"
-    },
-    {
-      "tag": "c:feathers"
-    },
-    {
-      "tag": "c:feathers"
-    },
-    {
-      "tag": "c:feathers"
-    }
+    "#c:crops/nether_wart",
+    "#c:dyes/yellow",
+    "#c:feathers",
+    "#c:feathers",
+    "#c:feathers",
+    "#c:feathers"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:fall_protect_bauble"
   }
 }

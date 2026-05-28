@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:dyes/cyan"
-    },
-    {
-      "tag": "c:dusts/redstone"
-    },
-    {
-      "tag": "c:dusts/redstone"
-    }
+    "#c:obsidians",
+    "#c:obsidians",
+    "#c:obsidians",
+    "#c:dyes/cyan",
+    "#c:dusts/redstone",
+    "#c:dusts/redstone"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.1,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:kappa_compass"
   }
 }

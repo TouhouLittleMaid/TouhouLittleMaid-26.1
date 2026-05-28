@@ -7,5 +7,6 @@
       "loot_table_type": "minecraft:chest"
     }
   ],
+  "priority": 1,
   "table": "touhou_little_maid:chest/power_point"
 }
