@@ -9,7 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.attachment.AttachmentType;
 
-public record ConfigData(long booleanValue, byte pickupType, float soundFreq) {
+public record ConfigData(long booleanValue, PickType pickupType, float soundFreq) {
     private static final int PICKUP_FLAG = 0;
     private static final int HOME_MODE_FLAG = 1;
     private static final int RIDEABLE_FLAG = 2;
@@ -31,18 +31,17 @@ public record ConfigData(long booleanValue, byte pickupType, float soundFreq) {
             | (1L << OPEN_FENCE_GATE_FLAG)
             | (1L << ACTIVE_CLIMBING_FLAG);
 
-    private static final byte DEFAULT_PICKUP_TYPE = (byte) PickType.ALL.ordinal();
     private static final float DEFAULT_SOUND_FREQ = 1.0f;
 
     private static final MapCodec<ConfigData> CODEC = RecordCodecBuilder.mapCodec(ins -> ins.group(
             Codec.LONG.fieldOf("boolean_value").forGetter(ConfigData::booleanValue),
-            Codec.BYTE.fieldOf("pickup_type").forGetter(ConfigData::pickupType),
+            PickType.CODEC.fieldOf("pickup_type").forGetter(ConfigData::pickupType),
             Codec.FLOAT.fieldOf("sound_freq").forGetter(ConfigData::soundFreq)
     ).apply(ins, ConfigData::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ConfigData> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.LONG, ConfigData::booleanValue,
-            ByteBufCodecs.BYTE, ConfigData::pickupType,
+            PickType.STREAM_CODEC, ConfigData::pickupType,
             ByteBufCodecs.FLOAT, ConfigData::soundFreq,
             ConfigData::new
     );
@@ -54,7 +53,7 @@ public record ConfigData(long booleanValue, byte pickupType, float soundFreq) {
             .build();
 
     private static ConfigData defaultConfig() {
-        return new ConfigData(DEFAULT_BOOLEAN_VALUE, DEFAULT_PICKUP_TYPE, DEFAULT_SOUND_FREQ);
+        return new ConfigData(DEFAULT_BOOLEAN_VALUE, PickType.ALL, DEFAULT_SOUND_FREQ);
     }
 
     public ConfigData {
@@ -144,12 +143,11 @@ public record ConfigData(long booleanValue, byte pickupType, float soundFreq) {
     }
 
     public ConfigData setPickupType(PickType pickupType) {
-        byte typeValue = (byte) pickupType.ordinal();
-        return new ConfigData(booleanValue, typeValue, soundFreq);
+        return new ConfigData(booleanValue, pickupType, soundFreq);
     }
 
     public PickType getPickupType() {
-        return PickType.values()[pickupType % PickType.values().length];
+        return pickupType;
     }
 
     public ConfigData setSoundFreq(float soundFreq) {

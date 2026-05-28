@@ -35,15 +35,6 @@ public abstract class IMaidBackpack {
 
     public abstract MenuProvider getGuiProvider(int entityId);
 
-    public boolean hasBackpackData() {
-        return false;
-    }
-
-    @Nullable
-    public IBackpackData getBackpackData(EntityMaid maid) {
-        return null;
-    }
-
     public abstract int getAvailableMaxContainerIndex();
 
     public abstract void offsetBackpackItem(PoseStack poseStack);

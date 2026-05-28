@@ -99,7 +99,6 @@ public final class InitEntities {
 
     public static EntityDataSerializer<Optional<UUID>> SERIALIZER_OPTIONAL_UUID = EntityDataSerializer.forValueType(ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC));
 
-    public static Supplier<EntityDataSerializer<?>> MAID_SCHEDULE_DATA_SERIALIZERS = DATA_SERIALIZERS.register("maid_schedule", () -> MaidSchedule.DATA);
     public static Supplier<EntityDataSerializer<?>> MAID_CHAT_BUBBLE_DATA_SERIALIZERS = DATA_SERIALIZERS.register("maid_chat_bubble", () -> ChatBubbleRegister.INSTANCE);
     public static Supplier<EntityDataSerializer<?>> OPTIONAL_UUID_SERIALIZERS = DATA_SERIALIZERS.register("optional_uuid", () -> SERIALIZER_OPTIONAL_UUID);
 

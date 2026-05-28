@@ -4,8 +4,6 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPa
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
-import com.github.tartaricacid.touhoulittlemaid.api.backpack.IBackpackData;
-import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.api.event.*;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
@@ -20,11 +18,8 @@ import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagEntity;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidBrain;
-import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidSchedule;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.control.MaidMoveControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.navigation.MaidPathNavigation;
-import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
-import com.github.tartaricacid.touhoulittlemaid.entity.backpack.EmptyBackpack;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleDataCollection;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleRegister;
@@ -113,7 +108,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.joml.Vector3f;
 
@@ -136,6 +130,7 @@ public class EntityMaid extends TamableAnimal implements
         MaidProfileManager.View,
         MaidStatsManager.View,
         MaidTaskManager.View,
+        MaidBackpackManager.View,
         MaidWorldInteractionManager.View,
         MaidTeleportManager.View,
         MaidGameManager.View,
@@ -166,17 +161,10 @@ public class EntityMaid extends TamableAnimal implements
 
     // 女仆默认同步数据
     private static final EntityDataAccessor<Boolean> DATA_INVULNERABLE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<MaidSchedule> SCHEDULE_MODE = SynchedEntityData.defineId(EntityMaid.class, MaidSchedule.DATA);
-    private static final EntityDataAccessor<BlockPos> RESTRICT_CENTER = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BLOCK_POS);
-    private static final EntityDataAccessor<Integer> RESTRICT_RADIUS = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<ChatBubbleDataCollection> CHAT_BUBBLE = SynchedEntityData.defineId(EntityMaid.class, ChatBubbleRegister.INSTANCE);
-    private static final EntityDataAccessor<String> BACKPACK_TYPE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<ItemStack> BACKPACK_ITEM_SHOW = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.ITEM_STACK);
-    private static final EntityDataAccessor<String> BACKPACK_FLUID = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.STRING);
 
     private static final String INVULNERABLE_TAG = "Invulnerable";
-    private static final String SCHEDULE_MODE_TAG = "MaidScheduleMode";
-    private static final String BACKPACK_DATA_TAG = "MaidBackpackData";
     private static final String STRUCTURE_SPAWN_TAG = "StructureSpawn";
 
     public static boolean canInsertItem(ItemStack stack) {
@@ -197,6 +185,7 @@ public class EntityMaid extends TamableAnimal implements
     private final MaidAnimationManager animationManager = new MaidAnimationManager(this);
     private final MaidConfigManager configManager = new MaidConfigManager(this);
     private final MaidGameManager gameManager = new MaidGameManager(this);
+    private final MaidBackpackManager backpackManager = new MaidBackpackManager(this);
 
     public final ItemStack[] handItemsForAnimation = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY};
 
@@ -208,7 +197,7 @@ public class EntityMaid extends TamableAnimal implements
     // 控制不同的 navigation 切换的条件以及切换后变更女仆相关的 AI 控制参数
     private final MaidNavigationManager navigationManager;
     private final MaidAIChatManager aiChatManager;
-    private final SchedulePos schedulePos;
+
     private final ItemCooldowns cooldowns;
 
     private int pickupSoundCount = 5;
@@ -227,11 +216,8 @@ public class EntityMaid extends TamableAnimal implements
 
     private List<SendEffectPackage.EffectData> effects = Lists.newArrayList();
     IMaidTask task = TaskManager.getIdleTask();
-    private IMaidBackpack backpack = BackpackManager.getEmptyBackpack();
     private int playerHurtSoundCount = 120;
-    private int backpackDelay = 0;
     private int passiveUseShieldTick = 0;
-    private @Nullable IBackpackData backpackData = null;
 
     /**
      * 女仆现在可以在前哨站生成，那么会打上这个标签
@@ -254,10 +240,6 @@ public class EntityMaid extends TamableAnimal implements
     protected EntityMaid(EntityType<EntityMaid> type, Level world) {
         super(type, world);
         this.aiChatManager = new MaidAIChatManager(this);
-
-        // 尝试修复 https://github.com/TartaricAcid/TouhouLittleMaid/issues/631
-        ResourceKey<Level> dimension = Objects.requireNonNullElse(world.dimension(), Level.OVERWORLD);
-        this.schedulePos = new SchedulePos(BlockPos.ZERO, dimension.identifier());
 
         this.moveControl = new MaidMoveControl(this);
         this.navigationManager = new MaidNavigationManager(this);
@@ -323,6 +305,11 @@ public class EntityMaid extends TamableAnimal implements
     }
 
     @Override
+    public MaidBackpackManager getBackpackManager() {
+        return backpackManager;
+    }
+
+    @Override
     public MaidSwimManager getSwimManager() {
         return swimManager;
     }
@@ -366,13 +353,8 @@ public class EntityMaid extends TamableAnimal implements
         super.defineSynchedData(builder);
 
         builder.define(DATA_INVULNERABLE, false);
-        builder.define(SCHEDULE_MODE, MaidSchedule.DAY);
-        builder.define(RESTRICT_CENTER, BlockPos.ZERO);
-        builder.define(RESTRICT_RADIUS, MaidConfig.MAID_NON_HOME_RANGE.get());
         builder.define(CHAT_BUBBLE, ChatBubbleDataCollection.getEmptyCollection());
-        builder.define(BACKPACK_TYPE, EmptyBackpack.ID.toString());
         builder.define(BACKPACK_ITEM_SHOW, ItemStack.EMPTY);
-        builder.define(BACKPACK_FLUID, StringUtils.EMPTY);
     }
 
     @Override
@@ -450,9 +432,7 @@ public class EntityMaid extends TamableAnimal implements
     @Override
     public void baseTick() {
         super.baseTick();
-        if (backpackDelay > 0) {
-            backpackDelay--;
-        }
+        this.backpackManager.tick();
         if (playerHurtSoundCount > 0) {
             playerHurtSoundCount--;
         }
@@ -497,19 +477,11 @@ public class EntityMaid extends TamableAnimal implements
         this.navigationManager.tick();
         if (!level.isClientSide()) {
             this.chatBubbleManager.tick();
-            if (this.backpackData != null) {
-                Profiler.get().push("maidBackpackData");
-                this.backpackData.serverTick(this);
-                Profiler.get().pop();
-            }
-
             Profiler.get().push("maidFavorability");
             this.favorabilityManager.tick();
             Profiler.get().pop();
 
-            Profiler.get().push("maidSchedulePos");
-            this.schedulePos.tick(this);
-            Profiler.get().pop();
+            this.taskManager.tick();
 
             Profiler.get().push("maidCooldowns");
             this.cooldowns.tick();
@@ -938,14 +910,9 @@ public class EntityMaid extends TamableAnimal implements
 
         itemManager.addAdditionalSaveData(output);
         output.store(INVULNERABLE_TAG, Codec.BOOL, getIsInvulnerable());
-        output.store(SCHEDULE_MODE_TAG, Codec.STRING, getSchedule().name());
-        output.store(MAID_BACKPACK_TYPE, Codec.STRING, getMaidBackpackType().getId().toString());
         output.store(STRUCTURE_SPAWN_TAG, Codec.BOOL, this.structureSpawn);
         this.favorabilityManager.addAdditionalSaveData(output);
-        this.schedulePos.save(output);
-        if (this.backpackData != null) {
-            this.backpackData.save(output.child(BACKPACK_DATA_TAG), this);
-        }
+        this.taskManager.save(output);
         this.killRecordManager.addAdditionalSaveData(output);
         this.aiChatManager.saveValue(output);
     }
@@ -954,24 +921,13 @@ public class EntityMaid extends TamableAnimal implements
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
 
-        input.read(SCHEDULE_MODE_TAG, Codec.STRING).ifPresent(s -> setSchedule(MaidSchedule.valueOf(s)));
         itemManager.readAdditionalSaveData(input);
 
         input.read(INVULNERABLE_TAG, Codec.BOOL).ifPresent(this::setEntityInvulnerable);
         input.read(STRUCTURE_SPAWN_TAG, Codec.BOOL).ifPresent(v -> this.structureSpawn = v);
-        //FIXME NbtUtils.readBlockPos migration for RESTRICT_CENTER_TAG archive migration
-
-        input.read(MAID_BACKPACK_TYPE, Codec.STRING).ifPresent(idStr -> {
-            Identifier id = Identifier.parse(idStr);
-            IMaidBackpack backpack = BackpackManager.findBackpack(id).orElse(BackpackManager.getEmptyBackpack());
-            setMaidBackpackType(backpack);
-            if (this.backpackData != null) {
-                this.backpackData.load(input.childOrEmpty(BACKPACK_DATA_TAG), this);
-            }
-        });
 
         this.favorabilityManager.readAdditionalSaveData(input);
-        this.schedulePos.load(input, this);
+        this.taskManager.read(input);
         this.setBackpackShowItem(ItemUtil.getStack(itemManager.getMaidInv(), MaidBackpackHandler.BACKPACK_ITEM_SLOT));
         this.killRecordManager.readAdditionalSaveData(input);
         this.aiChatManager.loadValue(input);
@@ -1373,14 +1329,6 @@ public class EntityMaid extends TamableAnimal implements
         }
     }
 
-    public void setBackpackDelay() {
-        backpackDelay = 20;
-    }
-
-    public boolean backpackHasDelay() {
-        return backpackDelay > 0;
-    }
-
     public boolean isMaidInSittingPose() {
         return super.isInSittingPose();
     }
@@ -1400,30 +1348,23 @@ public class EntityMaid extends TamableAnimal implements
 
     @Override
     public void setHomeTo(BlockPos pos, int distance) {
-        this.entityData.set(RESTRICT_CENTER, pos);
-        this.entityData.set(RESTRICT_RADIUS, distance);
+        this.taskManager.setHomeTo(pos, distance);
     }
 
     @Override
     public BlockPos getHomePosition() {
-        return this.entityData.get(RESTRICT_CENTER);
+        return this.taskManager.getHomePosition();
     }
 
     @Override
     public int getHomeRadius() {
-        return this.entityData.get(RESTRICT_RADIUS);
-    }
-
-    @Override
-    public void clearHome() {
-        this.schedulePos.clear(this);
+        return this.taskManager.getHomeRadius();
     }
 
     @Override
     public boolean hasHome() {
         return this.isHomeModeEnable();
     }
-
 
     public BlockPos getBrainSearchPos() {
         if (this.hasHome()) {
@@ -1437,32 +1378,9 @@ public class EntityMaid extends TamableAnimal implements
         return !this.isMaidInSittingPose() && !this.isPassenger() && !this.isSleeping() && !this.isLeashed();
     }
 
-    public String getBackpackFluid() {
-        return this.entityData.get(BACKPACK_FLUID);
-    }
-
-    public void setBackpackFluid(String fluidName) {
-        this.entityData.set(BACKPACK_FLUID, fluidName);
-    }
-
-    public MaidSchedule getSchedule() {
-        return this.entityData.get(SCHEDULE_MODE);
-    }
-
-    public void setSchedule(MaidSchedule schedule) {
-        this.entityData.set(SCHEDULE_MODE, schedule);
-        if (this.level instanceof ServerLevel) {
-            this.refreshBrain((ServerLevel) this.level);
-        }
-    }
-
     public Activity getScheduleDetail() {
         //TODO 检查是否正确
         return level.environmentAttributes().getValue(this.getSchedule().getEnvironmentAttribute(), blockPosition());
-    }
-
-    public SchedulePos getSchedulePos() {
-        return schedulePos;
     }
 
     public ItemStack getBackpackShowItem() {
@@ -1471,32 +1389,6 @@ public class EntityMaid extends TamableAnimal implements
 
     public void setBackpackShowItem(ItemStack stack) {
         this.entityData.set(BACKPACK_ITEM_SHOW, stack);
-    }
-
-    public IMaidBackpack getMaidBackpackType() {
-        Identifier id = Identifier.parse(entityData.get(BACKPACK_TYPE));
-        return BackpackManager.findBackpack(id).orElse(BackpackManager.getEmptyBackpack());
-    }
-
-    public boolean hasBackpack() {
-        return !(this.getMaidBackpackType() instanceof EmptyBackpack);
-    }
-
-    public void setMaidBackpackType(IMaidBackpack backpack) {
-        if (backpack == this.backpack) {
-            return;
-        }
-        this.backpack = backpack;
-        if (this.backpack.hasBackpackData()) {
-            this.backpackData = this.backpack.getBackpackData(this);
-        } else {
-            this.backpackData = null;
-        }
-        this.entityData.set(BACKPACK_TYPE, backpack.getId().toString());
-    }
-
-    public IBackpackData getBackpackData() {
-        return backpackData;
     }
 
     public boolean getIsInvulnerable() {
