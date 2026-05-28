@@ -196,8 +196,10 @@ public class TileEntityWChessRenderer implements BlockEntityRenderer<TileEntityW
         }
         RenderType renderType = RenderTypes.entityCutout(TEXTURE);
         submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            poseStack.pushPose();
             poseStack.last().set(pose);
             chessModel.renderToBuffer(poseStack, buffer, lightCoords, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
         });
         poseStack.popPose();
     }

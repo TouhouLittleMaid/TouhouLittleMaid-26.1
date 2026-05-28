@@ -69,8 +69,10 @@ public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntity
             renderType = RenderTypes.entityCutout(texture);
         }
         submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            poseStack.pushPose();
             poseStack.last().set(pose);
             model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
         });
         poseStack.popPose();
     }

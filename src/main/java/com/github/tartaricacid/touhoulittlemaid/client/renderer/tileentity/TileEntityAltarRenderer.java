@@ -65,8 +65,10 @@ public class TileEntityAltarRenderer implements BlockEntityRenderer<TileEntityAl
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
             RenderType renderType = RenderTypes.entityTranslucent(TEXTURE);
             submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+                poseStack.pushPose();
                 poseStack.last().set(pose);
                 model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+                poseStack.popPose();
             });
             poseStack.popPose();
         }

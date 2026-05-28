@@ -33,8 +33,10 @@ public class TileEntityKeyboardRenderer extends TileEntityJoyRenderer<TileEntity
         submitNodeCollector.submitCustomGeometry(poseStack,
                 RenderTypes.entityCutout(TEXTURE),
                 (pose, buffer) -> {
+                    poseStack.pushPose();
                     poseStack.last().set(pose);
                     model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+                    poseStack.popPose();
                 });
         poseStack.popPose();
     }

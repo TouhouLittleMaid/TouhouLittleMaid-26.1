@@ -111,8 +111,10 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
         }
         RenderType renderType = RenderTypes.entityCutout(CHECKER_BOARD_TEXTURE);
         submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            poseStack.pushPose();
             poseStack.last().set(pose);
             checkerBoardModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
         });
         poseStack.popPose();
     }
@@ -131,6 +133,7 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
         poseStack.translate(0.92, -0.1, -1.055);
         RenderType blackRenderType = RenderTypes.entityCutout(BLACK_PIECE_TEXTURE);
         submitNodeCollector.submitCustomGeometry(poseStack, blackRenderType, (pose, buffer) -> {
+            poseStack.pushPose();
             poseStack.last().set(pose);
             for (byte[] row : chessData) {
                 for (int j = 0; j < chessData[0].length; j++) {
@@ -141,6 +144,7 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
                 }
                 poseStack.translate(-0.1316, 0, -1.974);
             }
+            poseStack.popPose();
         });
         poseStack.popPose();
 
@@ -149,6 +153,7 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
         poseStack.translate(0.92, -0.1, -1.055);
         RenderType whiteRenderType = RenderTypes.entityCutout(WHITE_PIECE_TEXTURE);
         submitNodeCollector.submitCustomGeometry(poseStack, whiteRenderType, (pose, buffer) -> {
+            poseStack.pushPose();
             poseStack.last().set(pose);
             for (byte[] row : chessData) {
                 for (int j = 0; j < chessData[0].length; j++) {
@@ -159,6 +164,7 @@ public class TileEntityGomokuRenderer implements BlockEntityRenderer<TileEntityG
                 }
                 poseStack.translate(-0.1316, 0, -1.974);
             }
+            poseStack.popPose();
         });
         poseStack.popPose();
 
