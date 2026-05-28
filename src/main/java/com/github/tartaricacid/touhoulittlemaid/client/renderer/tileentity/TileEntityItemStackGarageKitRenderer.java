@@ -117,7 +117,10 @@ public class TileEntityItemStackGarageKitRenderer implements SpecialModelRendere
         poseStack.translate(1, 1.5, 1);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
+            poseStack.pushPose();
+            poseStack.last().set(pose);
             baseModel.renderToBuffer(poseStack, buffer, lightCoords, overlayCoords);
+            poseStack.popPose();
         });
         poseStack.popPose();
 

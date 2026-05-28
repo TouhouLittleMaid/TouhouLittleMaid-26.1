@@ -85,7 +85,10 @@ public class PicnicMatRender implements BlockEntityRenderer<TileEntityPicnicMat,
 
         // 渲染底座模型
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
+            poseStack.pushPose();
+            poseStack.last().set(pose);
             model.renderToBuffer(poseStack, buffer, state.lightCoords, 0);
+            poseStack.popPose();
         });
         poseStack.popPose();
     }

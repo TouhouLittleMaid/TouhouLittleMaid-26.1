@@ -63,8 +63,12 @@ public class TileEntityShrineRenderer implements BlockEntityRenderer<TileEntityS
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         poseStack.mulPose(Axis.YN.rotationDegrees(180 - facing.get2DDataValue() * 90));
         RenderType renderType = RenderTypes.entityCutout(TEXTURE);
-        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) ->
-                model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY));
+        submitNodeCollector.submitCustomGeometry(poseStack, renderType, (pose, buffer) -> {
+            poseStack.pushPose();
+            poseStack.last().set(pose);
+            model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
+        });
         poseStack.popPose();
 
         if (state.hasItem) {

@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ProblemReporter;
@@ -106,7 +107,10 @@ public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEnti
         poseStack.translate(1, 1.5, 1);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
-            baseModel.renderToBuffer(poseStack, buffer, state.lightCoords, 0);
+            poseStack.pushPose();
+            poseStack.last().set(pose);
+            baseModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
         });
         poseStack.popPose();
 

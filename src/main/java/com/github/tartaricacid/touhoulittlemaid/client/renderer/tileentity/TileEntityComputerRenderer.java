@@ -32,7 +32,12 @@ public class TileEntityComputerRenderer extends TileEntityJoyRenderer<TileEntity
         poseStack.mulPose(Axis.YN.rotationDegrees(180 - state.facing.get2DDataValue() * 90));
         submitNodeCollector.submitCustomGeometry(
                 poseStack, RenderTypes.entityCutout(TEXTURE),
-                (pose, buffer) -> model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY)
+                (pose, buffer) -> {
+                    poseStack.pushPose();
+                    poseStack.last().set(pose);
+                    model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+                    poseStack.popPose();
+                }
         );
         poseStack.popPose();
     }
