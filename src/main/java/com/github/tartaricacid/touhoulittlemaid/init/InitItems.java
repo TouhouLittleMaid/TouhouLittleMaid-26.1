@@ -89,9 +89,6 @@ public final class InitItems {
             new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).setId(ResourceKey.create(Registries.ITEM, id)))
     );
 
-    public static DeferredItem<Item> GOMOKU_BOARD_STATE = ITEMS.register("gomoku_board_state", ItemBoardState::new);
-    public static DeferredItem<Item> CCHESS_BOARD_STATE = ITEMS.register("cchess_board_state", ItemBoardState::new);
-    public static DeferredItem<Item> WCHESS_BOARD_STATE = ITEMS.register("wchess_board_state", ItemBoardState::new);
     public static DeferredItem<Item> SNACK_CABINET = ITEMS.register("snack_cabinet", ItemSnackCabinet::new);
 
     public static DeferredItem<Item> MAID_SPAWN_EGG = ITEMS.register("maid_spawn_egg", id ->

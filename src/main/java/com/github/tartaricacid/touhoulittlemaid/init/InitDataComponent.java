@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.init;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemBoardState;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemFoxScroll.TrackInfo;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
@@ -152,13 +151,6 @@ public class InitDataComponent {
             DATA_COMPONENTS.register(BED_COLOR_TAG_NAME, () -> DataComponentType.<DyeColor>builder()
                     .persistent(DyeColor.CODEC)
                     .networkSynchronized(DyeColor.STREAM_CODEC)
-                    .build());
-
-    private static final String BOARD_STATE_TAG_NAME = "board_state";
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemBoardState.BoardStateInfo>> BOARD_STATE_TAG =
-            DATA_COMPONENTS.register(BOARD_STATE_TAG_NAME, () -> DataComponentType.<ItemBoardState.BoardStateInfo>builder()
-                    .persistent(ItemBoardState.BoardStateInfo.CODEC)
-                    .networkSynchronized(ItemBoardState.BoardStateInfo.STREAM_CODEC)
                     .build());
 
     /**
