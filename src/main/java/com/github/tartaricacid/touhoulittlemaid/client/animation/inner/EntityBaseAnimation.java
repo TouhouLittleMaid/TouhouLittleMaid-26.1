@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.animation.inner;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -52,7 +53,7 @@ public final class EntityBaseAnimation {
         };
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseFloatDefault() {
+    public static IAnimation<LivingEntityRenderState> getBaseFloatDefault() {
         return (state, models) -> {
             float ageInTicks = state.ageInTicks;
             setOffsetY(models.get("sinFloat"), Math.sin(ageInTicks * 0.1) * 0.05);
@@ -87,7 +88,7 @@ public final class EntityBaseAnimation {
         };
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseTimeSysRotation() {
+    public static IAnimation<LivingEntityRenderState> getBaseTimeSysRotation() {
         return (ignored, models) -> {
             LocalTime now = LocalTime.now();
             float hourDeg = ((now.getHour() + now.getMinute() / 60f) % 12) * ((float) Math.PI / 6);
@@ -108,7 +109,7 @@ public final class EntityBaseAnimation {
         };
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationReciprocate() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationReciprocate() {
         return (state, models) -> {
             double angle = Math.cos(state.ageInTicks * 0.3) * 0.2;
             setXRot(models.get("xReciprocate"), angle);
@@ -117,7 +118,7 @@ public final class EntityBaseAnimation {
         };
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationXH() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationXH() {
         return (state, models) ->
                 rotatePartsX(models, (state.ageInTicks * 4) % 360 * DEG_TO_RAD,
                         "xRotationHighA",
@@ -128,7 +129,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationXN() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationXN() {
         return (state, models) ->
                 rotatePartsX(models, state.ageInTicks % 360 * DEG_TO_RAD,
                         "xRotationNormalA",
@@ -139,7 +140,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationXL() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationXL() {
         return (state, models) ->
                 rotatePartsX(models, (state.ageInTicks / 4) % 360 * DEG_TO_RAD,
                         "xRotationLowA",
@@ -150,7 +151,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationYH() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationYH() {
         return (state, models) ->
                 rotatePartsY(models, (state.ageInTicks * 4) % 360 * DEG_TO_RAD,
                         "yRotationHighA",
@@ -161,7 +162,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationYN() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationYN() {
         return (state, models) ->
                 rotatePartsY(models, state.ageInTicks % 360 * DEG_TO_RAD,
                         "yRotationNormalA",
@@ -172,7 +173,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationYL() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationYL() {
         return (state, models) ->
                 rotatePartsY(models, (state.ageInTicks / 4) % 360 * DEG_TO_RAD,
                         "yRotationLowA",
@@ -183,7 +184,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationZH() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationZH() {
         return (state, models) ->
                 rotatePartsZ(models, (state.ageInTicks * 4) % 360 * DEG_TO_RAD,
                         "zRotationHighA",
@@ -194,7 +195,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationZN() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationZN() {
         return (state, models) ->
                 rotatePartsZ(models, state.ageInTicks % 360 * DEG_TO_RAD,
                         "zRotationNormalA",
@@ -205,7 +206,7 @@ public final class EntityBaseAnimation {
                 );
     }
 
-    public static IAnimation<EntityMaidRenderState> getBaseRotationZL() {
+    public static IAnimation<LivingEntityRenderState> getBaseRotationZL() {
         return (state, models) ->
                 rotatePartsZ(models, (state.ageInTicks / 4) % 360 * DEG_TO_RAD,
                         "zRotationLowA",
