@@ -34,7 +34,6 @@ public class MaidTaskManager {
         if (taskNewId.equals(oldTask.taskId())) {
             return;
         }
-        this.maid.task = task;
         this.maid.setData(TASK, oldTask.withTaskId(taskNewId));
         if (this.maid.level instanceof ServerLevel serverLevel) {
             this.maid.refreshBrain(serverLevel);

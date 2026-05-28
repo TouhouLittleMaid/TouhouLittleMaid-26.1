@@ -1,22 +1,28 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
+import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidPickupEvent;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityPowerPoint;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.init.InitAttribute;
+import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidBackpackHandler;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidInvWrapper;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemFilm;
 import com.github.tartaricacid.touhoulittlemaid.mixin.accessor.ArrowAccessor;
+import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
+import com.github.tartaricacid.touhoulittlemaid.network.message.ItemBreakPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityMaidEquipmentWrapper;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -25,6 +31,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -184,6 +191,19 @@ public class MaidItemManager {
             }
         });
         state.spawnAfterBreak(serverLevel, pos, tool, true);
+    }
+
+    /**
+     * 用于物品的耐久损失，同步到附近的玩家，发出破碎的效果
+     */
+    public void hurtAndBreak(ItemStack stack, int amount) {
+        if (maid.level instanceof ServerLevel serverLevel) {
+            stack.hurtAndBreak(amount, serverLevel, maid, stackIn -> {
+                ItemStack instance = stackIn.getDefaultInstance();
+                ItemBreakPackage msg = new ItemBreakPackage(maid.getId(), instance);
+                NetworkHandler.sendToNearby(maid, msg);
+            });
+        }
     }
 
     public boolean pickupArrow(AbstractArrow arrow, boolean simulate) {
@@ -418,6 +438,57 @@ public class MaidItemManager {
         maid.setItemInHand(InteractionHand.OFF_HAND, output);
     }
 
+    void onEquipItem(EquipmentSlot slot, ItemStack oldItem, ItemStack newItem) {
+        if (newItem.isEmpty() || maid.firstTick() || !slot.isArmor()) {
+            return;
+        }
+
+        // 触发成就
+        if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
+            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.ANY_EQUIPMENT);
+        }
+
+        // 如果是下界合金
+        if (this.isNetheriteArmor(newItem)) {
+            // 检查全身装备
+            for (EquipmentSlot slotIn : EquipmentSlot.values()) {
+                if (!slotIn.isArmor() || slotIn == slot || slotIn == EquipmentSlot.BODY) {
+                    continue;
+                }
+                ItemStack itemBySlot = maid.getItemBySlot(slotIn);
+                if (!isNetheriteArmor(itemBySlot)) {
+                    return;
+                }
+            }
+            // 触发事件
+            if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
+                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.ALL_NETHERITE_EQUIPMENT);
+            }
+        }
+    }
+
+    void updateUsingItem(ItemStack usingItem) {
+        // 处理问题 https://github.com/TartaricAcid/TouhouLittleMaid/issues/1003
+        // 检测女仆是否处于异常的进食状态：正在使用物品但手中物品不是可正常使用状态下的物品
+        if (maid.isUsingItem()) {
+            ItemStack currentItem = maid.getUseItem();
+            // 如果正在使用物品但该物品无法继续使用（例如食物已被移除），则强制停止使用
+            if (currentItem.isEmpty() || currentItem.getUseDuration(maid) <= 0) {
+                maid.stopUsingItem();
+                return;
+            }
+        }
+
+        if (!usingItem.isEmpty()) {
+            AttributeInstance attribute = maid.getAttribute(InitAttribute.MAID_USE_ITEM_SPEED);
+            if (attribute != null) {
+                // MAID_USE_ITEM_SPEED 默认是 1
+                // 故这里减去属性值再加 1，保证属性值为 1 时行为和原版一致
+                maid.setUseItemRemainingTicks(maid.getUseItemRemainingTicks() - (int) attribute.getValue() + 1);
+            }
+        }
+    }
+
     void addAdditionalSaveData(ValueOutput output) {
         maidInv.serialize(output.child(MAID_INVENTORY_TAG));
         maidBauble.serialize(output.child(MAID_BAUBLE_INVENTORY_TAG));
@@ -464,6 +535,14 @@ public class MaidItemManager {
             }
         }
         return stacks.isEmpty() ? ItemStack.EMPTY : stacks.get(maid.getRandom().nextInt(stacks.size()));
+    }
+
+    private boolean isNetheriteArmor(ItemStack stack) {
+        //FIXME 判断合理?
+        if (stack.has(DataComponents.EQUIPPABLE) && stack.has(DataComponents.REPAIRABLE)) {
+            return stack.get(DataComponents.REPAIRABLE).isValidRepairItem(Items.NETHERITE_INGOT.getDefaultInstance());
+        }
+        return false;
     }
 
     private ItemStack getArrowFromEntity(AbstractArrow entity) {
@@ -517,6 +596,10 @@ public class MaidItemManager {
         default void dropResourcesToMaidInv(BlockState state, Level level, BlockPos pos,
                                             @Nullable BlockEntity blockEntity, ItemStack tool) {
             getItemManager().dropResourcesToMaidInv(state, level, pos, blockEntity, tool);
+        }
+
+        default void hurtAndBreak(ItemStack stack, int amount) {
+            getItemManager().hurtAndBreak(stack, amount);
         }
 
         default boolean pickupArrow(AbstractArrow arrow, boolean simulate) {

@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatMana
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.api.event.*;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
-import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
@@ -37,10 +36,8 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.Bau
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.config.MaidConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidBackpackHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
-import com.github.tartaricacid.touhoulittlemaid.network.message.ItemBreakPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.PlayMaidSoundPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackage;
-import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.github.tartaricacid.touhoulittlemaid.util.TeleportHelper;
 import com.github.tartaricacid.touhoulittlemaid.world.backups.MaidBackupsManager;
@@ -50,7 +47,6 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.*;
@@ -59,15 +55,11 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.DifficultyInstance;
@@ -79,7 +71,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -89,13 +80,11 @@ import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.storage.ValueInput;
@@ -103,12 +92,10 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
@@ -118,8 +105,6 @@ import java.util.function.Supplier;
 
 import static com.github.tartaricacid.touhoulittlemaid.config.ServerConfig.MAID_AI_TIME_DEBUG;
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.MAID_NUM;
-import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost;
-import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre;
 
 public class EntityMaid extends TamableAnimal implements
         CrossbowAttackMob,
@@ -133,6 +118,7 @@ public class EntityMaid extends TamableAnimal implements
         MaidBackpackManager.View,
         MaidWorldInteractionManager.View,
         MaidTeleportManager.View,
+        MaidCombatManager.View,
         MaidGameManager.View,
         MaidSwimManager.View {
 
@@ -186,6 +172,7 @@ public class EntityMaid extends TamableAnimal implements
     private final MaidConfigManager configManager = new MaidConfigManager(this);
     private final MaidGameManager gameManager = new MaidGameManager(this);
     private final MaidBackpackManager backpackManager = new MaidBackpackManager(this);
+    private final MaidCombatManager combatManager = new MaidCombatManager(this);
 
     public final ItemStack[] handItemsForAnimation = new ItemStack[]{ItemStack.EMPTY, ItemStack.EMPTY};
 
@@ -215,9 +202,7 @@ public class EntityMaid extends TamableAnimal implements
     public boolean shouldReset = false;
 
     private List<SendEffectPackage.EffectData> effects = Lists.newArrayList();
-    IMaidTask task = TaskManager.getIdleTask();
     private int playerHurtSoundCount = 120;
-    private int passiveUseShieldTick = 0;
 
     /**
      * 女仆现在可以在前哨站生成，那么会打上这个标签
@@ -312,6 +297,11 @@ public class EntityMaid extends TamableAnimal implements
     @Override
     public MaidSwimManager getSwimManager() {
         return swimManager;
+    }
+
+    @Override
+    public MaidCombatManager getCombatManager() {
+        return combatManager;
     }
 
     /**
@@ -485,20 +475,9 @@ public class EntityMaid extends TamableAnimal implements
 
             Profiler.get().push("maidCooldowns");
             this.cooldowns.tick();
-            if (this.passiveUseShieldTick > 0) {
-                // 如果没有拿着盾牌，直接取消计时，避免疯狂挥手
-                ItemStack offHandItem = this.getItemInHand(InteractionHand.OFF_HAND);
-                if (offHandItem.has(DataComponents.BLOCKS_ATTACKS)) {
-                    this.passiveUseShieldTick--;
-                } else {
-                    this.passiveUseShieldTick = 1;
-                }
-                // 最后 1 tick 取消盾牌
-                if (this.passiveUseShieldTick == 1 && this.isUsingItem() && this.getUsedItemHand() == InteractionHand.OFF_HAND) {
-                    this.stopUsingItem();
-                }
-            }
             Profiler.get().pop();
+
+            this.combatManager.aiStep();
         }
     }
 
@@ -571,153 +550,40 @@ public class EntityMaid extends TamableAnimal implements
 
     @Override
     public boolean isWithinMeleeAttackRange(LivingEntity target) {
-        int attackPlusDistance = this.favorabilityManager.getAttackDistancePlusByPoint(this.getFavorability());
-        double attackDistance = this.getAttributeValue(Attributes.ENTITY_INTERACTION_RANGE) + attackPlusDistance;
-        return this.distanceTo(target) < attackDistance;
+        return combatManager.isWithinMeleeAttackRange(target);
     }
 
     @Override
     public boolean doHurtTarget(ServerLevel level, Entity target) {
-        MaidHurtTarget.Pre event = new MaidHurtTarget.Pre(this, target);
-        if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
-            return true;
-        }
-
-        // 调用饰品的攻击
-        getMaidBauble().fireEvent((b, s) -> {
-            b.onMeleeAttack(this, s, target);
-            return false;
-        });
-
-        boolean result = super.doHurtTarget(level, target);
-        if (result) {
-            // 尝试使用横扫之刃
-            this.doSweepHurt(target);
-            // 调用 hurtEnemy 来实现耐久消耗和部分其他功能
-            ItemStack mainHandItem = this.getMainHandItem();
-            Item item = mainHandItem.getItem();
-            if (target instanceof LivingEntity livingEntity) {
-                item.hurtEnemy(mainHandItem, livingEntity, this);
-                item.postHurtEnemy(mainHandItem, livingEntity, this);
-            }
-        }
-
-        MaidHurtTarget.Post postEvent = new MaidHurtTarget.Post(this, target, result);
-        NeoForge.EVENT_BUS.post(postEvent);
-
-        // 部分 task 有额外伤害
-        if (this.getTask() instanceof IAttackTask attackTask && attackTask.hasExtraAttack(this, target)) {
-            boolean extraResult = attackTask.doExtraAttack(this, target);
-            return result && extraResult;
-        }
-        return result;
-    }
-
-    private void doSweepHurt(Entity target) {
-        ItemStack mainhandItem = this.getItemInHand(InteractionHand.MAIN_HAND);
-        boolean canSweep = mainhandItem.canPerformAction(ItemAbilities.SWORD_SWEEP);
-        float sweepingDamageRatio = (float) this.getAttributes().getValue(Attributes.SWEEPING_DAMAGE_RATIO);
-        if (canSweep && sweepingDamageRatio > 0) {
-            float baseDamage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            float sweepDamage = 1.0f + sweepingDamageRatio * baseDamage;
-            AABB sweepRange = this.getFavorabilityManager().getSweepRange(target, this.getFavorability());
-            List<LivingEntity> hurtEntities = this.level.getEntitiesOfClass(LivingEntity.class, sweepRange);
-            for (LivingEntity entity : hurtEntities) {
-                if (entity != this && entity != target && !this.isAlliedTo(entity) && canAttack(entity) && wantsToAttack(entity, getOwner())) {
-                    float posX = Mth.sin(this.getYRot() * ((float) Math.PI / 180F));
-                    float posY = -Mth.cos(this.getYRot() * ((float) Math.PI / 180F));
-                    entity.knockback(0.4, posX, posY);
-                    entity.hurt(this.damageSources().mobAttack(this), sweepDamage);
-                }
-            }
-            this.level.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, this.getSoundSource(), 1, 1);
-            this.particleManager.spawnSweepAttackParticle();
-        }
+        return combatManager.doHurtTarget(level, target, super::doHurtTarget);
     }
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
-        if (NeoForge.EVENT_BUS.post(new MaidAttackEvent(this, source, amount)).isCanceled()) {
-            return false;
-        }
-        if (source.getEntity() instanceof Player player && this.isAlliedTo(player)) {
-            // 主人和同 Team 玩家对自己女仆的伤害数值为 1/5，最大为 2
-            amount = Mth.clamp(amount / 5, 0, 2);
-            return super.hurtServer(level, source, amount);
-        }
-        // 使用盾牌
-        if (source.is(DamageTypeTags.IS_PROJECTILE) && this.canUseShield()) {
-            boolean isUsingShield = this.isUsingItem() && this.getUsedItemHand() == InteractionHand.OFF_HAND;
-            if (!isUsingShield) {
-                this.startUsingItem(InteractionHand.OFF_HAND);
-                // 使用五秒的盾牌
-                AttributeInstance attribute = this.getAttribute(InitAttribute.MAID_PASSIVE_USE_SHIELD_TICK);
-                if (attribute != null) {
-                    this.passiveUseShieldTick = (int) attribute.getValue();
-                } else {
-                    this.passiveUseShieldTick = 100;
-                }
-            }
-        }
-        return super.hurtServer(level, source, amount);
+        return combatManager.hurtServer(level, source, amount, super::hurtServer);
+    }
+
+    @Nullable
+    public Stack<DamageContainer> getDamageContainers() {
+        return this.damageContainers;
+    }
+
+    @Override
+    public float getDamageAfterArmorAbsorb(DamageSource damageSource, float damage) {
+        return super.getDamageAfterArmorAbsorb(damageSource, damage);
+    }
+
+    @Override
+    public float getDamageAfterMagicAbsorb(DamageSource damageSource, float damage) {
+        return super.getDamageAfterMagicAbsorb(damageSource, damage);
     }
 
     /**
      * 重新复写父类方法，添加上自己的 Event
      */
     @Override
-    @SuppressWarnings("UnstableApiUsage")
     protected void actuallyHurt(ServerLevel level, DamageSource damageSrc, float damageAmount) {
-        if (!this.isInvulnerableTo(level, damageSrc) && this.damageContainers != null) {
-            DamageContainer peek = this.damageContainers.peek();
-
-            // 获取盔甲减伤后的数值
-            float armorAbsorb = this.getDamageAfterArmorAbsorb(damageSrc, peek.getNewDamage());
-            peek.setReduction(DamageContainer.Reduction.ARMOR, peek.getNewDamage() - armorAbsorb);
-
-            // 获取抗性提升减伤后的数值
-            this.getDamageAfterMagicAbsorb(damageSrc, peek.getNewDamage());
-
-            // 获取事件减伤效果
-            MaidHurtEvent maidHurtEvent = new MaidHurtEvent(this, damageSrc, peek.getNewDamage());
-            damageAmount = NeoForge.EVENT_BUS.post(maidHurtEvent).isCanceled() ? 0 : maidHurtEvent.getAmount();
-            peek.setReduction(DamageContainer.Reduction.ABSORPTION, peek.getNewDamage() - damageAmount);
-
-            // NeoForge 事件也来一套
-            float damage = onLivingDamagePre(this, peek);
-            peek.setReduction(DamageContainer.Reduction.ABSORPTION, Math.min(this.getAbsorptionAmount(), damage));
-
-            // 总减伤效果，用于玩家信息统计
-            float damageDealtAbsorbed = Math.min(damage, peek.getReduction(DamageContainer.Reduction.ABSORPTION));
-            this.setAbsorptionAmount(Math.max(0, this.getAbsorptionAmount() - damageDealtAbsorbed));
-            if (0 < damageDealtAbsorbed && damageDealtAbsorbed < 3.5 && damageSrc.getEntity() instanceof ServerPlayer player) {
-                player.awardStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(damageDealtAbsorbed * 10));
-            }
-
-            // 饰品
-            MutableFloat newDamage = new MutableFloat(peek.getNewDamage());
-            boolean baubleCancel = getMaidBauble().fireEvent((b, s) -> b.onInjured(this, s, damageSrc, newDamage));
-            float damageAfterAbsorption = newDamage.getValue();
-            // 如果饰品取消了事件，那么也不触发后续内容了
-            if (baubleCancel || damageAfterAbsorption <= 0) {
-                return;
-            }
-
-            // 再来一次事件
-            MaidDamageEvent maidDamageEvent = new MaidDamageEvent(this, damageSrc, damageAfterAbsorption);
-            damageAfterAbsorption = NeoForge.EVENT_BUS.post(maidDamageEvent).isCanceled() ? 0 : maidDamageEvent.getAmount();
-
-            // 最终运用实际伤害
-            if (damageAfterAbsorption != 0) {
-                this.getCombatTracker().recordDamage(damageSrc, damageAfterAbsorption);
-                this.setHealth(this.getHealth() - damageAfterAbsorption);
-                this.gameEvent(GameEvent.ENTITY_DAMAGE);
-                this.onDamageTaken(peek);
-            }
-
-            // NeoForge 事件也来一套
-            onLivingDamagePost(this, peek);
-        }
+        this.combatManager.actuallyHurt(level, damageSrc, damageAmount);
     }
 
     @Override
@@ -811,22 +677,7 @@ public class EntityMaid extends TamableAnimal implements
     // 弩在装载时的 tryLoadProjectiles 方法会从这里拿到需要装填的物品
     @Override
     public ItemStack getProjectile(ItemStack weaponStack) {
-        // 烟花只检查副手：优先检查副手有没有烟花
-        if (this.getOffhandItem().getItem() instanceof FireworkRocketItem) {
-            return this.getOffhandItem();
-        }
-        if (!(this.getMainHandItem().getItem() instanceof ProjectileWeaponItem weaponItem)) {
-            return ItemStack.EMPTY;
-        }
-        var handler = this.getAvailableInv(true);
-        int slot = ItemsUtil.findStackSlot(handler, weaponItem.getAllSupportedProjectiles());
-        if (slot < 0) {
-            // 不存在时，返回空
-            return ItemStack.EMPTY;
-        } else {
-            // 拿到弹药物品
-            return ItemUtil.getStack(handler, slot);
-        }
+        return this.combatManager.getProjectile(weaponStack);
     }
 
     @Override
@@ -852,19 +703,11 @@ public class EntityMaid extends TamableAnimal implements
 
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
-        IMaidTask maidTask = this.getTask();
-        if (maidTask instanceof IRangedAttackTask rangedAttackTask) {
-            // 调用饰品的攻击
-            getMaidBauble().fireEvent((b, s) -> {
-                b.onRangedAttack(this, s, rangedAttackTask);
-                return false;
-            });
-            rangedAttackTask.performRangedAttack(this, target, distanceFactor);
-        }
+        this.combatManager.performRangedAttack(target, distanceFactor);
     }
 
     @Override
-    public boolean wantsToAttack(LivingEntity target, LivingEntity owner) {
+    public boolean wantsToAttack(LivingEntity target, @Nullable LivingEntity owner) {
         return target.getType() != EntityType.ARMOR_STAND;
     }
 
@@ -886,15 +729,6 @@ public class EntityMaid extends TamableAnimal implements
             return false;
         }
         return true;
-    }
-
-    /**
-     * 用于物品的耐久损失
-     */
-    public void hurtAndBreak(ItemStack stack, int amount) {
-        if (this.level instanceof ServerLevel serverLevel) {
-            stack.hurtAndBreak(amount, serverLevel, this, stackIn -> NetworkHandler.sendToNearby(this, new ItemBreakPackage(this.getId(), stackIn.getDefaultInstance())));
-        }
     }
 
     private void randomRestoreHealth() {
@@ -949,7 +783,7 @@ public class EntityMaid extends TamableAnimal implements
 
     private MenuProvider getGuiProvider(int tabIndex) {
         return switch (tabIndex) {
-            case TabIndex.TASK_CONFIG -> task.getTaskConfigGuiProvider(this);
+            case TabIndex.TASK_CONFIG -> this.getTask().getTaskConfigGuiProvider(this);
             case TabIndex.MAID_CONFIG -> MaidConfigContainer.create(getId());
             case TabIndex.BAUBLE -> BaubleContainer.create(this);
             case TabIndex.CURIOS -> CuriosCompat.create(this);
@@ -1063,43 +897,14 @@ public class EntityMaid extends TamableAnimal implements
         }
     }
 
+    public boolean firstTick() {
+        return this.firstTick;
+    }
+
     @Override
     public void onEquipItem(EquipmentSlot slot, ItemStack oldItem, ItemStack newItem) {
         super.onEquipItem(slot, oldItem, newItem);
-        if (newItem.isEmpty() || this.firstTick || !slot.isArmor()) {
-            return;
-        }
-
-        // 触发成就
-        if (this.getOwner() instanceof ServerPlayer serverPlayer) {
-            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.ANY_EQUIPMENT);
-        }
-
-        // 如果是下界合金
-        if (isNetheriteArmor(newItem)) {
-            // 检查全身装备
-            for (EquipmentSlot slotIn : EquipmentSlot.values()) {
-                if (!slotIn.isArmor() || slotIn == slot || slotIn == EquipmentSlot.BODY) {
-                    continue;
-                }
-                ItemStack itemBySlot = getItemBySlot(slotIn);
-                if (!isNetheriteArmor(itemBySlot)) {
-                    return;
-                }
-            }
-            // 触发事件
-            if (this.getOwner() instanceof ServerPlayer serverPlayer) {
-                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.ALL_NETHERITE_EQUIPMENT);
-            }
-        }
-    }
-
-    private boolean isNetheriteArmor(ItemStack stack) {
-        //FIXME 判断合理?
-        if (stack.has(DataComponents.EQUIPPABLE) && stack.has(DataComponents.REPAIRABLE)) {
-            return stack.get(DataComponents.REPAIRABLE).isValidRepairItem(Items.NETHERITE_INGOT.getDefaultInstance());
-        }
-        return false;
+        this.itemManager.onEquipItem(slot, oldItem, newItem);
     }
 
     @Override
@@ -1117,7 +922,7 @@ public class EntityMaid extends TamableAnimal implements
         if (!mayPlaySound()) {
             return null;
         }
-        return task.getAmbientSound(this);
+        return this.getTask().getAmbientSound(this);
     }
 
     public boolean mayPlaySound() {
@@ -1290,26 +1095,12 @@ public class EntityMaid extends TamableAnimal implements
 
     @Override
     protected void updateUsingItem(ItemStack usingItem) {
-        // 处理问题 https://github.com/TartaricAcid/TouhouLittleMaid/issues/1003
-        // 检测女仆是否处于异常的进食状态：正在使用物品但手中物品不是可正常使用状态下的物品
-        if (this.isUsingItem()) {
-            ItemStack currentItem = this.getUseItem();
-            // 如果正在使用物品但该物品无法继续使用（例如食物已被移除），则强制停止使用
-            if (currentItem.isEmpty() || currentItem.getUseDuration(this) <= 0) {
-                this.stopUsingItem();
-                return;
-            }
-        }
-
-        if (!usingItem.isEmpty()) {
-            AttributeInstance attribute = this.getAttribute(InitAttribute.MAID_USE_ITEM_SPEED);
-            if (attribute != null) {
-                // MAID_USE_ITEM_SPEED 默认是 1
-                // 故这里减去属性值再加 1，保证属性值为 1 时行为和原版一致
-                this.useItemRemaining = this.useItemRemaining - (int) attribute.getValue() + 1;
-            }
-        }
+        this.itemManager.updateUsingItem(usingItem);
         super.updateUsingItem(usingItem);
+    }
+
+    public void setUseItemRemainingTicks(int ticks) {
+        this.useItemRemaining = ticks;
     }
 
     @Override
@@ -1598,36 +1389,18 @@ public class EntityMaid extends TamableAnimal implements
         return this.isSwimming();
     }
 
-    public boolean canUseShield() {
-        ItemStack offhandItem = this.getOffhandItem();
-        return offhandItem.has(DataComponents.BLOCKS_ATTACKS) && !this.getCooldowns().isOnCooldown(offhandItem.getItem().getDefaultInstance());
+    public void setUseItem(ItemStack stack) {
+        this.useItem = stack;
     }
 
     @Override
     public @Nullable ItemStack getItemBlockingWith() {
-        if (!this.useItem.isEmpty()) {
-            BlocksAttacks blocksAttacks = this.useItem.get(DataComponents.BLOCKS_ATTACKS);
-            if (blocksAttacks != null) {
-                return this.useItem;
-            }
-        }
-        return null;
+        return this.combatManager.getItemBlockingWith();
     }
 
     @Override
     public float applyItemBlocking(ServerLevel level, DamageSource source, float damage) {
-        boolean shouldPredicateBlockItemBreaking = isBlocking();
-        InteractionHand interactionhand = this.getUsedItemHand();
-        float v = super.applyItemBlocking(level, source, damage);
-        if (shouldPredicateBlockItemBreaking && this.useItem.isEmpty()) {
-            if (interactionhand == InteractionHand.MAIN_HAND) {
-                this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-            } else {
-                this.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
-            }
-            this.useItem = ItemStack.EMPTY;
-        }
-        return v;
+        return this.combatManager.applyItemBlocking(level, source, damage, super::applyItemBlocking);
     }
 
     public ItemCooldowns getCooldowns() {
@@ -1647,29 +1420,9 @@ public class EntityMaid extends TamableAnimal implements
         return ownerReference == null ? null : ownerReference.getUUID();
     }
 
-    /**
-     * 参考自 <a href="https://github.com/Snownee/Companion/blob/1.20-forge/src/main/java/snownee/companion/Hooks.java#L313-L322">Snownee's Companion</a>
-     * <p>
-     * 更加高效的 owner 寻找方式
-     */
-    @Nullable
-    @Override
-    public LivingEntity getOwner() {
-        UUID uuid = this.getOwnerUUID();
-        if (uuid == null) {
-            return null;
-        }
-        MinecraftServer server = this.level().getServer();
-        if (server == null) {
-            return this.level().getPlayerByUUID(uuid);
-        }
-        return server.getPlayerList().getPlayer(uuid);
-    }
-
     public ChatBubbleManager getChatBubbleManager() {
         return chatBubbleManager;
     }
-
 
     @Override
     public void spawnItemParticles(ItemStack stack, int amount) {
