@@ -62,8 +62,6 @@ public class TileEntityItemStackPicnicBasketRenderer implements SpecialModelRend
 
     @Override
     public void getExtents(Consumer<Vector3fc> output) {
-        PoseStack poseStack = new PoseStack();
-        model.root().getExtentsForGui(poseStack, output);
         output.accept(new Vector3f(10,10,10));
         output.accept(new Vector3f(-10,-10,-10));
     }

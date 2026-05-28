@@ -1,12 +1,16 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityChairRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.ChairRenderRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemChair;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -16,20 +20,56 @@ import java.util.function.Consumer;
 
 /**
  * 椅子物品的 SpecialModelRenderer（替代旧的 BlockEntityWithoutLevelRenderer）
- * 参考 PlayerDollItemRenderer 的模式实现
+ * <p>
+ * 参考 {@link com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityChairRenderer} 的渲染模式实现。
+ * extractArgument 仿照 EntityChairRenderer.extractRenderState 提取模型、纹理数据，
+ * submit 仿照 EntityChairRenderer.submitChair 渲染逻辑。
  */
 public class TileEntityItemStackChairRenderer implements SpecialModelRenderer<ChairRenderRenderState> {
     public static final Identifier CHAIR_ITEM_RENDERER = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "chair_item");
+    /**
+     * 默认兜底模型 ID，与 {@code EntityChairRenderer.DEFAULT_CHAIR_ID} 保持一致
+     */
+    private static final String DEFAULT_CHAIR_ID = "touhou_little_maid:cushion";
+
     public TileEntityItemStackChairRenderer() {
     }
 
+    /**
+     * 仿照 {@code EntityChairRenderer.extractRenderState} 提取模型、纹理数据到渲染状态
+     */
+    @Override
+    public ChairRenderRenderState extractArgument(ItemStack stack) {
+        ChairRenderRenderState state = new ChairRenderRenderState();
+        if (!(stack.getItem() instanceof ItemChair)) {
+            return state;
+        }
+
+        ItemChair.Data data = ItemChair.getData(stack);
+        String modelId = data.modelId();
+        state.modelId = modelId;
+
+        // 读取模型数据（仿照 EntityChairRenderer.extractRenderState）
+        CustomPackLoader.CHAIR_MODELS.getModel(modelId).ifPresent(model -> state.bedrockModel = model);
+        CustomPackLoader.CHAIR_MODELS.getInfo(modelId).ifPresent(info -> {
+            state.chairInfo = info;
+            state.texture = info.getTexture();
+            state.renderItemScale = info.getRenderItemScale();
+        });
+
+        return state;
+    }
+
+    /**
+     * 仿照 {@code EntityChairRenderer.submitChair} 渲染逻辑
+     */
     @Override
     public void submit(
             ChairRenderRenderState state,
             PoseStack poseStack,
             SubmitNodeCollector collector,
-            int light,
-            int overlay,
+            int lightCoords,
+            int overlayCoords,
             boolean hasFoil,
             int outlineColor
     ) {
@@ -37,48 +77,52 @@ public class TileEntityItemStackChairRenderer implements SpecialModelRenderer<Ch
             return;
         }
 
-        // 尝试从 CustomPackLoader 获取椅子模型并直接渲染
-        // 由于 SpecialModelRenderer 无法使用 EntityRenderDispatcher（API 不兼容），
-        // 此处直接渲染 Bedrock 模型。动画和复杂实体渲染暂不支持。
-        CustomPackLoader.CHAIR_MODELS.getModel(state.modelId).ifPresent(model -> {
+        // 确保有可用模型：优先使用指定模型，找不到则兜底
+        EntityChairModel model = state.bedrockModel;
+        if (model == null) {
+            model = CustomPackLoader.CHAIR_MODELS.getModel(DEFAULT_CHAIR_ID).orElse(null);
+        }
+        if (model == null) {
+            return;
+        }
+
+        // 纹理：优先 chairInfo，兜底 empty
+        Identifier texture = state.texture != null
+                ? state.texture
+                : EntityChairRenderer.DEFAULT_TEXTURE;
+
+        // 缩放：优先 renderItemScale，兜底 1.0
+        float scale = state.renderItemScale > 0 ? state.renderItemScale : 1.0f;
+
+        // 仿照 EntityChairRenderer 的缩放逻辑
+        poseStack.pushPose();
+        poseStack.translate(0.5, 1.5, 0.5);
+        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+        poseStack.scale(scale, scale, scale);
+        EntityChairModel finalModel = model;
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture), (pose, buffer) -> {
             poseStack.pushPose();
-            poseStack.scale(state.renderItemScale, state.renderItemScale, state.renderItemScale);
-            // TODO: 完整实现需要参考 EntityChairRenderer 的 submit 逻辑
-            // 当前使用 LivingEntityRenderer 渲染模型的方式需要 Entity 上下文，在 SpecialModelRenderer 中不可用。
-            // 如需要支持动画和实体属性，需迁移至 ItemStackRenderState 体系或使用 ItemRenderer 扩展。
-            // model 目前无法直接 submit（BedrockModel 需要 EntityRenderState 参数），此处仅渲染基础几何。
-            model.renderToBuffer(poseStack, null, light, overlay);
+            poseStack.last().set(pose);
+
+            finalModel.renderToBuffer(poseStack, buffer, lightCoords, overlayCoords);
             poseStack.popPose();
         });
+        poseStack.popPose();
     }
 
     @Override
     public void getExtents(Consumer<Vector3fc> output) {
         PoseStack poseStack = new PoseStack();
-        // 使用默认椅子模型计算 GUI 范围
-        CustomPackLoader.CHAIR_MODELS.getModel("touhou_little_maid:cushion").ifPresent(model ->
+        CustomPackLoader.CHAIR_MODELS.getModel(DEFAULT_CHAIR_ID).ifPresent(model ->
                 model.root().getExtentsForGui(poseStack, output)
         );
     }
 
-    @Override
-    public ChairRenderRenderState extractArgument(ItemStack stack) {
-        ChairRenderRenderState state = new ChairRenderRenderState();
-        if (!(stack.getItem() instanceof ItemChair)) {
-            return state;
-        }
-        ItemChair.Data data = ItemChair.getData(stack);
-        state.modelId = data.modelId();
-        state.renderItemScale = CustomPackLoader.CHAIR_MODELS.getModelRenderItemScale(data.modelId());
-        return state;
-    }
-
-
     public record Unbaked() implements SpecialModelRenderer.Unbaked<ChairRenderRenderState> {
-        public static final MapCodec<Unbaked> MAP_CODEC = MapCodec.unit(Unbaked::new);
+        public static final MapCodec<TileEntityItemStackChairRenderer.Unbaked> MAP_CODEC = MapCodec.unit(TileEntityItemStackChairRenderer.Unbaked::new);
 
         @Override
-        public MapCodec<Unbaked> type() {
+        public MapCodec<TileEntityItemStackChairRenderer.Unbaked> type() {
             return MAP_CODEC;
         }
 
