@@ -11,7 +11,6 @@ public final class GeneralConfig {
         MaidConfig.init(builder);
         ChairConfig.init(builder);
         MiscConfig.init(builder);
-        VanillaConfig.init(builder);
         RenderConfig.init(builder);
         AIConfig.init(builder);
         CONFIG = builder.build();

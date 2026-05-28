@@ -13,7 +13,6 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.world.entity.EntityType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -35,10 +34,6 @@ public final class InitEntitiesRender {
         EntityRenderers.register(EntitySit.TYPE, EntitySitRenderer::new);
         EntityRenderers.register(EntityBroom.TYPE, EntityBroomRender::new);
         EntityRenderers.register(MaidFishingHook.TYPE, MaidFishingHookRenderer::new);
-
-        EntityRenderers.register(EntityType.SLIME, EntityYukkuriSlimeRender::new);
-        EntityRenderers.register(EntityType.MAGMA_CUBE, EntityMarisaYukkuriSlimeRender::new);
-        EntityRenderers.register(EntityType.EXPERIENCE_ORB, ReplaceExperienceOrbRenderer::new);
 
         BlockEntityRenderers.register(InitBlocks.ALTAR_TE.get(), TileEntityAltarRenderer::new);
         BlockEntityRenderers.register(InitBlocks.STATUE_TE.get(), TileEntityStatueRenderer::new);

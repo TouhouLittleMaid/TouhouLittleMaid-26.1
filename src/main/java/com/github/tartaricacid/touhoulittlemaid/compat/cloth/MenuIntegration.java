@@ -25,7 +25,6 @@ public class MenuIntegration {
         maidConfig(root, entryBuilder);
         chairConfig(root, entryBuilder);
         miscConfig(root, entryBuilder);
-        vanillaConfig(root, entryBuilder);
         renderConfig(root, entryBuilder);
         GlobalAIIntegration.aiChat(root, entryBuilder);
         NeoForge.EVENT_BUS.post(new AddClothConfigEvent(root, entryBuilder));
@@ -432,38 +431,6 @@ public class MenuIntegration {
                 .setSaveConsumer(s -> {
                     MiscConfig.INVULNERABLE_PARTICLE_EFFECT.set(s);
                     MiscConfig.INVULNERABLE_PARTICLE_EFFECT.save();
-                }).build());
-    }
-
-    private static void vanillaConfig(ConfigBuilder root, ConfigEntryBuilder entryBuilder) {
-        ConfigCategory vanilla = root.getOrCreateCategory(Component.translatable("config.touhou_little_maid.vanilla"));
-
-        vanilla.addEntry(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.vanilla.replace_slime_model"), VanillaConfig.REPLACE_SLIME_MODEL.get())
-                .setDefaultValue(true).setTooltip(Component.translatable("config.touhou_little_maid.vanilla.replace_slime_model.tooltip"))
-                .setSaveConsumer(b -> {
-                    VanillaConfig.REPLACE_SLIME_MODEL.set(b);
-                    VanillaConfig.REPLACE_SLIME_MODEL.save();
-                }).build());
-
-        vanilla.addEntry(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.vanilla.replace_xp_texture"), VanillaConfig.REPLACE_XP_TEXTURE.get())
-                .setDefaultValue(true).setTooltip(Component.translatable("config.touhou_little_maid.vanilla.replace_xp_texture.tooltip"))
-                .setSaveConsumer(b -> {
-                    VanillaConfig.REPLACE_XP_TEXTURE.set(b);
-                    VanillaConfig.REPLACE_XP_TEXTURE.save();
-                }).build());
-
-        vanilla.addEntry(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.vanilla.replace_totem_texture"), VanillaConfig.REPLACE_TOTEM_TEXTURE.get())
-                .setDefaultValue(true).setTooltip(Component.translatable("config.touhou_little_maid.vanilla.replace_totem_texture.tooltip"))
-                .setSaveConsumer(b -> {
-                    VanillaConfig.REPLACE_TOTEM_TEXTURE.set(b);
-                    VanillaConfig.REPLACE_TOTEM_TEXTURE.save();
-                }).build());
-
-        vanilla.addEntry(entryBuilder.startBooleanToggle(Component.translatable("config.touhou_little_maid.vanilla.replace_xp_bottle_texture"), VanillaConfig.REPLACE_XP_BOTTLE_TEXTURE.get())
-                .setDefaultValue(true).setTooltip(Component.translatable("config.touhou_little_maid.vanilla.replace_xp_bottle_texture.tooltip"))
-                .setSaveConsumer(b -> {
-                    VanillaConfig.REPLACE_XP_BOTTLE_TEXTURE.set(b);
-                    VanillaConfig.REPLACE_XP_BOTTLE_TEXTURE.save();
                 }).build());
     }
 
