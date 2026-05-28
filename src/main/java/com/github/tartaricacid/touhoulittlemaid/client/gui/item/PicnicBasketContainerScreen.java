@@ -12,7 +12,7 @@ public class PicnicBasketContainerScreen extends AbstractContainerScreen<PicnicB
     private static final Identifier CONTAINER_BACKGROUND = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
 
     public PicnicBasketContainerScreen(PicnicBasketContainer container, Inventory inv, Component titleIn) {
-        super(container, inv, titleIn, 132, 166);
+        super(container, inv, titleIn, 176, 166);
         this.inventoryLabelY = this.imageHeight - 94;
     }
 
@@ -26,7 +26,13 @@ public class PicnicBasketContainerScreen extends AbstractContainerScreen<PicnicB
     public void extractContents(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float a) {
         int middleX = (this.width - this.imageWidth) / 2;
         int middleY = (this.height - this.imageHeight) / 2;
-        GuiTools.blit(guiGraphics, CONTAINER_BACKGROUND, middleX, middleY, 0, 0, this.imageWidth, 35);
-        GuiTools.blit(guiGraphics, CONTAINER_BACKGROUND, middleX, middleY + 35, 0, 126, this.imageWidth, 96);
+        GuiTools.guiBlit(guiGraphics, CONTAINER_BACKGROUND, middleX, middleY, 0, 0, this.imageWidth, 35);
+        GuiTools.guiBlit(guiGraphics, CONTAINER_BACKGROUND, middleX, middleY + 35, 0, 126, this.imageWidth, 96);
+        super.extractContents(guiGraphics, mouseX, mouseY, a);
+    }
+
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, -12566464, false);
     }
 }

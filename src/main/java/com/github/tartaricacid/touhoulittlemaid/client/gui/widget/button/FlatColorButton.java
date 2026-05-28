@@ -56,7 +56,7 @@ public class FlatColorButton extends Button {
     }
 
     public void renderString(GuiGraphicsExtractor graphics, Font font, int pColor) {
-        graphics.centeredText(font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, 0xF3EFE0);
+        graphics.centeredText(font, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, 0xFFF3EFE0);
     }
 
     public void setSelect(boolean select) {

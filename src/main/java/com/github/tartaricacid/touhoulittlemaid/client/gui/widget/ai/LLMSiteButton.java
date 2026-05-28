@@ -5,9 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsLLMSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveLLMSitePacket;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -17,7 +15,6 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public class LLMSiteButton extends Button {
     private static final Identifier MISC = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/ai_chat/misc.png");
@@ -50,13 +47,13 @@ public class LLMSiteButton extends Button {
         this.renderString(graphics, Minecraft.getInstance().font, 0xF3EFE0);
 
         // 站点图标（左侧）
-        GuiTools.blit(graphics,this.site.icon(), this.getX() + 6, this.getY() + 4, 0, 0, 16, 16, 16, 16);
+        GuiTools.guiBlit(graphics, this.site.icon(), this.getX() + 6, this.getY() + 4, 0, 0, 16, 16, 16, 16);
         // 启用按钮（右侧）
-        GuiTools.blit(graphics,MISC, this.getX() + this.width - 68, this.getY() + 4, this.site.enabled() ? 16 : 0, 0, 16, 16);
+        GuiTools.guiBlit(graphics, MISC, this.getX() + this.width - 68, this.getY() + 4, this.site.enabled() ? 16 : 0, 0, 16, 16);
         // 编辑按钮（右侧）
-        GuiTools.blit(graphics,MISC, this.getX() + this.width - 46, this.getY() + 4, 16, 16, 16, 16);
+        GuiTools.guiBlit(graphics, MISC, this.getX() + this.width - 46, this.getY() + 4, 16, 16, 16, 16);
         // 删除按钮（最右侧）
-        GuiTools.blit(graphics,MISC, this.getX() + this.width - 24, this.getY() + 4, 0, 16, 16, 16);
+        GuiTools.guiBlit(graphics, MISC, this.getX() + this.width - 24, this.getY() + 4, 0, 16, 16, 16);
     }
 
     @Override

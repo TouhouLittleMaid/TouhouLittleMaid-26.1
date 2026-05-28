@@ -6,11 +6,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.player.PlayerSkin;
 
 import java.util.List;
 
@@ -28,10 +30,10 @@ public class HistoryChatWidget extends AbstractWidget {
      */
     private final boolean isTool;
 
-    private final Identifier playerSkin;
+    private final PlayerSkin playerSkin;
     private final Component time;
 
-    public HistoryChatWidget(int pX, int pY, int width, int height, Component message, Identifier playerSkin,
+    public HistoryChatWidget(int pX, int pY, int width, int height, Component message, PlayerSkin playerSkin,
                              long gameTime, boolean isLeft, boolean isTool) {
         super(pX, pY, width, height, message);
         this.isLeft = isLeft;
@@ -98,27 +100,27 @@ public class HistoryChatWidget extends AbstractWidget {
         int offset = 6;
         int xOffset = this.isLeft ? (-size - offset) : this.getWidth() + offset;
         if (isLeft) {
-            GuiTools.blit(graphics, TEXTURE, this.getX() + xOffset, this.getHeightMiddle(size), size, size, 0, 16);
+            GuiTools.guiBlit(graphics, TEXTURE, this.getX() + xOffset, this.getHeightMiddle(size), 0, 16, size, size,128,128);
         } else {
-            GuiTools.blit(graphics, this.playerSkin, this.getX() + xOffset, this.getHeightMiddle(size), size, size, 8, 8, 8, 8, 64, 64);
+            PlayerFaceExtractor.extractRenderState(graphics, playerSkin,this.getX() + xOffset, this.getHeightMiddle(size), size, 0xFFFFFFFF);
+//            GuiTools.guiBlit(graphics, this.playerSkin, this.getX() + xOffset, this.getHeightMiddle(size), 0, 16, size, size);
         }
     }
 
     private void drawBackground(GuiGraphicsExtractor graphics) {
         int heightMiddle = this.getHeightMiddle(14);
-        GuiTools.blitNineSliced(graphics, TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(),
-                8, 4, 100, 16, 0, this.getTextureY());
         if (isLeft) {
-            GuiTools.blit(graphics, TEXTURE, this.getX() - 4, heightMiddle, 6, 14, 100, 16);
+            GuiTools.blitNineSliced(graphics, TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(),
+                    8, 4, 100, 16, 0, this.getTextureY());
         } else {
-            GuiTools.blit(graphics, TEXTURE, this.getX() + this.getWidth() - 2, heightMiddle, 6, 14, 100, 0);
+            GuiTools.guiBlit(graphics, TEXTURE, this.getX() + this.getWidth() - 2, heightMiddle, 6, 14, 100, 0);
         }
     }
 
     public void renderString(GuiGraphicsExtractor graphics, Font font) {
         Component message = this.getMessage();
         List<FormattedCharSequence> lines = font.split(message, this.getWidth() - 10);
-        int color = isLeft ? 0x555555 : 0xFFFFFF;
+        int color = isLeft ? 0xFF555555 : 0xFFFFFFFF;
         for (int i = 0; i < lines.size(); i++) {
             graphics.text(font, lines.get(i), this.getX() + 5, this.getY() + 5 + i * font.lineHeight, color, false);
         }
@@ -130,13 +132,13 @@ public class HistoryChatWidget extends AbstractWidget {
             graphics.text(font, this.time.getVisualOrderText(),
                     (int) ((this.getX() + 2) / scale),
                     (int) ((this.getY() - 5) / scale),
-                    0x999999, false);
+                    0xFF999999, false);
         } else {
             float width = font.width(this.time) * scale;
             graphics.text(font, this.time.getVisualOrderText(),
                     (int) ((this.getX() + this.getWidth() - width - 2) / scale),
                     (int) ((this.getY() - 5) / scale),
-                    0x999999, false);
+                    0xFF999999, false);
         }
         graphics.pose().popMatrix();
     }

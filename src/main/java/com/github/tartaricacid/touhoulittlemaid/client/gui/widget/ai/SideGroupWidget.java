@@ -23,6 +23,6 @@ public class SideGroupWidget implements Renderable {
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fillGradient(this.x, this.y, this.x + this.width, this.y + this.height, 0xbf_090909, 0xbf_090909);
-        graphics.centeredText(Minecraft.getInstance().font, this.text, this.x + this.width / 2, this.y + (this.height - 8) / 2, 0xF3EFE0);
+        graphics.centeredText(Minecraft.getInstance().font, this.text, this.x + this.width / 2, this.y + (this.height - 8) / 2, 0xFFF3EFE0);
     }
 }

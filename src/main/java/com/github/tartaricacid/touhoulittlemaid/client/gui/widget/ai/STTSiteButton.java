@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.stt.STTSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsSTTSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -44,11 +43,11 @@ public class STTSiteButton extends Button {
         this.renderString(graphics, Minecraft.getInstance().font, 0xF3EFE0);
 
         // 站点图标（左侧）
-        GuiTools.blit(graphics,this.site.icon(), this.getX() + 6, this.getY() + 4, 0, 0, 16, 16, 16, 16);
+        GuiTools.guiBlit(graphics, this.site.icon(), this.getX() + 6, this.getY() + 4, 0, 0, 16, 16, 16, 16);
         // 启用按钮（右侧）
-        GuiTools.blit(graphics,MISC, this.getX() + this.width - 46, this.getY() + 4, this.site.enabled() ? 16 : 0, 0, 16, 16);
+        GuiTools.guiBlit(graphics, MISC, this.getX() + this.width - 46, this.getY() + 4, this.site.enabled() ? 16 : 0, 0, 16, 16);
         // 编辑按钮（最右侧）
-        GuiTools.blit(graphics,MISC, this.getX() + this.width - 24, this.getY() + 4, 16, 16, 16, 16);
+        GuiTools.guiBlit(graphics, MISC, this.getX() + this.width - 24, this.getY() + 4, 16, 16, 16, 16);
     }
 
     @Override
