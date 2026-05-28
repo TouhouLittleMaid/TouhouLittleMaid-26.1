@@ -32,10 +32,7 @@ public class GlobalLootModifier extends GlobalLootModifierProvider {
         addChestLootModifier("desert_pyramid", BuiltInLootTables.DESERT_PYRAMID, LootTableGenerator.RARE_BAUBLE);
         addChestLootModifier("jungle_temple", BuiltInLootTables.JUNGLE_TEMPLE, LootTableGenerator.RARE_BAUBLE);
         addChestLootModifier("woodland_mansion_bauble", BuiltInLootTables.WOODLAND_MANSION, LootTableGenerator.VERY_RARE_BAUBLE);
-        addChestLootModifier("simple_dungeon", BuiltInLootTables.SIMPLE_DUNGEON, LootTableGenerator.FURNACE_OR_CRAFTING_TABLE_BACKPACK);
         addChestLootModifier("abandoned_mineshaft", BuiltInLootTables.ABANDONED_MINESHAFT, LootTableGenerator.NORMAL_BACKPACK);
-        addChestLootModifier("nether_bridge", BuiltInLootTables.NETHER_BRIDGE, LootTableGenerator.TANK_BACKPACK);
-        addChestLootModifier("stronghold_corridor", BuiltInLootTables.STRONGHOLD_CORRIDOR, LootTableGenerator.ENDER_CHEST_BACKPACK);
         addChestLootModifier("stronghold_library", BuiltInLootTables.STRONGHOLD_LIBRARY, LootTableGenerator.SHRINE_LESS);
         addChestLootModifier("stronghold_library_board_state", BuiltInLootTables.STRONGHOLD_LIBRARY, LootTableGenerator.RANDOM_BOARD_STATE);
         addChestLootModifier("ancient_city", BuiltInLootTables.ANCIENT_CITY, LootTableGenerator.SHRINE_LESS);

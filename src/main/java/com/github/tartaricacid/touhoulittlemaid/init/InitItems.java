@@ -22,10 +22,6 @@ public final class InitItems {
     public static DeferredItem<Item> MAID_BACKPACK_SMALL = ITEMS.register("maid_backpack_small", ItemMaidBackpack::new);
     public static DeferredItem<Item> MAID_BACKPACK_MIDDLE = ITEMS.register("maid_backpack_middle", ItemMaidBackpack::new);
     public static DeferredItem<Item> MAID_BACKPACK_BIG = ITEMS.register("maid_backpack_big", ItemMaidBackpack::new);
-    public static DeferredItem<Item> CRAFTING_TABLE_BACKPACK = ITEMS.register("crafting_table_backpack", ItemMaidBackpack::new);
-    public static DeferredItem<Item> ENDER_CHEST_BACKPACK = ITEMS.register("ender_chest_backpack", ItemMaidBackpack::new);
-    public static DeferredItem<Item> FURNACE_BACKPACK = ITEMS.register("furnace_backpack", ItemMaidBackpack::new);
-    public static DeferredItem<Item> TANK_BACKPACK = ITEMS.register("tank_backpack", ItemTankBackpack::new);
     public static DeferredItem<Item> CHAIR = ITEMS.register("chair", ItemChair::new);
     public static DeferredItem<Item> HAKUREI_GOHEI = ITEMS.register("hakurei_gohei", ItemHakureiGohei::new);
     public static DeferredItem<Item> SANAE_GOHEI = ITEMS.register("sanae_gohei", ItemHakureiGohei::new);

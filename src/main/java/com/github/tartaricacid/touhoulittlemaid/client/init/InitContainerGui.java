@@ -23,10 +23,6 @@ public final class InitContainerGui {
         event.register(InitContainer.MAID_SMALL_BACKPACK_CONTAINER.get(), SmallBackpackContainerScreen::new);
         event.register(InitContainer.MAID_MIDDLE_BACKPACK_CONTAINER.get(), MiddleBackpackContainerScreen::new);
         event.register(InitContainer.MAID_BIG_BACKPACK_CONTAINER.get(), BigBackpackContainerScreen::new);
-        event.register(InitContainer.MAID_CRAFTING_TABLE_BACKPACK_CONTAINER.get(), CraftingTableBackpackContainerScreen::new);
-        event.register(InitContainer.MAID_ENDER_CHEST_CONTAINER.get(), EnderChestBackpackContainerScreen::new);
-        event.register(InitContainer.MAID_FURNACE_CONTAINER.get(), FurnaceBackpackContainerScreen::new);
-        event.register(InitContainer.MAID_TANK_CONTAINER.get(), TankBackpackContainerScreen::new);
 
         event.register(InitContainer.MAID_BAUBLE_CONTAINER.get(), BaubleContainerScreen::new);
         event.register(InitContainer.MAID_CONFIG_CONTAINER.get(), MaidConfigContainerGui::new);

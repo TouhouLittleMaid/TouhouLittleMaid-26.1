@@ -126,13 +126,6 @@ public class InitDataComponent {
                     .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
                     .build());
 
-    public static final String TANK_BACKPACK_TAG_NAME = "tanks";
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CompoundTag>> TANK_BACKPACK_TAG =
-            DATA_COMPONENTS.register(TANK_BACKPACK_TAG_NAME, () -> DataComponentType.<CompoundTag>builder()
-                    .persistent(CompoundTag.CODEC)
-                    .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
-                    .build());
-
     public static final String SAKUYA_BELL_UUID_TAG_NAME = "sakuya_bell_uuid";
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<UUID>> SAKUYA_BELL_UUID_TAG =
             DATA_COMPONENTS.register(SAKUYA_BELL_UUID_TAG_NAME, () -> DataComponentType.<UUID>builder()

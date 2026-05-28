@@ -4,7 +4,6 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.loot.LootTableTypeCondition;
 import com.github.tartaricacid.touhoulittlemaid.loot.RandomBoardStateFunction;
 import com.github.tartaricacid.touhoulittlemaid.loot.SetInitMaidOwnerFunction;
-import com.github.tartaricacid.touhoulittlemaid.loot.SetTankCountFunction;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
@@ -23,9 +22,6 @@ public class InitLootModifier {
 
     public static final Supplier<MapCodec<? extends LootItemCondition>> LOOT_TABLE_TYPE =
             LOOT_CONDITION_TYPES.register("loot_table_type", () -> LootTableTypeCondition.CODEC);
-
-    public static final Supplier<MapCodec<? extends LootItemConditionalFunction>> SET_TANK_COUNT_FUNCTION =
-            LOOT_FUNCTION_TYPES.register("set_tank_count", () -> SetTankCountFunction.CODEC);
 
     public static final Supplier<MapCodec<? extends LootItemConditionalFunction>> BOARD_STATE_RANDOMLY =
             LOOT_FUNCTION_TYPES.register("board_state_randomly", () -> RandomBoardStateFunction.CODEC);
