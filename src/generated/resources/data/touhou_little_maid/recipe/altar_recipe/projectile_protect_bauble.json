@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "c:crops/nether_wart"
-    },
-    {
-      "tag": "c:dyes/blue"
-    },
-    {
-      "item": "minecraft:shield"
-    },
-    {
-      "item": "minecraft:shield"
-    },
-    {
-      "item": "minecraft:shield"
-    },
-    {
-      "item": "minecraft:shield"
-    }
+    "#c:crops/nether_wart",
+    "#c:dyes/blue",
+    "minecraft:shield",
+    "minecraft:shield",
+    "minecraft:shield",
+    "minecraft:shield"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:projectile_protect_bauble"
   }
 }

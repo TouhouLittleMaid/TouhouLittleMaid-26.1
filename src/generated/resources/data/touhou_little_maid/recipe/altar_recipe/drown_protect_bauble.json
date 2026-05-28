@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "c:crops/nether_wart"
-    },
-    {
-      "tag": "c:dyes/lime"
-    },
-    {
-      "tag": "minecraft:fishes"
-    },
-    {
-      "tag": "minecraft:fishes"
-    },
-    {
-      "tag": "minecraft:fishes"
-    },
-    {
-      "tag": "minecraft:fishes"
-    }
+    "#c:crops/nether_wart",
+    "#c:dyes/lime",
+    "#minecraft:fishes",
+    "#minecraft:fishes",
+    "#minecraft:fishes",
+    "#minecraft:fishes"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:drown_protect_bauble"
   }
 }

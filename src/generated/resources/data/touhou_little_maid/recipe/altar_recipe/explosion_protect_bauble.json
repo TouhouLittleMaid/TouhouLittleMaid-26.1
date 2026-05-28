@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "c:crops/nether_wart"
-    },
-    {
-      "tag": "c:dyes/orange"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:obsidians"
-    }
+    "#c:crops/nether_wart",
+    "#c:dyes/orange",
+    "#c:obsidians",
+    "#c:obsidians",
+    "#c:obsidians",
+    "#c:obsidians"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:explosion_protect_bauble"
   }
 }

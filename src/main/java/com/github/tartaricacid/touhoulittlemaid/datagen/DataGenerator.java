@@ -44,14 +44,15 @@ public class DataGenerator {
                 (output, lookup) -> new TagBlock(output, lookup, TouhouLittleMaid.MOD_ID),
                 (output, lookup, blockTags) -> new TagItem(output, lookup, TouhouLittleMaid.MOD_ID)
         );
-        generator.addProvider(true, new TagDamage(pack, registries));
         generator.addProvider(true, new TagEntity(pack, registries));
-        generator.addProvider(true, new TagPaintingVariant(pack, registries));
-        generator.addProvider(true, new TagEnchantment(pack, registries));
 
         // Registry Based Stuff
         DatapackBuiltinEntriesProvider datapackProvider = new RegistryDataGenerator(pack, registries);
         generator.addProvider(true, datapackProvider);
+
+        generator.addProvider(true, new TagDamage(pack, datapackProvider.getRegistryProvider()));
+        generator.addProvider(true, new TagEnchantment(pack, datapackProvider.getRegistryProvider()));
+        generator.addProvider(true, new TagPaintingVariant(pack,  datapackProvider.getRegistryProvider()));
 
         generator.addProvider(true, new DataMapGenerator(pack, registries));
     }

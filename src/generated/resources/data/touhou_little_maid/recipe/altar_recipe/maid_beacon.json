@@ -4,29 +4,16 @@
   "entity": "minecraft:item",
   "group": "altar_recipe",
   "ingredients": [
-    {
-      "tag": "minecraft:planks"
-    },
-    {
-      "tag": "c:dyes/red"
-    },
-    {
-      "tag": "minecraft:planks"
-    },
-    {
-      "tag": "c:obsidians"
-    },
-    {
-      "tag": "c:gems/diamond"
-    },
-    {
-      "tag": "c:obsidians"
-    }
+    "#minecraft:planks",
+    "#c:dyes/red",
+    "#minecraft:planks",
+    "#c:obsidians",
+    "#c:gems/diamond",
+    "#c:obsidians"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "count": 1,
     "id": "touhou_little_maid:maid_beacon"
   }
 }
