@@ -8,6 +8,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.Profiler;
+import net.minecraft.world.attribute.EnvironmentAttribute;
+import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
@@ -50,6 +52,11 @@ public class MaidTaskManager {
         if (this.maid.level instanceof ServerLevel serverLevel) {
             this.maid.refreshBrain(serverLevel);
         }
+    }
+
+    public Activity getScheduleDetail() {
+        EnvironmentAttribute<Activity> schedule = this.getSchedule().getEnvironmentAttribute();
+        return maid.level.environmentAttributes().getValue(schedule, maid.blockPosition());
     }
 
     public void clearHome() {
@@ -119,6 +126,10 @@ public class MaidTaskManager {
 
         default void setSchedule(MaidSchedule schedule) {
             getTaskManager().setSchedule(schedule);
+        }
+
+        default Activity getScheduleDetail() {
+            return getTaskManager().getScheduleDetail();
         }
 
         default void clearHome() {

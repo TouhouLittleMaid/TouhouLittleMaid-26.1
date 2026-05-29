@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -28,19 +28,19 @@ public class MaidTorchPlaceTask extends Behavior<EntityMaid> {
     private final double closeEnoughDist;
 
     public MaidTorchPlaceTask(double closeEnoughDist) {
-        super(ImmutableMap.of(InitEntities.TARGET_POS.get(), MemoryStatus.VALUE_PRESENT));
+        super(ImmutableMap.of(InitBrains.TARGET_POS.get(), MemoryStatus.VALUE_PRESENT));
         this.closeEnoughDist = closeEnoughDist;
     }
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid owner) {
         Brain<EntityMaid> brain = owner.getBrain();
-        return brain.getMemory(InitEntities.TARGET_POS.get()).map(targetPos -> {
+        return brain.getMemory(InitBrains.TARGET_POS.get()).map(targetPos -> {
             Vec3 targetV3d = targetPos.currentPosition();
             if (owner.distanceToSqr(targetV3d) > Math.pow(closeEnoughDist, 2)) {
                 Optional<WalkTarget> walkTarget = brain.getMemory(MemoryModuleType.WALK_TARGET);
                 if (walkTarget.isEmpty() || !walkTarget.get().getTarget().currentPosition().equals(targetV3d)) {
-                    brain.eraseMemory(InitEntities.TARGET_POS.get());
+                    brain.eraseMemory(InitBrains.TARGET_POS.get());
                 }
                 return false;
             }
@@ -50,7 +50,7 @@ public class MaidTorchPlaceTask extends Behavior<EntityMaid> {
 
     @Override
     protected void start(ServerLevel world, EntityMaid maid, long gameTimeIn) {
-        maid.getBrain().getMemory(InitEntities.TARGET_POS.get()).ifPresent(posWrapper -> {
+        maid.getBrain().getMemory(InitBrains.TARGET_POS.get()).ifPresent(posWrapper -> {
             if (getAndExtractTorchItem(maid)) {
                 BlockPos pos = posWrapper.currentBlockPosition().above();
                 BlockState torchState = Blocks.TORCH.defaultBlockState();
@@ -59,7 +59,7 @@ public class MaidTorchPlaceTask extends Behavior<EntityMaid> {
                 world.playSound(null, pos, soundType.getPlaceSound(), SoundSource.BLOCKS,
                         (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F);
                 maid.swing(InteractionHand.MAIN_HAND);
-                maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+                maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
                 maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             }
         });

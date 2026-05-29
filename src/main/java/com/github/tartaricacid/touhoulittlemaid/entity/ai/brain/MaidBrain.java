@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.ride.MaidRideBegTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
@@ -41,8 +41,8 @@ public final class MaidBrain {
                 MemoryModuleType.WALK_TARGET,
                 MemoryModuleType.ATTACK_TARGET,
                 MemoryModuleType.ATTACK_COOLING_DOWN,
-                InitEntities.TARGET_POS.get(),
-                InitEntities.MAID_EDIBLE_BLOCK_ACTION.get()
+                InitBrains.TARGET_POS.get(),
+                InitBrains.MAID_EDIBLE_BLOCK_ACTION.get()
         );
         ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra ->
                 defaultTypes.addAll(extra.getExtraMemoryTypes())
@@ -52,10 +52,10 @@ public final class MaidBrain {
 
     public static ImmutableList<SensorType<? extends Sensor<? super EntityMaid>>> getSensorTypes() {
         List<SensorType<? extends Sensor<? super EntityMaid>>> defaultTypes = Lists.newArrayList(
-                InitEntities.MAID_NEAREST_LIVING_ENTITY_SENSOR.get(),
+                InitBrains.MAID_NEAREST_LIVING_ENTITY_SENSOR.get(),
                 SensorType.HURT_BY,
-                InitEntities.MAID_HOSTILES_SENSOR.get(),
-                InitEntities.MAID_PICKUP_ENTITIES_SENSOR.get()
+                InitBrains.MAID_HOSTILES_SENSOR.get(),
+                InitBrains.MAID_PICKUP_ENTITIES_SENSOR.get()
         );
         ExtraMaidBrainManager.EXTRA_MAID_BRAINS.forEach(extra ->
                 defaultTypes.addAll(extra.getExtraSensorTypes())
@@ -166,7 +166,7 @@ public final class MaidBrain {
             pairMaidList.addAll(extra.getWorkBehaviors());
         }
 
-        return ActivityData.create(Activity.IDLE, ImmutableList.copyOf(pairMaidList));
+        return ActivityData.create(Activity.WORK, ImmutableList.copyOf(pairMaidList));
     }
 
     private static ActivityData<EntityMaid> initRestActivity() {
@@ -182,7 +182,7 @@ public final class MaidBrain {
                 behaviors.addAll(extra.getRestBehaviors())
         );
 
-        return ActivityData.create(Activity.IDLE, ImmutableList.copyOf(behaviors));
+        return ActivityData.create(Activity.REST, ImmutableList.copyOf(behaviors));
     }
 
     private static ActivityData<EntityMaid> initPanicActivity() {
@@ -216,7 +216,7 @@ public final class MaidBrain {
                 behaviors.addAll(extra.getRideIdleBehaviors())
         );
 
-        return ActivityData.create(InitEntities.RIDE_IDLE.get(), ImmutableList.copyOf(behaviors));
+        return ActivityData.create(InitBrains.RIDE_IDLE.get(), ImmutableList.copyOf(behaviors));
     }
 
     private static ActivityData<EntityMaid> initRideWorkActivity(EntityMaid maid) {
@@ -238,7 +238,7 @@ public final class MaidBrain {
             pairMaidList.addAll(extra.getRideWorkBehaviors());
         }
 
-        return ActivityData.create(InitEntities.RIDE_WORK.get(), ImmutableList.copyOf(pairMaidList));
+        return ActivityData.create(InitBrains.RIDE_WORK.get(), ImmutableList.copyOf(pairMaidList));
     }
 
     private static ActivityData<EntityMaid> initRideRestActivity() {
@@ -249,7 +249,7 @@ public final class MaidBrain {
                 behaviors.addAll(extra.getRideRestBehaviors())
         );
 
-        return ActivityData.create(InitEntities.RIDE_REST.get(), ImmutableList.copyOf(behaviors));
+        return ActivityData.create(InitBrains.RIDE_REST.get(), ImmutableList.copyOf(behaviors));
     }
 
     private static MaidRunOne getLookAndRandomWalk(Predicate<EntityMaid> enableCondition) {

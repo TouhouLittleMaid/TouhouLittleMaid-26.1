@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IFarmTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.google.common.collect.ImmutableMap;
@@ -31,19 +31,19 @@ public class MaidFarmPlantTask extends Behavior<EntityMaid> {
     private final IFarmTask task;
 
     public MaidFarmPlantTask(IFarmTask task) {
-        super(ImmutableMap.of(InitEntities.TARGET_POS.get(), MemoryStatus.VALUE_PRESENT));
+        super(ImmutableMap.of(InitBrains.TARGET_POS.get(), MemoryStatus.VALUE_PRESENT));
         this.task = task;
     }
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid owner) {
         Brain<EntityMaid> brain = owner.getBrain();
-        return brain.getMemory(InitEntities.TARGET_POS.get()).map(targetPos -> {
+        return brain.getMemory(InitBrains.TARGET_POS.get()).map(targetPos -> {
             Vec3 targetV3d = targetPos.currentPosition();
             if (owner.distanceToSqr(targetV3d) > Math.pow(task.getCloseEnoughDist(), 2)) {
                 Optional<WalkTarget> walkTarget = brain.getMemory(MemoryModuleType.WALK_TARGET);
                 if (walkTarget.isEmpty() || !walkTarget.get().getTarget().currentPosition().equals(targetV3d)) {
-                    brain.eraseMemory(InitEntities.TARGET_POS.get());
+                    brain.eraseMemory(InitBrains.TARGET_POS.get());
                 }
                 return false;
             }
@@ -53,14 +53,14 @@ public class MaidFarmPlantTask extends Behavior<EntityMaid> {
 
     @Override
     protected void start(ServerLevel world, EntityMaid maid, long gameTimeIn) {
-        maid.getBrain().getMemory(InitEntities.TARGET_POS.get()).ifPresent(posWrapper -> {
+        maid.getBrain().getMemory(InitBrains.TARGET_POS.get()).ifPresent(posWrapper -> {
             BlockPos basePos = posWrapper.currentBlockPosition();
             BlockPos cropPos = basePos.above();
             BlockState cropState = world.getBlockState(cropPos);
             if (maid.canDestroyBlock(cropPos) && task.canHarvest(maid, cropPos, cropState)) {
                 task.harvest(maid, cropPos, cropState);
                 maid.swing(InteractionHand.MAIN_HAND);
-                maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+                maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
                 maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                 if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                     InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.MAID_FARM);
@@ -81,7 +81,7 @@ public class MaidFarmPlantTask extends Behavior<EntityMaid> {
                             ItemStack remain = task.plant(maid, basePos, baseState, seed);
                             availableInv.insert(slot, res, remain.getCount(), tx);
                             maid.swing(InteractionHand.MAIN_HAND);
-                            maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+                            maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
                             maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.MAID_FARM);

@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidPathFindingBFS;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -32,7 +32,7 @@ public abstract class MaidMoveToBlockTask extends MaidCheckRateTask {
         this(
                 ImmutableMap.of(
                         MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT,
-                        InitEntities.TARGET_POS.get(), MemoryStatus.VALUE_ABSENT
+                        InitBrains.TARGET_POS.get(), MemoryStatus.VALUE_ABSENT
                 ),
                 movementSpeed, verticalSearchRange
         );
@@ -58,7 +58,7 @@ public abstract class MaidMoveToBlockTask extends MaidCheckRateTask {
                         if (maid.isWithinHome(mutableBlockPos) && shouldMoveTo(worldIn, maid, mutableBlockPos) && checkPathReach(maid, pathFinding, mutableBlockPos)
                             && checkOwnerPos(maid, mutableBlockPos)) {
                             BehaviorUtils.setWalkAndLookTargetMemories(maid, mutableBlockPos, this.movementSpeed, 0);
-                            maid.getBrain().setMemory(InitEntities.TARGET_POS.get(), new BlockPosTracker(mutableBlockPos));
+                            maid.getBrain().setMemory(InitBrains.TARGET_POS.get(), new BlockPosTracker(mutableBlockPos));
                             this.currentWorkPos = mutableBlockPos;
                             this.setNextCheckTickCount(5);
                             this.clearCurrentArrivalMap(pathFinding);

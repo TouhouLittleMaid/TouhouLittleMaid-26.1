@@ -11,6 +11,7 @@ import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
+
 import java.util.concurrent.CompletableFuture;
 
 public class TagEntity extends EntityTypeTagsProvider {

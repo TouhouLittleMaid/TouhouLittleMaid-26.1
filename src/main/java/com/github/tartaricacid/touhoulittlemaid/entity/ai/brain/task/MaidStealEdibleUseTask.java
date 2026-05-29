@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlock
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlockManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
@@ -31,8 +31,8 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
 
     public MaidStealEdibleUseTask(double closeEnoughDist) {
         super(ImmutableMap.of(
-                InitEntities.TARGET_POS.get(), MemoryStatus.VALUE_PRESENT,
-                InitEntities.MAID_EDIBLE_BLOCK_ACTION.get(), MemoryStatus.VALUE_PRESENT
+                InitBrains.TARGET_POS.get(), MemoryStatus.VALUE_PRESENT,
+                InitBrains.MAID_EDIBLE_BLOCK_ACTION.get(), MemoryStatus.VALUE_PRESENT
         ));
         this.closeEnoughDist = closeEnoughDist;
     }
@@ -40,12 +40,12 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid owner) {
         Brain<EntityMaid> brain = owner.getBrain();
-        return brain.getMemory(InitEntities.TARGET_POS.get()).map(targetPos -> {
+        return brain.getMemory(InitBrains.TARGET_POS.get()).map(targetPos -> {
             Vec3 targetV3d = targetPos.currentPosition();
             if (owner.distanceToSqr(targetV3d) > Math.pow(closeEnoughDist, 2)) {
                 Optional<WalkTarget> walkTarget = brain.getMemory(MemoryModuleType.WALK_TARGET);
                 if (walkTarget.isEmpty() || !walkTarget.get().getTarget().currentPosition().equals(targetV3d)) {
-                    brain.eraseMemory(InitEntities.TARGET_POS.get());
+                    brain.eraseMemory(InitBrains.TARGET_POS.get());
                 }
                 return false;
             }
@@ -56,8 +56,8 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
     @Override
     protected void start(ServerLevel world, EntityMaid maid, long gameTimeIn) {
         Brain<EntityMaid> brain = maid.getBrain();
-        brain.getMemory(InitEntities.TARGET_POS.get())
-                .ifPresent(posWrapper -> brain.getMemory(InitEntities.MAID_EDIBLE_BLOCK_ACTION.get())
+        brain.getMemory(InitBrains.TARGET_POS.get())
+                .ifPresent(posWrapper -> brain.getMemory(InitBrains.MAID_EDIBLE_BLOCK_ACTION.get())
                         .ifPresent(action -> handle(world, maid, posWrapper, action)));
     }
 
@@ -75,7 +75,7 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
                         maid.getFavorabilityManager().apply(Type.STEAL_EDIBLE_BLOCK, points);
                         maid.swing(InteractionHand.MAIN_HAND);
                     }
-                    maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+                    maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
                     maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                     return;
                 }
@@ -98,7 +98,7 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
                             //Fixme 替换可变的ItemStack
                             ItemsUtil.extractItem(inv, i, originalAmount - stack.count(), false, null);
                         }
-                        maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+                        maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
                         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
                         return;
                     }

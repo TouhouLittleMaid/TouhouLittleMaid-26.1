@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.Brain;
@@ -11,8 +11,10 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.schedule.Activity;
 
+import javax.annotation.Nullable;
+
 public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
-    private Activity cacheActivity;
+    private @Nullable Activity cacheActivity;
 
     public MaidUpdateActivityFromSchedule() {
         super(ImmutableMap.of());
@@ -25,7 +27,6 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
 
         // 让女仆在切换日程表时能够改变自己的活动范围
         if (gameTime - brain.lastScheduleUpdate > 20L) {
-            //TODO 之前为什么不是这么做？这个对吗？
             Activity activity = maid.getScheduleDetail();
             if (this.cacheActivity == null) {
                 this.cacheActivity = activity;
@@ -57,19 +58,17 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
     }
 
     private static void updateActivityFromSchedule(ServerLevel level, EntityMaid maid, Brain<EntityMaid> brain, long gameTime) {
-        long dayTime = level.getGameTime();
         if (maid.isMaidInSittingPose() || maid.isPassenger()) {
             if (gameTime - brain.lastScheduleUpdate > 20L) {
                 brain.lastScheduleUpdate = gameTime;
-                //TODO 检查
                 Activity activity = maid.getScheduleDetail();
                 Activity riderActivity;
                 if (activity.equals(Activity.WORK)) {
-                    riderActivity = InitEntities.RIDE_WORK.get();
+                    riderActivity = InitBrains.RIDE_WORK.get();
                 } else if (activity.equals(Activity.IDLE)) {
-                    riderActivity = InitEntities.RIDE_IDLE.get();
+                    riderActivity = InitBrains.RIDE_IDLE.get();
                 } else {
-                    riderActivity = InitEntities.RIDE_REST.get();
+                    riderActivity = InitBrains.RIDE_REST.get();
                 }
                 if (!brain.isActive(riderActivity)) {
                     brain.eraseMemory(MemoryModuleType.PATH);
@@ -77,7 +76,7 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
                     brain.setActiveActivityIfPossible(riderActivity);
 
                     // 如果是拥有工作点的 task，需要脱离骑乘的实体
-                    if (maid.isPassenger() && !riderActivity.equals(InitEntities.RIDE_WORK.get())) {
+                    if (maid.isPassenger() && !riderActivity.equals(InitBrains.RIDE_WORK.get())) {
                         if (!maid.getTask().workPointTask(maid)) {
                             return;
                         }

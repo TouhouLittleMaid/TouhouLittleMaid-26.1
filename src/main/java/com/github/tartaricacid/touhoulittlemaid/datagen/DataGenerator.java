@@ -51,6 +51,7 @@ public class DataGenerator {
         generator.addProvider(true, datapackProvider);
 
         generator.addProvider(true, new TagDamage(pack, datapackProvider.getRegistryProvider()));
+        generator.addProvider(true, new TagTimeline(pack, datapackProvider.getRegistryProvider()));
         generator.addProvider(true, new TagEnchantment(pack, datapackProvider.getRegistryProvider()));
         generator.addProvider(true, new TagPaintingVariant(pack,  datapackProvider.getRegistryProvider()));
 

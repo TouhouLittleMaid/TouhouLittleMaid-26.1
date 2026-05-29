@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.sensor;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -23,7 +23,7 @@ public class MaidPickupEntitiesSensor extends Sensor<EntityMaid> {
 
     @Override
     public Set<MemoryModuleType<?>> requires() {
-        return ImmutableSet.of(InitEntities.VISIBLE_PICKUP_ENTITIES.get());
+        return ImmutableSet.of(InitBrains.VISIBLE_PICKUP_ENTITIES.get());
     }
 
     @Override
@@ -45,6 +45,6 @@ public class MaidPickupEntitiesSensor extends Sensor<EntityMaid> {
                 .filter(e -> e.closerThan(maid, radius + 1))
                 .filter(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(maid::hasLineOfSight).collect(Collectors.toList());
-        maid.getBrain().setMemory(InitEntities.VISIBLE_PICKUP_ENTITIES.get(), optional);
+        maid.getBrain().setMemory(InitBrains.VISIBLE_PICKUP_ENTITIES.get(), optional);
     }
 }

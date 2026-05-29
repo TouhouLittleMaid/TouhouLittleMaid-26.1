@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain;
 
 
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,9 +24,9 @@ public enum MaidSchedule implements StringRepresentable {
 
     public EnvironmentAttribute<Activity> getEnvironmentAttribute() {
         return switch (this) {
-            case DAY -> InitEntities.MAID_DAY_SHIFT_SCHEDULES.get();
-            case NIGHT -> InitEntities.MAID_NIGHT_SHIFT_SCHEDULES.get();
-            case ALL -> InitEntities.MAID_ALL_DAY_SCHEDULES.get();
+            case DAY -> InitBrains.MAID_DAY_SHIFT_ACTIVITY.get();
+            case NIGHT -> InitBrains.MAID_NIGHT_SHIFT_ACTIVITY.get();
+            case ALL -> InitBrains.MAID_ALL_DAY_ACTIVITY.get();
         };
     }
 

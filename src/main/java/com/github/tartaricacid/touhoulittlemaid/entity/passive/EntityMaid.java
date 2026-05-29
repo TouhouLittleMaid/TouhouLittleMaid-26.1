@@ -780,11 +780,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return !this.isMaidInSittingPose() && !this.isPassenger() && !this.isSleeping() && !this.isLeashed();
     }
 
-    public Activity getScheduleDetail() {
-        //TODO 检查是否正确
-        return level.environmentAttributes().getValue(this.getSchedule().getEnvironmentAttribute(), blockPosition());
-    }
-
     public ItemStack getBackpackShowItem() {
         return this.entityData.get(BACKPACK_ITEM_SHOW);
     }

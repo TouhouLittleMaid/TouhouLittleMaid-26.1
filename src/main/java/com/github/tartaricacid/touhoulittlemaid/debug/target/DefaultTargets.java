@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.debug.target;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import net.minecraft.util.VisibleForDebug;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class DefaultTargets {
 
     public static List<DebugTarget> getDefaultTargets(EntityMaid maid) {
         return maid.getBrain()
-                .getMemory(InitEntities.TARGET_POS.get())
+                .getMemory(InitBrains.TARGET_POS.get())
                 .map(tracker -> List.of(new DebugTarget(tracker.currentBlockPosition(), COLOR, TEXT, LIFE_TIME)))
                 .orElseGet(List::of);
     }

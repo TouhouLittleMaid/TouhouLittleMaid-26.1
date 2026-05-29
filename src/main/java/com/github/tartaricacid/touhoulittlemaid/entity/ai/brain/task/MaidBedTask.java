@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockMaidBed;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitPoi;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
@@ -27,7 +27,7 @@ public class MaidBedTask extends MaidCheckRateTask {
 
     public MaidBedTask(float movementSpeed, int closeEnoughDist) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT,
-                InitEntities.TARGET_POS.get(), MemoryStatus.VALUE_ABSENT));
+                InitBrains.TARGET_POS.get(), MemoryStatus.VALUE_ABSENT));
         this.closeEnoughDist = closeEnoughDist;
         this.speed = movementSpeed;
         this.setMaxCheckRate(10);
@@ -39,13 +39,13 @@ public class MaidBedTask extends MaidCheckRateTask {
             BlockPos bedPos = findBed(worldIn, maid);
             if (bedPos != null && maid.isWithinHome(bedPos)) {
                 if (bedPos.distToCenterSqr(maid.position()) < Math.pow(this.closeEnoughDist, 2)) {
-                    maid.getBrain().setMemory(InitEntities.TARGET_POS.get(), new BlockPosTracker(bedPos));
+                    maid.getBrain().setMemory(InitBrains.TARGET_POS.get(), new BlockPosTracker(bedPos));
                     return true;
                 }
                 BehaviorUtils.setWalkAndLookTargetMemories(maid, bedPos, speed, 1);
                 this.setNextCheckTickCount(5);
             } else {
-                maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+                maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
             }
         }
         return false;
@@ -53,7 +53,7 @@ public class MaidBedTask extends MaidCheckRateTask {
 
     @Override
     protected void start(ServerLevel worldIn, EntityMaid maid, long gameTimeIn) {
-        maid.getBrain().getMemory(InitEntities.TARGET_POS.get()).ifPresent(targetPos -> {
+        maid.getBrain().getMemory(InitBrains.TARGET_POS.get()).ifPresent(targetPos -> {
             BlockPos pos = targetPos.currentBlockPosition();
             BlockState blockState = worldIn.getBlockState(pos);
             if (blockState.is(InitBlocks.MAID_BED.get()) && blockState.getValue(BlockMaidBed.PART) == BedPart.HEAD && !blockState.getValue(BedBlock.OCCUPIED)) {
@@ -61,7 +61,7 @@ public class MaidBedTask extends MaidCheckRateTask {
                 maid.setPos(pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5);
             }
         });
-        maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+        maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
     }

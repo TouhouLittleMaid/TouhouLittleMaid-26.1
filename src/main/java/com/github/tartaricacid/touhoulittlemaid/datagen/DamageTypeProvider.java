@@ -11,7 +11,6 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DeathMessageType;
 
 public class DamageTypeProvider {
-
     public static final ResourceKey<DamageType> DANMAKU = key("danmaku");
     public static final ResourceKey<DamageType> DANMAKU_ENDER_KILLER = key("danmaku_ender_killer");
 
@@ -27,5 +26,4 @@ public class DamageTypeProvider {
     public static ResourceKey<DamageType> key(String id) {
         return ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, id));
     }
-
 }

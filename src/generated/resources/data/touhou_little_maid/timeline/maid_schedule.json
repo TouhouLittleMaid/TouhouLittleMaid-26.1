@@ -1,0 +1,46 @@
+{
+  "clock": "minecraft:overworld",
+  "period_ticks": 24000,
+  "tracks": {
+    "touhou_little_maid:gameplay/maid_all_day_activity": {
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": "minecraft:work"
+        }
+      ]
+    },
+    "touhou_little_maid:gameplay/maid_day_shift_activity": {
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": "minecraft:work"
+        },
+        {
+          "ticks": 12000,
+          "value": "minecraft:idle"
+        },
+        {
+          "ticks": 16000,
+          "value": "minecraft:rest"
+        }
+      ]
+    },
+    "touhou_little_maid:gameplay/maid_night_shift_activity": {
+      "keyframes": [
+        {
+          "ticks": 0,
+          "value": "minecraft:rest"
+        },
+        {
+          "ticks": 8000,
+          "value": "minecraft:idle"
+        },
+        {
+          "ticks": 12000,
+          "value": "minecraft:work"
+        }
+      ]
+    }
+  }
+}

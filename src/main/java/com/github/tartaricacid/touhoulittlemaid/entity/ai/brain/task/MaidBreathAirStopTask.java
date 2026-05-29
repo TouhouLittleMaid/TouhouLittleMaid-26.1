@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.inventory.handler.BaubleItemHandler;
 import com.google.common.collect.ImmutableMap;
@@ -41,7 +41,7 @@ public class MaidBreathAirStopTask extends Behavior<EntityMaid> {
         maid.getSwimManager().setGoingToBreath(false);
         // 如果呼吸计划打断了某些任务寻路，则需要重置目标记忆来重新寻路
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-        maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+        maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
     }
 
     private boolean hasDrownBauble(EntityMaid maid) {

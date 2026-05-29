@@ -19,7 +19,8 @@ public class RegistryDataGenerator extends DatapackBuiltinEntriesProvider {
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.ENCHANTMENT, EnchantmentKeys::bootstrap)
             .add(Registries.DAMAGE_TYPE, DamageTypeProvider::bootstrap)
-            .add(Registries.PAINTING_VARIANT, RegistryDataGenerator::genPainting);
+            .add(Registries.PAINTING_VARIANT, RegistryDataGenerator::genPainting)
+            .add(Registries.TIMELINE, TimelinesProvider::bootstrap);
 
     private static void genPainting(BootstrapContext<PaintingVariant> ctx) {
         var id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "wine_fox");

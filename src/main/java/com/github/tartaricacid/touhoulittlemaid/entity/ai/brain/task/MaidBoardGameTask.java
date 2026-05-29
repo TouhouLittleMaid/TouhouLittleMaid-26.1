@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IBoardGameBlock;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IBoardGameEntityBlock;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitPoi;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.google.common.collect.ImmutableMap;
@@ -29,7 +29,7 @@ public class MaidBoardGameTask extends MaidCheckRateTask {
 
     public MaidBoardGameTask(float movementSpeed, int closeEnoughDist) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT,
-                InitEntities.TARGET_POS.get(), MemoryStatus.VALUE_ABSENT));
+                InitBrains.TARGET_POS.get(), MemoryStatus.VALUE_ABSENT));
         this.closeEnoughDist = closeEnoughDist;
         this.speed = movementSpeed;
         this.setMaxCheckRate(10);
@@ -41,13 +41,13 @@ public class MaidBoardGameTask extends MaidCheckRateTask {
             BlockPos gamePos = findGameBlock(worldIn, maid);
             if (gamePos != null && maid.isWithinHome(gamePos)) {
                 if (gamePos.distToCenterSqr(maid.position()) < Math.pow(this.closeEnoughDist, 2)) {
-                    maid.getBrain().setMemory(InitEntities.TARGET_POS.get(), new BlockPosTracker(gamePos));
+                    maid.getBrain().setMemory(InitBrains.TARGET_POS.get(), new BlockPosTracker(gamePos));
                     return true;
                 }
                 BehaviorUtils.setWalkAndLookTargetMemories(maid, gamePos, speed, 1);
                 this.setNextCheckTickCount(5);
             } else {
-                maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+                maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
             }
         }
         return false;
@@ -55,7 +55,7 @@ public class MaidBoardGameTask extends MaidCheckRateTask {
 
     @Override
     protected void start(ServerLevel worldIn, EntityMaid maid, long gameTimeIn) {
-        maid.getBrain().getMemory(InitEntities.TARGET_POS.get()).ifPresent((targetPos) -> {
+        maid.getBrain().getMemory(InitBrains.TARGET_POS.get()).ifPresent((targetPos) -> {
             BlockPos pos = targetPos.currentBlockPosition();
             BlockState blockState = worldIn.getBlockState(pos);
             if (blockState.getBlock() instanceof IBoardGameBlock gameBlock) {
@@ -65,7 +65,7 @@ public class MaidBoardGameTask extends MaidCheckRateTask {
                 }
             }
         });
-        maid.getBrain().eraseMemory(InitEntities.TARGET_POS.get());
+        maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         maid.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
     }

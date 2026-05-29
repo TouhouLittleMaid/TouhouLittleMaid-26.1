@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlock
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlockManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidPathFindingBFS;
+import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -46,7 +47,7 @@ public class MaidStealEdibleMoveBlockTask extends MaidMoveToBlockTask {
     public MaidStealEdibleMoveBlockTask(float movementSpeed) {
         super(movementSpeed, 2);
         this.setMaxCheckRate(NEXT_CHECK_TICK_COUNT);
-        this.action = InitEntities.MAID_EDIBLE_BLOCK_ACTION.get();
+        this.action = InitBrains.MAID_EDIBLE_BLOCK_ACTION.get();
     }
 
     @Override

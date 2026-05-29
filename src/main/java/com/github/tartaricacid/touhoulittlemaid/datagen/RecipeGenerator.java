@@ -1,8 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
 import com.github.tartaricacid.touhoulittlemaid.datagen.builder.AltarRecipeBuilder;
-import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -10,8 +8,6 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.Tags;
 

@@ -73,15 +73,6 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
         this(TYPE, worldIn);
     }
 
-    public static AttributeSupplier.Builder createFairyAttributes() {
-        return Monster.createMonsterAttributes()
-                .add(Attributes.FOLLOW_RANGE, 35.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.25)
-                .add(Attributes.ATTACK_DAMAGE, 1.5)
-                .add(Attributes.ARMOR, 1.)
-                .add(Attributes.FLYING_SPEED, 0.4);
-    }
-
     public static boolean checkFairySpawnRules(EntityType<EntityFairy> entityType, ServerLevelAccessor levelAccessor, EntitySpawnReason spawnType, BlockPos pos, RandomSource randomSource) {
         if (Monster.checkMonsterSpawnRules(entityType, levelAccessor, spawnType, pos, randomSource) && levelAccessor instanceof ServerLevel level) {
             int scarecrowRange = MiscConfig.SCARECROW_RANGE.get();
