@@ -24,7 +24,7 @@ public interface InitRecipes {
             "altar", () -> AltarRecipeSerializer.SERIALIZER
     );
 
-    Supplier<RecipeType<AltarRecipe>> ALTAR_CRAFTING = RECIPE_TYPES.register(
-            "altar", () -> RecipeType.simple(Identifier.fromNamespaceAndPath(MOD_ID, "altar_crafting"))
+    Supplier<RecipeType<AltarRecipe>> ALTAR_RECIPE = RECIPE_TYPES.register(
+            "altar", () -> RecipeType.simple(Identifier.fromNamespaceAndPath(MOD_ID, "altar_recipe"))
     );
 }

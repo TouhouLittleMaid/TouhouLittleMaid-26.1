@@ -172,7 +172,7 @@ public class BlockAltar extends Block implements EntityBlock {
         CraftingInput craftingInput = CraftingInput.of(6, 1, arrayList);
         PowerAttachment powerAttachment = playerIn.getData(InitDataAttachment.POWER_NUM);
         if (world instanceof ServerLevel serverLevel) {
-            serverLevel.recipeAccess().getRecipeFor(InitRecipes.ALTAR_CRAFTING.get(), craftingInput, world)
+            serverLevel.recipeAccess().getRecipeFor(InitRecipes.ALTAR_RECIPE.get(), craftingInput, world)
                     .ifPresent(recipe -> spawnResultEntity(world, playerIn, powerAttachment, recipe.id(), recipe.value(), arrayList, altar));
         }
     }

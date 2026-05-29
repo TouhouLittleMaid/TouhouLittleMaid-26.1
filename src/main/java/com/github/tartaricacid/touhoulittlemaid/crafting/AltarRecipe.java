@@ -151,7 +151,7 @@ public class AltarRecipe implements Recipe<CraftingInput> {
 
     @Override
     public RecipeType<AltarRecipe> getType() {
-        return InitRecipes.ALTAR_CRAFTING.get();
+        return InitRecipes.ALTAR_RECIPE.get();
     }
 
     @Override
