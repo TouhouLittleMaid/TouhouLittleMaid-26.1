@@ -1,17 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidBrain;
 import com.github.tartaricacid.touhoulittlemaid.init.InitAttribute;
-import com.google.common.base.Suppliers;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
-import java.util.ArrayList;
-import java.util.function.Supplier;
-
-public class MaidConstant {
+public final class MaidConstant {
     /**
      * 如果其他模组想要给女仆添加额外属性
      * <p>
@@ -40,12 +34,4 @@ public class MaidConstant {
                 .add(InitAttribute.MAID_PASSIVE_USE_SHIELD_TICK)
                 .add(InitAttribute.MAID_HUNGER);
     }
-
-    // Brain
-    public static final Supplier<Brain.Provider<EntityMaid>> BRAIN_PROVIDER = Suppliers.memoize(() -> Brain.provider(
-            MaidBrain.getMemoryTypes(),
-            MaidBrain.getSensorTypes(),
-            //TODO 是否可能简化Brain注册?
-            _ -> new ArrayList<>()
-    ));
 }

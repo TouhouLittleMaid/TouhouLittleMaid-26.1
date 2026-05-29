@@ -4,7 +4,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.Swim;
 
-public class MaidSwimJumpTask extends Swim {
+public class MaidSwimJumpTask extends Swim<Mob> {
     public MaidSwimJumpTask(float chance) {
         super(chance);
     }

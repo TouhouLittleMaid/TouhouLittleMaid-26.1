@@ -73,6 +73,7 @@ import java.util.Stack;
 import java.util.UUID;
 
 import static com.github.tartaricacid.touhoulittlemaid.config.ServerConfig.MAID_AI_TIME_DEBUG;
+import static com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidBrain.BRAIN_PROVIDER;
 
 public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         MaidAnimationManager.View, MaidConfigManager.View, MaidItemManager.View,
@@ -82,20 +83,29 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         MaidDeathManager.View, MaidSoundManager.View, MaidClimbManager.View,
         MaidMiscManager.View, MaidSwimManager.View {
 
-    public static final EntityType<EntityMaid> TYPE = EntityType.Builder.<EntityMaid>of(EntityMaid::new, MobCategory.CREATURE)
-            .sized(0.6f, 1.5f).clientTrackingRange(10)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid")));
+    public static final Identifier ENTITY_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid");
+    public static final ResourceKey<EntityType<?>> ENTITY_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ENTITY_ID);
+    public static final EntityType<EntityMaid> TYPE = EntityType.
+            Builder.<EntityMaid>of(EntityMaid::new, MobCategory.CREATURE)
+            .sized(0.6f, 1.5f)
+            .clientTrackingRange(10)
+            .build(ENTITY_KEY);
 
-    // AI 超时检测
+    /**
+     * AI 超时检测
+     */
     private static final long WARNING_TIME_NANOS = Duration.ofMillis(50L).toNanos();
 
-    private static final String INVULNERABLE_TAG = "Invulnerable";
-
-    // 女仆默认同步数据
+    /**
+     * 女仆默认同步数据
+     */
     private static final EntityDataAccessor<Boolean> DATA_INVULNERABLE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<ChatBubbleDataCollection> CHAT_BUBBLE = SynchedEntityData.defineId(EntityMaid.class, ChatBubbleRegister.INSTANCE);
     private static final EntityDataAccessor<ItemStack> BACKPACK_ITEM_SHOW = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<ChatBubbleDataCollection> CHAT_BUBBLE = SynchedEntityData.defineId(EntityMaid.class, ChatBubbleRegister.INSTANCE);
 
+    /**
+     * 各个系统的管理器，负责处理女仆的不同功能模块，避免 EntityMaid 类过于臃肿
+     */
     private final MaidProfileManager profileManager = new MaidProfileManager(this);
     private final MaidTaskManager taskManager = new MaidTaskManager(this);
     private final MaidStatsManager statsManager = new MaidStatsManager(this);
@@ -112,20 +122,31 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     private final MaidSoundManager soundManager = new MaidSoundManager(this);
     private final MaidClimbManager climbManager = new MaidClimbManager(this);
     private final MaidMiscManager miscManager = new MaidMiscManager(this);
-    private final MaidKillRecordManager killRecordManager = new MaidKillRecordManager();
+    private final MaidKillRecordManager killRecordManager = new MaidKillRecordManager(this);
     private final ChatBubbleManager chatBubbleManager = new ChatBubbleManager(this);
     private final FavorabilityManager favorabilityManager = new FavorabilityManager(this);
     private final MaidSwimManager swimManager = new MaidSwimManager(this);
     private final MaidAIChatManager aiChatManager = new MaidAIChatManager(this);
 
-    // 控制不同的 navigation 切换的条件以及切换后变更女仆相关的 AI 控制参数
+    /**
+     * 控制不同的 navigation 切换的条件以及切换后变更女仆相关的 AI 控制参数
+     */
     private final MaidNavigationManager navigationManager;
-
+    /**
+     * 检查玩家是否正在打开女仆的 GUI 的标志位，打开 GUI 后女仆会暂停 Brain 的执行
+     */
     public boolean guiOpening = false;
+    /**
+     * 女仆钓鱼实体的引用
+     */
     public @Nullable MaidFishingHook fishing = null;
-
-    // 用于渲染缓存的内容
+    /**
+     * 女仆当前处于什么形态的渲染，是手办、雕像还是 GUI 内渲染等等
+     */
     public MaidRenderState renderState = MaidRenderState.ENTITY;
+    /**
+     * 用于女仆 GUI 界面内的效果的渲染
+     */
     private List<SendEffectPackage.EffectData> effects = Lists.newArrayList();
 
     protected EntityMaid(EntityType<EntityMaid> type, Level world) {
@@ -138,6 +159,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     public EntityMaid(Level worldIn) {
         this(TYPE, worldIn);
+    }
+
+    public static EntityDataAccessor<ChatBubbleDataCollection> getChatBubbleKey() {
+        return CHAT_BUBBLE;
     }
 
     @Override
@@ -233,16 +258,12 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return navigationManager;
     }
 
-    public static EntityDataAccessor<ChatBubbleDataCollection> getChatBubbleKey() {
-        return CHAT_BUBBLE;
-    }
-
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_INVULNERABLE, false);
-        builder.define(CHAT_BUBBLE, ChatBubbleDataCollection.getEmptyCollection());
         builder.define(BACKPACK_ITEM_SHOW, ItemStack.EMPTY);
+        builder.define(CHAT_BUBBLE, ChatBubbleDataCollection.getEmptyCollection());
     }
 
     @Override
@@ -251,25 +272,22 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     }
 
     @Override
-    @SuppressWarnings("all")
+    @SuppressWarnings("unchecked")
     public Brain<EntityMaid> getBrain() {
         return (Brain<EntityMaid>) super.getBrain();
     }
 
     @Override
     protected Brain<? extends LivingEntity> makeBrain(Brain.Packed packedBrain) {
-        Brain<EntityMaid> brain = MaidConstant.BRAIN_PROVIDER.get().makeBrain(this, packedBrain);
+        Brain<EntityMaid> brain = BRAIN_PROVIDER.makeBrain(this, packedBrain);
         MaidBrain.registerBrainGoals(brain, this);
         return brain;
     }
 
     public void refreshBrain(ServerLevel serverWorldIn) {
         Brain<EntityMaid> oldBrain = this.getBrain();
-        Brain.Packed packed = oldBrain.pack();
         oldBrain.stopAll(serverWorldIn, this);
-        //FIXME 此处没复制SensorType。是否影响？
-        this.brain = makeBrain(packed);
-        MaidBrain.registerBrainGoals(this.getBrain(), this);
+        this.brain = makeBrain(oldBrain.pack());
     }
 
     @Override
@@ -492,7 +510,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         super.addAdditionalSaveData(output);
 
 
-        output.store(INVULNERABLE_TAG, Codec.BOOL, getIsInvulnerable());
+        output.store(TAG_INVULNERABLE, Codec.BOOL, getIsInvulnerable());
         this.statsManager.save(output);
         this.itemManager.addAdditionalSaveData(output);
         this.favorabilityManager.addAdditionalSaveData(output);
@@ -505,7 +523,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
 
-        input.read(INVULNERABLE_TAG, Codec.BOOL).ifPresent(this::setEntityInvulnerable);
+        input.read(TAG_INVULNERABLE, Codec.BOOL).ifPresent(this::setEntityInvulnerable);
 
         this.statsManager.read(input);
         this.itemManager.readAdditionalSaveData(input);

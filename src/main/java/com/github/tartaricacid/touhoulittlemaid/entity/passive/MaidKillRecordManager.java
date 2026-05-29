@@ -20,10 +20,16 @@ public final class MaidKillRecordManager {
     private static final String WITHER_COUNT = "Wither";
     private static final String ENDER_DRAGON_COUNT = "EnderDragon";
 
+    private final EntityMaid maid;
+
     private int totalCount;
     private int slimeCount;
     private int witherCount;
     private int enderDragonCount;
+
+    public MaidKillRecordManager(EntityMaid maid) {
+        this.maid = maid;
+    }
 
     void addAdditionalSaveData(ValueOutput output) {
         ValueOutput child = output.child(KILL_RECORD);
