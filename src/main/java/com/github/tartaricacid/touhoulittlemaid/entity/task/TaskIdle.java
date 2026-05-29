@@ -55,7 +55,7 @@ public class TaskIdle implements IMaidTask {
     private boolean canSnowballFight(EntityMaid maid) {
         Level world = maid.level();
         BlockPos pos = maid.blockPosition();
-        return !maid.isBegging() && world.getBiome(pos).value().coldEnoughToSnow(pos, world.getSeaLevel()) && world.getBlockState(pos).is(Blocks.SNOW);
+        return !maid.components().animation.isBegging() && world.getBiome(pos).value().coldEnoughToSnow(pos, world.getSeaLevel()) && world.getBlockState(pos).is(Blocks.SNOW);
     }
 
     private Optional<? extends LivingEntity> findFirstValidSnowballTarget(EntityMaid maid) {

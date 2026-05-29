@@ -28,25 +28,25 @@ public class ItemMagnetBauble implements IMaidBauble {
 
     private void handlePickup(EntityMaid maid) {
         Level world = maid.level();
-        if (maid.isPickup() && maid.isTame()) {
-            List<Entity> entities = world.getEntities(maid, maid.getBoundingBox().inflate(RANGE), maid::canPickup);
+        if (maid.components().config.isPickup() && maid.isTame()) {
+              List<Entity> entities = world.getEntities(maid, maid.getBoundingBox().inflate(RANGE), e -> maid.components().item.canPickup(e, false));
             if (!entities.isEmpty() && maid.isAlive()) {
                 for (Entity entityPickup : entities) {
                     // 如果是物品
                     if (entityPickup instanceof ItemEntity) {
-                        maid.pickupItem((ItemEntity) entityPickup, false);
+                        maid.components().item.pickupItem((ItemEntity) entityPickup, false);
                     }
                     // 如果是经验
                     if (entityPickup instanceof ExperienceOrb) {
-                        maid.pickupXPOrb((ExperienceOrb) entityPickup);
+                        maid.components().item.pickupXPOrb((ExperienceOrb) entityPickup);
                     }
                     // 如果是 P 点
                     if (entityPickup instanceof EntityPowerPoint) {
-                        maid.pickupPowerPoint((EntityPowerPoint) entityPickup);
+                        maid.components().item.pickupPowerPoint((EntityPowerPoint) entityPickup);
                     }
                     // 如果是箭
                     if (entityPickup instanceof AbstractArrow) {
-                        maid.pickupArrow((AbstractArrow) entityPickup, false);
+                        maid.components().item.pickupArrow((AbstractArrow) entityPickup, false);
                     }
                 }
                 if (maid.getOwner() instanceof ServerPlayer serverPlayer) {

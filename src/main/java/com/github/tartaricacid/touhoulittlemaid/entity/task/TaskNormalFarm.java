@@ -69,10 +69,10 @@ public class TaskNormalFarm implements IFarmTask {
 
         // 其他情况
         if (isDestroyMode) {
-            maid.destroyBlock(cropPos);
+            maid.components().worldInteraction.destroyBlock(cropPos);
         } else if (cropBlock instanceof CropBlockAccessor crop) {
             BlockEntity blockEntity = cropState.hasBlockEntity() ? maid.level.getBlockEntity(cropPos) : null;
-            maid.dropResourcesToMaidInv(cropState, maid.level, cropPos, blockEntity, maid.getMainHandItem());
+            maid.components().item.dropResourcesToMaidInv(cropState, maid.level, cropPos, blockEntity, maid.getMainHandItem());
             maid.level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, cropPos, Block.getId(cropState));
             // 直接设置 Age 为 0
             if (cropState.hasProperty(crop.tlmAgeProperty())) {
@@ -117,7 +117,7 @@ public class TaskNormalFarm implements IFarmTask {
         }
         // 然后是默认情况
         if (item instanceof BlockItem) {
-            maid.placeItemBlock(basePos.above(), seed);
+            maid.components().worldInteraction.placeItemBlock(basePos.above(), seed);
         }
         return seed;
     }

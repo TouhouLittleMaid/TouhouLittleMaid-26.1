@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.event.maid;
 
 import com.github.tartaricacid.touhoulittlemaid.api.event.InteractMaidEvent;
-import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.sounds.SoundEvents;
@@ -15,7 +15,7 @@ public class UseFavorabilityToolEvent {
     @SubscribeEvent
     public static void onInteract(InteractMaidEvent event) {
         EntityMaid maid = event.getMaid();
-        FavorabilityManager manager = maid.getFavorabilityManager();
+        FavorabilityComponent manager = maid.components().favorability;
         ItemStack stack = event.getStack();
         Player player = event.getPlayer();
         int point = player.isShiftKeyDown() ? 1 : 64;

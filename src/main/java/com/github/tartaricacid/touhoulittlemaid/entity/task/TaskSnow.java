@@ -47,11 +47,11 @@ public class TaskSnow implements IFarmTask {
     public void harvest(EntityMaid maid, BlockPos cropPos, BlockState cropState) {
         ItemStack mainHandItem = maid.getMainHandItem();
         if (mainHandItem.getItem() instanceof ShovelItem) {
-            if (maid.destroyBlock(cropPos)) {
+            if (maid.components().worldInteraction.destroyBlock(cropPos)) {
                 mainHandItem.hurtAndBreak(1, maid, EquipmentSlot.MAINHAND);
             }
         } else {
-            maid.destroyBlock(cropPos, false);
+            maid.components().worldInteraction.destroyBlock(cropPos, false);
         }
     }
 

@@ -53,7 +53,7 @@ public class TaskCocoa implements IFarmTask {
 
     @Override
     public void harvest(EntityMaid maid, BlockPos cropPos, BlockState cropState) {
-        maid.destroyBlock(cropPos);
+        maid.components().worldInteraction.destroyBlock(cropPos);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class TaskCocoa implements IFarmTask {
             basePos = basePos.above();
             for (Direction direction : Direction.Plane.HORIZONTAL) {
                 BlockPos directionPos = basePos.relative(direction);
-                if (!seed.isEmpty() && maid.canPlaceBlock(directionPos)) {
+                if (!seed.isEmpty() && maid.components().worldInteraction.canPlaceBlock(directionPos)) {
                     Level world = maid.level();
                     BlockState cocoaState = Blocks.COCOA.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, direction.getOpposite());
                     world.setBlock(directionPos, cocoaState, Block.UPDATE_ALL_IMMEDIATE);

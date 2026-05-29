@@ -73,7 +73,7 @@ public class MaidCollectHoneyTask extends MaidCheckRateTask {
             if (hiveBlockState.getValue(BeehiveBlock.HONEY_LEVEL) < 5) {
                 return;
             }
-            CombinedResourceHandler<@NotNull ItemResource> maidAvailableInv = maid.getAvailableInv(true);
+            CombinedResourceHandler<@NotNull ItemResource> maidAvailableInv = maid.components().item.getAvailableInv(true);
             if (!this.collectHoneyComb(level, maid, maidAvailableInv, hiveBlockState, hivePos)) {
                 this.collectHoneyBottle(level, maid, maidAvailableInv, hiveBlockState, hivePos);
             }

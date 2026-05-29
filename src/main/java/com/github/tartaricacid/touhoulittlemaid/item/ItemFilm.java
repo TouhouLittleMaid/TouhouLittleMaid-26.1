@@ -45,7 +45,7 @@ public class ItemFilm extends AbstractStoreMaidItem {
 
     public static ItemStack maidToFilm(EntityMaid maid) {
         ItemStack film = InitItems.FILM.get().getDefaultInstance();
-        maid.setHomeModeEnable(false);
+        maid.components().config.setHomeModeEnable(false);
 
         TagValueOutput valueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, maid.registryAccess());
         maid.saveWithoutId(valueOutput);

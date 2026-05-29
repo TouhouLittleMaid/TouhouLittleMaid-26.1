@@ -110,7 +110,7 @@ public class MaidFollowOwnerVehicleTask extends Behavior<EntityMaid> {
     }
 
     private boolean maidStateConditions(EntityMaid maid) {
-        return !maid.isHomeModeEnable() && this.canBrainMoving(maid) && maid.isRideable();
+        return !maid.components().config.isHomeModeEnable() && this.canBrainMoving(maid) && maid.components().config.isRideable();
     }
 
     private boolean ownerStateConditions(@Nullable LivingEntity owner) {

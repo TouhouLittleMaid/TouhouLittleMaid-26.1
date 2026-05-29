@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.summary;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.LLMCallback;
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.response.ResponseChat;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMMessage;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +16,7 @@ public class HistorySummaryCallback extends LLMCallback {
     private final List<LLMMessage> snapshot;
     private final @Nullable Runnable afterSummary;
 
-    public HistorySummaryCallback(MaidAIChatManager manager, List<LLMMessage> messages,
+    public HistorySummaryCallback(MaidAIChatData manager, List<LLMMessage> messages,
                                   List<LLMMessage> snapshot, @Nullable Runnable afterSummary) {
         super(manager, messages, true);
         this.summaryManager = manager.getHistorySummaryManager();

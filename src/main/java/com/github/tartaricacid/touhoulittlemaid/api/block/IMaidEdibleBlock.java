@@ -116,11 +116,11 @@ public interface IMaidEdibleBlock {
      * @return 若放置成功返回 {@code true}，女仆将播放挥动手臂的动画；否则返回 {@code false}
      */
     default boolean placeAsFood(EntityMaid maid, BlockPos pos, ItemStack stack, int slotIndex) {
-        var availableInv = maid.getAvailableInv(true);
+        var availableInv = maid.components().item.getAvailableInv(true);
         ItemStack stackExtra = ItemsUtil.extractItem(availableInv, slotIndex, 1, false, null);
         if (stackExtra.isEmpty()) {
             return false;
         }
-        return maid.placeItemBlock(pos, stackExtra);
+        return maid.components().worldInteraction.placeItemBlock(pos, stackExtra);
     }
 }

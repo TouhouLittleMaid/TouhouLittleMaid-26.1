@@ -1,5 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.favorability;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
+
 public class Type {
     public static final Type BOOKSHELF = new Type("BookShelf", 2, 24000);
     public static final Type COMPUTER = new Type("Computer", 2, 24000);
@@ -31,7 +33,7 @@ public class Type {
         this.point = Math.abs(point);
         this.cooldown = cooldown;
         this.isReduce = point < 0;
-        FavorabilityManager.TYPES.put(typeName, this);
+        FavorabilityComponent.TYPES.put(typeName, this);
     }
 
     public String getTypeName() {

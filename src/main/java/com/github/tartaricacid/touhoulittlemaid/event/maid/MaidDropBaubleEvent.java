@@ -29,7 +29,7 @@ public class MaidDropBaubleEvent {
         // 2 级：20 个格子
         // 0 和 1 级：10 个格子
         int startIndex = newLevel <= 1 ? 10 : 20;
-        BaubleItemHandler maidBauble = maid.getMaidBauble();
+        BaubleItemHandler maidBauble = maid.components().item.getMaidBauble();
         try (Transaction tx = Transaction.openRoot()) {
             for (int i = startIndex; i < maidBauble.size(); i++) {
                 ItemResource resource = maidBauble.getResource(i);

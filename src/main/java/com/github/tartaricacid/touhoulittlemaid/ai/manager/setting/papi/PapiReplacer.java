@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.papi;
 
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.skill.SkillLoader;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Maps;
 import net.minecraft.util.Util;
@@ -36,7 +37,7 @@ public class PapiReplacer {
         });
 
         String base = new StrSubstitutor(valueMap).replace(FULL_SETTING);
-        if (language.equals(maid.getAiChatManager().getTTSLanguage())) {
+        if (language.equals(maid.components().aiChat.getTTSLanguage())) {
             base += new StrSubstitutor(valueMap).replace(OUTPUT_FORMAT_REQUIREMENTS_SAME_LANGUAGES);
         } else {
             base += new StrSubstitutor(valueMap).replace(OUTPUT_FORMAT_REQUIREMENTS_DIFFERENT_LANGUAGES);
@@ -50,11 +51,11 @@ public class PapiReplacer {
     }
 
     public static String getTtsLanguage(EntityMaid maid) {
-        return language(maid.getAiChatManager().getTTSLanguage());
+        return language(maid.components().aiChat.getTTSLanguage());
     }
 
     public static String getOwnerName(EntityMaid maid) {
-        String ownerName = maid.getAiChatManager().ownerName;
+        String ownerName = maid.components().aiChat.ownerName;
         if (StringUtils.isBlank(ownerName)) {
             return DEFAULT_OWNER_NAME;
         }

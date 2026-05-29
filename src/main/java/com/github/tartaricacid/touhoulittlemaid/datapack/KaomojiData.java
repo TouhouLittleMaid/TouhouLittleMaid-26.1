@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datapack;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement.TextChatBubbleData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
@@ -48,15 +48,15 @@ public class KaomojiData {
         });
     }
 
-    public static void showRoutineKaomoji(EntityMaid maid, ChatBubbleManager bubbleManager) {
-        Activity activity = maid.getScheduleDetail();
+    public static void showRoutineKaomoji(EntityMaid maid, ChatBubbleComponent bubbleManager) {
+        Activity activity = maid.components().task.getScheduleDetail();
         if (activity == Activity.REST) {
             String randomEmoji = getRandomEmoji(KAOMOJI_MAP.get(SLEEP));
             MutableComponent literal = Component.literal(randomEmoji);
             bubbleManager.addChatBubble(TextChatBubbleData.type2(literal));
             return;
         }
-        if (activity == Activity.IDLE || maid.getTask() == TaskManager.getIdleTask()) {
+        if (activity == Activity.IDLE || maid.components().task.getTask() == TaskManager.getIdleTask()) {
             String randomEmoji = getRandomEmoji(KAOMOJI_MAP.get(IDLE));
             MutableComponent literal = Component.literal(randomEmoji);
             bubbleManager.addChatBubble(TextChatBubbleData.type2(literal));
@@ -69,7 +69,7 @@ public class KaomojiData {
         }
     }
 
-    public static void showHurtKaomoji(EntityMaid maid, ChatBubbleManager bubbleManager) {
+    public static void showHurtKaomoji(EntityMaid maid, ChatBubbleComponent bubbleManager) {
         String randomEmoji = getRandomEmoji(KAOMOJI_MAP.get(HURT));
         MutableComponent literal = Component.literal(randomEmoji);
         bubbleManager.addChatBubble(TextChatBubbleData.type2(literal));

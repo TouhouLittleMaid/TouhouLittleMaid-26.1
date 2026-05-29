@@ -118,7 +118,7 @@ public class ItemServantBell extends Item {
 
     private void teleportMaid(Player player, List<? extends EntityMaid> maids) {
         maids.forEach(maid -> {
-            maid.setHomeModeEnable(false);
+            maid.components().config.setHomeModeEnable(false);
             // 如果女仆是骑乘某个实体的，先让女仆下来
             if (maid.isPassenger()) {
                 maid.stopRiding();

@@ -1,5 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidNavigationComponent;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidSwimComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.google.common.collect.ImmutableMap;
@@ -28,7 +30,7 @@ public class MaidFollowOwnerTask extends Behavior<EntityMaid> {
         LivingEntity owner = maid.getOwner();
         if (ownerStateConditions(owner, maid)) {
             // 如果女仆在前往呼吸点，玩家不在水中
-            if (maid.getSwimManager().isGoingToBreath()) {
+            if (maid.components().swim.isGoingToBreath()) {
                 return !owner.isUnderWater();
             }
             return true;
@@ -42,10 +44,10 @@ public class MaidFollowOwnerTask extends Behavior<EntityMaid> {
 
         // 如果女仆在前往呼吸点快要淹死了，那必须就近传送
         // 这个传送会鬼畜，但是没办法，为了救女仆只能这样了
-        if (maid.getSwimManager().isGoingToBreath() && ownerStateConditions(owner, maid)
-            && maidStateConditions(maid) && maid.teleportToOwner(owner)) {
-            maid.getNavigationManager().resetNavigation();
-            maid.getSwimManager().setGoingToBreath(false);
+        if (maid.components().swim.isGoingToBreath() && ownerStateConditions(owner, maid)
+            && maidStateConditions(maid) && maid.components().teleport.teleportToOwner(owner)) {
+            maid.components().navigation.resetNavigation();
+            maid.components().swim.setGoingToBreath(false);
             maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
             this.doStop(worldIn, maid, gameTimeIn);
@@ -57,8 +59,8 @@ public class MaidFollowOwnerTask extends Behavior<EntityMaid> {
         int minTeleportDistance = startDistance + 4;
         if (ownerStateConditions(owner, maid) && maidStateConditions(maid) && !maid.closerThan(owner, startDistance)) {
             if (!maid.closerThan(owner, minTeleportDistance)) {
-                maid.teleportToOwner(owner);
-                maid.getNavigationManager().resetNavigation();
+                maid.components().teleport.teleportToOwner(owner);
+                maid.components().navigation.resetNavigation();
             } else if (!ownerIsWalkTarget(maid, owner)) {
                 BehaviorUtils.setWalkAndLookTargetMemories(maid, owner, speedModifier, stopDistance);
             }
@@ -66,7 +68,7 @@ public class MaidFollowOwnerTask extends Behavior<EntityMaid> {
     }
 
     private boolean maidStateConditions(EntityMaid maid) {
-        return !maid.isHomeModeEnable() && maid.canBrainMoving();
+        return !maid.components().config.isHomeModeEnable() && maid.canBrainMoving();
     }
 
     private boolean ownerStateConditions(@Nullable LivingEntity owner, EntityMaid maid) {

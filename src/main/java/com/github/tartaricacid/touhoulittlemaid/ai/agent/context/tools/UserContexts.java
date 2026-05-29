@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.ai.agent.context.tools;
 
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.AbstractMaidContext;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.GameContextRegister;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Lists;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -35,7 +36,7 @@ public final class UserContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            String ownerName = maid.getAiChatManager().ownerName;
+            String ownerName = maid.components().aiChat.ownerName;
             if (StringUtils.isBlank(ownerName)) {
                 return DEFAULT_OWNER_NAME;
             }

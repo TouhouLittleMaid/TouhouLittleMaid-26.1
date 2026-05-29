@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.compat.extracontainer.curios;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidPickupEvent;
 import com.github.tartaricacid.touhoulittlemaid.compat.extracontainer.MaidContainerCache;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidItemManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidItemComponent;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
@@ -37,7 +37,7 @@ public class ExtraContainerPickupHandler {
             return false;
         }
         ItemStack itemStack = itemEntity.getItem();
-        if (!MaidItemManager.canInsertItem(itemStack)) {
+        if (!MaidItemComponent.canInsertItem(itemStack)) {
             return false;
         }
 
@@ -79,7 +79,7 @@ public class ExtraContainerPickupHandler {
     private void handlePickupEffects(EntityMaid maid, ItemEntity itemEntity, ItemStack remaining, int originCount) {
         int pickedCount = originCount - remaining.getCount();
         maid.take(itemEntity, pickedCount);
-        maid.tryPlayMaidPickupSound();
+        maid.components().sound.tryPlayMaidPickupSound();
 
         ItemStack pickedStack = new ItemStack(itemEntity.getItem().getItem(), pickedCount);
         NeoForge.EVENT_BUS.post(new MaidPickupEvent.ItemResultPost(maid, pickedStack));

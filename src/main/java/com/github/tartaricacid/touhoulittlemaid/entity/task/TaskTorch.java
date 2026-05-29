@@ -54,7 +54,7 @@ public class TaskTorch implements IMaidTask {
     }
 
     private boolean hasTorch(EntityMaid maid) {
-        return ItemsUtil.isStackIn(maid.getAvailableInv(false), stack -> stack.getItem() == Items.TORCH);
+        return ItemsUtil.isStackIn(maid.components().item.getAvailableInv(false), stack -> stack.getItem() == Items.TORCH);
     }
 
     @Override

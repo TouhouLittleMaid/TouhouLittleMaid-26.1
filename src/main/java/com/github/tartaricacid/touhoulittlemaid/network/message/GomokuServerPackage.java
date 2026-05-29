@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Point;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Statue;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidGomokuAI;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidGameComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
@@ -50,7 +51,7 @@ public record GomokuServerPackage(BlockPos pos, Point point) implements CustomPa
                     if (level instanceof ServerLevel serverLevel && serverLevel.getEntity(gomoku.getSitId()) instanceof EntitySit sit && sit.getFirstPassenger() instanceof EntityMaid maid) {
                         maid.swing(InteractionHand.MAIN_HAND);
                         if (statue == Statue.WIN) {
-                            maid.getGameManager().markStatue(true);
+                            maid.components().game.markStatue(true);
                         }
                     }
                     level.playSound(null, message.pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);

@@ -16,7 +16,7 @@ public final class MaidMountEvent {
         Entity entityMounting = event.getEntityMounting();
         Entity entityBeingMounted = event.getEntityBeingMounted();
         if (event.isMounting() && entityMounting instanceof EntityMaid maid && !(entityBeingMounted instanceof EntitySit)) {
-            if (!maid.isRideable()) {
+            if (!maid.components().config.isRideable()) {
                 event.setCanceled(true);
                 return;
             }

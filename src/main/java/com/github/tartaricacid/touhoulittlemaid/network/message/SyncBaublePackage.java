@@ -64,7 +64,7 @@ public record SyncBaublePackage(boolean isFull, int entityId,
         }
         Entity entity = mc.level.getEntity(message.entityId);
         if (entity instanceof EntityMaid maid) {
-            BaubleItemHandler maidBauble = maid.getMaidBauble();
+            BaubleItemHandler maidBauble = maid.components().item.getMaidBauble();
             // 全量同步前需要清空
             if (message.isFull) {
                 maidBauble.clearAll();

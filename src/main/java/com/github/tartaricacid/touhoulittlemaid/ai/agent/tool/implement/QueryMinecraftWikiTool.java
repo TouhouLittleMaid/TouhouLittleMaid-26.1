@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.implement;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ITool;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.record.WikiRecord;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.LLMCallback;
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.grounded.GroundedAnswerCallback;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.function.schema.parameter.ObjectParameter;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.function.schema.parameter.Parameter;
@@ -197,7 +197,7 @@ public class QueryMinecraftWikiTool implements ITool<String> {
 
     private CompletableFuture<String> summarizeWithChildCallback(String content, LLMCallback parentCallback, LLMClient client) {
         CompletableFuture<String> summaryFuture = new CompletableFuture<>();
-        MaidAIChatManager chatManager = parentCallback.getChatManager();
+        MaidAIChatData chatManager = parentCallback.getChatManager();
         long bubbleId = parentCallback.getWaitingChatBubbleId();
         GroundedAnswerCallback callback = new GroundedAnswerCallback(chatManager, content, bubbleId, summaryFuture);
         client.chat(callback);

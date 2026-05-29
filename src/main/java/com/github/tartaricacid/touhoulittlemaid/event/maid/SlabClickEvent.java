@@ -24,9 +24,9 @@ public final class SlabClickEvent {
         if (stack.getItem() == emptySmartSlab) {
             if (!player.getCooldowns().isOnCooldown(new ItemStack(emptySmartSlab))) {
                 ItemStack output = maidSmartSlab.getDefaultInstance();
-                maid.setHomeModeEnable(false);
+                maid.components().config.setHomeModeEnable(false);
                 ItemSmartSlab.storeMaidData(output, maid);
-                maid.spawnExplosionParticle();
+                maid.components().particle.spawnExplosionParticle();
                 maid.discard();
                 maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, maid.level.getRandom().nextFloat() * 0.1F + 0.9F);
                 player.setItemInHand(InteractionHand.MAIN_HAND, output);

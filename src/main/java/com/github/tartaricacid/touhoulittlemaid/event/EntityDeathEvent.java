@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.data.PowerAttachment;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidKillRecordComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -28,7 +29,7 @@ public class EntityDeathEvent {
         }
         Entity causingEntity = source.getEntity();
         if (causingEntity instanceof EntityMaid maid) {
-            maid.getKillRecordManager().onTargetDeath(maid, event.getEntity());
+            maid.components().killRecord.onTargetDeath(maid, event.getEntity());
         }
     }
 

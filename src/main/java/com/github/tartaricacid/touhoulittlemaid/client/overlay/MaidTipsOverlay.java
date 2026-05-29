@@ -78,7 +78,7 @@ public class MaidTipsOverlay implements GuiLayer {
         if (!ENABLE_SHEARS_TIP.get()) {
             return false;
         }
-        return maid.isOwnedBy(player) && maid.hasBackpack() && item.is(Tags.Items.TOOLS_SHEAR);
+        return maid.isOwnedBy(player) && maid.components().backpack.hasBackpack() && item.is(Tags.Items.TOOLS_SHEAR);
     }
 
     private static MutableComponent checkSpecialTips(ItemStack mainhandItem, EntityMaid maid, LocalPlayer player) {

@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidConfigComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.mixin.accessor.FenceGateBlockAccessor;
 import com.google.common.collect.Sets;
@@ -51,8 +52,8 @@ public class MaidInteractWithDoor {
                     return false;
                 }
 
-                boolean canOpenDoor = entity instanceof EntityMaid maid && maid.getConfigManager().isOpenDoor();
-                boolean canOpenFenceGate = entity instanceof EntityMaid maid && maid.getConfigManager().isOpenFenceGate();
+                boolean canOpenDoor = entity instanceof EntityMaid maid && maid.components().config.isOpenDoor();
+                boolean canOpenFenceGate = entity instanceof EntityMaid maid && maid.components().config.isOpenFenceGate();
 
                 mutableObject.setValue(path.getNextNode());
                 Node previousNode = path.getPreviousNode();

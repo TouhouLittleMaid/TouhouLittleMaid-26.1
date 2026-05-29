@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.compat.jade.provider;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.event.AddJadeInfoEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -25,15 +26,15 @@ public enum MaidProvider implements IEntityComponentProvider {
     public void appendTooltip(ITooltip iTooltip, EntityAccessor entityAccessor, IPluginConfig iPluginConfig) {
         if (entityAccessor.getEntity() instanceof EntityMaid maid) {
             if (maid.isTame()) {
-                IMaidTask task = maid.getTask();
+                IMaidTask task = maid.components().task.getTask();
                 iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.task").append(task.getName()));
 
                 // 添加于 Mode 之下，用于给 Mode 添加额外的信息
                 NeoForge.EVENT_BUS.post(new AddJadeInfoEvent(maid, iTooltip, iPluginConfig));
 
                 iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.schedule").append(getActivityTransText(maid)));
-                iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.favorability", maid.getFavorabilityManager().getLevel()));
-                iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.nex_favorability_point", maid.getFavorabilityManager().nextLevelPoint()));
+                iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.favorability", maid.components().favorability.getLevel()));
+                iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.nex_favorability_point", maid.components().favorability.nextLevelPoint()));
                 if (maid.getSyncInvulnerable()) {
                     iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.invulnerable").withStyle(ChatFormatting.DARK_PURPLE));
                 }
@@ -47,7 +48,7 @@ public enum MaidProvider implements IEntityComponentProvider {
     }
 
     private MutableComponent getActivityTransText(EntityMaid maid) {
-        return getActivityTransText(maid.getScheduleDetail());
+        return getActivityTransText(maid.components().task.getScheduleDetail());
     }
 
     private MutableComponent getActivityTransText(Activity activity) {

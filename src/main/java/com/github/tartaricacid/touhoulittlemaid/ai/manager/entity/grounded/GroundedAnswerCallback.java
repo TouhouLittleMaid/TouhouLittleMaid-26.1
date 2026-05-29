@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.grounded;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.LLMCallback;
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.summary.HistorySummaryPrompts;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.response.ResponseChat;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMClient;
@@ -34,7 +34,7 @@ public class GroundedAnswerCallback extends LLMCallback {
      */
     private final CompletableFuture<String> resultFuture;
 
-    public GroundedAnswerCallback(MaidAIChatManager manager, String knowledge, long waitingChatBubbleId, CompletableFuture<String> resultFuture) {
+    public GroundedAnswerCallback(MaidAIChatData manager, String knowledge, long waitingChatBubbleId, CompletableFuture<String> resultFuture) {
         super(manager, createGroundedAnswerMessages(manager, knowledge), true);
         this.waitingChatBubbleId = waitingChatBubbleId;
         this.needAddTools = false;
@@ -71,7 +71,7 @@ public class GroundedAnswerCallback extends LLMCallback {
     /**
      * 创建一个空白的知识库上下文
      */
-    private static List<LLMMessage> createGroundedAnswerMessages(MaidAIChatManager manager, String knowledge) {
+    private static List<LLMMessage> createGroundedAnswerMessages(MaidAIChatData manager, String knowledge) {
         EntityMaid maid = manager.getMaid();
         List<LLMMessage> msg = Lists.newArrayList();
 
@@ -84,7 +84,7 @@ public class GroundedAnswerCallback extends LLMCallback {
         return msg;
     }
 
-    private static String resolveUserQuestion(MaidAIChatManager manager) {
+    private static String resolveUserQuestion(MaidAIChatData manager) {
         String latestUser = StringUtils.EMPTY;
         List<LLMMessage> contextMessages = Lists.newArrayList();
 

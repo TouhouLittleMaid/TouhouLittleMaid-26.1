@@ -31,7 +31,7 @@ public final class GetExpBottleEvent {
         Level world = event.getWorld();
 
         if (itemstack.getItem() == Items.GLASS_BOTTLE) {
-            int count = maid.getExperience() / PER_BOTTLE_XP;
+            int count = maid.components().stats.getExperience() / PER_BOTTLE_XP;
             if (count <= 0) {
                 return;
             }
@@ -41,7 +41,7 @@ public final class GetExpBottleEvent {
                 count = 1;
             }
             int costNum = PER_BOTTLE_XP * count;
-            maid.setExperience(maid.getExperience() - costNum);
+            maid.components().stats.setExperience(maid.components().stats.getExperience() - costNum);
             itemstack.shrink(count);
             if (!world.isClientSide()) {
                 ItemStack xpBottles = new ItemStack(Items.EXPERIENCE_BOTTLE, count);

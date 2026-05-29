@@ -74,7 +74,7 @@ public final class EntityCacheUtil {
         maid.deathTime = 0;
         maid.setOnGround(true);
         maid.setInSittingPose(false);
-        maid.setMaidBackpackType(BackpackManager.getEmptyBackpack());
+        maid.components().backpack.setMaidBackpackType(BackpackManager.getEmptyBackpack());
         maid.setCustomName(Component.empty());
         if (clearEquipmentData) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {

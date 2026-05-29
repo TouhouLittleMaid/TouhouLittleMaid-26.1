@@ -54,21 +54,21 @@ public class SwitchFollowStateTool implements ITool<SwitchFollowStateTool.Result
     public LLMCallback onCall(String toolId, SwitchFollowStateTool.Result result, LLMCallback callback) {
         EntityMaid maid = callback.getMaid();
         boolean toFollow = result.follow;
-        boolean isHome = maid.isHomeModeEnable();
+        boolean isHome = maid.components().config.isHomeModeEnable();
         if (toFollow) {
             if (!isHome) {
                 return callback.addToolResult("Already following the owner", toolId);
             }
             maid.setHomeTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
-            maid.setHomeModeEnable(false);
+            maid.components().config.setHomeModeEnable(false);
             return callback.addToolResult("Follow mode enabled", toolId);
         }
 
         if (isHome) {
             return callback.addToolResult("Already stop following", toolId);
         }
-        maid.getSchedulePos().setHomeModeEnable(maid, maid.blockPosition());
-        maid.setHomeModeEnable(true);
+        maid.components().task.schedulePos.setHomeModeEnable(maid, maid.blockPosition());
+        maid.components().config.setHomeModeEnable(true);
         return callback.addToolResult("Flow mode disabled", toolId);
     }
 

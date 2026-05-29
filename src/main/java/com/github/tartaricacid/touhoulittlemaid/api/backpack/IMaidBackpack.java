@@ -46,13 +46,13 @@ public abstract class IMaidBackpack {
     public abstract Identifier getBackpackTexture();
 
     protected final void dropAllItems(EntityMaid maid) {
-        ItemsUtil.dropEntityItems(maid, maid.getMaidInv(), BackpackLevel.EMPTY_CAPACITY, null);
+        ItemsUtil.dropEntityItems(maid, maid.components().item.getMaidInv(), BackpackLevel.EMPTY_CAPACITY, null);
     }
 
     protected final void dropRelativeItems(ItemStack stack, EntityMaid maid) {
         BackpackManager.findBackpack(stack).ifPresentOrElse(backpack -> {
             int startIndex = backpack.getAvailableMaxContainerIndex();
-            ItemsUtil.dropEntityItems(maid, maid.getMaidInv(), startIndex, null);
+            ItemsUtil.dropEntityItems(maid, maid.components().item.getMaidInv(), startIndex, null);
         }, () -> this.dropAllItems(maid));
     }
 }

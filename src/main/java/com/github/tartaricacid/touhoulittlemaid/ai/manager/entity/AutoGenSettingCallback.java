@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMClient;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMMessage;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.Message;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement.TextChatBubbleData;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -21,13 +22,13 @@ import static com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBu
 import static com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData.TYPE_2;
 
 public class AutoGenSettingCallback extends LLMCallback {
-    public AutoGenSettingCallback(MaidAIChatManager chatManager, List<LLMMessage> messages) {
+    public AutoGenSettingCallback(MaidAIChatData chatManager, List<LLMMessage> messages) {
         super(chatManager, messages, true);
         this.needAddTools = false;
         // 添加自己的提示聊天气泡
         MutableComponent component = Component.translatable("ai.touhou_little_maid.chat.llm.role_no_setting_and_gen_setting");
         TextChatBubbleData bubbleData = TextChatBubbleData.create(30 * 20, component, TYPE_2, DEFAULT_PRIORITY);
-        this.waitingChatBubbleId = this.getMaid().getChatBubbleManager().addChatBubble(bubbleData);
+        this.waitingChatBubbleId = this.getMaid().components().chatBubble.addChatBubble(bubbleData);
     }
 
     @Override
@@ -52,8 +53,8 @@ public class AutoGenSettingCallback extends LLMCallback {
         if (maid.level instanceof ServerLevel serverLevel) {
             MinecraftServer server = serverLevel.getServer();
             server.submit(() -> {
-                maid.getChatBubbleManager().removeChatBubble(waitingChatBubbleId);
-                maid.getChatBubbleManager().addTextChatBubble("ai.touhou_little_maid.chat.llm.auto_gen_setting");
+                maid.components().chatBubble.removeChatBubble(waitingChatBubbleId);
+                maid.components().chatBubble.addTextChatBubble("ai.touhou_little_maid.chat.llm.auto_gen_setting");
             });
         }
     }

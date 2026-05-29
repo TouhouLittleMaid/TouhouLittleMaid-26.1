@@ -16,7 +16,7 @@ public class FallProtectBauble implements IMaidBauble {
     @Override
     public boolean onInjured(EntityMaid maid, ItemStack baubleItem, DamageSource source, MutableFloat damage) {
         if (source.is(DamageTypeTags.IS_FALL)) {
-            maid.hurtAndBreak(baubleItem, 1);
+            maid.components().item.hurtAndBreak(baubleItem, 1);
             NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.EXPLOSION));
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_PROTECT_BAUBLE);

@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidSwimComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
@@ -20,7 +21,7 @@ public class MaidBreathAirStopTask extends Behavior<EntityMaid> {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, EntityMaid maid) {
-        if (!maid.getSwimManager().isGoingToBreath()) {
+        if (!maid.components().swim.isGoingToBreath()) {
             return false;
         }
         // 下面的条件表示女仆不再有窒息风险
@@ -38,14 +39,14 @@ public class MaidBreathAirStopTask extends Behavior<EntityMaid> {
 
     @Override
     protected void start(ServerLevel level, EntityMaid maid, long gameTime) {
-        maid.getSwimManager().setGoingToBreath(false);
+        maid.components().swim.setGoingToBreath(false);
         // 如果呼吸计划打断了某些任务寻路，则需要重置目标记忆来重新寻路
         maid.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
         maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
     }
 
     private boolean hasDrownBauble(EntityMaid maid) {
-        BaubleItemHandler maidBauble = maid.getMaidBauble();
+        BaubleItemHandler maidBauble = maid.components().item.getMaidBauble();
         for (int i = 0; i < maidBauble.size(); i++) {
             if (maidBauble.getResource(i).is(InitItems.DROWN_PROTECT_BAUBLE.get())) {
                 return true;

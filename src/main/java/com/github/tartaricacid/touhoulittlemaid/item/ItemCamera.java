@@ -59,7 +59,7 @@ public class ItemCamera extends Item {
                         InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.PHOTO_MAID);
                     }
                 }
-                maid.spawnExplosionParticle();
+                maid.components().particle.spawnExplosionParticle();
                 playerIn.playSound(InitSounds.CAMERA_USE.get(), 1.0f, 1.0f);
                 return InteractionResult.SUCCESS;
             }
@@ -75,7 +75,7 @@ public class ItemCamera extends Item {
             return;
         }
 
-        maid.setHomeModeEnable(false);
+        maid.components().config.setHomeModeEnable(false);
         TagValueOutput valueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, maid.registryAccess());
         maid.saveWithoutId(valueOutput);
 
@@ -92,7 +92,7 @@ public class ItemCamera extends Item {
 
     private void spawnMaidPhoto(Level worldIn, EntityMaid maid, Player playerIn) {
         ItemStack photo = InitItems.PHOTO.get().getDefaultInstance();
-        maid.setHomeModeEnable(false);
+        maid.components().config.setHomeModeEnable(false);
         TagValueOutput valueOutput = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, maid.registryAccess());
         maid.saveWithoutId(valueOutput);
 

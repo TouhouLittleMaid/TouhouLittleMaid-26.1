@@ -50,7 +50,7 @@ public record ChatClientInfo(String language, String name, List<String> descript
 
     private static List<String> getMaidDescription(EntityMaid maid) {
         List<String> description = Lists.newArrayList();
-        Optional<MaidModelInfo> info = CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId());
+        Optional<MaidModelInfo> info = CustomPackLoader.MAID_MODELS.getInfo(maid.components().profile.getModelId());
         if (info.isPresent()) {
             MaidModelInfo maidModelInfo = info.get();
             List<Component> parse = ParseI18n.parse(maidModelInfo.getDescription());

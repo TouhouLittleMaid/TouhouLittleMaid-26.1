@@ -29,7 +29,7 @@ public record SetMaidSoundIdPackage(int entityId, String soundId) implements Cus
                 ServerPlayer sender = (ServerPlayer) context.player();
                 Entity entity = sender.level.getEntity(message.entityId);
                 if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
-                    maid.setSoundPackId(message.soundId);
+                    maid.components().profile.setSoundPackId(message.soundId);
                     InitTrigger.MAID_EVENT.get().trigger(sender, TriggerType.CHANGE_MAID_SOUND);
                 }
             });

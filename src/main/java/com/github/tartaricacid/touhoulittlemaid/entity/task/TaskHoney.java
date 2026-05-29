@@ -53,7 +53,7 @@ public class TaskHoney implements IMaidTask {
     }
 
     private boolean hasBottle(EntityMaid maid) {
-        return ItemsUtil.isStackIn(maid.getAvailableInv(false), stack -> stack.is(Items.GLASS_BOTTLE));
+        return ItemsUtil.isStackIn(maid.components().item.getAvailableInv(false), stack -> stack.is(Items.GLASS_BOTTLE));
     }
 
     private boolean hasShears(EntityMaid maid) {

@@ -102,10 +102,10 @@ public final class SchedulePos {
     }
 
     public void restrictTo(EntityMaid maid) {
-        if (!maid.isHomeModeEnable()) {
+        if (!maid.components().config.isHomeModeEnable()) {
             return;
         }
-        Activity activity = maid.getScheduleDetail();
+        Activity activity = maid.components().task.getScheduleDetail();
         if (activity == Activity.WORK) {
             maid.setHomeTo(this.workPos, MaidConfig.MAID_WORK_RANGE.get());
             return;

@@ -14,6 +14,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.M
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.ToolCall;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -54,7 +55,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
     /**
      * 聊天管理器，提供一些需要持久化的数据，比如缓存历史记录等
      */
-    protected final MaidAIChatManager chatManager;
+    protected final MaidAIChatData chatManager;
     /**
      * 当前准备向 LLM 发送的消息内容，包含需要的历史对话上下文
      */
@@ -81,18 +82,18 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
      */
     public boolean needAddTools = true;
 
-    public LLMCallback(MaidAIChatManager chatManager, List<LLMMessage> messages, boolean subagents) {
+    public LLMCallback(MaidAIChatData chatManager, List<LLMMessage> messages, boolean subagents) {
         this.maid = chatManager.getMaid();
         this.chatManager = chatManager;
         this.messages = messages;
         // 如果是子 agent，那么无需添加聊天气泡
         if (!subagents) {
             String key = "ai.touhou_little_maid.chat.chat_bubble_waiting";
-            this.waitingChatBubbleId = this.maid.getChatBubbleManager().addThinkingText(key);
+            this.waitingChatBubbleId = this.maid.components().chatBubble.addThinkingText(key);
         }
     }
 
-    public LLMCallback(MaidAIChatManager chatManager, List<LLMMessage> messages) {
+    public LLMCallback(MaidAIChatData chatManager, List<LLMMessage> messages) {
         this(chatManager, messages, false);
     }
 
@@ -148,7 +149,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
                     MutableComponent errorMessage = ErrorCode.getErrorMessage(ServiceType.LLM, errorCode, cause);
                     player.sendSystemMessage(errorMessage.withStyle(ChatFormatting.RED));
                 }
-                maid.getChatBubbleManager().removeChatBubble(waitingChatBubbleId);
+                maid.components().chatBubble.removeChatBubble(waitingChatBubbleId);
             });
         }
         if (errorCode == ErrorCode.CHAT_TEXT_IS_EMPTY) {
@@ -187,7 +188,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
         } else {
             if (StringUtils.isNotBlank(chatText) && maid.level instanceof ServerLevel serverLevel) {
                 MinecraftServer server = serverLevel.getServer();
-                server.submit(() -> maid.getChatBubbleManager().addLLMChatText(chatText, waitingChatBubbleId));
+                server.submit(() -> maid.components().chatBubble.addLLMChatText(chatText, waitingChatBubbleId));
             }
         }
     }
@@ -316,7 +317,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
         if (!this.isOnServerThread()) {
             throw new IllegalStateException("refreshWaitingChatBubble must be called on the server thread");
         }
-        this.waitingChatBubbleId = maid.getChatBubbleManager().refreshThinkingText(
+        this.waitingChatBubbleId = maid.components().chatBubble.refreshThinkingText(
                 "ai.touhou_little_maid.chat.chat_bubble_waiting",
                 waitingChatBubbleId, summaryComponent
         );
@@ -497,7 +498,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
         return this.messages;
     }
 
-    public MaidAIChatManager getChatManager() {
+    public MaidAIChatData getChatManager() {
         return chatManager;
     }
 

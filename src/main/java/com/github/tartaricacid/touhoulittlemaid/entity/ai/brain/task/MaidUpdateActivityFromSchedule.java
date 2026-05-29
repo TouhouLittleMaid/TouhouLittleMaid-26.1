@@ -27,13 +27,13 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
 
         // 让女仆在切换日程表时能够改变自己的活动范围
         if (gameTime - brain.lastScheduleUpdate > 20L) {
-            Activity activity = maid.getScheduleDetail();
+            Activity activity = maid.components().task.getScheduleDetail();
             if (this.cacheActivity == null) {
                 this.cacheActivity = activity;
             }
-            if (!this.cacheActivity.equals(activity) && maid.isHomeModeEnable() && maid.canBrainMoving()) {
+            if (!this.cacheActivity.equals(activity) && maid.components().config.isHomeModeEnable() && maid.canBrainMoving()) {
                 this.cacheActivity = activity;
-                maid.getSchedulePos().restrictTo(maid);
+                maid.components().task.schedulePos.restrictTo(maid);
                 BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getHomePosition(), 0.7f, 3);
             }
         }
@@ -61,7 +61,7 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
         if (maid.isMaidInSittingPose() || maid.isPassenger()) {
             if (gameTime - brain.lastScheduleUpdate > 20L) {
                 brain.lastScheduleUpdate = gameTime;
-                Activity activity = maid.getScheduleDetail();
+                Activity activity = maid.components().task.getScheduleDetail();
                 Activity riderActivity;
                 if (activity.equals(Activity.WORK)) {
                     riderActivity = InitBrains.RIDE_WORK.get();
@@ -77,7 +77,7 @@ public class MaidUpdateActivityFromSchedule extends Behavior<EntityMaid> {
 
                     // 如果是拥有工作点的 task，需要脱离骑乘的实体
                     if (maid.isPassenger() && !riderActivity.equals(InitBrains.RIDE_WORK.get())) {
-                        if (!maid.getTask().workPointTask(maid)) {
+                        if (!maid.components().task.getTask().workPointTask(maid)) {
                             return;
                         }
                         // 特殊的实体（比如娱乐工具的，就不需要脱离）

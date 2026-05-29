@@ -8,6 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.sound.CustomSoundLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.data.MaidSoundInstance;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.data.SoundData;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.pojo.SoundPackInfo;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidSoundComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPackage;
@@ -111,7 +112,7 @@ public class MaidSoundPackGui extends Screen {
     private void addSoundOtherButtons() {
         this.addRenderableWidget(new FlatColorButton(startX + 245, startY + 19, 110, 18, Component.translatable("gui.touhou_little_maid.custom_sound.pack.apply"), (b) -> {
             if (StringUtils.isNotBlank(selectSoundId) && CustomSoundLoader.CACHE.containsKey(selectSoundId)) {
-                this.maid.setSoundPackId(this.selectSoundId);
+                this.maid.components().profile.setSoundPackId(this.selectSoundId);
                 ClientPacketDistributor.sendToServer(new SetMaidSoundIdPackage(this.maid.getId(), this.selectSoundId));
                 this.init();
             }
@@ -181,7 +182,7 @@ public class MaidSoundPackGui extends Screen {
             if (soundId.equals(selectSoundId)) {
                 button.setSelect(true);
             }
-            if (soundId.equals(this.maid.getSoundPackId())) {
+            if (soundId.equals(this.maid.components().profile.getSoundPackId())) {
                 button.setUse(true);
             }
             this.addRenderableWidget(button);

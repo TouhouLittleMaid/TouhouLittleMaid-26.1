@@ -5,6 +5,8 @@ import com.github.tartaricacid.touhoulittlemaid.api.task.meal.IMaidMeal;
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.MaidMealType;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.meal.MaidMealManager;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
@@ -42,7 +44,7 @@ public class MaidHomeMealTask extends MaidCheckRateTask {
         if (!super.checkExtraStartConditions(serverLevel, maid)) {
             return false;
         }
-        if (!maid.getFavorabilityManager().canAdd(Type.HOME_MEAL.getTypeName())) {
+        if (!maid.components().favorability.canAdd(Type.HOME_MEAL.getTypeName())) {
             return false;
         }
         if (maid.getVehicle() instanceof EntitySit sit && sit.getJoyType().equals(Type.ON_HOME_MEAL.getTypeName())) {
@@ -74,11 +76,11 @@ public class MaidHomeMealTask extends MaidCheckRateTask {
 
         // 先对把手上的物品放入背包做预处理：如果放入背包后，手上还有剩余，那就不执行后续吃的逻辑并添加气泡提示
         ItemStack itemInHand = maid.getItemInHand(eanHand);
-        CombinedResourceHandler<ItemResource> availableInv = maid.getAvailableBackpackInv();
+        CombinedResourceHandler<ItemResource> availableInv = maid.components().item.getAvailableBackpackInv();
         ItemStack handItemCopy = itemInHand.copy();
         ItemStack leftoverStack = ItemsUtil.insertItemStacked(availableInv, handItemCopy, true, null);
         if (!leftoverStack.isEmpty()) {
-            this.handFullBubbleKey = maid.getChatBubbleManager().addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.home_meal.two_hand_is_full", handFullBubbleKey);
+            this.handFullBubbleKey = maid.components().chatBubble.addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.home_meal.two_hand_is_full", handFullBubbleKey);
             return;
         }
 
@@ -100,7 +102,7 @@ public class MaidHomeMealTask extends MaidCheckRateTask {
         // 如果没搜索到，不执行后续吃的逻辑
         int size = candidateFood.size();
         if (size == 0) {
-            this.mealEmptyBubbleKey = maid.getChatBubbleManager().addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.home_meal.meal_is_empty", this.mealEmptyBubbleKey);
+            this.mealEmptyBubbleKey = maid.components().chatBubble.addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.home_meal.meal_is_empty", this.mealEmptyBubbleKey);
             return;
         }
 
@@ -114,7 +116,7 @@ public class MaidHomeMealTask extends MaidCheckRateTask {
             ItemStack refreshItemInHand = maid.getItemInHand(hand);
             for (IMaidMeal maidMeal : maidMeals) {
                 if (maidMeal.canMaidEat(maid, refreshItemInHand, hand)) {
-                    maid.memoryHandItemStack(handItemCopy);
+                    maid.components().item.memoryHandItemStack(handItemCopy);
                     maidMeal.onMaidEat(maid, refreshItemInHand, hand);
                     if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                         InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.MAID_PICNIC_EAT);

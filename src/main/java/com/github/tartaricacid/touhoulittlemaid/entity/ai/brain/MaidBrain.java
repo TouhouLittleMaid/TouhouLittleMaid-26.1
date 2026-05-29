@@ -2,9 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain;
 
 import com.github.tartaricacid.touhoulittlemaid.api.entity.ai.IExtraMaidBrain;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
+import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidSchedule;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.ride.MaidRideBegTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.MaidComponents;
+import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -77,7 +80,7 @@ public final class MaidBrain {
     }
 
     public static void registerBrainGoals(Brain<EntityMaid> brain, EntityMaid maid) {
-        brain.setSchedule(maid.getSchedule().getEnvironmentAttribute());
+        brain.setSchedule(resolveSchedule(maid).getEnvironmentAttribute());
         MaidUpdateActivityFromSchedule.updateActivityFromSchedule(maid, brain);
     }
 
@@ -94,7 +97,7 @@ public final class MaidBrain {
         Pair<Integer, BehaviorControl<? super EntityMaid>> followOwner = Pair.of(3, new MaidFollowOwnerTask(0.5f, 2));
         Pair<Integer, BehaviorControl<? super EntityMaid>> followOwnerVehicle = Pair.of(3, new MaidFollowOwnerVehicleTask(0.5f, 2));
         Pair<Integer, BehaviorControl<? super EntityMaid>> healSelf = Pair.of(3, new MaidHealSelfTask());
-        Pair<Integer, BehaviorControl<? super EntityMaid>> pickupItem = Pair.of(10, new MaidPickupEntitiesTask(EntityMaid::isPickup, 0.6f));
+        Pair<Integer, BehaviorControl<? super EntityMaid>> pickupItem = Pair.of(10, new MaidPickupEntitiesTask(maid -> maid.components().config.isPickup(), 0.6f));
         Pair<Integer, BehaviorControl<? super EntityMaid>> clearSleep = Pair.of(99, new MaidClearSleepTask());
 
         List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(
@@ -122,7 +125,7 @@ public final class MaidBrain {
 
         // 女仆随机走动
         Pair<Integer, BehaviorControl<? super EntityMaid>> supplemented = Pair.of(20, getLookAndRandomWalk(maid ->
-                !maid.getSwimManager().isGoingToBreath())
+                !maid.components().swim.isGoingToBreath())
         );
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
 
@@ -140,7 +143,7 @@ public final class MaidBrain {
 
     private static ActivityData<EntityMaid> initWorkActivity(EntityMaid maid) {
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
-        IMaidTask task = maid.getTask();
+        IMaidTask task = resolveTask(maid);
         List<Pair<Integer, BehaviorControl<? super EntityMaid>>> pairMaidList = task.createBrainTasks(maid);
         if (pairMaidList.isEmpty()) {
             pairMaidList = Lists.newArrayList(updateActivity);
@@ -158,8 +161,8 @@ public final class MaidBrain {
 
         // 女仆随机走动
         pairMaidList.add(Pair.of(20, getLookAndRandomWalk(e ->
-                e.getTask().enableLookAndRandomWalk(e)
-                && !e.getSwimManager().isGoingToBreath()))
+                resolveTask(e).enableLookAndRandomWalk(e)
+                && !e.components().swim.isGoingToBreath()))
         );
 
         for (IExtraMaidBrain extra : ExtraMaidBrainManager.EXTRA_MAID_BRAINS) {
@@ -222,7 +225,7 @@ public final class MaidBrain {
     private static ActivityData<EntityMaid> initRideWorkActivity(EntityMaid maid) {
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
 
-        IMaidTask task = maid.getTask();
+        IMaidTask task = resolveTask(maid);
         List<Pair<Integer, BehaviorControl<? super EntityMaid>>> pairMaidList = task.createRideBrainTasks(maid);
         if (pairMaidList.isEmpty()) {
             pairMaidList = Lists.newArrayList(updateActivity);
@@ -232,7 +235,7 @@ public final class MaidBrain {
 
         pairMaidList.add(Pair.of(6, new MaidRideBegTask()));
         pairMaidList.add(Pair.of(7, new MaidWorkMealTask()));
-        pairMaidList.add(Pair.of(20, getLook(e -> e.getTask().enableLookAndRandomWalk(e))));
+        pairMaidList.add(Pair.of(20, getLook(e -> resolveTask(e).enableLookAndRandomWalk(e))));
 
         for (IExtraMaidBrain extra : ExtraMaidBrainManager.EXTRA_MAID_BRAINS) {
             pairMaidList.addAll(extra.getRideWorkBehaviors());
@@ -279,5 +282,24 @@ public final class MaidBrain {
                 ImmutableList.of(lookToPlayer, lookToMaid, lookToWolf, lookToCat, lookToParrot, noLook),
                 enableCondition
         );
+    }
+
+    /**
+     * {@link EntityMaid} 字段初始化器在 {@code super(...)} 之后才运行，Brain 构建期间 components 仍为 null。
+     */
+    private static IMaidTask resolveTask(EntityMaid maid) {
+        MaidComponents components = maid.components();
+        if (components == null) {
+            return TaskManager.getIdleTask();
+        }
+        return components.task.getTask();
+    }
+
+    private static MaidSchedule resolveSchedule(EntityMaid maid) {
+        MaidComponents components = maid.components();
+        if (components == null) {
+            return MaidSchedule.ALL;
+        }
+        return components.task.getSchedule();
     }
 }

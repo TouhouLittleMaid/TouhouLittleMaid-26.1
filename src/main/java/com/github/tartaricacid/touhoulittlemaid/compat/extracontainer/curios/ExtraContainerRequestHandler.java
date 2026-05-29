@@ -59,7 +59,7 @@ public class ExtraContainerRequestHandler {
     }
 
     private ItemStack transferToMaidInv(EntityMaid maid, ItemStack stack) {
-        var inv = maid.getAvailableInv(false);
+        var inv = maid.components().item.getAvailableInv(false);
         try (Transaction tx = Transaction.openRoot()) {
             ItemResource resource = ItemResource.of(stack);
             int count = inv.insert(resource, stack.getCount(), tx);
@@ -74,7 +74,7 @@ public class ExtraContainerRequestHandler {
      * 该槽位物品永远不会被尝试放入背包
      */
     private boolean transferToBackpack(EntityMaid maid, List<ContainerRef> containers) {
-        var inv = maid.getAvailableBackpackInv();
+        var inv = maid.components().item.getAvailableBackpackInv();
 
         int targetSlot = -1;
         ItemStack targetStack = ItemStack.EMPTY;

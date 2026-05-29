@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.block.IMaidEdibleBlock;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlockAction;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.edible.MaidEdibleBlockManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
@@ -72,7 +73,7 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
                     boolean result = edibleBlock.consume(maid, blockPos, blockState);
                     if (result) {
                         int points = edibleBlock.getFavorabilityPoints(maid, blockPos, blockState);
-                        maid.getFavorabilityManager().apply(Type.STEAL_EDIBLE_BLOCK, points);
+                        maid.components().favorability.apply(Type.STEAL_EDIBLE_BLOCK, points);
                         maid.swing(InteractionHand.MAIN_HAND);
                     }
                     maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
@@ -81,7 +82,7 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
                 }
             }
         } else {
-            CombinedResourceHandler<@NotNull ItemResource> inv = maid.getAvailableInv(true);
+            CombinedResourceHandler<@NotNull ItemResource> inv = maid.components().item.getAvailableInv(true);
             for (int i = 0; i < inv.size(); i++) {
                 ItemResource resource = inv.getResource(i);
                 ItemStack stack = resource.toStack(inv.getAmountAsInt(i));

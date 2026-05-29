@@ -9,6 +9,8 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidGomokuAI;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidGameComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
@@ -284,7 +286,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 // 重置女仆棋类动画
                 Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
                 if (sitEntity != null && sitEntity.isAlive() && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
-                    maid.getGameManager().resetStatue();
+                    maid.components().game.resetStatue();
                 }
 
                 return InteractionResult.SUCCESS;
@@ -313,10 +315,10 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 Statue statue = MaidGomokuAI.getStatue(chessData, playerPoint);
                 // 但是和其他人的女仆对弈不加好感哦
                 if (statue == Statue.WIN && maid.isOwnedBy(player)) {
-                    maid.getFavorabilityManager().apply(Type.GOMOKU_WIN);
-                    maid.getGameManager().markStatue(false);
+                    maid.components().favorability.apply(Type.GOMOKU_WIN);
+                    maid.components().game.markStatue(false);
                     int rankBefore = MaidGomokuAI.getRank(maid);
-                    maid.getGameManager().increaseGomokuWinCount();
+                    maid.components().game.increaseGomokuWinCount();
                     int rankAfter = MaidGomokuAI.getRank(maid);
                     // 女仆升段啦
                     if (rankBefore < rankAfter) {
@@ -332,7 +334,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
                 if (gomoku.getStatue() == Statue.IN_PROGRESS && player instanceof ServerPlayer serverPlayer) {
                     gomoku.setPlayerTurn(false);
-                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.getGameManager().getGomokuWinCount()));
+                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.components().game.getGomokuWinCount()));
                 }
                 gomoku.refresh();
                 return InteractionResult.SUCCESS;

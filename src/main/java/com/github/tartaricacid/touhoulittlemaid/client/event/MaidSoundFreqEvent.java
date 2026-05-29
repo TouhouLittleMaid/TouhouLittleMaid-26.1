@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.event;
 
 import com.github.tartaricacid.touhoulittlemaid.client.sound.data.MaidSoundInstance;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidConfigComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,7 +19,7 @@ public class MaidSoundFreqEvent {
                 event.setSound(null);
                 return;
             }
-            double soundFrequency = maid.getConfigManager().getSoundFreq();
+            double soundFrequency = maid.components().config.getSoundFreq();
             soundFrequency = soundFrequency * MaidConfig.GLOBAL_MAID_SOUND_FREQUENCY.get() / 100;
             if (soundFrequency < 1 && !maidSoundInstance.isTestSound()) {
                 if (Math.random() > soundFrequency) {

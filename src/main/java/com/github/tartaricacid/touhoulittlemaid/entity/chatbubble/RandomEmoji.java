@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.event.MaidDamageEvent;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.datapack.KaomojiData;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement.EmojiChatBubbleData;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -12,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @EventBusSubscriber
 public final class RandomEmoji {
-    static void tick(EntityMaid maid) {
+    public static void tick(EntityMaid maid) {
         if (!MaidConfig.ENABLE_EMOJI.get()) {
             return;
         }
@@ -21,7 +22,7 @@ public final class RandomEmoji {
         if ((maid.tickCount + offset) % checkRate != 0) {
             return;
         }
-        ChatBubbleManager bubbleManager = maid.getChatBubbleManager();
+        ChatBubbleComponent bubbleManager = maid.components().chatBubble;
         boolean empty = bubbleManager.getChatBubbleDataCollection().isEmpty();
         if (!empty) {
             return;
@@ -44,7 +45,7 @@ public final class RandomEmoji {
             return;
         }
         EntityMaid maid = event.getMaid();
-        ChatBubbleManager bubbleManager = maid.getChatBubbleManager();
+        ChatBubbleComponent bubbleManager = maid.components().chatBubble;
         boolean empty = bubbleManager.getChatBubbleDataCollection().isEmpty();
         if (empty) {
             KaomojiData.showHurtKaomoji(maid, bubbleManager);

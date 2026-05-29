@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.Role;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.ToolCall;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.HistoryChatWidget;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.ClearMaidAIDataPacket;
 import com.google.common.collect.Lists;
@@ -80,7 +81,7 @@ public class HistoryAIChatScreen extends Screen {
         this.maid = maid;
         this.playerSkin = DefaultPlayerSkin.getDefaultSkin();
         this.loadPlayerSkinAsync();
-        this.summaryText = maid.getAiChatManager().getCompressedSummary();
+        this.summaryText = maid.components().aiChat.getCompressedSummary();
         this.transformMessage();
     }
 
@@ -133,7 +134,7 @@ public class HistoryAIChatScreen extends Screen {
                     this.history.clear();
                     this.historyWidgets.clear();
                     this.summaryText = StringUtils.EMPTY;
-                    this.maid.getAiChatManager().clearAllChatMemory();
+                    this.maid.components().aiChat.clearAllChatMemory();
                     ClientPacketDistributor.sendToServer(new ClearMaidAIDataPacket(this.maid.getId()));
                     this.init();
                 }
@@ -225,7 +226,7 @@ public class HistoryAIChatScreen extends Screen {
     }
 
     private void transformMessage() {
-        Deque<LLMMessage> deque = this.maid.getAiChatManager().getHistory().getDeque();
+        Deque<LLMMessage> deque = this.maid.components().aiChat.getHistory().getDeque();
         deque.descendingIterator().forEachRemaining(message -> {
             if (message.role() == Role.USER) {
                 this.history.add(message);

@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.util;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidItemManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidItemComponent;
 import com.google.common.collect.MapMaker;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
@@ -84,7 +84,7 @@ public class EntityMaidEquipmentWrapper {
 
         @Override
         protected boolean isValid(ItemResource resource) {
-            return MaidItemManager.canInsertItem(resource.toStack());
+            return MaidItemComponent.canInsertItem(resource.toStack());
         }
 
         @Override

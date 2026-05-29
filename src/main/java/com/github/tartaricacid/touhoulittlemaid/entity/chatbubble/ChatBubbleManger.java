@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 
 
@@ -11,11 +12,11 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 @Deprecated
 public class ChatBubbleManger {
     /**
-     * use {@link ChatBubbleManager#addTextChatBubble} instead
+     * use {@link ChatBubbleComponent#addTextChatBubble} instead
      */
     @Deprecated
     public static void addInnerChatText(EntityMaid maid, String key) {
-        maid.getChatBubbleManager().addTextChatBubble(key);
+        maid.components().chatBubble.addTextChatBubble(key);
     }
 
     @Deprecated
@@ -23,7 +24,7 @@ public class ChatBubbleManger {
     }
 
     /**
-     * use {@link ChatBubbleManager#addLLMChatText(String, long)} instead
+     * use {@link ChatBubbleComponent#addLLMChatText(String, long)} instead
      */
     @Deprecated
     public static void addAiChatText(EntityMaid maid, String message) {

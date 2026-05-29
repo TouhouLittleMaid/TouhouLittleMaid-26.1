@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
-import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -73,9 +73,9 @@ public class EntitySit extends Entity {
         maid.setYRot(this.getYRot());
         maid.setYHeadRot(this.getYRot());
         if (tickCount % 20 == 0) {
-            FavorabilityManager manager = maid.getFavorabilityManager();
+            FavorabilityComponent manager = maid.components().favorability;
             String joyType = this.getJoyType();
-            IMaidTask task = maid.getTask();
+            IMaidTask task = maid.components().task.getTask();
 
             // 给予好感度提升
             manager.apply(joyType);
@@ -104,11 +104,11 @@ public class EntitySit extends Entity {
     }
 
     private boolean isIdleSchedule(EntityMaid maid) {
-        return maid.getScheduleDetail() == Activity.IDLE;
+        return maid.components().task.getScheduleDetail() == Activity.IDLE;
     }
 
     private boolean isWorkSchedule(EntityMaid maid) {
-        return maid.getScheduleDetail() == Activity.WORK;
+        return maid.components().task.getScheduleDetail() == Activity.WORK;
     }
 
     public BlockPos getAssociatedBlockPos() {

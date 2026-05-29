@@ -92,7 +92,7 @@ public class TileEntityItemStackGarageKitRenderer implements SpecialModelRendere
         entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), data));
         if (entity instanceof EntityMaid maid) {
             clearMaidDataResidue(maid, true);
-            maid.setModelId(data.getStringOr("model_id","touhou_little_maid:hakurei_reimu"));
+            maid.components().profile.setModelId(data.getStringOr("model_id","touhou_little_maid:hakurei_reimu"));
             maid.renderState = MaidRenderState.GARAGE_KIT_ITEM;
             maid.tickCount = 0;
         }

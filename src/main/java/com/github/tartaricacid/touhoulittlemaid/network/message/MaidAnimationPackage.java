@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidAnimationComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -37,8 +38,8 @@ public record MaidAnimationPackage(int maidId, int animationId) implements Custo
     public static MaidAnimationPackage pickUpSnowball(EntityMaid maid) {
         // 播放丢雪球动画之前，先禁止女仆移动
         // 标记服务端事件
-        maid.getAnimationManager().animationId = PICK_UP_SNOWBALL;
-        maid.getAnimationManager().animationRecordTime = System.currentTimeMillis();
+        maid.components().animation.animationId = PICK_UP_SNOWBALL;
+        maid.components().animation.animationRecordTime = System.currentTimeMillis();
         // 返回消息
         return new MaidAnimationPackage(maid.getId(), PICK_UP_SNOWBALL);
     }
@@ -55,9 +56,9 @@ public record MaidAnimationPackage(int maidId, int animationId) implements Custo
             return;
         }
         if (level.getEntity(message.maidId) instanceof EntityMaid maid) {
-            maid.getAnimationManager().animationId = message.animationId;
-            maid.getAnimationManager().animationRecordTime = System.currentTimeMillis();
-            maid.getAnimationManager().shouldReset = true;
+            maid.components().animation.animationId = message.animationId;
+            maid.components().animation.animationRecordTime = System.currentTimeMillis();
+            maid.components().animation.shouldReset = true;
         }
     }
 }

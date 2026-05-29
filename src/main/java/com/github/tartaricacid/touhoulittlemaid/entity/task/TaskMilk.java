@@ -51,7 +51,7 @@ public class TaskMilk implements IMaidTask {
     }
 
     private boolean hasBucket(EntityMaid maid) {
-        return ItemsUtil.isStackIn(maid.getAvailableInv(true), stack -> stack.getItem() == Items.BUCKET);
+        return ItemsUtil.isStackIn(maid.components().item.getAvailableInv(true), stack -> stack.getItem() == Items.BUCKET);
     }
 
     @Override

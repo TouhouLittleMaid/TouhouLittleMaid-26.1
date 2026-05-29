@@ -15,10 +15,10 @@ public class InitCapabilities {
     public static final EntityCapability<ResourceHandler<ItemResource>, @Nullable Direction> ARMOR_ITEM = EntityCapability.createSided(getResourceLocation("armor_item"), ResourceHandler.asClass());
 
     public static void registerGenericItemHandlers(RegisterCapabilitiesEvent event) {
-        event.registerEntity(HAND_ITEM, InitEntities.MAID.get(), (maid, direction) -> maid.getHandsInvWrapper());
-        event.registerEntity(ARMOR_ITEM, InitEntities.MAID.get(), (maid, direction) -> maid.getArmorInvWrapper());
+        event.registerEntity(HAND_ITEM, InitEntities.MAID.get(), (maid, direction) -> maid.components().item.getHandsInvWrapper());
+        event.registerEntity(ARMOR_ITEM, InitEntities.MAID.get(), (maid, direction) -> maid.components().item.getArmorInvWrapper());
 
         // 适配 forge 的实体 cap
-        event.registerEntity(Capabilities.Item.ENTITY, InitEntities.MAID.get(), (maid, direction) -> maid.getAllInv());
+        event.registerEntity(Capabilities.Item.ENTITY, InitEntities.MAID.get(), (maid, direction) -> maid.components().item.getAllInv());
     }
 }

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.summary;
 
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.UserPromptContexts;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.response.ResponseChat;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMMessage;
@@ -25,7 +25,7 @@ public final class HistorySummaryPrompts {
     private HistorySummaryPrompts() {
     }
 
-    static String formatSummarySystemMessage(MaidAIChatManager manager) {
+    static String formatSummarySystemMessage(MaidAIChatData manager) {
         return """
                 ## Compressed Conversation Summary
                 %s

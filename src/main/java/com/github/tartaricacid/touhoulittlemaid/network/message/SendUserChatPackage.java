@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record SendUserChatPackage(int maidId, String message,
@@ -49,7 +50,7 @@ public record SendUserChatPackage(int maidId, String message,
         ServerPlayer sender = (ServerPlayer) context.player();
         Entity entity = sender.level.getEntity(message.maidId);
         if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender) && maid.isAlive()) {
-            maid.getAiChatManager().chat(message.message, message.clientInfo, sender);
+            maid.components().aiChat.chat(message.message, message.clientInfo, sender);
         }
     }
 }

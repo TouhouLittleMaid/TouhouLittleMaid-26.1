@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidSoundComponent;
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
 
 public record PlayMaidSoundPackage(Identifier soundEvent, String id,

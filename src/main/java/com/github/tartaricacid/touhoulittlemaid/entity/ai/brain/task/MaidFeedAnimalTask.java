@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.google.common.collect.ImmutableMap;
@@ -37,7 +38,7 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
     @Override
     protected void start(ServerLevel worldIn, EntityMaid maid, long gameTimeIn) {
         feedEntity = null;
-        CombinedResourceHandler<@NotNull ItemResource> availableInv = maid.getAvailableInv(false);
+        CombinedResourceHandler<@NotNull ItemResource> availableInv = maid.components().item.getAvailableInv(false);
         long animalCount = this.getEntities(maid)
                 .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
@@ -73,7 +74,7 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
                 feedEntity = null;
             }
         } else {
-            this.chatBubbleKey = maid.getChatBubbleManager().addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.feed_animal.max_number", chatBubbleKey);
+            this.chatBubbleKey = maid.components().chatBubble.addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.feed_animal.max_number", chatBubbleKey);
         }
     }
 

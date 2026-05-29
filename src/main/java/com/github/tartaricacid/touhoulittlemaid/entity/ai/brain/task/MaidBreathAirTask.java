@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidSwimComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidPathFindingBFS;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
@@ -55,11 +56,11 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, EntityMaid maid) {
         // 正在食用可呼吸的食物
-        if (maid.getSwimManager().isEatBreatheItem()) {
+        if (maid.components().swim.isEatBreatheItem()) {
             return false;
         }
         // 如果正在上浮但是失去目标也是需要重新计算的。目标存在时可以不需要再次计算
-        if (maid.getSwimManager().isGoingToBreath() && maid.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET)) {
+        if (maid.components().swim.isGoingToBreath() && maid.getBrain().hasMemoryValue(MemoryModuleType.WALK_TARGET)) {
             BlockPos target = maid.getBrain().getMemory(MemoryModuleType.WALK_TARGET).get().getTarget().currentBlockPosition();
             // 有可能在途中被其他任务覆盖呼吸目标点，还是吸口气比较要紧
             if (givesAir(maid, target)) {
@@ -95,7 +96,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
     }
 
     private boolean hasDrownBauble(EntityMaid maid) {
-        BaubleItemHandler maidBauble = maid.getMaidBauble();
+        BaubleItemHandler maidBauble = maid.components().item.getMaidBauble();
         for (int i = 0; i < maidBauble.size(); i++) {
             if (maidBauble.getResource(i).is(InitItems.DROWN_PROTECT_BAUBLE.get())) {
                 return true;
@@ -128,7 +129,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
         ItemStack itemInHand = maid.getItemInHand(eanHand);
 
         // 尝试在背包中寻找食物放入
-        var backpackInv = maid.getAvailableBackpackInv();
+        var backpackInv = maid.components().item.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
         try (Transaction transaction = Transaction.openRoot()) {
@@ -139,7 +140,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
                     ItemStack foodStack = ItemsUtil.extractItem(backpackInv, stackSlot, canExtract.getCount(), false, transaction);
                     ItemStack handStack = itemInHand.copy();
                     maid.setItemInHand(eanHand, foodStack);
-                    maid.memoryHandItemStack(handStack);
+                    maid.components().item.memoryHandItemStack(handStack);
                     itemInHand = maid.getItemInHand(eanHand);
                     this.startEatBreatheItem(maid, itemInHand, eanHand);
                     transaction.commit();
@@ -151,7 +152,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
     }
 
     private void startEatBreatheItem(EntityMaid maid, ItemStack stack, InteractionHand hand) {
-        maid.getSwimManager().setEatBreatheItem(true);
+        maid.components().swim.setEatBreatheItem(true);
 
         FoodProperties foodProperties = stack.get(DataComponents.FOOD);
         float total = 0;
@@ -220,7 +221,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
 
         // FIXME: BFS 算法找到的目标点在 A* 算法中可能会需要更多步骤才能走到，当超过了寻路长度后可能会被截断导致无法找到路径
         if (match.isPresent() && maid.canPathReach(match.get())) {
-            maid.getSwimManager().setGoingToBreath(true);
+            maid.components().swim.setGoingToBreath(true);
             BehaviorUtils.setWalkAndLookTargetMemories(maid, match.get(), 0.5f, 1);
             return;
         }
@@ -228,7 +229,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
         // 当前女仆坐标的海平面位置
         BlockPos.MutableBlockPos seaLevelPos = maid.blockPosition().mutable().setY(level.getSeaLevel() + 1);
         if (this.givesAir(maid, seaLevelPos) && maid.canPathReach(seaLevelPos)) {
-            maid.getSwimManager().setGoingToBreath(true);
+            maid.components().swim.setGoingToBreath(true);
             BehaviorUtils.setWalkAndLookTargetMemories(maid, seaLevelPos, 0.5f, 1);
             return;
         }
@@ -244,7 +245,7 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
                 seaLevelPos.getZ() + seaLevelOffset);
         for (BlockPos canBreathPo : canBreathPos) {
             if (this.givesAir(maid, canBreathPo) && maid.canPathReach(canBreathPo)) {
-                maid.getSwimManager().setGoingToBreath(true);
+                maid.components().swim.setGoingToBreath(true);
                 BehaviorUtils.setWalkAndLookTargetMemories(maid, canBreathPo, 0.5f, 1);
                 return;
             }

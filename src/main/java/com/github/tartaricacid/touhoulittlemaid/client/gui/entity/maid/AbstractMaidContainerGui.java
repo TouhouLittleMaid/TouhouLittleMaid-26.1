@@ -11,7 +11,8 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.*;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.compat.ipn.SortButtonScreen;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidGomokuAI;
-import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidGameComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
@@ -100,7 +101,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     public AbstractMaidContainerGui(T screenContainer, Inventory inv, Component titleIn, int imageWidth, int imageHeight) {
         super(screenContainer, inv, titleIn, imageWidth, imageHeight);
         this.maid = menu.getMaid();
-        this.task = menu.getMaid().getTask();
+        this.task = menu.getMaid().components().task.getTask();
         this.notHiddenTasks = TaskManager.getNotHiddenTaskList(this.maid);
     }
 
@@ -355,7 +356,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     // 用于开放切换任务时对当前 GUI 的操作
     protected void taskButtonPressed(IMaidTask maidTask, boolean enable) {
         if (enable && maid != null) {
-            maid.setTask(maidTask);
+            maid.components().task.setTask(maidTask);
             ClientPacketDistributor.sendToServer(new MaidTaskPackage(maid.getId(), maidTask.getUid()));
         }
     }
@@ -427,11 +428,11 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void addRideButton() {
-        ride = new TouhouStateSwitchButton(leftPos + 51, topPos + 206, 20, 20, maid.isRideable()) {
+        ride = new TouhouStateSwitchButton(leftPos + 51, topPos + 206, 20, 20, maid.components().config.isRideable()) {
             @Override
             public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
-                ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.isHomeModeEnable(), maid.isPickup(), isStateTriggered, maid.getSchedule()));
+                ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.components().config.isHomeModeEnable(), maid.components().config.isPickup(), isStateTriggered, maid.components().task.getSchedule()));
             }
         };
         ride.initTextureValues(84, 0, 21, 21, BUTTON);
@@ -439,11 +440,11 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void addPickButton() {
-        pick = new TouhouStateSwitchButton(leftPos + 30, topPos + 206, 20, 20, maid.isPickup()) {
+        pick = new TouhouStateSwitchButton(leftPos + 30, topPos + 206, 20, 20, maid.components().config.isPickup()) {
             @Override
             public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
-                ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.isHomeModeEnable(), isStateTriggered, maid.isRideable(), maid.getSchedule()));
+                ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.components().config.isHomeModeEnable(), isStateTriggered, maid.components().config.isRideable(), maid.components().task.getSchedule()));
             }
         };
         pick.initTextureValues(42, 0, 21, 21, BUTTON);
@@ -451,11 +452,11 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void addHomeButton() {
-        home = new TouhouStateSwitchButton(leftPos + 9, topPos + 206, 20, 20, maid.isHomeModeEnable()) {
+        home = new TouhouStateSwitchButton(leftPos + 9, topPos + 206, 20, 20, maid.components().config.isHomeModeEnable()) {
             @Override
             public void onClick(MouseButtonEvent event, boolean doubleClick) {
                 this.isStateTriggered = !this.isStateTriggered;
-                ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), isStateTriggered, maid.isPickup(), maid.isRideable(), maid.getSchedule()));
+                ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), isStateTriggered, maid.components().config.isPickup(), maid.components().config.isRideable(), maid.components().task.getSchedule()));
             }
         };
         home.initTextureValues(0, 0, 21, 21, BUTTON);
@@ -475,7 +476,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void drawCurrentTaskText(GuiGraphicsExtractor graphics) {
-        IMaidTask task = maid.getTask();
+        IMaidTask task = maid.components().task.getTask();
         graphics.item(task.getIcon(), leftPos + 6, topPos + 161);
         List<FormattedCharSequence> splitTexts = font.split(task.getName(), 42);
         if (!splitTexts.isEmpty()) {
@@ -492,7 +493,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
                     .append(Component.translatable("tooltips.touhou_little_maid.info.title")
                             .withStyle(ChatFormatting.GOLD, ChatFormatting.UNDERLINE))
                     .append(Component.literal("§r "));
-            if (maid.isStruckByLightning()) {
+            if (maid.components().stats.isStruckByLightning()) {
                 title.append(Component.literal("❀").withStyle(ChatFormatting.DARK_RED));
             }
             if (maid.isInvulnerable()) {
@@ -506,7 +507,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
                                 .append(": ").withStyle(ChatFormatting.AQUA))
                         .append(maid.getOwner().getDisplayName()));
             }
-            CustomPackLoader.MAID_MODELS.getInfo(maid.getModelId()).ifPresent((info) -> list.add(Component.literal(prefix)
+            CustomPackLoader.MAID_MODELS.getInfo(maid.components().profile.getModelId()).ifPresent((info) -> list.add(Component.literal(prefix)
                     .withStyle(ChatFormatting.WHITE)
                     .append(Component.translatable("tooltips.touhou_little_maid.info.model_name")
                             .append(": ").withStyle(ChatFormatting.AQUA))
@@ -514,15 +515,15 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
             list.add(Component.literal(prefix).withStyle(ChatFormatting.WHITE)
                     .append(Component.translatable("tooltips.touhou_little_maid.info.experience")
                             .append(": ").withStyle(ChatFormatting.AQUA))
-                    .append(String.valueOf(maid.getExperience())));
+                    .append(String.valueOf(maid.components().stats.getExperience())));
             list.add(Component.literal(prefix).withStyle(ChatFormatting.WHITE)
                     .append(Component.translatable("tooltips.touhou_little_maid.info.favorability")
                             .append(": ").withStyle(ChatFormatting.AQUA))
-                    .append(String.valueOf(maid.getFavorability())));
+                    .append(String.valueOf(maid.components().stats.getFavorability())));
             list.add(Component.literal(prefix).withStyle(ChatFormatting.WHITE)
                     .append(Component.translatable("block.touhou_little_maid.gomoku")
                             .append(": ").withStyle(ChatFormatting.AQUA))
-                    .append(Component.translatable("tooltips.touhou_little_maid.info.game_skill.gomoku", maid.getGameManager().getGomokuWinCount(), MaidGomokuAI.getRank(maid))));
+                    .append(Component.translatable("tooltips.touhou_little_maid.info.game_skill.gomoku", maid.components().game.getGomokuWinCount(), MaidGomokuAI.getRank(maid))));
 
             graphics.text(font, FormattedCharSequence.fromList(list.stream().map(Component::getVisualOrderText).toList()), mouseX, mouseY, 0xFFFFFFFF);
         }
@@ -585,7 +586,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
             GuiTools.guiBlit(graphics, SIDE, leftPos + 53, topPos + 135, 18, 0, 9, 9);
             GuiTools.guiBlit(graphics, SIDE, leftPos + 5, topPos + 135, 0, 9, 47, 9);
 
-            int exp = maid.getExperience();
+            int exp = maid.components().stats.getExperience();
             int count = exp / 120;
             double percent = (exp % 120) / 120.0;
             GuiTools.guiBlit(graphics, SIDE, leftPos + 7, topPos + 137, 2, 28, (int) (43 * percent), 5);
@@ -594,7 +595,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         {
             GuiTools.guiBlit(graphics, SIDE, leftPos + 53, topPos + 146, 27, 0, 9, 9);
             GuiTools.guiBlit(graphics, SIDE, leftPos + 5, topPos + 146, 0, 9, 47, 9);
-            FavorabilityManager manager = maid.getFavorabilityManager();
+            FavorabilityComponent manager = maid.components().favorability;
             double percent = manager.getLevelPercent();
             GuiTools.guiBlit(graphics, SIDE, leftPos + 7, topPos + 148, 2, 33, (int) (43 * percent), 5);
             drawNumberScale(graphics, manager.getLevel(), leftPos + 63, topPos + 147);

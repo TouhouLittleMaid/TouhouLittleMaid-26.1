@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai;
 
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.ChatClientInfo;
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatSerializable;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.site.ClientAvailableSitesSync;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.DefaultLLMSite;
@@ -10,6 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.Role;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.SupportLanguage;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.system.TTSSystemSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveMaidAIDataPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendUserChatPackage;
@@ -43,7 +44,7 @@ public class AIChatScreen extends Screen {
     private static final int POPUP_ROW_HEIGHT = 16;
 
     private final EntityMaid maid;
-    private final MaidAIChatManager manager;
+    private final MaidAIChatData manager;
 
     private int currentTokens = 0;
     private int maxTokens = Integer.MAX_VALUE;
@@ -73,7 +74,7 @@ public class AIChatScreen extends Screen {
     public AIChatScreen(EntityMaid maid) {
         super(Component.literal("Maid AI Chat Screen"));
         this.maid = maid;
-        this.manager = maid.getAiChatManager();
+        this.manager = maid.components().aiChat;
     }
 
     public void updateTokens(int current, int max) {

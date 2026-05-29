@@ -62,7 +62,7 @@ public class ItemTrumpet extends Item {
     }
 
     private void teleportToOwner(EntityMaid maid, Player player) {
-        maid.setHomeModeEnable(false);
+        maid.components().config.setHomeModeEnable(false);
         // 如果女仆是骑乘某个实体的，先让女仆下来
         if (maid.isPassenger()) {
             maid.stopRiding();

@@ -21,7 +21,7 @@ public class PotionItemUse {
             potionStack.shrink(1);
             // 说明喝的是堆叠的药水，需要主动给女仆加瓶子
             if (!potionStack.isEmpty()) {
-                var inv = maid.getAvailableInv(false);
+                var inv = maid.components().item.getAvailableInv(false);
                 try (Transaction tx = Transaction.openRoot()) {
                     ItemResource resource = ItemResource.of(Items.GLASS_BOTTLE);
                     int insert = inv.insert(resource, 1, tx);

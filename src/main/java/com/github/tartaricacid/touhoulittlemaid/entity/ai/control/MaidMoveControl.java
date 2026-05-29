@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.control;
 
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidSwimComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -24,7 +25,7 @@ public class MaidMoveControl extends MoveControl {
     @Override
     public void tick() {
         // 如何女仆想游泳了
-        if (this.maid.getSwimManager().wantToSwim()) {
+        if (this.maid.components().swim.wantToSwim()) {
             if (this.maid.isUnderWater() && this.maid.getNavigation().isDone()) {
                 this.maid.setSpeed(0.0F);
                 return;
@@ -41,8 +42,8 @@ public class MaidMoveControl extends MoveControl {
             float speed = (float) (this.speedModifier * this.maid.getAttributeValue(Attributes.MOVEMENT_SPEED));
             float speedLerp = Mth.lerp(1, this.maid.getSpeed(), speed);
 
-            if (maid.getSwimManager().getSwimTarget() != null) {
-                maid.getLookControl().setLookAt(maid.getSwimManager().getSwimTarget().getCenter());
+            if (maid.components().swim.getSwimTarget() != null) {
+                maid.getLookControl().setLookAt(maid.components().swim.getSwimTarget().getCenter());
             }
 
             // 太慢了，3 倍基础速度

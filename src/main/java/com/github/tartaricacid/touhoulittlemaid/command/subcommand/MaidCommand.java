@@ -56,7 +56,7 @@ public class MaidCommand {
         Entity entity = EntityArgument.getEntity(context, TARGETS_NAME);
         int xpCount = IntegerArgumentType.getInteger(context, RESULT_NAME);
         if (entity instanceof EntityMaid maid) {
-            maid.setExperience(xpCount);
+            maid.components().stats.setExperience(xpCount);
             context.getSource().sendSuccess(() -> Component.translatable("commands.touhou_little_maid.maid.xp.success", String.valueOf(xpCount)), true);
         } else {
             context.getSource().sendFailure(Component.translatable("commands.touhou_little_maid.maid.not_maid"));

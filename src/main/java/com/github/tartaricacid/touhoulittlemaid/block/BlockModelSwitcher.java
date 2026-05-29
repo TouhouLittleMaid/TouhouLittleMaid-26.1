@@ -114,7 +114,7 @@ public class BlockModelSwitcher extends BaseEntityBlock {
     private void setMaidData(TileEntityModelSwitcher switcher, EntityMaid maid) {
         TileEntityModelSwitcher.ModeInfo modelInfo = switcher.getModelInfo();
         if (modelInfo != null) {
-            maid.setModelId(modelInfo.getModelId().toString());
+            maid.components().profile.setModelId(modelInfo.getModelId().toString());
             if (StringUtils.isNotBlank(modelInfo.getText())) {
                 maid.setCustomName(Component.literal(modelInfo.getText()));
                 maid.setCustomNameVisible(true);

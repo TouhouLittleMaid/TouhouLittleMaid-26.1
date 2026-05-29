@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.ErrorCode;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.ResponseCallback;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.ServiceType;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.TTSAudioToClientPackage;
 import net.minecraft.ChatFormatting;
@@ -37,7 +38,7 @@ public class TTSCallback implements ResponseCallback<byte[]> {
                     MutableComponent errorMessage = ErrorCode.getErrorMessage(ServiceType.TTS, errorCode, cause);
                     player.sendSystemMessage(errorMessage.withStyle(ChatFormatting.RED));
                 }
-                maid.getChatBubbleManager().addLLMChatText(chatText, waitingChatBubbleId);
+                maid.components().chatBubble.addLLMChatText(chatText, waitingChatBubbleId);
             });
         }
         TouhouLittleMaid.LOGGER.error("LLM request failed: {}, error is {}", request, throwable.getMessage());
@@ -55,7 +56,7 @@ public class TTSCallback implements ResponseCallback<byte[]> {
         MinecraftServer server = serverLevel.getServer();
         server.submit(() -> {
             PacketDistributor.sendToPlayer(player, new TTSAudioToClientPackage(maid.getId(), data));
-            maid.getChatBubbleManager().addLLMChatText(chatText, waitingChatBubbleId);
+            maid.components().chatBubble.addLLMChatText(chatText, waitingChatBubbleId);
         });
     }
 

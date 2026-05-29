@@ -110,7 +110,7 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
             addSlot(BackpackSlot.create(maid, i, 143 + 18 * i, 37));
             // 最后一格给予特殊图标
             if (i == 5) {
-                ItemStacksResourceHandler maidInv = maid.getMaidInv();
+                ItemStacksResourceHandler maidInv = maid.components().item.getMaidInv();
                 addSlot(new BackpackSlot(maid, maidInv::set, i, 143 + 18 * i, 37) {
                     @Override
                     public Identifier getNoItemIcon() {
@@ -162,12 +162,12 @@ public abstract class MaidMainContainer extends AbstractMaidContainer {
         private final EntityMaid maid;
 
         private BackpackSlot(EntityMaid maid, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
-            super(maid.getMaidInv(), slotModifier, index, xPosition, yPosition);
+            super(maid.components().item.getMaidInv(), slotModifier, index, xPosition, yPosition);
             this.maid = maid;
         }
 
         public static BackpackSlot create(EntityMaid maid, int index, int xPosition, int yPosition) {
-            ItemStacksResourceHandler maidInv = maid.getMaidInv();
+            ItemStacksResourceHandler maidInv = maid.components().item.getMaidInv();
             return new BackpackSlot(maid, maidInv::set, index, xPosition, yPosition);
         }
 

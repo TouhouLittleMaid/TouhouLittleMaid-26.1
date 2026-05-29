@@ -26,7 +26,7 @@ public class ChairModelDetailsGui extends AbstractModelDetailsGui<EntityChair, C
         if (Minecraft.getInstance().level != null) {
             this.maid = InitEntities.MAID.get().create(Minecraft.getInstance().level, EntitySpawnReason.COMMAND);
             if (this.maid != null) {
-                this.maid.setModelId("authors_and_credits:wine_fox_maid");
+                this.maid.components().profile.setModelId("authors_and_credits:wine_fox_maid");
             }
         }
     }

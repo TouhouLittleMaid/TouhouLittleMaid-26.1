@@ -31,7 +31,7 @@ public class DefaultMaidHealSelfMeal implements IMaidMeal {
         FoodProperties foodProperties = stack.get(DataComponents.FOOD);
         if (foodProperties != null) {
             // 调用饰品
-            maid.getMaidBauble().fireEvent((b, s) -> {
+            maid.components().item.getMaidBauble().fireEvent((b, s) -> {
                 b.onMaidEat(maid, s, stack, MaidMealType.HEAL_MEAL);
                 return false;
             });

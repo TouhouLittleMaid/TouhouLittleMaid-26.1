@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message.ai;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,7 +39,7 @@ public record ClearMaidAIDataPacket(int entityId, int msgIndex) implements Custo
         Entity entity = player.level.getEntity(message.entityId);
         if (entity instanceof EntityMaid maid && maid.isOwnedBy(player)) {
             if (message.msgIndex == ALL_MSG_INDEX) {
-                maid.getAiChatManager().clearAllChatMemory();
+                maid.components().aiChat.clearAllChatMemory();
             }
         }
     }

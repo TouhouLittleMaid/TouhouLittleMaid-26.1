@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.AIService;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Point;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.Statue;
 import com.github.tartaricacid.touhoulittlemaid.api.game.gomoku.ZhiZhangAIService;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidGameComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 
 public final class MaidGomokuAI {
@@ -17,7 +18,7 @@ public final class MaidGomokuAI {
     public static final int HARD_COUNT = 24;
 
     public static int getRank(EntityMaid maid) {
-        int maidCount = maid.getGameManager().getGomokuWinCount();
+        int maidCount = maid.components().game.getGomokuWinCount();
         if (maidCount <= EASY_COUNT) {
             return 1;
         } else if (maidCount <= NORMAL_COUNT) {

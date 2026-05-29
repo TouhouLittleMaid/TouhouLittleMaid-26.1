@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.navigation;
 
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidConfigComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,7 +35,7 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
     // 一般这些物体都是相连的，所以向上向下搜寻下
     protected int createClimbNode(int nodeId, Node[] nodes, Node origin) {
         // 只有在开启攀爬能力，才将梯子加入寻路节点里
-        if (this.mob instanceof EntityMaid maid && maid.getConfigManager().isActiveClimbing()) {
+        if (this.mob instanceof EntityMaid maid && maid.components().config.isActiveClimbing()) {
             // 向上搜寻
             BlockPos.MutableBlockPos upPos = new BlockPos.MutableBlockPos(origin.x, origin.y + 1, origin.z);
             if (isMaidCanClimbBlock(upPos, maid)) {
@@ -129,17 +130,17 @@ public class MaidNodeEvaluator extends WalkNodeEvaluator {
 
     private boolean canOpenDoor(Block block, EntityMaid maid) {
         if (block instanceof DoorBlock) {
-            return maid.getConfigManager().isOpenDoor();
+            return maid.components().config.isOpenDoor();
         }
         if (block instanceof FenceGateBlock) {
-            return maid.getConfigManager().isOpenFenceGate();
+            return maid.components().config.isOpenFenceGate();
         }
         return true;
     }
 
     private boolean canClimb(BlockState blockState, BlockPos blockPos, EntityMaid maid) {
         if (isMaidCanClimbBlock(blockState, blockPos, maid)) {
-            return maid.getConfigManager().isActiveClimbing();
+            return maid.components().config.isActiveClimbing();
         }
         return false;
     }

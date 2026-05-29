@@ -21,6 +21,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.C
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.Message;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.Usage;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
 import com.google.common.net.HttpHeaders;
@@ -52,7 +53,7 @@ public class LLMOpenAIClient implements LLMClient {
         // 模型站点信息获取
         URI url = URI.create(this.site.url());
         String apiKey = this.site.secretKey();
-        String model = maid.getAiChatManager().getLLMModel();
+        String model = maid.components().aiChat.getLLMModel();
         boolean isReasoningModel = this.site.isReasoningModel(model);
 
         // 构建对话
@@ -159,7 +160,7 @@ public class LLMOpenAIClient implements LLMClient {
                 // TOKEN 计数
                 int totalTokens = usage.getTotalTokens();
                 if (totalTokens > 0 && callback.shouldCacheTokenUsage()) {
-                    callback.getMaid().getAiChatManager().setLastChatTokenUsage(totalTokens);
+                    callback.getMaid().components().aiChat.setLastChatTokenUsage(totalTokens);
                 }
                 if (totalTokens > 0 && callback.getMaid().getOwner() instanceof ServerPlayer serverPlayer) {
                     var tokensData = serverPlayer.getData(InitDataAttachment.CHAT_TOKENS);

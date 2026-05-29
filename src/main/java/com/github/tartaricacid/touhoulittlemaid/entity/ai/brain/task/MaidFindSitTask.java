@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.ChatBubbleComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
@@ -40,7 +41,7 @@ public class MaidFindSitTask extends MaidCheckRateTask {
                     BehaviorUtils.setWalkAndLookTargetMemories(maid, this.sitEntity, this.speedModifier, 0);
                 }, () -> {
                     String langKey = "chat_bubble.touhou_little_maid.inner.fishing.no_sit";
-                    this.chatBubbleKey = maid.getChatBubbleManager().addTextChatBubbleIfTimeout(langKey, this.chatBubbleKey);
+                    this.chatBubbleKey = maid.components().chatBubble.addTextChatBubbleIfTimeout(langKey, this.chatBubbleKey);
                 });
 
         if (sitEntity != null && sitEntity.isAlive() && sitEntity.closerThan(maid, 2)) {

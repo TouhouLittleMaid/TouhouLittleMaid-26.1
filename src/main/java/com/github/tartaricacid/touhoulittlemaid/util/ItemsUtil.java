@@ -186,7 +186,7 @@ public final class ItemsUtil {
     }
 
     public static boolean isStackIn(EntityMaid maid, Predicate<ItemStack> filter) {
-        return findStackSlot(maid.getAvailableInv(false), filter) >= 0;
+        return findStackSlot(maid.components().item.getAvailableInv(false), filter) >= 0;
     }
 
     /**
@@ -204,7 +204,7 @@ public final class ItemsUtil {
     }
 
     public static ItemStack getStack(EntityMaid maid, Predicate<ItemStack> filter) {
-        return getStack(maid.getAvailableInv(false), filter);
+        return getStack(maid.components().item.getAvailableInv(false), filter);
     }
 
     /**
@@ -215,7 +215,7 @@ public final class ItemsUtil {
      * @return 如果没找到，返回 -1
      */
     public static int getBaubleSlotInMaid(EntityMaid maid, IMaidBauble bauble) {
-        BaubleItemHandler handler = maid.getMaidBauble();
+        BaubleItemHandler handler = maid.components().item.getMaidBauble();
         return handler.getBaubleSlot(bauble);
     }
 
@@ -226,7 +226,7 @@ public final class ItemsUtil {
      */
     @ApiStatus.AvailableSince("1.4.3")
     public static boolean hasBaubleItemInMaid(EntityMaid maid, Item bauble) {
-        BaubleItemHandler handler = maid.getMaidBauble();
+        BaubleItemHandler handler = maid.components().item.getMaidBauble();
         return handler.containsItem(bauble);
     }
 
@@ -260,7 +260,7 @@ public final class ItemsUtil {
     }
 
     public static void giveItemToMaid(EntityMaid maid, ItemStack itemStack) {
-        var inv = maid.getAvailableInv(false);
+        var inv = maid.components().item.getAvailableInv(false);
         ItemStack stack = ItemsUtil.insertItemStacked(inv, itemStack, false, null);
         if (!stack.isEmpty()) {
             ItemEntity itemEntity = new ItemEntity(maid.level(), maid.getX(), maid.getY() + 0.5, maid.getZ(), stack);

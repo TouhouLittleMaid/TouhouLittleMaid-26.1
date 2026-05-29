@@ -220,7 +220,7 @@ public interface IMaidTask {
      * @return MenuProvider
      */
     default MenuProvider getTaskInfoGuiProvider(EntityMaid maid) {
-        return maid.getMaidBackpackType().getGuiProvider(maid.getId());
+        return maid.components().backpack.getMaidBackpackType().getGuiProvider(maid.getId());
     }
 
     /**

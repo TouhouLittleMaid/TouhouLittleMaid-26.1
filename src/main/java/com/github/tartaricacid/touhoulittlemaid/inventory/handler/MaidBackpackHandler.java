@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.inventory.handler;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidItemManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidItemComponent;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
@@ -20,7 +20,7 @@ public class MaidBackpackHandler extends ItemStacksResourceHandler {
 
     @Override
     public boolean isValid(int slot, @Nonnull ItemResource resource) {
-        return MaidItemManager.canInsertItem(resource.toStack());
+        return MaidItemComponent.canInsertItem(resource.toStack());
     }
 
     @Override

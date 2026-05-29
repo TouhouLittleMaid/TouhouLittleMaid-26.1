@@ -60,7 +60,7 @@ public abstract class PersistentEntitySectionManagerMixin {
                 if (!shouldFollowOwner(owner, maid)) {
                     continue;
                 }
-                if (maid.teleportToOwner(owner)) {
+                if (maid.components().teleport.teleportToOwner(owner)) {
                     MaidWorldData data = MaidWorldData.get(maid.level);
                     if (data != null) {
                         data.removeInfo(maid);
@@ -75,7 +75,7 @@ public abstract class PersistentEntitySectionManagerMixin {
         if (owner == null || owner.isDeadOrDying() || owner.isSpectator()) {
             return false;
         }
-        return !maid.isHomeModeEnable() && maid.canBrainMoving();
+        return !maid.components().config.isHomeModeEnable() && maid.canBrainMoving();
     }
 
     @Shadow

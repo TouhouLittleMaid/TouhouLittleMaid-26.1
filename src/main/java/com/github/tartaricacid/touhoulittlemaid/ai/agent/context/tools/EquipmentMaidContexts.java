@@ -58,7 +58,7 @@ public final class EquipmentMaidContexts {
         @Override
         public String getValue(EntityMaid maid) {
             List<String> names = Lists.newArrayList();
-            var backpack = maid.getAvailableBackpackInv();
+            var backpack = maid.components().item.getAvailableBackpackInv();
             for (int i = 0; i < backpack.size(); i++) {
                 ItemStack stack = ItemUtil.getStack(backpack, i);
                 if (!stack.isEmpty()) {
@@ -82,7 +82,7 @@ public final class EquipmentMaidContexts {
         @Override
         public String getValue(EntityMaid maid) {
             List<String> names = Lists.newArrayList();
-            var armor = maid.getArmorInvWrapper();
+            var armor = maid.components().item.getArmorInvWrapper();
             for (int i = 0; i < armor.size(); i++) {
                 ItemStack stack = ItemUtil.getStack(armor, i);
                 if (!stack.isEmpty()) {

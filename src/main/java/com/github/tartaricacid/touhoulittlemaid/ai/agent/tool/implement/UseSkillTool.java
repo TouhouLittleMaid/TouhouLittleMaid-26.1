@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.agent.skill.SkillInstance;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.skill.SkillLoader;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ITool;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.LLMCallback;
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.grounded.GroundedAnswerCallback;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.function.schema.parameter.ObjectParameter;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.function.schema.parameter.Parameter;
@@ -82,7 +82,7 @@ public class UseSkillTool implements ITool<String> {
         // 如果是知识库查询，那么需要新建空白回调，并异步阻塞等待
         if (selected.isKnowledgeType()) {
             long bubbleId = callback.getWaitingChatBubbleId();
-            MaidAIChatManager chatManager = callback.getChatManager();
+            MaidAIChatData chatManager = callback.getChatManager();
             String knowledge = this.getKnowledge(selected, chatManager);
 
             CompletableFuture<String> summaryFuture = new CompletableFuture<>();
@@ -120,7 +120,7 @@ public class UseSkillTool implements ITool<String> {
         return "%s { %s }".formatted(TOOL_ID, result);
     }
 
-    private String getKnowledge(SkillInstance selected, MaidAIChatManager chatManager) {
+    private String getKnowledge(SkillInstance selected, MaidAIChatData chatManager) {
         String knowledge = selected.body();
 
         // 把 en-US 这样的改成 en_us 这样的规范格式

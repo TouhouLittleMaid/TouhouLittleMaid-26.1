@@ -8,6 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.DefaultLLMSite;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMMessage;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMSite;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.response.ToolCall;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.summary.HistorySummaryManager;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.system.TTSSystemSite;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
@@ -201,10 +202,14 @@ public abstract class MaidAIChatData extends MaidAIChatSerializable {
     }
 
     public Optional<CharacterSetting> getSetting() {
-        String modelId = this.maid.getModelId();
+        String modelId = this.maid.components().profile.getModelId();
         return SettingReader.getSetting(modelId);
     }
 
     protected void onHistoryUpdated() {
     }
+
+    public abstract HistorySummaryManager getHistorySummaryManager();
+
+    public abstract void tts(TTSSite site, String chatText, String ttsText, long waitingChatBubbleId);
 }

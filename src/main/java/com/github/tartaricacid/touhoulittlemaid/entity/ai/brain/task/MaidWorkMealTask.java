@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.IMaidMeal;
 import com.github.tartaricacid.touhoulittlemaid.api.task.meal.MaidMealType;
-import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.meal.DefaultMaidWorkMeal;
@@ -28,8 +28,8 @@ public class MaidWorkMealTask extends MaidCheckRateTask {
     protected boolean checkExtraStartConditions(ServerLevel serverLevel, EntityMaid maid) {
         if (super.checkExtraStartConditions(serverLevel, maid)) {
             String workMealTypeName = Type.WORK_MEAL.getTypeName();
-            FavorabilityManager manager = maid.getFavorabilityManager();
-            return !maid.isSleeping() && maid.getTask().enableEating(maid) && manager.canAdd(workMealTypeName);
+            FavorabilityComponent manager = maid.components().favorability;
+            return !maid.isSleeping() && maid.components().task.getTask().enableEating(maid) && manager.canAdd(workMealTypeName);
         }
         return false;
     }
@@ -66,7 +66,7 @@ public class MaidWorkMealTask extends MaidCheckRateTask {
 
         // 尝试在背包中寻找食物放入
         boolean hasFood = false;
-        var backpackInv = maid.getAvailableBackpackInv();
+        var backpackInv = maid.components().item.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
         ItemsUtil.findStackSlot(backpackInv, DefaultMaidWorkMeal::isWorkMeal);
@@ -83,7 +83,7 @@ public class MaidWorkMealTask extends MaidCheckRateTask {
                     ItemStack foodStack = ItemsUtil.extractItem(backpackInv, i, cnt, false, null);
                     ItemStack handStack = itemInHand.copy();
                     maid.setItemInHand(eanHand, foodStack);
-                    maid.memoryHandItemStack(handStack);
+                    maid.components().item.memoryHandItemStack(handStack);
                     itemInHand = maid.getItemInHand(eanHand);
                     hasFood = true;
                     break swapItemCheck;

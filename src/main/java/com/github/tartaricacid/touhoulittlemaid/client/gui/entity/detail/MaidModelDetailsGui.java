@@ -28,7 +28,7 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
 
     public MaidModelDetailsGui(EntityMaid sourceEntity, MaidModelInfo modelInfo) {
         super(sourceEntity, InitEntities.MAID.get().create(sourceEntity.level(), EntitySpawnReason.COMMAND), modelInfo);
-        this.guiEntity.setModelId(modelInfo.getModelId().toString());
+        this.guiEntity.components().profile.setModelId(modelInfo.getModelId().toString());
         this.guiEntity.setOnGround(true);
         this.guiEntity.yHeadRot = 0;
         this.guiEntity.yHeadRotO = 0;
@@ -52,7 +52,7 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
     @Override
     protected void initSideButton() {
         ModelDetailsButton begButton = new ModelDetailsButton(2, 17, "gui.touhou_little_maid.skin_details.beg",
-                (isStateTriggered) -> guiEntity.setBegging(isStateTriggered));
+                (isStateTriggered) -> guiEntity.components().animation.setBegging(isStateTriggered));
         ModelDetailsButton walkButton = new ModelDetailsButton(2, 17 + 13, "gui.touhou_little_maid.skin_details.walk",
                 (isStateTriggered) -> isEnableWalk = isStateTriggered);
         ModelDetailsButton sitButton = new ModelDetailsButton(2, 17 + 13 * 2, "gui.touhou_little_maid.skin_details.sit",

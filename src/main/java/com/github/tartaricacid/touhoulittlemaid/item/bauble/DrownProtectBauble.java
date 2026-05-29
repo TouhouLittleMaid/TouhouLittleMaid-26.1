@@ -16,7 +16,7 @@ public class DrownProtectBauble implements IMaidBauble {
     @Override
     public boolean onInjured(EntityMaid maid, ItemStack baubleItem, DamageSource source, MutableFloat damage) {
         if (source.is(DamageTypeTags.IS_DROWNING)) {
-            maid.hurtAndBreak(baubleItem, 1);
+            maid.components().item.hurtAndBreak(baubleItem, 1);
             // 增加了游泳功能，故此饰品可以增加到最大空气值
             maid.setAirSupply(maid.getMaxAirSupply());
             NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.BUBBLE));

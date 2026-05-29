@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.summary;
 
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMMessage;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.LLMSite;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
@@ -19,9 +19,9 @@ import static com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.summary
 public class HistorySummaryManager {
     private static final int SUMMARY_KEEP_RECENT_COUNT = 32;
 
-    private final MaidAIChatManager chatManager;
+    private final MaidAIChatData chatManager;
 
-    public HistorySummaryManager(MaidAIChatManager chatManager) {
+    public HistorySummaryManager(MaidAIChatData chatManager) {
         this.chatManager = chatManager;
     }
 

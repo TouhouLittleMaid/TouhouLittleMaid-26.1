@@ -52,7 +52,7 @@ public class MaidTridentTargetTask extends Behavior<EntityMaid> {
 
     @Override
     protected void start(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
-        entityIn.setSwingingArms(true);
+        entityIn.components().animation.setSwingingArms(true);
     }
 
     @Override

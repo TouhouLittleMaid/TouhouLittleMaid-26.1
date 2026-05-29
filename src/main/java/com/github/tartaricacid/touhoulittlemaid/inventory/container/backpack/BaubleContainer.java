@@ -64,9 +64,9 @@ public class BaubleContainer extends MaidMainContainer {
         // 0 级和 1 级：只有前两层
         // 2 级，前四层
         // 3 级及以上，全部开放
-        int level = this.maid.getFavorabilityManager().getLevel();
+        int level = this.maid.components().favorability.getLevel();
         // 以防万一，检测是否越界
-        int maxSize = maid.getMaidBauble().size();
+        int maxSize = maid.components().item.getMaidBauble().size();
 
         for (int y = 0; y < 6; y++) {
             if (level <= 1 && y >= 2) {
@@ -141,12 +141,12 @@ public class BaubleContainer extends MaidMainContainer {
         private final EntityMaid maid;
 
         private BaubleSlot(EntityMaid maid, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
-            super(maid.getMaidBauble(), slotModifier, index, xPosition, yPosition);
+            super(maid.components().item.getMaidBauble(), slotModifier, index, xPosition, yPosition);
             this.maid = maid;
         }
 
         public static BaubleSlot create(EntityMaid maid, int index, int xPosition, int yPosition) {
-            BaubleItemHandler maidBauble = maid.getMaidBauble();
+            BaubleItemHandler maidBauble = maid.components().item.getMaidBauble();
             return new BaubleSlot(maid, maidBauble::set, index, xPosition, yPosition);
         }
 

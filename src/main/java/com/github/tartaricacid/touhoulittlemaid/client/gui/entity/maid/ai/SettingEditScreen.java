@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
+import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatData;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.CharacterSetting;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.SettingReader;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.bean.MetaData;
@@ -9,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderStat
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.AiChatComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveMaidAIDataPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
@@ -46,7 +47,7 @@ public class SettingEditScreen extends Screen {
 
     private final @Nullable Screen parent;
     private final EntityMaid maid;
-    private final MaidAIChatManager manager;
+    private final MaidAIChatData manager;
 
     private EditBox ownerName;
     private MultiLineEditBox customSetting;
@@ -60,7 +61,7 @@ public class SettingEditScreen extends Screen {
         super(Component.literal("Setting Edit Screen"));
         this.parent = parent;
         this.maid = maid;
-        this.manager = maid.getAiChatManager();
+        this.manager = maid.components().aiChat;
     }
 
     @Override
@@ -144,7 +145,7 @@ public class SettingEditScreen extends Screen {
         if (this.getMinecraft().player != null) {
             author = this.getMinecraft().player.getScoreboardName();
         }
-        String modelId = this.maid.getModelId();
+        String modelId = this.maid.components().profile.getModelId();
         return new MetaData(0, author, Collections.singletonList(modelId), lang);
     }
 
@@ -186,7 +187,7 @@ public class SettingEditScreen extends Screen {
         if (world == null) {
             return;
         }
-        Optional<MaidModelInfo> info = CustomPackLoader.MAID_MODELS.getInfo(rawMaid.getModelId());
+        Optional<MaidModelInfo> info = CustomPackLoader.MAID_MODELS.getInfo(rawMaid.components().profile.getModelId());
         if (info.isEmpty()) {
             return;
         }
@@ -197,9 +198,9 @@ public class SettingEditScreen extends Screen {
 
         clearMaidDataResidue(maid, false);
         if (modelInfo.getEasterEgg() != null) {
-            maid.setModelId(EASTER_EGG_MODEL);
+            maid.components().profile.setModelId(EASTER_EGG_MODEL);
         } else {
-            maid.setModelId(modelInfo.getModelId().toString());
+            maid.components().profile.setModelId(modelInfo.getModelId().toString());
         }
         float renderItemScale = modelInfo.getRenderItemScale();
         InventoryScreen.extractEntityInInventoryFollowsMouse(

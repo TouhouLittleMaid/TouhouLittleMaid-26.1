@@ -7,6 +7,8 @@ import com.github.tartaricacid.touhoulittlemaid.block.properties.GomokuPart;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.FavorabilityComponent;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.component.impl.MaidGameComponent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
@@ -113,8 +115,8 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
                 if (level instanceof ServerLevel serverLevel && serverLevel.getEntity(sitId) instanceof EntitySit sit
                     && sit.getFirstPassenger() instanceof EntityMaid maid && maid.isOwnedBy(player)) {
                     // TODO: 暂时不加段位系统
-                    maid.getFavorabilityManager().apply(Type.CCHESS_WIN);
-                    maid.getGameManager().markStatue(false);
+                    maid.components().favorability.apply(Type.CCHESS_WIN);
+                    maid.components().game.markStatue(false);
                     InitTrigger.MAID_EVENT.get().trigger(player, TriggerType.WIN_CCHESS);
                 }
 
@@ -145,7 +147,7 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
                 && sit.getFirstPassenger() instanceof EntityMaid maid) {
                 maid.swing(InteractionHand.MAIN_HAND);
                 if (playerLost) {
-                    maid.getGameManager().markStatue(true);
+                    maid.components().game.markStatue(true);
                 }
             }
             level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
@@ -257,7 +259,7 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
                 Entity sitEntity = serverLevel.getEntity(chess.getSitId());
                 if (sitEntity != null && sitEntity.isAlive()
                     && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
-                    maid.getGameManager().resetStatue();
+                    maid.components().game.resetStatue();
                 }
 
                 return InteractionResult.SUCCESS;

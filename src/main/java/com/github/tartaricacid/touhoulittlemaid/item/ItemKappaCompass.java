@@ -91,7 +91,7 @@ public class ItemKappaCompass extends Item {
     public InteractionResult interactLivingEntity(ItemStack compass, Player player, LivingEntity livingEntity, InteractionHand hand) {
         if (livingEntity instanceof EntityMaid maid && !maid.level.isClientSide()) {
             if (player.isDiscrete()) {
-                maid.getSchedulePos().clear(maid);
+                maid.components().task.schedulePos.clear(maid);
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.kappa_compass.maid_clear"));
                 player.level.playSound(null, player.blockPosition(), InitSounds.COMPASS_POINT.get(), SoundSource.PLAYERS, 0.8f, 1.5f);
                 return InteractionResult.SUCCESS;
@@ -102,21 +102,21 @@ public class ItemKappaCompass extends Item {
                     player.sendSystemMessage(Component.translatable("message.touhou_little_maid.kappa_compass.maid_dimension_check"));
                     return InteractionResult.CONSUME;
                 }
-                maid.getSchedulePos().setDimension(dimension);
+                maid.components().task.schedulePos.setDimension(dimension);
                 BlockPos point = getPoint(Activity.WORK, compass);
                 if (point != null) {
-                    maid.getSchedulePos().setWorkPos(point);
+                    maid.components().task.schedulePos.setWorkPos(point);
                 }
                 point = getPoint(Activity.IDLE, compass);
                 if (point != null) {
-                    maid.getSchedulePos().setIdlePos(point);
+                    maid.components().task.schedulePos.setIdlePos(point);
                 }
                 point = getPoint(Activity.REST, compass);
                 if (point != null) {
-                    maid.getSchedulePos().setSleepPos(point);
+                    maid.components().task.schedulePos.setSleepPos(point);
                 }
-                maid.getSchedulePos().setConfigured(true);
-                maid.getSchedulePos().restrictTo(maid);
+                maid.components().task.schedulePos.setConfigured(true);
+                maid.components().task.schedulePos.restrictTo(maid);
                 player.sendSystemMessage(Component.translatable("message.touhou_little_maid.kappa_compass.maid_write"));
                 player.level.playSound(null, player.blockPosition(), InitSounds.COMPASS_POINT.get(), SoundSource.PLAYERS, 0.8f, 1.5f);
                 return InteractionResult.SUCCESS;
