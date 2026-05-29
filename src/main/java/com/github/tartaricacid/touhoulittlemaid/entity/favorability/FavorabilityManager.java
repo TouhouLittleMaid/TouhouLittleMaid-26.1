@@ -324,12 +324,12 @@ public class FavorabilityManager {
         this.add(LEVEL_3_POINT);
     }
 
-    public void addAdditionalSaveData(ValueOutput output) {
+    public void save(ValueOutput output) {
         ValueOutput child = output.child(TAG_NAME);
         this.counter.forEach((name, time) -> child.store(name, Codec.INT, time.getTickCount()));
     }
 
-    public void readAdditionalSaveData(ValueInput value) {
+    public void read(ValueInput value) {
         value.child(TAG_NAME).ifPresent(d -> {
             for (String name : d.keySet()) {
                 this.counter.put(name, new Time(d.getIntOr(name, 0)));

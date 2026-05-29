@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.manager.entity;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -59,7 +58,7 @@ public class MaidAIChatSerializable {
         customSetting = data.customSetting;
     }
 
-    public void loadValue(ValueInput input) {
+    public void read(ValueInput input) {
         ValueInput inputChild = input.childOrEmpty("MaidAIChat");
         llmSite = inputChild.getStringOr("LLMSite", "");
         llmModel = inputChild.getStringOr("LLMModel", "");
@@ -70,7 +69,8 @@ public class MaidAIChatSerializable {
         ownerName = inputChild.getStringOr("OwnerName", "");
         customSetting = inputChild.getStringOr("CustomSetting", "");
     }
-    public void saveValue(ValueOutput output) {
+
+    public void save(ValueOutput output) {
         ValueOutput outputChild = output.child("MaidAIChat");
         outputChild.putString("LLMSite", llmSite);
         outputChild.putString("LLMModel", llmModel);

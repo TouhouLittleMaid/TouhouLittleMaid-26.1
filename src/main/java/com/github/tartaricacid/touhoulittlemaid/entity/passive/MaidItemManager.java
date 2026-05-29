@@ -52,6 +52,7 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -501,14 +502,14 @@ public class MaidItemManager {
         }
     }
 
-    void addAdditionalSaveData(ValueOutput output) {
+    void save(ValueOutput output) {
         maidInv.serialize(output.child(MAID_INVENTORY_TAG));
         maidBauble.serialize(output.child(MAID_BAUBLE_INVENTORY_TAG));
         hideInv.serialize(output.child(MAID_HIDE_INVENTORY_TAG));
         taskInv.serialize(output.child(MAID_TASK_INVENTORY_TAG));
     }
 
-    void readAdditionalSaveData(ValueInput input) {
+    void read(ValueInput input) {
         maidInv.deserialize(input.childOrEmpty(MAID_INVENTORY_TAG));
         maidBauble.deserialize(input.childOrEmpty(MAID_BAUBLE_INVENTORY_TAG));
         hideInv.deserialize(input.childOrEmpty(MAID_HIDE_INVENTORY_TAG));
@@ -534,6 +535,24 @@ public class MaidItemManager {
         }
         // 然后存入我们的物品
         ItemsUtil.insertItemStacked(hide, itemStack, false, null);
+    }
+
+    /**
+     * 当女仆吃完后的容器无处可存，就直接以实体形式掉落
+     */
+    void handleExtraItemsCreatedOnUse(ItemStack convertedStack) {
+        var availableInv = this.getAvailableInv(false);
+        try (Transaction tx = Transaction.openRoot()) {
+            ItemResource resource = ItemResource.of(convertedStack);
+            int insert = availableInv.insert(resource, convertedStack.count(), tx);
+            // 如果女仆背包满了，掉落在地上
+            if (insert < convertedStack.count()) {
+                ItemStack droppedStack = convertedStack.copyWithCount(convertedStack.count() - insert);
+                ItemEntity itemEntity = new ItemEntity(maid.level, maid.getX(), maid.getY(), maid.getZ(), droppedStack);
+                maid.level.addFreshEntity(itemEntity);
+            }
+            tx.commit();
+        }
     }
 
     private ItemStack getRandomItemWithMendingEnchantments(ResourceHandler<ItemResource> handler) {

@@ -42,9 +42,11 @@ import java.util.Optional;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.MAID_NUM;
 
+/**
+ * 无法归类的部分功能，全部放入此 Manager 里
+ */
 public class MaidMiscManager {
     private final EntityMaid maid;
-
 
     public MaidMiscManager(EntityMaid maid) {
         this.maid = maid;

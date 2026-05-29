@@ -121,6 +121,18 @@ public class MaidClimbManager {
         }
     }
 
+    /**
+     * 略微修改原版的方法，禁用了向上的动力源
+     */
+    Vec3 handleRelativeFrictionAndCalculateMovement(Vec3 deltaMovement, float friction) {
+        float speed = maid.getFrictionInfluencedSpeed(friction);
+        maid.moveRelative(speed, deltaMovement);
+        Vec3 vec3 = this.handleOnClimbable(maid.getDeltaMovement());
+        maid.setDeltaMovement(vec3);
+        maid.move(MoverType.SELF, maid.getDeltaMovement());
+        return maid.getDeltaMovement();
+    }
+
     interface View {
         MaidClimbManager getClimbManager();
 

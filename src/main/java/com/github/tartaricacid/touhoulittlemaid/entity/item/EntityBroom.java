@@ -140,12 +140,12 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
     private boolean canMaidRide(EntityMaid maid) {
         //FIXME 等女仆的逻辑完成
         if (maid.canBrainMoving() && !maid.isVehicle() && EntitySelector.pushableBy(this).test(maid)) {
-            UUID maidOwnerUUID = maid.getOwnerUUID();
+            var maidOwner = maid.getOwnerReference();
             UUID broomOwnerUUID = this.getOwnerUUID();
-            if (maidOwnerUUID == null || broomOwnerUUID == null) {
+            if (maidOwner == null || broomOwnerUUID == null) {
                 return false;
             }
-            return maidOwnerUUID.equals(broomOwnerUUID);
+            return maidOwner.getUUID().equals(broomOwnerUUID);
         }
         return false;
     }

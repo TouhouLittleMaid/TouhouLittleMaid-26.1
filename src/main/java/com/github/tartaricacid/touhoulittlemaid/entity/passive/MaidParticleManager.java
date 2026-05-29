@@ -29,8 +29,18 @@ public class MaidParticleManager {
         this.random = maid.getRandom();
     }
 
+    void tick() {
+        // 女仆无敌状态时，随机散发末影人粒子
+        if (maid.getSyncInvulnerable()
+            && MiscConfig.INVULNERABLE_PARTICLE_EFFECT.get()
+            && maid.getOwner() != null
+        ) {
+            spawnPortalParticle();
+        }
+    }
+
     public void spawnPortalParticle() {
-        if (isClient() && maid.getIsInvulnerable() && MiscConfig.INVULNERABLE_PARTICLE_EFFECT.get() && maid.getOwner() != null) {
+        if (isClient()) {
             level.addParticle(ParticleTypes.PORTAL,
                     maid.getX() + (random.nextDouble() - 0.5D) * (double) maid.getBbWidth(),
                     maid.getY() + random.nextDouble() * (double) maid.getBbHeight() - 0.25D,

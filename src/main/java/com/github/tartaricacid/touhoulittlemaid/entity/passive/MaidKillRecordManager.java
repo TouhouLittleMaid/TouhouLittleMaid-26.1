@@ -31,7 +31,7 @@ public final class MaidKillRecordManager {
         this.maid = maid;
     }
 
-    void addAdditionalSaveData(ValueOutput output) {
+    void save(ValueOutput output) {
         ValueOutput child = output.child(KILL_RECORD);
         child.store(TOTAL_COUNT, Codec.INT, totalCount);
         child.store(SLIME_COUNT, Codec.INT, slimeCount);
@@ -39,7 +39,7 @@ public final class MaidKillRecordManager {
         child.store(ENDER_DRAGON_COUNT, Codec.INT, enderDragonCount);
     }
 
-    void readAdditionalSaveData(ValueInput input) {
+    void read(ValueInput input) {
         ValueInput child = input.childOrEmpty(KILL_RECORD);
         child.read(TOTAL_COUNT, Codec.INT).ifPresent(v -> totalCount = v);
         child.read(SLIME_COUNT, Codec.INT).ifPresent(v -> slimeCount = v);

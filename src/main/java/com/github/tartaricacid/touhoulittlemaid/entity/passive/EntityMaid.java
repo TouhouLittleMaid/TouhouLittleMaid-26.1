@@ -21,12 +21,10 @@ import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidBackpackHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackage;
 import com.github.tartaricacid.touhoulittlemaid.world.backups.MaidBackupsManager;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -70,10 +68,10 @@ import javax.annotation.Nullable;
 import java.time.Duration;
 import java.util.List;
 import java.util.Stack;
-import java.util.UUID;
 
 import static com.github.tartaricacid.touhoulittlemaid.config.ServerConfig.MAID_AI_TIME_DEBUG;
 import static com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidBrain.BRAIN_PROVIDER;
+import static com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidBackpackHandler.BACKPACK_ITEM_SLOT;
 
 public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         MaidAnimationManager.View, MaidConfigManager.View, MaidItemManager.View,
@@ -99,7 +97,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     /**
      * 女仆默认同步数据
      */
-    private static final EntityDataAccessor<Boolean> DATA_INVULNERABLE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_SYNC_INVULNERABLE = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<ItemStack> BACKPACK_ITEM_SHOW = SynchedEntityData.defineId(EntityMaid.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<ChatBubbleDataCollection> CHAT_BUBBLE = SynchedEntityData.defineId(EntityMaid.class, ChatBubbleRegister.INSTANCE);
 
@@ -258,10 +256,22 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return navigationManager;
     }
 
+    public MaidKillRecordManager getKillRecordManager() {
+        return killRecordManager;
+    }
+
+    public FavorabilityManager getFavorabilityManager() {
+        return favorabilityManager;
+    }
+
+    public ChatBubbleManager getChatBubbleManager() {
+        return chatBubbleManager;
+    }
+
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(DATA_INVULNERABLE, false);
+        builder.define(DATA_SYNC_INVULNERABLE, this.isInvulnerable());
         builder.define(BACKPACK_ITEM_SHOW, ItemStack.EMPTY);
         builder.define(CHAT_BUBBLE, ChatBubbleDataCollection.getEmptyCollection());
     }
@@ -293,21 +303,29 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     protected void customServerAiStep(ServerLevel level) {
         long timeRecord = Util.getNanos();
-        Profiler.get().push("maidBrain");
+
+        // 当玩家打开女仆的 GUI 时，暂停女仆的 Brain 执行
         if (!guiOpening) {
+            Profiler.get().push("maidBrain");
             this.getBrain().tick(level, this);
+            Profiler.get().pop();
         }
-        Profiler.get().pop();
+
+        // 如果开启了 Debug 模式，此处会记录每次 AI 执行的时间
+        // 超过 50ms 就会在控制台输出警告日志，方便开发者定位性能问题
         timeRecord = Util.getNanos() - timeRecord;
         if (MAID_AI_TIME_DEBUG.get() && timeRecord > WARNING_TIME_NANOS) {
             double timeMs = timeRecord / 1000000.0;
             BlockPos blockPos = this.blockPosition();
             String taskId = this.getTask().getUid().toString();
-            int searchRange = Math.round(this.getHomeRadius());
-
-            TouhouLittleMaid.LOGGER.error("Maid's AI taking too long! Time: {} ms, Pos: ({},{},{}), Task ID: {}, Search Range: {}",
-                    timeMs, blockPos.getX(), blockPos.getY(), blockPos.getZ(), taskId, searchRange);
+            int searchRange = this.getHomeRadius();
+            TouhouLittleMaid.LOGGER.error(
+                    "Maid's AI taking too long! Time: {} ms, Pos: ({},{},{}), Task ID: {}, Search Range: {}",
+                    timeMs, blockPos.getX(), blockPos.getY(), blockPos.getZ(),
+                    taskId, searchRange
+            );
         }
+
         super.customServerAiStep(level);
     }
 
@@ -315,13 +333,13 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     public void tick() {
         if (!NeoForge.EVENT_BUS.post(new MaidTickEvent(this)).isCanceled()) {
             super.tick();
-            getMaidBauble().fireEvent((b, s) -> {
+            this.getMaidBauble().fireEvent((b, s) -> {
                 b.onTick(this, s);
                 return false;
             });
         }
 
-        // 自 1.4.2 版本起强制开启女仆备份机制
+        // 强制开启女仆备份机制
         int saveIntervalTick = ServerConfig.MAID_BACKUP_INTERVAL_SECONDS.get() * 20;
         // 通过哈希计算出一个随机值，这样做可以避免所有实体都在同一 tick 进行保存
         int checkTick = Math.abs(this.getUUID().hashCode()) % saveIntervalTick;
@@ -333,10 +351,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void baseTick() {
         super.baseTick();
+
         this.backpackManager.tick();
         this.soundManager.tick();
         this.climbManager.tick();
-        this.particleManager.spawnPortalParticle();
+        this.particleManager.tick();
         this.miscManager.tick();
         this.gameManager.tick();
     }
@@ -344,6 +363,8 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void rideTick() {
         super.rideTick();
+
+        // 强制让女仆和骑乘的实体一个朝向，黑名单的除外
         Entity vehicle = this.getVehicle();
         if (vehicle != null && !vehicle.is(TagEntity.MAID_VEHICLE_ROTATE_BLOCKLIST)) {
             this.setYHeadRot(vehicle.getYRot());
@@ -354,8 +375,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void aiStep() {
         super.aiStep();
+
         this.updateSwingTime();
-        this.navigationManager.tick();
+        this.getNavigationManager().tick();
+
         if (!level.isClientSide()) {
             this.chatBubbleManager.tick();
             this.favorabilityManager.tick();
@@ -373,6 +396,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     protected void pushEntities() {
         super.pushEntities();
+
         // 只有拾物模式开启，驯服状态下才可以捡起物品
         if (this.isPickup() && this.isTame()) {
             itemManager.pickupEntities();
@@ -409,9 +433,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return super.getDamageAfterMagicAbsorb(damageSource, damage);
     }
 
-    /**
-     * 重新复写父类方法，添加上自己的 Event
-     */
     @Override
     protected void actuallyHurt(ServerLevel level, DamageSource damageSrc, float damageAmount) {
         this.combatManager.actuallyHurt(level, damageSrc, damageAmount);
@@ -425,7 +446,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
-        if (this.getOwnerUUID() != null) {
+
+        // 当女仆添加进世界后，从 MaidWorldData 上移除
+        if (this.getOwnerReference() != null) {
             MaidWorldData data = MaidWorldData.get(this.level);
             if (data != null) {
                 data.removeInfo(this);
@@ -436,7 +459,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     @Override
     public void onRemovedFromLevel() {
         super.onRemovedFromLevel();
-        if (!this.level.isClientSide() && this.isAlive() && this.getOwnerUUID() != null) {
+
+        // 当女仆从区块卸载时，把信息存入 MaidWorldData，方便其他工具查询实体位置
+        if (!this.level.isClientSide() && this.isAlive() && this.getOwnerReference() != null) {
             MaidWorldData data = MaidWorldData.get(this.level);
             if (data != null) {
                 data.addInfo(this);
@@ -470,9 +495,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return this.brain.getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
     }
 
-    // 弩在装载时的 tryLoadProjectiles 方法会从这里拿到需要装填的物品
     @Override
     public ItemStack getProjectile(ItemStack weaponStack) {
+        // 弩在装载时的 tryLoadProjectiles 方法会从这里拿到需要装填的物品
         return this.combatManager.getProjectile(weaponStack);
     }
 
@@ -484,7 +509,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     @Override
     protected void hurtArmor(DamageSource damageSource, float damage) {
-        this.doHurtEquipment(damageSource, damage, EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD);
+        this.doHurtEquipment(
+                damageSource, damage,
+                EquipmentSlot.FEET, EquipmentSlot.LEGS,
+                EquipmentSlot.CHEST, EquipmentSlot.HEAD
+        );
     }
 
     @Override
@@ -494,6 +523,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     @Override
     public boolean wantsToAttack(LivingEntity target, @Nullable LivingEntity owner) {
+        // 避免女仆攻击盔甲
         return target.getType() != EntityType.ARMOR_STAND;
     }
 
@@ -509,30 +539,31 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     public void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
 
-
-        output.store(TAG_INVULNERABLE, Codec.BOOL, getIsInvulnerable());
         this.statsManager.save(output);
-        this.itemManager.addAdditionalSaveData(output);
-        this.favorabilityManager.addAdditionalSaveData(output);
+        this.itemManager.save(output);
+        this.favorabilityManager.save(output);
         this.taskManager.save(output);
-        this.killRecordManager.addAdditionalSaveData(output);
-        this.aiChatManager.saveValue(output);
+        this.killRecordManager.save(output);
+        this.aiChatManager.save(output);
     }
 
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
 
-        input.read(TAG_INVULNERABLE, Codec.BOOL).ifPresent(this::setEntityInvulnerable);
-
         this.statsManager.read(input);
-        this.itemManager.readAdditionalSaveData(input);
-        this.favorabilityManager.readAdditionalSaveData(input);
+        this.itemManager.read(input);
+        this.favorabilityManager.read(input);
         this.taskManager.read(input);
-        this.killRecordManager.readAdditionalSaveData(input);
-        this.aiChatManager.loadValue(input);
+        this.killRecordManager.read(input);
+        this.aiChatManager.read(input);
 
-        this.setBackpackShowItem(ItemUtil.getStack(itemManager.getMaidInv(), MaidBackpackHandler.BACKPACK_ITEM_SLOT));
+        // 因为原版的无敌状态不会自动同步，故需要在这里手动设置同步
+        this.setSyncInvulnerable(this.isInvulnerable());
+
+        // 背包内的装饰栏有特殊渲染效果，需要手动同步到客户端
+        ItemStack backpackItem = ItemUtil.getStack(itemManager.getMaidInv(), BACKPACK_ITEM_SLOT);
+        this.setBackpackShowItem(backpackItem);
     }
 
     @Override
@@ -553,7 +584,11 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         this.itemManager.backCurrentHandItemStack(this);
     }
 
-    //FIXME eat方法已经被Consumer取代。事件需要寻找替代品或者对应移除
+    @Override
+    public void handleExtraItemsCreatedOnUse(ItemStack convertedStack) {
+        this.itemManager.handleExtraItemsCreatedOnUse(convertedStack);
+    }
+
     @Override
     protected boolean isAlwaysExperienceDropper() {
         return true;
@@ -625,23 +660,28 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     }
 
     @Override
-    public float getEyeHeight(Pose pPose) {
-        return this.getDimensions(pPose).height() * (isMaidInSittingPose() ? 0.65F : 0.85F);
+    public float getEyeHeight(Pose pose) {
+        boolean sittingPose = isMaidInSittingPose();
+        float multiply = sittingPose ? 0.65F : 0.85F;
+        return this.getDimensions(pose).height() * multiply;
     }
 
     @Override
     public boolean isBaby() {
+        // 没有幼年形态的女仆
         return false;
     }
 
     @Override
     @Nullable
-    public AgeableMob getBreedOffspring(ServerLevel serverWorld, AgeableMob ageableEntity) {
+    public AgeableMob getBreedOffspring(ServerLevel serverWorld, AgeableMob ageableMob) {
+        // 没有幼年形态的女仆
         return null;
     }
 
     @Override
     public boolean isFood(ItemStack stack) {
+        // 女仆不可繁殖
         return false;
     }
 
@@ -722,8 +762,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     }
 
     @Override
-    public void startSleeping(BlockPos pPos) {
-        super.startSleeping(pPos);
+    public void startSleeping(BlockPos pos) {
+        super.startSleeping(pos);
+
+        // 睡觉时自动满血，增加好感度，并触发睡觉成就
         this.setHealth(this.getMaxHealth());
         this.favorabilityManager.apply(Type.SLEEP);
         if (this.getOwner() instanceof ServerPlayer serverPlayer) {
@@ -776,8 +818,14 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         }
     }
 
+    /**
+     * 当前女仆是否能够执行移动相关的任务
+     */
     public boolean canBrainMoving() {
-        return !this.isMaidInSittingPose() && !this.isPassenger() && !this.isSleeping() && !this.isLeashed();
+        return !this.isMaidInSittingPose()
+               && !this.isPassenger()
+               && !this.isSleeping()
+               && !this.isLeashed();
     }
 
     public ItemStack getBackpackShowItem() {
@@ -788,19 +836,19 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         this.entityData.set(BACKPACK_ITEM_SHOW, stack);
     }
 
-    public boolean getIsInvulnerable() {
-        return this.entityData.get(DATA_INVULNERABLE);
+    public boolean getSyncInvulnerable() {
+        return this.entityData.get(DATA_SYNC_INVULNERABLE);
     }
 
-    public void setEntityInvulnerable(boolean isInvulnerable) {
+    public void setSyncInvulnerable(boolean isInvulnerable) {
         super.setInvulnerable(isInvulnerable);
-        this.entityData.set(DATA_INVULNERABLE, isInvulnerable);
+        this.entityData.set(DATA_SYNC_INVULNERABLE, isInvulnerable);
     }
 
     @Override
     public void setInSittingPose(boolean inSittingPose) {
         super.setInSittingPose(inSittingPose);
-        setOrderedToSit(inSittingPose);
+        this.setOrderedToSit(inSittingPose);
     }
 
     @Override
@@ -808,24 +856,16 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return (float) this.getAttributeValue(Attributes.LUCK);
     }
 
-    public MaidKillRecordManager getKillRecordManager() {
-        return killRecordManager;
-    }
-
     public boolean hasFishingHook() {
         return this.fishing != null;
-    }
-
-    public List<SendEffectPackage.EffectData> getEffects() {
-        return effects;
     }
 
     public void setEffects(List<SendEffectPackage.EffectData> effects) {
         this.effects = effects;
     }
 
-    public FavorabilityManager getFavorabilityManager() {
-        return favorabilityManager;
+    public List<SendEffectPackage.EffectData> getEffects() {
+        return effects;
     }
 
     @Override
@@ -838,23 +878,14 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return this.navigation;
     }
 
-    /**
-     * 爬梯子状态加上路径判断
-     */
     @Override
     public boolean onClimbable() {
         return this.climbManager.onClimbable(super::onClimbable);
     }
 
-    /**
-     * 略微修改原版的方法，禁用了向上的动力源
-     */
     @Override
     public Vec3 handleRelativeFrictionAndCalculateMovement(Vec3 deltaMovement, float friction) {
-        this.moveRelative(this.getFrictionInfluencedSpeed(friction), deltaMovement);
-        this.setDeltaMovement(this.handleOnClimbable(this.getDeltaMovement()));
-        this.move(MoverType.SELF, this.getDeltaMovement());
-        return this.getDeltaMovement();
+        return this.climbManager.handleRelativeFrictionAndCalculateMovement(deltaMovement, friction);
     }
 
     public void setNavigation(PathNavigation navigation) {
@@ -874,7 +905,10 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
 
     @Override
     public EntityDimensions getDefaultDimensions(Pose pose) {
-        return pose == Pose.SWIMMING ? this.getSwimManager().getSwimmingDimensions() : super.getDefaultDimensions(pose);
+        if (pose == Pose.SWIMMING) {
+            return this.getSwimManager().getSwimmingDimensions();
+        }
+        return super.getDefaultDimensions(pose);
     }
 
     @Override
@@ -892,23 +926,16 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
     }
 
     @Override
-    public @Nullable ItemStack getItemBlockingWith() {
+    @Nullable
+    public ItemStack getItemBlockingWith() {
         return this.combatManager.getItemBlockingWith();
     }
 
     @Override
     public float applyItemBlocking(ServerLevel level, DamageSource source, float damage) {
-        return this.combatManager.applyItemBlocking(level, source, damage, super::applyItemBlocking);
-    }
-
-    @Deprecated(forRemoval = true)
-    public @Nullable UUID getOwnerUUID() {
-        EntityReference<LivingEntity> ownerReference = getOwnerReference();
-        return ownerReference == null ? null : ownerReference.getUUID();
-    }
-
-    public ChatBubbleManager getChatBubbleManager() {
-        return chatBubbleManager;
+        return this.combatManager.applyItemBlocking(
+                level, source, damage, super::applyItemBlocking
+        );
     }
 
     @Override

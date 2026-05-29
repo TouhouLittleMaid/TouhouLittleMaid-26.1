@@ -34,8 +34,8 @@ public class ItemSubstituteJizo extends Item {
         EntityMaid maid = event.getMaid();
         ItemStack stack = event.getStack();
         Player player = event.getPlayer();
-        if (maid.isOwnedBy(player) && stack.getItem() == InitItems.SUBSTITUTE_JIZO.get() && !maid.getIsInvulnerable()) {
-            maid.setEntityInvulnerable(true);
+        if (maid.isOwnedBy(player) && stack.getItem() == InitItems.SUBSTITUTE_JIZO.get() && !maid.getSyncInvulnerable()) {
+            maid.setSyncInvulnerable(true);
             stack.shrink(1);
             event.setCanceled(true);
         }

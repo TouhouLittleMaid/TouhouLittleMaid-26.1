@@ -46,7 +46,8 @@ public class MaidDeathManager {
     }
 
     void dropEquipment(ServerLevel level) {
-        if (maid.getOwnerUUID() != null) {
+        var owner = maid.getOwnerReference();
+        if (owner != null) {
             // 掉出世界的判断
             Vec3 position = Vec3.atBottomCenterOf(maid.blockPosition());
             // 防止卡在基岩里？
@@ -56,7 +57,7 @@ public class MaidDeathManager {
             if (maid.getY() > maid.level.getMaxY()) {
                 position = new Vec3(position.x, maid.level.getMaxY(), position.z);
             }
-            EntityTombstone tombstone = new EntityTombstone(level, maid.getOwnerUUID(), position);
+            EntityTombstone tombstone = new EntityTombstone(level, owner.getUUID(), position);
             tombstone.setMaidName(maid.getDisplayName());
 
             maid.getItemManager().addItemsToTomb(tombstone);

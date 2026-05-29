@@ -34,7 +34,7 @@ public enum MaidProvider implements IEntityComponentProvider {
                 iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.schedule").append(getActivityTransText(maid)));
                 iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.favorability", maid.getFavorabilityManager().getLevel()));
                 iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.nex_favorability_point", maid.getFavorabilityManager().nextLevelPoint()));
-                if (maid.getIsInvulnerable()) {
+                if (maid.getSyncInvulnerable()) {
                     iTooltip.add(Component.translatable("top.touhou_little_maid.entity_maid.invulnerable").withStyle(ChatFormatting.DARK_PURPLE));
                 }
             }

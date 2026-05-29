@@ -43,8 +43,8 @@ public abstract class MaidAIChatData extends MaidAIChatSerializable {
     }
 
     @Override
-    public void loadValue(ValueInput input) {
-        super.loadValue(input);
+    public void read(ValueInput input) {
+        super.read(input);
         input.read(MAID_HISTORY_CHAT_TAG, LLMMessage.CODEC.listOf()).ifPresent(list -> {
             this.history.getDeque().clear();
             ListIterator<LLMMessage> iterator = list.listIterator(list.size());
@@ -58,8 +58,8 @@ public abstract class MaidAIChatData extends MaidAIChatSerializable {
     }
 
     @Override
-    public void saveValue(ValueOutput output) {
-        super.saveValue(output);
+    public void save(ValueOutput output) {
+        super.save(output);
         if (this.history.size() > 0) {
             ArrayList<LLMMessage> llmMessages = Lists.newArrayList(this.history.getDeque());
             output.store(MAID_HISTORY_CHAT_TAG, LLMMessage.CODEC.listOf(), llmMessages);

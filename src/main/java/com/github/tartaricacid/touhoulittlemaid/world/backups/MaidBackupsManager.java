@@ -19,7 +19,6 @@ import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -179,10 +178,9 @@ public final class MaidBackupsManager {
         for (String s : indexTag.keySet()) {
             UUID maidUuid = UUID.fromString(s);
             CompoundTag maidTag = indexTag.getCompoundOrEmpty(s);
-            IndexData indexData = IndexData.CODEC.parse(NbtOps.INSTANCE, maidTag)
+            IndexData.CODEC.parse(NbtOps.INSTANCE, maidTag)
                     .resultOrPartial(LOGGER::error)
-                    .orElse(new IndexData(Component.empty(), BlockPos.ZERO, "minecraft:unknown", -1L));
-            map.put(maidUuid, indexData);
+                    .ifPresent(indexData -> map.put(maidUuid, indexData));
         }
         return map;
     }
