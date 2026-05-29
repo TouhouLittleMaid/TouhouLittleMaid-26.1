@@ -67,7 +67,7 @@ public final class GeoModelState {
     public void visitLocatorGroup(GeoLocatorType type, PoseStack poseStack, Consumer<PoseStack> visitor) {
         var group = activeLocatorGroups.get(type.getSeq());
         if (!group.isEmpty()) {
-            visit(renderBoneIndices, (bone, transform) -> {
+            visit(group, (bone, transform) -> {
                 poseStack.pushPose();
                 poseStack.mulPose(transform);
                 var pivot = bone.pivot();
