@@ -52,7 +52,6 @@ import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.pathfinder.Path;
@@ -699,9 +698,9 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
      * 给 MaidMeleeAttack 使用，用于判断当前任务是否能够近战
      * <p>
      * 如果返回 true，则表示当前是远程攻击，不是近战攻击
-     * FIXME 方法从原版消失了
      */
-    public boolean canFireProjectileWeapon(ProjectileWeaponItem shootableItem) {
+    @Override
+    public boolean canUseNonMeleeWeapon(ItemStack itemStack) {
         return getTask() instanceof IRangedAttackTask;
     }
 

@@ -50,7 +50,7 @@ public class MaidMeleeAttack {
     private static boolean isHoldingUsableProjectileWeapon(EntityMaid maid) {
         return maid.isHolding((itemStack) -> {
             Item item = itemStack.getItem();
-            return item instanceof ProjectileWeaponItem projectile && maid.canFireProjectileWeapon(projectile);
+            return item instanceof ProjectileWeaponItem && maid.canUseNonMeleeWeapon(itemStack);
         });
     }
 }
