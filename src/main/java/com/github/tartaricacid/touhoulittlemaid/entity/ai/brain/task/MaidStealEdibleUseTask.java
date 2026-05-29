@@ -73,7 +73,7 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
                     boolean result = edibleBlock.consume(maid, blockPos, blockState);
                     if (result) {
                         int points = edibleBlock.getFavorabilityPoints(maid, blockPos, blockState);
-                        maid.components().favorability.apply(Type.STEAL_EDIBLE_BLOCK, points);
+                        maid.components.favorability.apply(Type.STEAL_EDIBLE_BLOCK, points);
                         maid.swing(InteractionHand.MAIN_HAND);
                     }
                     maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
@@ -82,7 +82,7 @@ public class MaidStealEdibleUseTask extends Behavior<EntityMaid> {
                 }
             }
         } else {
-            CombinedResourceHandler<@NotNull ItemResource> inv = maid.components().item.getAvailableInv(true);
+            CombinedResourceHandler<@NotNull ItemResource> inv = maid.components.item.getAvailableInv(true);
             for (int i = 0; i < inv.size(); i++) {
                 ItemResource resource = inv.getResource(i);
                 ItemStack stack = resource.toStack(inv.getAmountAsInt(i));

@@ -27,6 +27,6 @@ public class MaidRunOne extends RunOne<EntityMaid> {
         if (!enableCondition.test(maid)) {
             return false;
         }
-        return !maid.components().animation.isBegging() && !maid.isSleeping() && !(maid.getVehicle() instanceof EntitySit) && super.tryStart(pLevel, maid, pGameTime);
+        return !maid.components.animation.isBegging() && !maid.isSleeping() && !(maid.getVehicle() instanceof EntitySit) && super.tryStart(pLevel, maid, pGameTime);
     }
 }

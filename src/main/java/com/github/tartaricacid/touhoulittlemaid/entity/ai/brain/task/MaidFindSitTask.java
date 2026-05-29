@@ -41,7 +41,7 @@ public class MaidFindSitTask extends MaidCheckRateTask {
                     BehaviorUtils.setWalkAndLookTargetMemories(maid, this.sitEntity, this.speedModifier, 0);
                 }, () -> {
                     String langKey = "chat_bubble.touhou_little_maid.inner.fishing.no_sit";
-                    this.chatBubbleKey = maid.components().chatBubble.addTextChatBubbleIfTimeout(langKey, this.chatBubbleKey);
+                    this.chatBubbleKey = maid.components.chatBubble.addTextChatBubbleIfTimeout(langKey, this.chatBubbleKey);
                 });
 
         if (sitEntity != null && sitEntity.isAlive() && sitEntity.closerThan(maid, 2)) {

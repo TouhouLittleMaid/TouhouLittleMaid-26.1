@@ -113,7 +113,7 @@ public final class AnimationManager {
         if (checkSwingAndUse(maid, InteractionHand.OFF_HAND)) {
             ItemStack offhandItem = entity.getItemInHand(InteractionHand.OFF_HAND);
             if (!isSameItem(maid, offhandItem, InteractionHand.OFF_HAND)) {
-                maid.components().animation.getHandItemsForAnimation()[InteractionHand.OFF_HAND.ordinal()] = offhandItem;
+                maid.components.animation.getHandItemsForAnimation()[InteractionHand.OFF_HAND.ordinal()] = offhandItem;
                 playAnimation(event, "empty", LoopType.LOOP);
             }
 
@@ -145,7 +145,7 @@ public final class AnimationManager {
         if (checkSwingAndUse(maid, InteractionHand.MAIN_HAND)) {
             ItemStack mainHandItem = maid.getItemInHand(InteractionHand.MAIN_HAND);
             if (!isSameItem(maid, mainHandItem, InteractionHand.MAIN_HAND)) {
-                maid.components().animation.getHandItemsForAnimation()[InteractionHand.MAIN_HAND.ordinal()] = mainHandItem;
+                maid.components.animation.getHandItemsForAnimation()[InteractionHand.MAIN_HAND.ordinal()] = mainHandItem;
                 playAnimation(event, "empty", LoopType.LOOP);
             }
 
@@ -159,7 +159,7 @@ public final class AnimationManager {
     }
 
     private static boolean isSameItem(EntityMaid maid, ItemStack maidItem, InteractionHand hand) {
-        ItemStack preItem = maid.components().animation.getHandItemsForAnimation()[hand.ordinal()];
+        ItemStack preItem = maid.components.animation.getHandItemsForAnimation()[hand.ordinal()];
         if (preItem.isDamaged()) {
             return ItemStack.isSameItem(maidItem, preItem);
         }
@@ -214,7 +214,7 @@ public final class AnimationManager {
         EntityMaid maid = event.getAnimatableEntity().getMaid();
         // 赢棋输棋优先
         if (maid.getVehicle() instanceof EntitySit) {
-            MaidGameComponent manager = maid.components().game;
+            MaidGameComponent manager = maid.components.game;
             if (manager.isWin()) {
                 return playAnimation(event, "game_win", LoopType.LOOP);
             }
@@ -223,15 +223,15 @@ public final class AnimationManager {
             }
         }
         // 祈求动画
-        if (maid.components().animation.isBegging()) {
+        if (maid.components.animation.isBegging()) {
             return playAnimation(event, "beg", LoopType.LOOP);
         }
         // 其他杂项动画，目前仅捡雪球
-        if (maid.components().animation.animationId == MaidAnimationPackage.PICK_UP_SNOWBALL) {
+        if (maid.components.animation.animationId == MaidAnimationPackage.PICK_UP_SNOWBALL) {
             // 捡雪球动画默认 1750 毫秒
-            if (System.currentTimeMillis() - maid.components().animation.animationRecordTime > 1750) {
-                maid.components().animation.animationId = MaidAnimationPackage.NONE;
-                maid.components().animation.animationRecordTime = -1L;
+            if (System.currentTimeMillis() - maid.components.animation.animationRecordTime > 1750) {
+                maid.components.animation.animationId = MaidAnimationPackage.NONE;
+                maid.components.animation.animationRecordTime = -1L;
                 // 利用空动画重置 PLAY_ONCE 动画
                 return playAnimation(event, "empty", LoopType.PLAY_ONCE);
             }

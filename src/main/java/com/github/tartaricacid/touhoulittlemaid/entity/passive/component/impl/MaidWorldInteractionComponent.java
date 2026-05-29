@@ -65,7 +65,7 @@ public class MaidWorldInteractionComponent implements MaidComponent {
         }
         if (dropBlock) {
             BlockEntity blockEntity = blockState.hasBlockEntity() ? level.getBlockEntity(blockPos) : null;
-            maid.components().item.dropResourcesToMaidInv(blockState, level, blockPos, blockEntity, ItemStack.EMPTY);
+            maid.components.item.dropResourcesToMaidInv(blockState, level, blockPos, blockEntity, ItemStack.EMPTY);
         }
         FluidState fluidState = level.getFluidState(blockPos);
         boolean setResult = level.setBlock(blockPos, fluidState.createLegacyBlock(), Block.UPDATE_ALL);

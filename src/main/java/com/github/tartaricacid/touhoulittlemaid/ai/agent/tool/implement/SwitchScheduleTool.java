@@ -69,12 +69,12 @@ public class SwitchScheduleTool implements ITool<String> {
         }
 
         EntityMaid maid = callback.getMaid();
-        MaidSchedule current = maid.components().task.getSchedule();
+        MaidSchedule current = maid.components.task.getSchedule();
         if (current == target) {
             return callback.addToolResult("Already on %s schedule.".formatted(target.name()), toolId);
         }
 
-        maid.components().task.setSchedule(target);
+        maid.components.task.setSchedule(target);
         return callback.addToolResult("Schedule switched to %s.".formatted(target.name()), toolId);
     }
 

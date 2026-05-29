@@ -130,7 +130,7 @@ public class TaskCrossBowAttack implements IRangedAttackTask {
     private int findArrow(EntityMaid maid) {
         ItemStack mainHandItem = maid.getMainHandItem();
         if (mainHandItem.getItem() instanceof CrossbowItem) {
-            var handler = maid.components().item.getAvailableInv(true);
+            var handler = maid.components.item.getAvailableInv(true);
             return ItemsUtil.findStackSlot(handler, ((CrossbowItem) mainHandItem.getItem()).getAllSupportedProjectiles());
         }
         return -1;

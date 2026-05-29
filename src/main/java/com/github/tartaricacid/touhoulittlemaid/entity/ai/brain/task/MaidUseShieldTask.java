@@ -19,7 +19,7 @@ public class MaidUseShieldTask extends Behavior<EntityMaid> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel serverLevel, EntityMaid maid) {
         // 盾牌优先判断，节省性能
-        if (!maid.components().combat.canUseShield()) {
+        if (!maid.components.combat.canUseShield()) {
             return false;
         }
         LivingEntity target = maid.getTarget();

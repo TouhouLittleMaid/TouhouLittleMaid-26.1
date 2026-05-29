@@ -25,9 +25,9 @@ public class NetherWartCropHandler implements ISpecialCropHandler {
     @Override
     public void harvest(EntityMaid maid, BlockPos cropPos, BlockState cropState, boolean isDestroyMode) {
         if (isDestroyMode) {
-            maid.components().worldInteraction.destroyBlock(cropPos);
+            maid.components.worldInteraction.destroyBlock(cropPos);
         } else {
-            CombinedResourceHandler<ItemResource> availableInv = maid.components().item.getAvailableInv(false);
+            CombinedResourceHandler<ItemResource> availableInv = maid.components.item.getAvailableInv(false);
 
             ItemStack dropItemStack = new ItemStack(Items.NETHER_WART);
             ItemStack remindItemStack = ItemsUtil.insertItemStacked(availableInv, dropItemStack, false, null);

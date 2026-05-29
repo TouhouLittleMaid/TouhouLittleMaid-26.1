@@ -90,7 +90,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob {
     /**
      * 在 {@code super(...)} 返回后由字段初始化器赋值；Brain 构建发生在 super 链路中，此期间为 null。
      */
-    private final MaidComponents components = MaidComponents.create(this);
+    public final MaidComponents components = MaidComponents.create(this);
 
     public boolean guiOpening = false;
     public @Nullable MaidFishingHook fishing = null;
@@ -107,10 +107,6 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob {
 
     public EntityMaid(Level worldIn) {
         this(TYPE, worldIn);
-    }
-
-    public MaidComponents components() {
-        return components;
     }
 
     public static EntityDataAccessor<ChatBubbleDataCollection> getChatBubbleKey() {

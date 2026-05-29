@@ -97,7 +97,7 @@ public final class MaidBrain {
         Pair<Integer, BehaviorControl<? super EntityMaid>> followOwner = Pair.of(3, new MaidFollowOwnerTask(0.5f, 2));
         Pair<Integer, BehaviorControl<? super EntityMaid>> followOwnerVehicle = Pair.of(3, new MaidFollowOwnerVehicleTask(0.5f, 2));
         Pair<Integer, BehaviorControl<? super EntityMaid>> healSelf = Pair.of(3, new MaidHealSelfTask());
-        Pair<Integer, BehaviorControl<? super EntityMaid>> pickupItem = Pair.of(10, new MaidPickupEntitiesTask(maid -> maid.components().config.isPickup(), 0.6f));
+        Pair<Integer, BehaviorControl<? super EntityMaid>> pickupItem = Pair.of(10, new MaidPickupEntitiesTask(maid -> maid.components.config.isPickup(), 0.6f));
         Pair<Integer, BehaviorControl<? super EntityMaid>> clearSleep = Pair.of(99, new MaidClearSleepTask());
 
         List<Pair<Integer, BehaviorControl<? super EntityMaid>>> behaviors = Lists.newArrayList(
@@ -125,7 +125,7 @@ public final class MaidBrain {
 
         // 女仆随机走动
         Pair<Integer, BehaviorControl<? super EntityMaid>> supplemented = Pair.of(20, getLookAndRandomWalk(maid ->
-                !maid.components().swim.isGoingToBreath())
+                !maid.components.swim.isGoingToBreath())
         );
         Pair<Integer, BehaviorControl<? super EntityMaid>> updateActivity = Pair.of(99, new MaidUpdateActivityFromSchedule());
 
@@ -162,7 +162,7 @@ public final class MaidBrain {
         // 女仆随机走动
         pairMaidList.add(Pair.of(20, getLookAndRandomWalk(e ->
                 resolveTask(e).enableLookAndRandomWalk(e)
-                && !e.components().swim.isGoingToBreath()))
+                && !e.components.swim.isGoingToBreath()))
         );
 
         for (IExtraMaidBrain extra : ExtraMaidBrainManager.EXTRA_MAID_BRAINS) {
@@ -288,7 +288,7 @@ public final class MaidBrain {
      * {@link EntityMaid} 字段初始化器在 {@code super(...)} 之后才运行，Brain 构建期间 components 仍为 null。
      */
     private static IMaidTask resolveTask(EntityMaid maid) {
-        MaidComponents components = maid.components();
+        MaidComponents components = maid.components;
         if (components == null) {
             return TaskManager.getIdleTask();
         }
@@ -296,7 +296,7 @@ public final class MaidBrain {
     }
 
     private static MaidSchedule resolveSchedule(EntityMaid maid) {
-        MaidComponents components = maid.components();
+        MaidComponents components = maid.components;
         if (components == null) {
             return MaidSchedule.ALL;
         }

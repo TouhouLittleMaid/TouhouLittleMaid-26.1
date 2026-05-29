@@ -58,7 +58,7 @@ public class MaidFeedOwnerTask extends MaidCheckRateTask {
             IntList lowFoods = new IntArrayList();
             IntList highFoods = new IntArrayList();
 
-            CombinedResourceHandler<ItemResource> inv = maid.components().item.getAvailableInv(true);
+            CombinedResourceHandler<ItemResource> inv = maid.components.item.getAvailableInv(true);
 
             // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
             ItemsUtil.findStackSlot(inv, stack -> task.isFood(stack, player));

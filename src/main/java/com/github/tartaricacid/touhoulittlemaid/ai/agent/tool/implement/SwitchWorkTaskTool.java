@@ -108,19 +108,19 @@ public class SwitchWorkTaskTool implements ITool<SwitchWorkTaskTool.Result> {
 
         EntityMaid maid = callback.getMaid();
         IMaidTask task = optional.get();
-        IMaidTask currentTask = maid.components().task.getTask();
+        IMaidTask currentTask = maid.components.task.getTask();
         FunctionCallSwitchResult switchResult;
         int entityId = result.entityId();
 
         if (task != currentTask) {
-            maid.components().task.setTask(task);
+            maid.components.task.setTask(task);
         }
         switchResult = task.onFunctionCallSwitch(maid);
 
         // 日程表检查
-        Activity activity = maid.components().task.getScheduleDetail();
+        Activity activity = maid.components.task.getScheduleDetail();
         if (activity != Activity.WORK) {
-            String msg = SCHEDULED.formatted(taskId, maid.components().task.getSchedule().name());
+            String msg = SCHEDULED.formatted(taskId, maid.components.task.getSchedule().name());
             return callback.addToolResult(msg, toolId);
         }
 

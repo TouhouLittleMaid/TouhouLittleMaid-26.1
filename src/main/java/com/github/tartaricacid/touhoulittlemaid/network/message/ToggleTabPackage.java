@@ -27,7 +27,7 @@ public record ToggleTabPackage(int entityId, int tabId) implements CustomPacketP
                 ServerPlayer sender = (ServerPlayer) context.player();
                 Entity entity = sender.level.getEntity(message.entityId);
                 if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
-                    maid.components().misc.openMaidGui(sender, message.tabId);
+                    maid.components.misc.openMaidGui(sender, message.tabId);
                 }
             });
         }

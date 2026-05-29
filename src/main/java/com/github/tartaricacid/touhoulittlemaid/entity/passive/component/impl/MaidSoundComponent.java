@@ -56,7 +56,7 @@ public class MaidSoundComponent implements MaidComponent, BaseTickComponent, Sou
     @Override
     public boolean playSound(SoundEvent soundEvent, float volume, float pitch) {
         if (soundEvent.location().getPath().startsWith("maid") && !maid.level.isClientSide()) {
-            NetworkHandler.sendToNearby(maid, new PlayMaidSoundPackage(soundEvent.location(), maid.components().profile.getSoundPackId(), maid.getId()), 16);
+            NetworkHandler.sendToNearby(maid, new PlayMaidSoundPackage(soundEvent.location(), maid.components.profile.getSoundPackId(), maid.getId()), 16);
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ public class MaidSoundComponent implements MaidComponent, BaseTickComponent, Sou
         if (!mayPlaySound()) {
             return null;
         }
-        return maid.components().task.getTask().getAmbientSound(maid);
+        return maid.components.task.getTask().getAmbientSound(maid);
     }
 
     @Override

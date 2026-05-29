@@ -36,7 +36,7 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
 
     @Override
     protected void drawLeftEntity(GuiGraphicsExtractor graphics, int middleX, int middleY, float mouseX, float mouseY) {
-        float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(entity.components().profile.getModelId());
+        float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(entity.components.profile.getModelId());
         int centerX = (middleX - 256 / 2) / 2;
         int yOffset = (int) (45 * (renderItemScale - 1));
         InventoryScreen.extractEntityInInventoryFollowsMouse(
@@ -67,7 +67,7 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
     @Override
     protected void notifyModelChange(EntityMaid maid, MaidModelInfo info) {
         if (info.getEasterEgg() == null) {
-            maid.components().profile.setModelId(info.getModelId().toString());
+            maid.components.profile.setModelId(info.getModelId().toString());
             infoIn.setModelId(info.getModelId());
             getMinecraft().setScreen(this.modelSwitcherGui);
         }
@@ -123,9 +123,9 @@ public class ModelSwitcherModelGui extends AbstractModelGui<EntityMaid, MaidMode
 
         clearMaidDataResidue(maid, false);
         if (modelItem.getEasterEgg() != null) {
-            maid.components().profile.setModelId(EASTER_EGG_MODEL);
+            maid.components.profile.setModelId(EASTER_EGG_MODEL);
         } else {
-            maid.components().profile.setModelId(modelItem.getModelId().toString());
+            maid.components.profile.setModelId(modelItem.getModelId().toString());
         }
         InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,

@@ -90,9 +90,9 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
             maid.setCustomName(customNameComponent);
         }
         if (info.getEasterEgg() != null) {
-            maid.components().profile.setModelId(EASTER_EGG_MODEL);
+            maid.components.profile.setModelId(EASTER_EGG_MODEL);
         } else {
-            maid.components().profile.setModelId(info.getModelId().toString());
+            maid.components.profile.setModelId(info.getModelId().toString());
         }
 
         guiGraphics.enableScissor(pX, posY - 50, pX + width, posY);

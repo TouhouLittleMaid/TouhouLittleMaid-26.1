@@ -72,12 +72,12 @@ public class TaskMelon implements IFarmTask {
         ItemStack mainHandItem = maid.getMainHandItem();
         RegistryAccess access = maid.level.registryAccess();
         if (cropState.is(Blocks.MELON) && getEnchantmentLevel(access, Enchantments.SILK_TOUCH, mainHandItem) > 0) {
-            if (maid.components().worldInteraction.destroyBlock(cropPos, false)) {
+            if (maid.components.worldInteraction.destroyBlock(cropPos, false)) {
                 mainHandItem.hurtAndBreak(1, maid, EquipmentSlot.MAINHAND);
                 Block.popResource(maid.level, cropPos, Items.MELON.getDefaultInstance());
             }
         } else {
-            maid.components().worldInteraction.destroyBlock(cropPos);
+            maid.components.worldInteraction.destroyBlock(cropPos);
         }
     }
 

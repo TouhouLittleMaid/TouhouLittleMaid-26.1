@@ -33,7 +33,7 @@ public class MaidMilkTask extends MaidCheckRateTask {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, EntityMaid owner) {
         if (super.checkExtraStartConditions(worldIn, owner)) {
-            CombinedResourceHandler<ItemResource> availableInv = owner.components().item.getAvailableInv(true);
+            CombinedResourceHandler<ItemResource> availableInv = owner.components.item.getAvailableInv(true);
             return ItemsUtil.isStackIn(availableInv, stack -> stack.getItem() == Items.BUCKET) &&
                     ItemsUtil.isStackIn(availableInv, stack -> stack == ItemStack.EMPTY);
         }
@@ -56,7 +56,7 @@ public class MaidMilkTask extends MaidCheckRateTask {
                 });
 
         if (milkTarget != null && milkTarget.closerThan(maid, 2)) {
-            CombinedResourceHandler<ItemResource> availableInv = maid.components().item.getAvailableInv(false);
+            CombinedResourceHandler<ItemResource> availableInv = maid.components.item.getAvailableInv(false);
             ItemStack bucket = ItemsUtil.getStack(availableInv, stack -> stack.getItem() == Items.BUCKET);
             if (bucket != ItemStack.EMPTY) {
                 bucket.shrink(1);

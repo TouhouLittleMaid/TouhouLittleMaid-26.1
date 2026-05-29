@@ -22,7 +22,7 @@ public final class RandomEmoji {
         if ((maid.tickCount + offset) % checkRate != 0) {
             return;
         }
-        ChatBubbleComponent bubbleManager = maid.components().chatBubble;
+        ChatBubbleComponent bubbleManager = maid.components.chatBubble;
         boolean empty = bubbleManager.getChatBubbleDataCollection().isEmpty();
         if (!empty) {
             return;
@@ -45,7 +45,7 @@ public final class RandomEmoji {
             return;
         }
         EntityMaid maid = event.getMaid();
-        ChatBubbleComponent bubbleManager = maid.components().chatBubble;
+        ChatBubbleComponent bubbleManager = maid.components.chatBubble;
         boolean empty = bubbleManager.getChatBubbleDataCollection().isEmpty();
         if (empty) {
             KaomojiData.showHurtKaomoji(maid, bubbleManager);

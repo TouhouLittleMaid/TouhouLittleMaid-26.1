@@ -15,7 +15,7 @@ public class UseFavorabilityToolEvent {
     @SubscribeEvent
     public static void onInteract(InteractMaidEvent event) {
         EntityMaid maid = event.getMaid();
-        FavorabilityComponent manager = maid.components().favorability;
+        FavorabilityComponent manager = maid.components.favorability;
         ItemStack stack = event.getStack();
         Player player = event.getPlayer();
         int point = player.isShiftKeyDown() ? 1 : 64;

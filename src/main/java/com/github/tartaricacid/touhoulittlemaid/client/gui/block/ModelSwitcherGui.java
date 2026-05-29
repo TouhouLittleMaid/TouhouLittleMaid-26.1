@@ -76,7 +76,7 @@ public class ModelSwitcherGui extends Screen {
 
     private void addEditButton() {
         TileEntityModelSwitcher.ModeInfo info = this.infoList.get(selectedIndex);
-        maid.components().profile.setModelId(info.getModelId().toString());
+        maid.components.profile.setModelId(info.getModelId().toString());
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.button.skin"), b -> Minecraft.getInstance().setScreen(new ModelSwitcherModelGui(maid, info, this)))
                 .pos(leftPos + 55, topPos + 15).size(76, 20).build());

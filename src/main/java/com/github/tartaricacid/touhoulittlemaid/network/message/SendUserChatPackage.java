@@ -50,7 +50,7 @@ public record SendUserChatPackage(int maidId, String message,
         ServerPlayer sender = (ServerPlayer) context.player();
         Entity entity = sender.level.getEntity(message.maidId);
         if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender) && maid.isAlive()) {
-            maid.components().aiChat.chat(message.message, message.clientInfo, sender);
+            maid.components.aiChat.chat(message.message, message.clientInfo, sender);
         }
     }
 }

@@ -92,7 +92,7 @@ public class TaskFeedAnimal implements IAttackTask {
                 .filter(e -> e instanceof Animal)
                 .filter(e -> ((Animal) e).getAge() == 0)
                 .filter(e -> ((Animal) e).canFallInLove())
-                .filter(e -> ItemsUtil.isStackIn(maid.components().item.getAvailableInv(false), ((Animal) e)::isFood))
+                .filter(e -> ItemsUtil.isStackIn(maid.components.item.getAvailableInv(false), ((Animal) e)::isFood))
                 .filter(maid::canPathReach)
                 .findFirst();
     }

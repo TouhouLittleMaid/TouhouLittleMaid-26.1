@@ -154,7 +154,7 @@ public class TaskBowAttack implements IRangedAttackTask {
     private int findArrow(EntityMaid maid) {
         ItemStack mainHandItem = maid.getMainHandItem();
         if (mainHandItem.getItem() instanceof BowItem) {
-            var handler = maid.components().item.getAvailableInv(true);
+            var handler = maid.components.item.getAvailableInv(true);
             return ItemsUtil.findStackSlot(handler, ((BowItem) mainHandItem.getItem()).getAllSupportedProjectiles());
         }
         return -1;
@@ -167,7 +167,7 @@ public class TaskBowAttack implements IRangedAttackTask {
             return null;
         }
 
-        var handler = maid.components().item.getAvailableInv(true);
+        var handler = maid.components.item.getAvailableInv(true);
         ItemStack arrowStack = handler.getResource(slot).toStack();
         ItemStack mainHandItem = maid.getMainHandItem();
         RegistryAccess access = maid.level.registryAccess();

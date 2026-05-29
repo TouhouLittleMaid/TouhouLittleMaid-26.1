@@ -41,7 +41,7 @@ public class MaidPickupEntitiesSensor extends Sensor<EntityMaid> {
         List<Entity> allEntities = worldIn.getEntitiesOfClass(Entity.class, aabb, Entity::isAlive);
         allEntities.sort(Comparator.comparingDouble(maid::distanceToSqr));
         List<Entity> optional = allEntities.stream()
-                .filter(e -> maid.components().item.canPickup(e, true))
+                .filter(e -> maid.components.item.canPickup(e, true))
                 .filter(e -> e.closerThan(maid, radius + 1))
                 .filter(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(maid::hasLineOfSight).collect(Collectors.toList());

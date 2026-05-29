@@ -181,7 +181,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
      * 返回 MaidInvWrapper，方便触发 MaidRequestItemEvent 事件时使用
      */
     public CombinedResourceHandler<ItemResource> getAvailableBackpackInv() {
-        int maxContainerIndex = maid.components().backpack.getMaidBackpackType().getAvailableMaxContainerIndex();
+        int maxContainerIndex = maid.components.backpack.getMaidBackpackType().getAvailableMaxContainerIndex();
         var rangedWrapper = RangedResourceHandler.of(maidInv, 0, maxContainerIndex);
         return new MaidInvWrapper(maid, rangedWrapper);
     }
@@ -194,7 +194,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
      * @param handsFirst 是否将手持物品栏放在前面，放在前面会优先使用手持物品栏的物品
      */
     public CombinedResourceHandler<ItemResource> getAvailableInv(boolean handsFirst) {
-        int maxContainerIndex = maid.components().backpack.getMaidBackpackType().getAvailableMaxContainerIndex();
+        int maxContainerIndex = maid.components.backpack.getMaidBackpackType().getAvailableMaxContainerIndex();
         var combinedInvWrapper = RangedResourceHandler.of(maidInv, 0, maxContainerIndex);
         if (handsFirst) {
             return new MaidInvWrapper(maid, handsInvWrapper, combinedInvWrapper);
@@ -263,7 +263,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
             if (!simulate) {
                 // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
                 maid.take(arrow, 1);
-                maid.components().sound.tryPlayMaidPickupSound();
+                maid.components.sound.tryPlayMaidPickupSound();
                 arrow.discard();
             }
             return true;
@@ -293,7 +293,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
             if (!simulate) {
                 // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
                 maid.take(entityItem, count - itemstack.getCount());
-                maid.components().sound.tryPlayMaidPickupSound();
+                maid.components.sound.tryPlayMaidPickupSound();
                 ItemStack copy = new ItemStack(itemstack.getItem(), count - itemstack.getCount());
                 // 如果遍历塞完后发现为空了
                 if (itemstack.isEmpty()) {
@@ -318,7 +318,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
         if (!maid.level.isClientSide() && entityXPOrb.isAlive() && entityXPOrb.tickCount > 2) {
             // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
             maid.take(entityXPOrb, 1);
-            maid.components().sound.tryPlayMaidPickupSound();
+            maid.components.sound.tryPlayMaidPickupSound();
 
             // 普通的经验球可以修补护甲栏，主副手和女仆饰品栏
             var allItems = new CombinedResourceHandler<>(armorInvWrapper, handsInvWrapper, maidBauble);
@@ -329,7 +329,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
                 itemstack.setDamageValue(itemstack.getDamageValue() - i);
             }
             if (entityXPOrb.getValue() > 0) {
-                maid.components().stats.setExperience(maid.components().stats.getExperience() + entityXPOrb.getValue());
+                maid.components.stats.setExperience(maid.components.stats.getExperience() + entityXPOrb.getValue());
             }
             entityXPOrb.discard();
         }
@@ -343,7 +343,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
         if (!maid.level.isClientSide() && powerPoint.isAlive() && powerPoint.throwTime == 0) {
             // 这是向客户端同步数据用的，如果加了这个方法，会有短暂的拾取动画和音效
             powerPoint.take(maid, 1);
-            maid.components().sound.tryPlayMaidPickupSound();
+            maid.components.sound.tryPlayMaidPickupSound();
 
             // P 点则可以修补女仆身上所有的物品栏（包括背包）
             var allItems = getAllInv();
@@ -355,14 +355,14 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
                 itemstack.setDamageValue(itemstack.getDamageValue() - i);
             }
             if (xpValue > 0) {
-                maid.components().stats.setExperience(maid.components().stats.getExperience() + xpValue);
+                maid.components.stats.setExperience(maid.components.stats.getExperience() + xpValue);
             }
             powerPoint.discard();
         }
     }
 
     public boolean canPickup(Entity pickupEntity, boolean checkInWater) {
-        if (maid.components().config.isPickup()) {
+        if (maid.components.config.isPickup()) {
             if (checkInWater && pickupEntity.isInWater()) {
                 return false;
             }
@@ -391,7 +391,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
             pickupBox = maid.getBoundingBox().inflate(0.5);
         }
 
-        List<Entity> entityList = maid.level.getEntities(maid, pickupBox, e -> maid.components().item.canPickup(e, false));
+        List<Entity> entityList = maid.level.getEntities(maid, pickupBox, e -> maid.components.item.canPickup(e, false));
         if (!entityList.isEmpty() && maid.isAlive()) {
             for (Entity entityPickup : entityList) {
                 // 如果是物品
@@ -430,7 +430,7 @@ public class MaidItemComponent implements MaidComponent, SaveComponent, ItemUseH
             tombstone.insertItem(extractItem);
         }
         // 背包额外数据
-        IMaidBackpack maidBackpack = maid.components().backpack.getMaidBackpackType();
+        IMaidBackpack maidBackpack = maid.components.backpack.getMaidBackpackType();
         tombstone.insertItem(maidBackpack.getTakeOffItemStack(ItemStack.EMPTY, null, maid));
         maidBackpack.onSpawnTombstone(maid, tombstone);
         // 胶片

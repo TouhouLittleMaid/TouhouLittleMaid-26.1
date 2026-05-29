@@ -202,7 +202,7 @@ public abstract class MaidAIChatData extends MaidAIChatSerializable {
     }
 
     public Optional<CharacterSetting> getSetting() {
-        String modelId = this.maid.components().profile.getModelId();
+        String modelId = this.maid.components.profile.getModelId();
         return SettingReader.getSetting(modelId);
     }
 

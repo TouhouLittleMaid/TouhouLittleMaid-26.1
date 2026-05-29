@@ -29,7 +29,7 @@ public class EntityDeathEvent {
         }
         Entity causingEntity = source.getEntity();
         if (causingEntity instanceof EntityMaid maid) {
-            maid.components().killRecord.onTargetDeath(maid, event.getEntity());
+            maid.components.killRecord.onTargetDeath(maid, event.getEntity());
         }
     }
 

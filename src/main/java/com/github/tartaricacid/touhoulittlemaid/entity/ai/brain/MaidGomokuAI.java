@@ -18,7 +18,7 @@ public final class MaidGomokuAI {
     public static final int HARD_COUNT = 24;
 
     public static int getRank(EntityMaid maid) {
-        int maidCount = maid.components().game.getGomokuWinCount();
+        int maidCount = maid.components.game.getGomokuWinCount();
         if (maidCount <= EASY_COUNT) {
             return 1;
         } else if (maidCount <= NORMAL_COUNT) {

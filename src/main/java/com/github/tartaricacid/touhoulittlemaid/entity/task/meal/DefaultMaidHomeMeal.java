@@ -33,7 +33,7 @@ public class DefaultMaidHomeMeal implements IMaidMeal {
         FoodProperties foodProperties = stack.get(DataComponents.FOOD);
         if (foodProperties != null) {
             // 调用饰品
-            maid.components().item.getMaidBauble().fireEvent((b, s) -> {
+            maid.components.item.getMaidBauble().fireEvent((b, s) -> {
                 b.onMaidEat(maid, s, stack, MaidMealType.HOME_MEAL);
                 return false;
             });
@@ -48,7 +48,7 @@ public class DefaultMaidHomeMeal implements IMaidMeal {
             if (0 < tailPoint && maid.getRandom().nextInt(MAX_PROBABILITY) < tailPoint) {
                 point = point + 1;
             }
-            maid.components().favorability.apply(Type.HOME_MEAL, point);
+            maid.components.favorability.apply(Type.HOME_MEAL, point);
             if (point > 0) {
                 NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.HEART, stack.getUseDuration(maid)));
             }

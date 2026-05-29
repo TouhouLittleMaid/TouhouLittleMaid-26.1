@@ -37,7 +37,7 @@ public final class NearbyEntityMaidContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            AABB scanBox = maid.components().task.getTask().searchDimension(maid);
+            AABB scanBox = maid.components.task.getTask().searchDimension(maid);
             List<LivingEntity> entities = maid.level.getEntitiesOfClass(LivingEntity.class, scanBox, e -> e != maid && e.isAlive());
 
             if (entities.isEmpty()) {

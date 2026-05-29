@@ -33,7 +33,7 @@ public class DefaultMaidWorkMeal implements IMaidMeal {
         FoodProperties foodProperties = stack.get(DataComponents.FOOD);
         if (foodProperties != null) {
             // 调用饰品
-            maid.components().item.getMaidBauble().fireEvent((b, s) -> {
+            maid.components.item.getMaidBauble().fireEvent((b, s) -> {
                 b.onMaidEat(maid, s, stack, MaidMealType.WORK_MEAL);
                 return false;
             });
@@ -44,7 +44,7 @@ public class DefaultMaidWorkMeal implements IMaidMeal {
             float total = nutrition + nutrition * saturationModifier * 2;
             // 原版的熟牛肉之类的一般在 20 左右（除了迷之炖菜为 34.2）
             int point = maid.getRandom().nextInt(MAX_PROBABILITY) < total ? 0 : 1;
-            maid.components().favorability.apply(Type.WORK_MEAL, point);
+            maid.components.favorability.apply(Type.WORK_MEAL, point);
             if (point == 1) {
                 NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.HEART, stack.getUseDuration(maid)));
             }

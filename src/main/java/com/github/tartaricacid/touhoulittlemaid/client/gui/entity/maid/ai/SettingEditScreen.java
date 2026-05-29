@@ -61,7 +61,7 @@ public class SettingEditScreen extends Screen {
         super(Component.literal("Setting Edit Screen"));
         this.parent = parent;
         this.maid = maid;
-        this.manager = maid.components().aiChat;
+        this.manager = maid.components.aiChat;
     }
 
     @Override
@@ -145,7 +145,7 @@ public class SettingEditScreen extends Screen {
         if (this.getMinecraft().player != null) {
             author = this.getMinecraft().player.getScoreboardName();
         }
-        String modelId = this.maid.components().profile.getModelId();
+        String modelId = this.maid.components.profile.getModelId();
         return new MetaData(0, author, Collections.singletonList(modelId), lang);
     }
 
@@ -187,7 +187,7 @@ public class SettingEditScreen extends Screen {
         if (world == null) {
             return;
         }
-        Optional<MaidModelInfo> info = CustomPackLoader.MAID_MODELS.getInfo(rawMaid.components().profile.getModelId());
+        Optional<MaidModelInfo> info = CustomPackLoader.MAID_MODELS.getInfo(rawMaid.components.profile.getModelId());
         if (info.isEmpty()) {
             return;
         }
@@ -198,9 +198,9 @@ public class SettingEditScreen extends Screen {
 
         clearMaidDataResidue(maid, false);
         if (modelInfo.getEasterEgg() != null) {
-            maid.components().profile.setModelId(EASTER_EGG_MODEL);
+            maid.components.profile.setModelId(EASTER_EGG_MODEL);
         } else {
-            maid.components().profile.setModelId(modelInfo.getModelId().toString());
+            maid.components.profile.setModelId(modelInfo.getModelId().toString());
         }
         float renderItemScale = modelInfo.getRenderItemScale();
         InventoryScreen.extractEntityInInventoryFollowsMouse(

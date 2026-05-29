@@ -19,7 +19,7 @@ public class MaidSoundFreqEvent {
                 event.setSound(null);
                 return;
             }
-            double soundFrequency = maid.components().config.getSoundFreq();
+            double soundFrequency = maid.components.config.getSoundFreq();
             soundFrequency = soundFrequency * MaidConfig.GLOBAL_MAID_SOUND_FREQUENCY.get() / 100;
             if (soundFrequency < 1 && !maidSoundInstance.isTestSound()) {
                 if (Math.random() > soundFrequency) {

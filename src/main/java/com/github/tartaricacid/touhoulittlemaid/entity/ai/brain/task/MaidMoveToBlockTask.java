@@ -106,7 +106,7 @@ public abstract class MaidMoveToBlockTask extends MaidCheckRateTask {
     }
 
     private boolean checkOwnerPos(EntityMaid maid, BlockPos mutableBlockPos) {
-        if (maid.components().config.isHomeModeEnable()) {
+        if (maid.components.config.isHomeModeEnable()) {
             return true;
         }
         return maid.getOwner() != null && mutableBlockPos.closerToCenterThan(maid.getOwner().position(), 8);

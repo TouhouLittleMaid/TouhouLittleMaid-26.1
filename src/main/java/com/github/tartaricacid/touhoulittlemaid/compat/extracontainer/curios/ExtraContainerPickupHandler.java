@@ -79,7 +79,7 @@ public class ExtraContainerPickupHandler {
     private void handlePickupEffects(EntityMaid maid, ItemEntity itemEntity, ItemStack remaining, int originCount) {
         int pickedCount = originCount - remaining.getCount();
         maid.take(itemEntity, pickedCount);
-        maid.components().sound.tryPlayMaidPickupSound();
+        maid.components.sound.tryPlayMaidPickupSound();
 
         ItemStack pickedStack = new ItemStack(itemEntity.getItem().getItem(), pickedCount);
         NeoForge.EVENT_BUS.post(new MaidPickupEvent.ItemResultPost(maid, pickedStack));

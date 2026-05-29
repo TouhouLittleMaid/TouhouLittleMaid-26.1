@@ -84,7 +84,7 @@ public class MaidMiscComponent implements MaidComponent, BaseTickComponent, Inte
             // 利用短路原理，逐个触发对应的交互事件
             if (NeoForge.EVENT_BUS.post(event).isCanceled()
                 || stack.interactLivingEntity(playerIn, maid, hand).consumesAction()
-                || maid.components().misc.openMaidGui(playerIn)) {
+                || maid.components.misc.openMaidGui(playerIn)) {
                 return InteractionResult.SUCCESS;
             }
         } else {
@@ -112,7 +112,7 @@ public class MaidMiscComponent implements MaidComponent, BaseTickComponent, Inte
                 maid.playSound(InitSounds.MAID_TAMED.get(), 1, 1);
                 if (player instanceof ServerPlayer serverPlayer) {
                     InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.TAMED_MAID);
-                    if (maid.components().stats.isStructureSpawn()) {
+                    if (maid.components.stats.isStructureSpawn()) {
                         InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.TAMED_MAID_FROM_STRUCTURE);
                     }
                 }
@@ -146,11 +146,11 @@ public class MaidMiscComponent implements MaidComponent, BaseTickComponent, Inte
 
     private MenuProvider getGuiProvider(int tabIndex) {
         return switch (tabIndex) {
-            case TabIndex.TASK_CONFIG -> maid.components().task.getTask().getTaskConfigGuiProvider(maid);
+            case TabIndex.TASK_CONFIG -> maid.components.task.getTask().getTaskConfigGuiProvider(maid);
             case TabIndex.MAID_CONFIG -> MaidConfigContainer.create(maid.getId());
             case TabIndex.BAUBLE -> BaubleContainer.create(maid);
             case TabIndex.CURIOS -> CuriosCompat.create(maid);
-            default -> maid.components().backpack.getMaidBackpackType().getGuiProvider(maid.getId());
+            default -> maid.components.backpack.getMaidBackpackType().getGuiProvider(maid.getId());
         };
     }
 
@@ -163,7 +163,7 @@ public class MaidMiscComponent implements MaidComponent, BaseTickComponent, Inte
     private void randomRestoreHealth() {
         if (maid.getHealth() < maid.getMaxHealth() && maid.getRandom().nextFloat() < 0.0025) {
             maid.heal(1);
-            maid.components().particle.spawnRestoreHealthParticle(maid.getRandom().nextInt(3) + 7);
+            maid.components.particle.spawnRestoreHealthParticle(maid.getRandom().nextInt(3) + 7);
         }
     }
 
@@ -183,10 +183,10 @@ public class MaidMiscComponent implements MaidComponent, BaseTickComponent, Inte
 
     @Override
     public void thunderHit(ServerLevel world, LightningBolt lightning) {
-        if (!maid.components().stats.isStruckByLightning()) {
+        if (!maid.components.stats.isStruckByLightning()) {
             double beforeMaxHealth = maid.getAttributeBaseValue(Attributes.MAX_HEALTH);
             Objects.requireNonNull(maid.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(beforeMaxHealth + 20);
-            maid.components().stats.setStruckByLightning(true);
+            maid.components.stats.setStruckByLightning(true);
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.LIGHTNING_BOLT);
                 if (maid.getMaxHealth() >= 100) {
@@ -217,7 +217,7 @@ public class MaidMiscComponent implements MaidComponent, BaseTickComponent, Inte
             return typeNameEvent.getTypeName();
         }
         // 然后才是默认模型名
-        String modelId = maid.components().profile.getModelId();
+        String modelId = maid.components.profile.getModelId();
         MutableComponent rawTypeName = Component.literal(maid.getType().getDescriptionId());
         Optional<MaidModelInfo> info = ServerCustomPackLoader.SERVER_MAID_MODELS.getInfo(modelId);
         return info.map(maidModelInfo -> ParseI18n.parse(maidModelInfo.getName()))
@@ -236,7 +236,7 @@ public class MaidMiscComponent implements MaidComponent, BaseTickComponent, Inte
             int skipRandom = maid.getRandom().nextInt(modelSize);
             Optional<String> modelId = ServerCustomPackLoader.SERVER_MAID_MODELS.getModelIdSet().stream().skip(skipRandom).findFirst();
             return modelId.map(id -> {
-                maid.components().profile.setModelId(id);
+                maid.components.profile.setModelId(id);
                 return spawnDataIn;
             }).orElse(spawnDataIn);
         }

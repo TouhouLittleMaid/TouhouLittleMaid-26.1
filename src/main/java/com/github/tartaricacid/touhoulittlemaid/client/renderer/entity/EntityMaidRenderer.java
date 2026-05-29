@@ -108,19 +108,19 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         state.health = entity.getHealth();
         state.maxHealth = entity.getMaxHealth();
 
-        state.begging = entity.components().animation.isBegging();
-        state.swingingArms = entity.components().animation.isSwingingArms();
+        state.begging = entity.components.animation.isBegging();
+        state.swingingArms = entity.components.animation.isSwingingArms();
         state.maidInSittingPose = entity.isMaidInSittingPose();
         state.hasHelmet = !entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty();
         state.hasChestPlate = !entity.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
         state.hasLeggings = !entity.getItemBySlot(EquipmentSlot.LEGS).isEmpty();
         state.hasBoots = !entity.getItemBySlot(EquipmentSlot.FEET).isEmpty();
-        state.hasBackpack = entity.components().backpack.hasBackpack();
+        state.hasBackpack = entity.components.backpack.hasBackpack();
         state.hurt = entity.hurtTime > 0;
         state.hasFishingHook = entity.hasFishingHook();
         state.onClimbable = entity.onClimbable();
-        state.taskId = entity.components().task.getTask().getUid().getPath();
-        state.modelId = entity.components().profile.getModelId();
+        state.taskId = entity.components.task.getTask().getUid().getPath();
+        state.modelId = entity.components.profile.getModelId();
 
         // 卓越前线实体隐藏
         if (SWarfareCompat.shouldHideLivingRender(entity)) {
@@ -154,10 +154,10 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         }
 
         // 暂定只能女仆显示
-        if (MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() && entity.components().config.isChatBubbleShow()) {
+        if (MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() && entity.components.config.isChatBubbleShow()) {
             Vec3 vec3 = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getViewYRot(partialTicks));
             if (vec3 != null && ClientHooks.isNameplateInRenderDistance(entity, state.distanceToCameraSq)) {
-                var chatBubble = entity.components().chatBubble.getChatBubbleDataCollection();
+                var chatBubble = entity.components.chatBubble.getChatBubbleDataCollection();
                 if (chatBubble != null && !chatBubble.isEmpty()) {
                     state.showBubble = true;
                     state.bubbleOffset = vec3;
@@ -167,9 +167,9 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         }
 
         // 背部物品
-        state.showBackpack = entity.components().config.isShowBackpack();
+        state.showBackpack = entity.components.config.isShowBackpack();
         if (!entity.isSleeping() && !entity.isInvisible()) {
-            state.backpack = state.showBackpack ? entity.components().backpack.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
+            state.backpack = state.showBackpack ? entity.components.backpack.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
             ItemStack backpackShowingItem = entity.getBackpackShowItem();
             if (GunClientUtil.isGun(backpackShowingItem)) {
                 // 目前 26.1 没有枪械模组

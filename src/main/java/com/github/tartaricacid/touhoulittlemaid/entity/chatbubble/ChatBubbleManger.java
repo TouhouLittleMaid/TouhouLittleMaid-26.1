@@ -16,7 +16,7 @@ public class ChatBubbleManger {
      */
     @Deprecated
     public static void addInnerChatText(EntityMaid maid, String key) {
-        maid.components().chatBubble.addTextChatBubble(key);
+        maid.components.chatBubble.addTextChatBubble(key);
     }
 
     @Deprecated

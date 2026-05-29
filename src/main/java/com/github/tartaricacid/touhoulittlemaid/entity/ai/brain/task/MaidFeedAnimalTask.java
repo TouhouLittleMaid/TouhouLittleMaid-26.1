@@ -38,7 +38,7 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
     @Override
     protected void start(ServerLevel worldIn, EntityMaid maid, long gameTimeIn) {
         feedEntity = null;
-        CombinedResourceHandler<@NotNull ItemResource> availableInv = maid.components().item.getAvailableInv(false);
+        CombinedResourceHandler<@NotNull ItemResource> availableInv = maid.components.item.getAvailableInv(false);
         long animalCount = this.getEntities(maid)
                 .find(e -> maid.isWithinHome(e.blockPosition()))
                 .filter(Entity::isAlive)
@@ -74,7 +74,7 @@ public class MaidFeedAnimalTask extends MaidCheckRateTask {
                 feedEntity = null;
             }
         } else {
-            this.chatBubbleKey = maid.components().chatBubble.addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.feed_animal.max_number", chatBubbleKey);
+            this.chatBubbleKey = maid.components.chatBubble.addTextChatBubbleIfTimeout("chat_bubble.touhou_little_maid.inner.feed_animal.max_number", chatBubbleKey);
         }
     }
 

@@ -48,13 +48,13 @@ public record MaidTaskPackage(int id, Identifier uid) implements CustomPacketPay
                     if (!task.isEnable(maid)) {
                         return;
                     }
-                    maid.components().task.setTask(task);
+                    maid.components.task.setTask(task);
                     if (!TaskManager.getIdleTask().equals(task) && maid.getOwner() instanceof ServerPlayer serverPlayer) {
                         InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.SWITCH_TASK);
                     }
                     // 如果此时玩家打开的是配置界面
                     if (sender.containerMenu instanceof TaskConfigContainer) {
-                        maid.components().misc.openMaidGui(sender, TabIndex.TASK_CONFIG);
+                        maid.components.misc.openMaidGui(sender, TabIndex.TASK_CONFIG);
                     }
                 }
             });

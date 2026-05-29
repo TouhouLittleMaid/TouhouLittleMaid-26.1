@@ -88,11 +88,11 @@ public class MaidSnowballTargetTask extends Behavior<EntityMaid> {
             }
 
             // 如果女仆处于捡雪球动画中，禁止移动
-            if (owner.components().animation.animationId == MaidAnimationPackage.PICK_UP_SNOWBALL) {
+            if (owner.components.animation.animationId == MaidAnimationPackage.PICK_UP_SNOWBALL) {
                 // 捡雪球动画默认 1750 毫秒
-                if (System.currentTimeMillis() - owner.components().animation.animationRecordTime > 1750) {
-                    owner.components().animation.animationId = MaidAnimationPackage.NONE;
-                    owner.components().animation.animationRecordTime = -1L;
+                if (System.currentTimeMillis() - owner.components.animation.animationRecordTime > 1750) {
+                    owner.components.animation.animationId = MaidAnimationPackage.NONE;
+                    owner.components.animation.animationRecordTime = -1L;
                 }
                 owner.getNavigation().stop();
             }

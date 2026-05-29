@@ -36,7 +36,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
 
     @Override
     protected void drawLeftEntity(GuiGraphicsExtractor graphics, int middleX, int middleY, float mouseX, float mouseY) {
-        float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(entity.components().profile.getModelId());
+        float renderItemScale = CustomPackLoader.MAID_MODELS.getModelRenderItemScale(entity.components.profile.getModelId());
         int centerX = (middleX - 256 / 2) / 2;
         int yOffset = (int) (45 * (renderItemScale - 1));
         InventoryScreen.extractEntityInInventoryFollowsMouse(
@@ -73,8 +73,8 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
                 ClientPacketDistributor.sendToServer(new SetMaidSoundIdPackage(maid.getId(), useSoundPackId));
             }
             // 切换模型时，重置手部动作
-            maid.components().animation.handItemsForAnimation[0] = ItemStack.EMPTY;
-            maid.components().animation.handItemsForAnimation[1] = ItemStack.EMPTY;
+            maid.components.animation.handItemsForAnimation[0] = ItemStack.EMPTY;
+            maid.components.animation.handItemsForAnimation[1] = ItemStack.EMPTY;
         }
     }
 
@@ -128,9 +128,9 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
 
         clearMaidDataResidue(maid, false);
         if (modelItem.getEasterEgg() != null) {
-            maid.components().profile.setModelId(EASTER_EGG_MODEL);
+            maid.components.profile.setModelId(EASTER_EGG_MODEL);
         } else {
-            maid.components().profile.setModelId(modelItem.getModelId().toString());
+            maid.components.profile.setModelId(modelItem.getModelId().toString());
         }
         InventoryScreen.extractEntityInInventoryFollowsMouse(
                 graphics,

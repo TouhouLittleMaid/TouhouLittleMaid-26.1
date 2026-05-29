@@ -91,12 +91,12 @@ public class MaidAttackStrafingAnyItemTask extends Behavior<EntityMaid> {
 
     @Override
     protected void start(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
-        entityIn.components().animation.setSwingingArms(true);
+        entityIn.components.animation.setSwingingArms(true);
     }
 
     @Override
     protected void stop(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
-        entityIn.components().animation.setSwingingArms(false);
+        entityIn.components.animation.setSwingingArms(false);
         entityIn.getMoveControl().strafe(0, 0);
     }
 

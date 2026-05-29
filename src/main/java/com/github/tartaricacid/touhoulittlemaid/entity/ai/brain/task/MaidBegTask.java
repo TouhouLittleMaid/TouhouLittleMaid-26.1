@@ -49,13 +49,13 @@ public class MaidBegTask extends Behavior<EntityMaid> {
             } else {
                 BehaviorUtils.lookAtEntity(maid, owner);
             }
-            maid.components().animation.setBegging(true);
+            maid.components.animation.setBegging(true);
         }
     }
 
     @Override
     protected void stop(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
-        entityIn.components().animation.setBegging(false);
+        entityIn.components.animation.setBegging(false);
     }
 
     private boolean holdTemptationItem(LivingEntity e) {

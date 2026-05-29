@@ -31,7 +31,7 @@ public class MaidClimbTask extends Behavior<EntityMaid> {
     @Override
     protected boolean checkExtraStartConditions(ServerLevel pLevel, EntityMaid maid) {
         // 如果禁用了主动攀爬能力，就直接返回，不执行后续的操作
-        if (!maid.components().config.isActiveClimbing()) {
+        if (!maid.components.config.isActiveClimbing()) {
             return false;
         }
         return maid.onClimbable();
@@ -46,11 +46,11 @@ public class MaidClimbTask extends Behavior<EntityMaid> {
     protected void tick(ServerLevel level, EntityMaid maid, long pGameTime) {
         Path path = maid.getNavigation().getPath();
         if (path == null || path.isDone()) {
-            maid.components().climb.setCanClimb(false);
+            maid.components.climb.setCanClimb(false);
             return;
         }
 
-        maid.components().climb.setCanClimb(true);
+        maid.components.climb.setCanClimb(true);
         // 获取基础信息：下一个要到达的节点、女仆当前所处坐标、方块
         int beGoNodeIndex = path.getNextNodeIndex();
         Node beGoNode = path.getNode(beGoNodeIndex);
@@ -115,7 +115,7 @@ public class MaidClimbTask extends Behavior<EntityMaid> {
 
             boolean beWalkSurface = pointNext.y == currentNext.y;
             if (beWalkSurface || pointNext == path.getEndNode() || maidFeetPos.getY() == currentNext.y) {
-                maid.components().climb.setCanClimb(false);
+                maid.components.climb.setCanClimb(false);
                 // 给予女仆当前坐标与水平节点的x、z方向的差值向量，
                 // 让其向着那个水平节点进发，脱离楼梯等可爬行物体，不再继续爬楼梯或者停留在上面
                 int x1 = pointNext.x - currentNext.x;
@@ -132,6 +132,6 @@ public class MaidClimbTask extends Behavior<EntityMaid> {
     @Override
     protected void stop(ServerLevel pLevel, EntityMaid maid, long pGameTime) {
         maid.setShiftKeyDown(false);
-        maid.components().climb.setCanClimb(false);
+        maid.components.climb.setCanClimb(false);
     }
 }

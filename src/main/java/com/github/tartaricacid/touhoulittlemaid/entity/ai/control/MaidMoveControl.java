@@ -25,7 +25,7 @@ public class MaidMoveControl extends MoveControl {
     @Override
     public void tick() {
         // 如何女仆想游泳了
-        if (this.maid.components().swim.wantToSwim()) {
+        if (this.maid.components.swim.wantToSwim()) {
             if (this.maid.isUnderWater() && this.maid.getNavigation().isDone()) {
                 this.maid.setSpeed(0.0F);
                 return;
@@ -42,8 +42,8 @@ public class MaidMoveControl extends MoveControl {
             float speed = (float) (this.speedModifier * this.maid.getAttributeValue(Attributes.MOVEMENT_SPEED));
             float speedLerp = Mth.lerp(1, this.maid.getSpeed(), speed);
 
-            if (maid.components().swim.getSwimTarget() != null) {
-                maid.getLookControl().setLookAt(maid.components().swim.getSwimTarget().getCenter());
+            if (maid.components.swim.getSwimTarget() != null) {
+                maid.getLookControl().setLookAt(maid.components.swim.getSwimTarget().getCenter());
             }
 
             // 太慢了，3 倍基础速度

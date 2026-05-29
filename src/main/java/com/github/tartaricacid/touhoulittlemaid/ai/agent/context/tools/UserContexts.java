@@ -36,7 +36,7 @@ public final class UserContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            String ownerName = maid.components().aiChat.ownerName;
+            String ownerName = maid.components.aiChat.ownerName;
             if (StringUtils.isBlank(ownerName)) {
                 return DEFAULT_OWNER_NAME;
             }

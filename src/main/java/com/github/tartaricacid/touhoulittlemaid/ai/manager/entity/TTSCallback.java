@@ -38,7 +38,7 @@ public class TTSCallback implements ResponseCallback<byte[]> {
                     MutableComponent errorMessage = ErrorCode.getErrorMessage(ServiceType.TTS, errorCode, cause);
                     player.sendSystemMessage(errorMessage.withStyle(ChatFormatting.RED));
                 }
-                maid.components().chatBubble.addLLMChatText(chatText, waitingChatBubbleId);
+                maid.components.chatBubble.addLLMChatText(chatText, waitingChatBubbleId);
             });
         }
         TouhouLittleMaid.LOGGER.error("LLM request failed: {}, error is {}", request, throwable.getMessage());
@@ -56,7 +56,7 @@ public class TTSCallback implements ResponseCallback<byte[]> {
         MinecraftServer server = serverLevel.getServer();
         server.submit(() -> {
             PacketDistributor.sendToPlayer(player, new TTSAudioToClientPackage(maid.getId(), data));
-            maid.components().chatBubble.addLLMChatText(chatText, waitingChatBubbleId);
+            maid.components.chatBubble.addLLMChatText(chatText, waitingChatBubbleId);
         });
     }
 

@@ -60,19 +60,19 @@ public record SpawnParticlePackage(int entityId, Type particleType, int delayTic
         if (e instanceof EntityMaid maid && e.isAlive()) {
             switch (message.particleType) {
                 case EXPLOSION:
-                    maid.components().particle.spawnExplosionParticle();
+                    maid.components.particle.spawnExplosionParticle();
                     return;
                 case BUBBLE:
-                    maid.components().particle.spawnBubbleParticle();
+                    maid.components.particle.spawnBubbleParticle();
                     return;
                 case HEART:
-                    maid.components().particle.spawnHeartParticle();
+                    maid.components.particle.spawnHeartParticle();
                     return;
                 case RANK_UP:
-                    maid.components().particle.spawnRankUpParticle();
+                    maid.components.particle.spawnRankUpParticle();
                     return;
                 case HEAL:
-                    maid.components().particle.spawnRestoreHealthParticle(maid.getRandom().nextInt(3) + 7);
+                    maid.components.particle.spawnRestoreHealthParticle(maid.getRandom().nextInt(3) + 7);
                     return;
                 default:
             }

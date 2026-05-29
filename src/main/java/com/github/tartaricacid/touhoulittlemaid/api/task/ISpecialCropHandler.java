@@ -34,10 +34,10 @@ public interface ISpecialCropHandler {
      */
     default void harvest(EntityMaid maid, BlockPos cropPos, BlockState cropState, boolean isDestroyMode) {
         if (isDestroyMode) {
-            maid.components().worldInteraction.destroyBlock(cropPos);
+            maid.components.worldInteraction.destroyBlock(cropPos);
         } else if (cropState.getBlock() instanceof CropBlockAccessor crop) {
             BlockEntity blockEntity = cropState.hasBlockEntity() ? maid.level.getBlockEntity(cropPos) : null;
-            maid.components().item.dropResourcesToMaidInv(cropState, maid.level, cropPos, blockEntity, maid.getMainHandItem());
+            maid.components.item.dropResourcesToMaidInv(cropState, maid.level, cropPos, blockEntity, maid.getMainHandItem());
             maid.level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, cropPos, Block.getId(cropState));
             // 直接设置 Age 为 0
             if (cropState.hasProperty(crop.tlmAgeProperty())) {
@@ -72,7 +72,7 @@ public interface ISpecialCropHandler {
      */
     default ItemStack plant(EntityMaid maid, BlockPos basePos, BlockState baseState, ItemStack seed) {
         if (seed.getItem() instanceof BlockItem) {
-            maid.components().worldInteraction.placeItemBlock(basePos.above(), seed);
+            maid.components.worldInteraction.placeItemBlock(basePos.above(), seed);
         }
         return seed;
     }

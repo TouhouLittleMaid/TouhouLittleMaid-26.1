@@ -16,7 +16,7 @@ public class MagicProtectBauble implements IMaidBauble {
     @Override
     public boolean onInjured(EntityMaid maid, ItemStack baubleItem, DamageSource source, MutableFloat damage) {
         if (source.is(DamageTypeTags.WITCH_RESISTANT_TO)) {
-            maid.components().item.hurtAndBreak(baubleItem, 1);
+            maid.components.item.hurtAndBreak(baubleItem, 1);
             maid.removeAllEffects();
             NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.EXPLOSION));
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {

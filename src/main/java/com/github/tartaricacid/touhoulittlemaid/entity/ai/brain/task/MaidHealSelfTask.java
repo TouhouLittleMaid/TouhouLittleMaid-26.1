@@ -30,7 +30,7 @@ public class MaidHealSelfTask extends MaidCheckRateTask {
     protected boolean checkExtraStartConditions(ServerLevel serverLevel, EntityMaid maid) {
         if (super.checkExtraStartConditions(serverLevel, maid)) {
             float missingHealth = maid.getMaxHealth() - maid.getHealth();
-            return !maid.isSleeping() && maid.components().task.getTask().enableEating(maid) && missingHealth >= MAX_CHECK_MISSING_HEATH;
+            return !maid.isSleeping() && maid.components.task.getTask().enableEating(maid) && missingHealth >= MAX_CHECK_MISSING_HEATH;
         }
         return false;
     }
@@ -67,7 +67,7 @@ public class MaidHealSelfTask extends MaidCheckRateTask {
 
         // 尝试在背包中寻找食物放入
         boolean hasFood = false;
-        var backpackInv = maid.components().item.getAvailableBackpackInv();
+        var backpackInv = maid.components.item.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
         int stackSlot = ItemsUtil.findStackSlot(backpackInv, DefaultMaidHealSelfMeal::isHealMeal);
@@ -79,7 +79,7 @@ public class MaidHealSelfTask extends MaidCheckRateTask {
                 ItemStack handStack = itemInHand.copy();
                 maid.setItemInHand(eanHand, resource.toStack(foodStack));
                 itemInHand = maid.getItemInHand(eanHand);
-                maid.components().item.memoryHandItemStack(handStack);
+                maid.components.item.memoryHandItemStack(handStack);
                 transaction.commit();
 
                 for (IMaidMeal maidMeal : maidMeals) {

@@ -33,7 +33,7 @@ public class BaubleContainerScreen extends AbstractMaidContainerGui<BaubleContai
     public BaubleContainerScreen(BaubleContainer container, Inventory inv, Component titleIn) {
         super(container, inv, titleIn, 256, 256);
         this.maid = menu.getMaid();
-        this.favorabilityLevel = this.maid.components().favorability.getLevel();
+        this.favorabilityLevel = this.maid.components.favorability.getLevel();
     }
 
     @Override

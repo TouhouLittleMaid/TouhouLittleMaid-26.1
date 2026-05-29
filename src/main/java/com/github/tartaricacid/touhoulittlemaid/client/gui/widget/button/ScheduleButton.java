@@ -31,7 +31,7 @@ public class ScheduleButton<T extends AbstractMaidContainer> extends Button {
         super(Button.builder(Component.empty(), (b) -> {
         }).pos(x, y).size(61, 13));
         this.maid = gui.getMaid();
-        this.mode = maid.components().task.getSchedule();
+        this.mode = maid.components.task.getSchedule();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ScheduleButton<T extends AbstractMaidContainer> extends Button {
         int index = mode.ordinal() + 1;
         int length = MaidSchedule.values().length;
         this.mode = MaidSchedule.values()[index % length];
-        ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.components().config.isHomeModeEnable(), maid.components().config.isPickup(), maid.components().config.isRideable(), this.mode));
+        ClientPacketDistributor.sendToServer(new MaidConfigPackage(maid.getId(), maid.components.config.isHomeModeEnable(), maid.components.config.isPickup(), maid.components.config.isRideable(), this.mode));
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ScheduleButton<T extends AbstractMaidContainer> extends Button {
         int time = (int) (maid.level().getGameTime() % 24000L);
         int hour = (time / 1000 + 6) % 24;
         int minute = (time % 1000) * 60 / 1000;
-        Activity activity = maid.components().task.getScheduleDetail();
+        Activity activity = maid.components.task.getScheduleDetail();
 
         List<Component> out = Lists.newArrayList();
         out.add(Component.literal(String.format("§n%s§7 %s:%s", getScheduleTransText(), DECIMAL_FORMAT.format(hour), DECIMAL_FORMAT.format(minute))));

@@ -73,9 +73,9 @@ public class EntitySit extends Entity {
         maid.setYRot(this.getYRot());
         maid.setYHeadRot(this.getYRot());
         if (tickCount % 20 == 0) {
-            FavorabilityComponent manager = maid.components().favorability;
+            FavorabilityComponent manager = maid.components.favorability;
             String joyType = this.getJoyType();
-            IMaidTask task = maid.components().task.getTask();
+            IMaidTask task = maid.components.task.getTask();
 
             // 给予好感度提升
             manager.apply(joyType);
@@ -104,11 +104,11 @@ public class EntitySit extends Entity {
     }
 
     private boolean isIdleSchedule(EntityMaid maid) {
-        return maid.components().task.getScheduleDetail() == Activity.IDLE;
+        return maid.components.task.getScheduleDetail() == Activity.IDLE;
     }
 
     private boolean isWorkSchedule(EntityMaid maid) {
-        return maid.components().task.getScheduleDetail() == Activity.WORK;
+        return maid.components.task.getScheduleDetail() == Activity.WORK;
     }
 
     public BlockPos getAssociatedBlockPos() {

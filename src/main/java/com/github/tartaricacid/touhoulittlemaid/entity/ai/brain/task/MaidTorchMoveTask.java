@@ -23,7 +23,7 @@ public class MaidTorchMoveTask extends MaidMoveToBlockTask {
     @Override
     protected boolean shouldMoveTo(ServerLevel worldIn, EntityMaid entityIn, BlockPos pos) {
         BlockPos posUp = pos.above();
-        if (worldIn.getMaxLocalRawBrightness(posUp) < LOW_BRIGHTNESS && entityIn.components().worldInteraction.canPlaceBlock(posUp)) {
+        if (worldIn.getMaxLocalRawBrightness(posUp) < LOW_BRIGHTNESS && entityIn.components.worldInteraction.canPlaceBlock(posUp)) {
             BlockState stateUp = worldIn.getBlockState(posUp);
             return canSupportCenter(worldIn, pos, Direction.UP) && !stateUp.liquid();
         }
@@ -38,7 +38,7 @@ public class MaidTorchMoveTask extends MaidMoveToBlockTask {
     }
 
     private ItemStack getTorchItem(EntityMaid entityMaid) {
-        CombinedResourceHandler<ItemResource> itemHandler = entityMaid.components().item.getAvailableInv(false);
+        CombinedResourceHandler<ItemResource> itemHandler = entityMaid.components.item.getAvailableInv(false);
         return ItemsUtil.getStack(itemHandler, stack -> stack.getItem() == Items.TORCH);
     }
 }

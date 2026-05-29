@@ -102,7 +102,7 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
 
     @Override
     public boolean isWithinMeleeAttackRange(LivingEntity target) {
-        int favorability = maid.components().stats.getFavorability();
+        int favorability = maid.components.stats.getFavorability();
         int attackPlusDistance = host.favorability.getAttackDistancePlusByPoint(favorability);
         double attackDistance = maid.getAttributeValue(Attributes.ENTITY_INTERACTION_RANGE) + attackPlusDistance;
         return maid.distanceTo(target) < attackDistance;
@@ -116,7 +116,7 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
         }
 
         // 调用饰品的攻击
-        maid.components().item.getMaidBauble().fireEvent((b, s) -> {
+        maid.components.item.getMaidBauble().fireEvent((b, s) -> {
             b.onMeleeAttack(maid, s, target);
             return false;
         });
@@ -138,7 +138,7 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
         NeoForge.EVENT_BUS.post(postEvent);
 
         // 部分 task 有额外伤害
-        if (maid.components().task.getTask() instanceof IAttackTask attackTask && attackTask.hasExtraAttack(maid, target)) {
+        if (maid.components.task.getTask() instanceof IAttackTask attackTask && attackTask.hasExtraAttack(maid, target)) {
             boolean extraResult = attackTask.doExtraAttack(maid, target);
             return result && extraResult;
         }
@@ -158,7 +158,7 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
             return superHurtServer.test(level, source, amount);
         }
         // 使用盾牌
-        if (source.is(DamageTypeTags.IS_PROJECTILE) && maid.components().combat.canUseShield()) {
+        if (source.is(DamageTypeTags.IS_PROJECTILE) && maid.components.combat.canUseShield()) {
             boolean isUsingShield = maid.isUsingItem() && maid.getUsedItemHand() == InteractionHand.OFF_HAND;
             if (!isUsingShield) {
                 maid.startUsingItem(InteractionHand.OFF_HAND);
@@ -183,7 +183,7 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
         if (!(maid.getMainHandItem().getItem() instanceof ProjectileWeaponItem weaponItem)) {
             return ItemStack.EMPTY;
         }
-        var handler = maid.components().item.getAvailableInv(true);
+        var handler = maid.components.item.getAvailableInv(true);
         int slot = ItemsUtil.findStackSlot(handler, weaponItem.getAllSupportedProjectiles(weaponStack));
         if (slot < 0) {
             // 不存在时，返回空
@@ -196,10 +196,10 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
 
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
-        IMaidTask maidTask = maid.components().task.getTask();
+        IMaidTask maidTask = maid.components.task.getTask();
         if (maidTask instanceof IRangedAttackTask rangedAttackTask) {
             // 调用饰品的攻击
-            maid.components().item.getMaidBauble().fireEvent((b, s) -> {
+            maid.components.item.getMaidBauble().fireEvent((b, s) -> {
                 b.onRangedAttack(maid, s, rangedAttackTask);
                 return false;
             });
@@ -278,7 +278,7 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
 
             // 饰品
             MutableFloat newDamage = new MutableFloat(peek.getNewDamage());
-            boolean baubleCancel = maid.components().item.getMaidBauble().fireEvent(
+            boolean baubleCancel = maid.components.item.getMaidBauble().fireEvent(
                     (b, s) -> b.onInjured(maid, s, damageSrc, newDamage)
             );
             float damageAfterAbsorption = newDamage.getValue();
@@ -311,7 +311,7 @@ public class MaidCombatComponent implements MaidComponent, AiStepComponent, Comb
         if (canSweep && sweepingDamageRatio > 0) {
             float baseDamage = (float) maid.getAttributeValue(Attributes.ATTACK_DAMAGE);
             float sweepDamage = 1.0f + sweepingDamageRatio * baseDamage;
-            AABB sweepRange = host.favorability.getSweepRange(target, maid.components().stats.getFavorability());
+            AABB sweepRange = host.favorability.getSweepRange(target, maid.components.stats.getFavorability());
             List<LivingEntity> hurtEntities = maid.level.getEntitiesOfClass(LivingEntity.class, sweepRange);
             for (LivingEntity entity : hurtEntities) {
                 if (entity != maid && entity != target && !maid.isAlliedTo(entity) && maid.canAttack(entity) && maid.wantsToAttack(entity, maid.getOwner())) {

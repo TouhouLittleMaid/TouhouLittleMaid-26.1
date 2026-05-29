@@ -81,7 +81,7 @@ public class HistoryAIChatScreen extends Screen {
         this.maid = maid;
         this.playerSkin = DefaultPlayerSkin.getDefaultSkin();
         this.loadPlayerSkinAsync();
-        this.summaryText = maid.components().aiChat.getCompressedSummary();
+        this.summaryText = maid.components.aiChat.getCompressedSummary();
         this.transformMessage();
     }
 
@@ -134,7 +134,7 @@ public class HistoryAIChatScreen extends Screen {
                     this.history.clear();
                     this.historyWidgets.clear();
                     this.summaryText = StringUtils.EMPTY;
-                    this.maid.components().aiChat.clearAllChatMemory();
+                    this.maid.components.aiChat.clearAllChatMemory();
                     ClientPacketDistributor.sendToServer(new ClearMaidAIDataPacket(this.maid.getId()));
                     this.init();
                 }
@@ -226,7 +226,7 @@ public class HistoryAIChatScreen extends Screen {
     }
 
     private void transformMessage() {
-        Deque<LLMMessage> deque = this.maid.components().aiChat.getHistory().getDeque();
+        Deque<LLMMessage> deque = this.maid.components.aiChat.getHistory().getDeque();
         deque.descendingIterator().forEachRemaining(message -> {
             if (message.role() == Role.USER) {
                 this.history.add(message);

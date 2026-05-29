@@ -38,7 +38,7 @@ public record OpenMaidGuiPackage(int entityId, int tabId) implements CustomPacke
         }
         Entity entity = player.level.getEntity(message.entityId);
         if (entity instanceof EntityMaid maid && stillValid(player, maid)) {
-            maid.components().misc.openMaidGui(player, message.tabId);
+            maid.components.misc.openMaidGui(player, message.tabId);
         }
     }
 

@@ -24,7 +24,7 @@ public class MaidFarmMoveTask extends MaidMoveToBlockTask {
     @Override
     protected void start(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
         seeds.clear();
-        CombinedResourceHandler<@NotNull ItemResource> inv = entityIn.components().item.getAvailableInv(true);
+        CombinedResourceHandler<@NotNull ItemResource> inv = entityIn.components.item.getAvailableInv(true);
         for (int i = 0; i < inv.size(); i++) {
             ItemStack stack = inv.getResource(i).toStack();
             if (task.isSeed(stack)) {

@@ -112,7 +112,7 @@ public class MaidSoundPackGui extends Screen {
     private void addSoundOtherButtons() {
         this.addRenderableWidget(new FlatColorButton(startX + 245, startY + 19, 110, 18, Component.translatable("gui.touhou_little_maid.custom_sound.pack.apply"), (b) -> {
             if (StringUtils.isNotBlank(selectSoundId) && CustomSoundLoader.CACHE.containsKey(selectSoundId)) {
-                this.maid.components().profile.setSoundPackId(this.selectSoundId);
+                this.maid.components.profile.setSoundPackId(this.selectSoundId);
                 ClientPacketDistributor.sendToServer(new SetMaidSoundIdPackage(this.maid.getId(), this.selectSoundId));
                 this.init();
             }
@@ -182,7 +182,7 @@ public class MaidSoundPackGui extends Screen {
             if (soundId.equals(selectSoundId)) {
                 button.setSelect(true);
             }
-            if (soundId.equals(this.maid.components().profile.getSoundPackId())) {
+            if (soundId.equals(this.maid.components.profile.getSoundPackId())) {
                 button.setUse(true);
             }
             this.addRenderableWidget(button);

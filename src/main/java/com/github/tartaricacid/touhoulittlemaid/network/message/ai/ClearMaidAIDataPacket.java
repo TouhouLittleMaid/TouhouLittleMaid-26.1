@@ -39,7 +39,7 @@ public record ClearMaidAIDataPacket(int entityId, int msgIndex) implements Custo
         Entity entity = player.level.getEntity(message.entityId);
         if (entity instanceof EntityMaid maid && maid.isOwnedBy(player)) {
             if (message.msgIndex == ALL_MSG_INDEX) {
-                maid.components().aiChat.clearAllChatMemory();
+                maid.components.aiChat.clearAllChatMemory();
             }
         }
     }

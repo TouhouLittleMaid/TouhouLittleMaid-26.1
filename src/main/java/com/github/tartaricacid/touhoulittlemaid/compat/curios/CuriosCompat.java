@@ -29,7 +29,7 @@ public class CuriosCompat {
         if (isLoadedOrEnable()) {
             return CuriosContainer.create(maid);
         } else {
-            return maid.components().backpack.getMaidBackpackType().getGuiProvider(maid.getId());
+            return maid.components.backpack.getMaidBackpackType().getGuiProvider(maid.getId());
         }
     }
 

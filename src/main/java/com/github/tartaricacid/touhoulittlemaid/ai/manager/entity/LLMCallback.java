@@ -89,7 +89,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
         // 如果是子 agent，那么无需添加聊天气泡
         if (!subagents) {
             String key = "ai.touhou_little_maid.chat.chat_bubble_waiting";
-            this.waitingChatBubbleId = this.maid.components().chatBubble.addThinkingText(key);
+            this.waitingChatBubbleId = this.maid.components.chatBubble.addThinkingText(key);
         }
     }
 
@@ -149,7 +149,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
                     MutableComponent errorMessage = ErrorCode.getErrorMessage(ServiceType.LLM, errorCode, cause);
                     player.sendSystemMessage(errorMessage.withStyle(ChatFormatting.RED));
                 }
-                maid.components().chatBubble.removeChatBubble(waitingChatBubbleId);
+                maid.components.chatBubble.removeChatBubble(waitingChatBubbleId);
             });
         }
         if (errorCode == ErrorCode.CHAT_TEXT_IS_EMPTY) {
@@ -188,7 +188,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
         } else {
             if (StringUtils.isNotBlank(chatText) && maid.level instanceof ServerLevel serverLevel) {
                 MinecraftServer server = serverLevel.getServer();
-                server.submit(() -> maid.components().chatBubble.addLLMChatText(chatText, waitingChatBubbleId));
+                server.submit(() -> maid.components.chatBubble.addLLMChatText(chatText, waitingChatBubbleId));
             }
         }
     }
@@ -317,7 +317,7 @@ public class LLMCallback implements ResponseCallback<ResponseChat> {
         if (!this.isOnServerThread()) {
             throw new IllegalStateException("refreshWaitingChatBubble must be called on the server thread");
         }
-        this.waitingChatBubbleId = maid.components().chatBubble.refreshThinkingText(
+        this.waitingChatBubbleId = maid.components.chatBubble.refreshThinkingText(
                 "ai.touhou_little_maid.chat.chat_bubble_waiting",
                 waitingChatBubbleId, summaryComponent
         );

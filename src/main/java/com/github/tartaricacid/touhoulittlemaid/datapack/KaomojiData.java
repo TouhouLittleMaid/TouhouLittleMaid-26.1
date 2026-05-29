@@ -49,14 +49,14 @@ public class KaomojiData {
     }
 
     public static void showRoutineKaomoji(EntityMaid maid, ChatBubbleComponent bubbleManager) {
-        Activity activity = maid.components().task.getScheduleDetail();
+        Activity activity = maid.components.task.getScheduleDetail();
         if (activity == Activity.REST) {
             String randomEmoji = getRandomEmoji(KAOMOJI_MAP.get(SLEEP));
             MutableComponent literal = Component.literal(randomEmoji);
             bubbleManager.addChatBubble(TextChatBubbleData.type2(literal));
             return;
         }
-        if (activity == Activity.IDLE || maid.components().task.getTask() == TaskManager.getIdleTask()) {
+        if (activity == Activity.IDLE || maid.components.task.getTask() == TaskManager.getIdleTask()) {
             String randomEmoji = getRandomEmoji(KAOMOJI_MAP.get(IDLE));
             MutableComponent literal = Component.literal(randomEmoji);
             bubbleManager.addChatBubble(TextChatBubbleData.type2(literal));

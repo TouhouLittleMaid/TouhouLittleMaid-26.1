@@ -42,7 +42,7 @@ public class TaskSugarCane implements IFarmTask {
 
     @Override
     public void harvest(EntityMaid maid, BlockPos cropPos, BlockState cropState) {
-        maid.components().worldInteraction.destroyBlock(cropPos);
+        maid.components.worldInteraction.destroyBlock(cropPos);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class TaskSugarCane implements IFarmTask {
     @Override
     public ItemStack plant(EntityMaid maid, BlockPos basePos, BlockState baseState, ItemStack seed) {
         if (seed.getItem() == Items.SUGAR_CANE) {
-            maid.components().worldInteraction.placeItemBlock(basePos.above(), seed);
+            maid.components.worldInteraction.placeItemBlock(basePos.above(), seed);
         }
         return seed;
     }

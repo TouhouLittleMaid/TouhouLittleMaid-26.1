@@ -59,7 +59,7 @@ public class MaidShootTargetTask extends Behavior<EntityMaid> {
 
     @Override
     protected void start(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
-        entityIn.components().animation.setSwingingArms(true);
+        entityIn.components.animation.setSwingingArms(true);
     }
 
     @Override

@@ -51,7 +51,7 @@ public record SaveMaidAIDataPackage(int entityId, MaidAIChatSerializable data) i
         }
         Entity entity = player.level.getEntity(message.entityId);
         if (entity instanceof EntityMaid maid && maid.isOwnedBy(player)) {
-            maid.components().aiChat.copyFrom(message.data);
+            maid.components.aiChat.copyFrom(message.data);
         }
     }
 }

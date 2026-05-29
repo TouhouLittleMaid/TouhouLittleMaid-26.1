@@ -112,7 +112,7 @@ public abstract class AbstractStoreMaidItem extends Item {
             if (worldIn instanceof ServerLevel) {
                 worldIn.addFreshEntity(maid);
             }
-            maid.components().particle.spawnExplosionParticle();
+            maid.components.particle.spawnExplosionParticle();
             maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, worldIn.getRandom().nextFloat() * 0.1F + 0.9F);
             runnable.run();
             return InteractionResult.SUCCESS;

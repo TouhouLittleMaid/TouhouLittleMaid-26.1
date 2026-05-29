@@ -286,7 +286,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 // 重置女仆棋类动画
                 Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
                 if (sitEntity != null && sitEntity.isAlive() && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
-                    maid.components().game.resetStatue();
+                    maid.components.game.resetStatue();
                 }
 
                 return InteractionResult.SUCCESS;
@@ -315,10 +315,10 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 Statue statue = MaidGomokuAI.getStatue(chessData, playerPoint);
                 // 但是和其他人的女仆对弈不加好感哦
                 if (statue == Statue.WIN && maid.isOwnedBy(player)) {
-                    maid.components().favorability.apply(Type.GOMOKU_WIN);
-                    maid.components().game.markStatue(false);
+                    maid.components.favorability.apply(Type.GOMOKU_WIN);
+                    maid.components.game.markStatue(false);
                     int rankBefore = MaidGomokuAI.getRank(maid);
-                    maid.components().game.increaseGomokuWinCount();
+                    maid.components.game.increaseGomokuWinCount();
                     int rankAfter = MaidGomokuAI.getRank(maid);
                     // 女仆升段啦
                     if (rankBefore < rankAfter) {
@@ -334,7 +334,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
                 if (gomoku.getStatue() == Statue.IN_PROGRESS && player instanceof ServerPlayer serverPlayer) {
                     gomoku.setPlayerTurn(false);
-                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.components().game.getGomokuWinCount()));
+                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.components.game.getGomokuWinCount()));
                 }
                 gomoku.refresh();
                 return InteractionResult.SUCCESS;

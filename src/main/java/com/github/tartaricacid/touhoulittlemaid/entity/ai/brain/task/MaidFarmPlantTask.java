@@ -57,7 +57,7 @@ public class MaidFarmPlantTask extends Behavior<EntityMaid> {
             BlockPos basePos = posWrapper.currentBlockPosition();
             BlockPos cropPos = basePos.above();
             BlockState cropState = world.getBlockState(cropPos);
-            if (maid.components().worldInteraction.canDestroyBlock(cropPos) && task.canHarvest(maid, cropPos, cropState)) {
+            if (maid.components.worldInteraction.canDestroyBlock(cropPos) && task.canHarvest(maid, cropPos, cropState)) {
                 task.harvest(maid, cropPos, cropState);
                 maid.swing(InteractionHand.MAIN_HAND);
                 maid.getBrain().eraseMemory(InitBrains.TARGET_POS.get());
@@ -67,7 +67,7 @@ public class MaidFarmPlantTask extends Behavior<EntityMaid> {
                 }
             }
 
-            CombinedResourceHandler<ItemResource> availableInv = maid.components().item.getAvailableInv(true);
+            CombinedResourceHandler<ItemResource> availableInv = maid.components.item.getAvailableInv(true);
             List<Integer> slots = ItemsUtil.getFilterStackSlots(availableInv, task::isSeed);
             if (!slots.isEmpty()) {
                 for (int slot : slots) {

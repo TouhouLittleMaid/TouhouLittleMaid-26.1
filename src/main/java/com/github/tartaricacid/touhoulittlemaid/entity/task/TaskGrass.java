@@ -39,7 +39,7 @@ public class TaskGrass implements IFarmTask {
 
     @Override
     public void harvest(EntityMaid maid, BlockPos cropPos, BlockState cropState) {
-        maid.components().worldInteraction.destroyBlock(cropPos);
+        maid.components.worldInteraction.destroyBlock(cropPos);
     }
 
     @Override

@@ -10,7 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class MaidDeathFavorability {
     @SubscribeEvent
     public static void onDeath(MaidDeathEvent event) {
-        FavorabilityComponent manager = event.getMaid().components().favorability;
+        FavorabilityComponent manager = event.getMaid().components.favorability;
         manager.apply(Type.DEATH);
     }
 }

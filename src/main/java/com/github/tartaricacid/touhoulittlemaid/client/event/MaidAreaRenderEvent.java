@@ -64,7 +64,7 @@ public class MaidAreaRenderEvent {
 
         BlockPos restrictCenter = maid.getHomePosition();
         Vec3 restrictPos = camera.add(restrictCenter.getX() + 0.5, restrictCenter.getY() + 0.5, restrictCenter.getZ() + 0.5);
-        if (!maid.components().config.isHomeModeEnable()) {
+        if (!maid.components.config.isHomeModeEnable()) {
             restrictPos = camera.add(player.position());
         }
         Vec3 maidPos = camera.add(maid.position());

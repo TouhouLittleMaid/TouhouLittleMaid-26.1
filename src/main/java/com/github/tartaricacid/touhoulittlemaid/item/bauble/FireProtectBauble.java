@@ -17,7 +17,7 @@ public class FireProtectBauble implements IMaidBauble {
     @Override
     public boolean onInjured(EntityMaid maid, ItemStack baubleItem, DamageSource source, MutableFloat damage) {
         if (source.is(DamageTypeTags.IS_FIRE)) {
-            maid.components().item.hurtAndBreak(baubleItem, 1);
+            maid.components.item.hurtAndBreak(baubleItem, 1);
             maid.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 300));
             if (!maid.level.isClientSide()) {
                 maid.level.addFreshEntity(new EntityExtinguishingAgent(maid.level, maid.position()));

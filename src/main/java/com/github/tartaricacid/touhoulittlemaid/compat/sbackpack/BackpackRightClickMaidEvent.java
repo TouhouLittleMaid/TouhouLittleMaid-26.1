@@ -27,7 +27,7 @@ public class BackpackRightClickMaidEvent {
         if (!(stack.getItem() instanceof BackpackItem)) {
             return;
         }
-        int maidXp = maid.components().stats.getExperience();
+        int maidXp = maid.components.stats.getExperience();
         if (maidXp <= 0) {
             return;
         }
@@ -41,7 +41,7 @@ public class BackpackRightClickMaidEvent {
             try (Transaction tx = Transaction.openRoot()) {
                 int filled = fluid.insert(ModFluids.EXPERIENCE_TAG, count, ModFluids.XP_STILL.get(), tx, true);
                 if (filled > 0) {
-                    maid.components().stats.setExperience(maidXp - (int) XpHelper.liquidToExperience(filled));
+                    maid.components.stats.setExperience(maidXp - (int) XpHelper.liquidToExperience(filled));
                 }
                 event.setCanceled(true);
                 tx.commit();

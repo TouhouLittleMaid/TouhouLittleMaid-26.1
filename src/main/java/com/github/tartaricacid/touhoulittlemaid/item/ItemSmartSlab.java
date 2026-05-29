@@ -117,7 +117,7 @@ public class ItemSmartSlab extends AbstractStoreMaidItem {
                 maid.snapTo(context.getClickedPos().above(), 0, 0);
                 serverLevel.addFreshEntity(maid);
             }
-            maid.components().particle.spawnExplosionParticle();
+            maid.components.particle.spawnExplosionParticle();
             maid.playSound(SoundEvents.PLAYER_SPLASH, 1.0F, worldIn.getRandom().nextFloat() * 0.1F + 0.9F);
             player.setItemInHand(context.getHand(), InitItems.SMART_SLAB_EMPTY.get().getDefaultInstance());
             player.getCooldowns().addCooldown(new ItemStack(InitItems.SMART_SLAB_EMPTY.get()), 20);

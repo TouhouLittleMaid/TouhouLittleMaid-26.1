@@ -50,7 +50,7 @@ public class MaidShootTargetAnyItemTask extends Behavior<EntityMaid> {
 
     @Override
     protected void start(ServerLevel worldIn, EntityMaid entityIn, long gameTimeIn) {
-        entityIn.components().animation.setSwingingArms(true);
+        entityIn.components.animation.setSwingingArms(true);
     }
 
     @Override
@@ -105,22 +105,22 @@ public class MaidShootTargetAnyItemTask extends Behavior<EntityMaid> {
     }
 
     private void tickItemCanNotUse(EntityMaid owner, LivingEntity target, boolean canSee) {
-        if (owner.components().animation.isSwingingArms()) {
+        if (owner.components.animation.isSwingingArms()) {
             if (!canSee && this.seeTime < -60) {
-                owner.components().animation.setSwingingArms(false);
+                owner.components.animation.setSwingingArms(false);
                 swingTime = 0;
             } else if (canSee) {
                 if (swingTime >= this.chargeDurationTick) {
                     int powerTime = Math.max(swingTime, 20);
                     owner.performRangedAttack(target, BowItem.getPowerForTime(powerTime));
                     this.attackTime = this.attackCooldown;
-                    owner.components().animation.setSwingingArms(false);
+                    owner.components.animation.setSwingingArms(false);
                     swingTime = 0;
                 }
             }
             swingTime++;
         } else if (--this.attackTime <= 0 && this.seeTime >= -60) {
-            owner.components().animation.setSwingingArms(true);
+            owner.components.animation.setSwingingArms(true);
         }
     }
 

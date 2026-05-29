@@ -32,9 +32,9 @@ public class NimbleFabricBauble implements IMaidBauble {
             int slot = ItemsUtil.getBaubleSlotInMaid(maid, this);
             if (slot >= 0) {
                 event.setCanceled(true);
-                ItemStack stack = ItemUtil.getStack(maid.components().item.getMaidBauble(), slot);
-                maid.components().item.hurtAndBreak(stack, 1);
-                maid.components().item.getMaidBauble().set(slot, ItemResource.of(stack), 1);
+                ItemStack stack = ItemUtil.getStack(maid.components.item.getMaidBauble(), slot);
+                maid.components.item.hurtAndBreak(stack, 1);
+                maid.components.item.getMaidBauble().set(slot, ItemResource.of(stack), 1);
                 for (int i = 0; i < MAX_RETRY; ++i) {
                     if (TeleportHelper.teleport(maid)) {
                         if (maid.getOwner() instanceof ServerPlayer serverPlayer) {

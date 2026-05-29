@@ -59,7 +59,7 @@ public final class MaidContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            return maid.components().config.isHomeModeEnable() ? "no" : "yes";
+            return maid.components.config.isHomeModeEnable() ? "no" : "yes";
         }
     }
 
@@ -100,7 +100,7 @@ public final class MaidContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            return switch (maid.components().task.getSchedule()) {
+            return switch (maid.components.task.getSchedule()) {
                 case DAY -> "DAY";
                 case NIGHT -> "NIGHT";
                 case ALL -> "ALL";
@@ -115,7 +115,7 @@ public final class MaidContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            return maid.components().task.getScheduleDetail().getName();
+            return maid.components.task.getScheduleDetail().getName();
         }
     }
 
@@ -126,7 +126,7 @@ public final class MaidContexts {
 
         @Override
         public String getValue(EntityMaid maid) {
-            return maid.components().task.getTask().getUid().toString();
+            return maid.components.task.getTask().getUid().toString();
         }
     }
 }

@@ -38,7 +38,7 @@ public record MaidModelPackage(int id, Identifier modelId) implements CustomPack
                 Entity entity = sender.level.getEntity(message.id);
                 if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
                     if (sender.isCreative() || MaidConfig.MAID_CHANGE_MODEL.get()) {
-                        maid.components().profile.setModelId(message.modelId.toString());
+                        maid.components.profile.setModelId(message.modelId.toString());
                         InitTrigger.MAID_EVENT.get().trigger(sender, TriggerType.CHANGE_MAID_MODEL);
                     } else {
                         sender.sendSystemMessage(Component.translatable("message.touhou_little_maid.change_model.disabled"));

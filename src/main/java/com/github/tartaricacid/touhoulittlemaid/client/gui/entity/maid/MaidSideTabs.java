@@ -39,7 +39,7 @@ public class MaidSideTabs<T extends AbstractMaidContainer> {
             if (ModList.get().isLoaded(CompatRegistry.PATCHOULI)) {
                 EntityMaid maid = screen.getMaid();
                 if (maid != null) {
-                    NeoForge.EVENT_BUS.post(new OpenPatchouliBookEvent(maid, maid.components().task.getTask()));
+                    NeoForge.EVENT_BUS.post(new OpenPatchouliBookEvent(maid, maid.components.task.getTask()));
                 }
             } else {
                 PatchouliWarningScreen.open();

@@ -122,7 +122,7 @@ public class TaskAttack implements IAttackTask {
         if (!target.isAlive()) {
             return true;
         }
-        boolean enable = maid.components().config.isHomeModeEnable();
+        boolean enable = maid.components.config.isHomeModeEnable();
         float radius = maid.getHomeRadius();
         if (!enable && maid.getOwner() != null) {
             return maid.getOwner().distanceTo(target) > radius;

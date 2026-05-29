@@ -52,8 +52,8 @@ public class MaidInteractWithDoor {
                     return false;
                 }
 
-                boolean canOpenDoor = entity instanceof EntityMaid maid && maid.components().config.isOpenDoor();
-                boolean canOpenFenceGate = entity instanceof EntityMaid maid && maid.components().config.isOpenFenceGate();
+                boolean canOpenDoor = entity instanceof EntityMaid maid && maid.components.config.isOpenDoor();
+                boolean canOpenFenceGate = entity instanceof EntityMaid maid && maid.components.config.isOpenFenceGate();
 
                 mutableObject.setValue(path.getNextNode());
                 Node previousNode = path.getPreviousNode();

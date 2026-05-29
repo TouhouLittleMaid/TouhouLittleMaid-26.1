@@ -240,7 +240,7 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
             if (maidOpen == null) {
                 PacketDistributor.sendToPlayer(serverPlayer, new OpenPlayerInventoryPackage(OpenPlayerInventoryPackage.OPEN_PLAYER_INVENTORY));
             } else {
-                maidOpen.components().misc.openMaidGui(serverPlayer);
+                maidOpen.components.misc.openMaidGui(serverPlayer);
             }
         }
     }

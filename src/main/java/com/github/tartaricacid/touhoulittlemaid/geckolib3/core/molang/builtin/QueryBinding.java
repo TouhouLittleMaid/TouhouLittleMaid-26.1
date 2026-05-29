@@ -118,7 +118,7 @@ public class QueryBinding extends ContextBinding {
     }
 
     private static int getExpLevel(IContext<EntityMaid> ctx) {
-        return ctx.entity().components().stats.getExperience();
+        return ctx.entity().components.stats.getExperience();
     }
 
     private static Object getHealth(IContext<LivingEntity> ctx) {

@@ -45,23 +45,23 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
                 ServerPlayer sender = (ServerPlayer) context.player();
                 Entity entity = sender.level.getEntity(message.id);
                 if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
-                    if (maid.components().config.isHomeModeEnable() != message.home) {
+                    if (maid.components.config.isHomeModeEnable() != message.home) {
                         handleHome(message, sender, maid);
                     }
-                    if (maid.components().config.isPickup() != message.pick) {
-                        maid.components().config.setPickup(message.pick);
+                    if (maid.components.config.isPickup() != message.pick) {
+                        maid.components.config.setPickup(message.pick);
                     }
-                    if (maid.components().config.isRideable() != message.ride) {
-                        maid.components().config.setRideable(message.ride);
+                    if (maid.components.config.isRideable() != message.ride) {
+                        maid.components.config.setRideable(message.ride);
                         Entity vehicle = maid.getVehicle();
                         if (!message.ride && vehicle != null && !isStopRideBlocklist(vehicle)) {
                             maid.stopRiding();
                         }
                     }
-                    if (maid.components().task.getSchedule() != message.schedule) {
-                        maid.components().task.setSchedule(message.schedule);
-                        maid.components().task.schedulePos.restrictTo(maid);
-                        if (maid.components().config.isHomeModeEnable()) {
+                    if (maid.components.task.getSchedule() != message.schedule) {
+                        maid.components.task.setSchedule(message.schedule);
+                        maid.components.task.schedulePos.restrictTo(maid);
+                        if (maid.components.config.isHomeModeEnable()) {
                             BehaviorUtils.setWalkAndLookTargetMemories(maid, maid.getHomePosition(), 0.7f, 3);
                         }
                         if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
@@ -83,7 +83,7 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
 
     private static void handleHome(MaidConfigPackage message, ServerPlayer sender, EntityMaid maid) {
         if (message.home) {
-            SchedulePos schedulePos = maid.components().task.schedulePos;
+            SchedulePos schedulePos = maid.components.task.schedulePos;
             if (schedulePos.isConfigured()) {
                 Identifier dimension = schedulePos.getDimension();
                 if (!dimension.equals(maid.level.dimension().identifier())) {
@@ -102,7 +102,7 @@ public record MaidConfigPackage(int id, boolean home, boolean pick, boolean ride
         } else {
             maid.setHomeTo(BlockPos.ZERO, MaidConfig.MAID_NON_HOME_RANGE.get());
         }
-        maid.components().config.setHomeModeEnable(message.home);
+        maid.components.config.setHomeModeEnable(message.home);
     }
 
     @Override

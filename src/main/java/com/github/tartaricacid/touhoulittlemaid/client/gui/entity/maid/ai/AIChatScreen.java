@@ -74,7 +74,7 @@ public class AIChatScreen extends Screen {
     public AIChatScreen(EntityMaid maid) {
         super(Component.literal("Maid AI Chat Screen"));
         this.maid = maid;
-        this.manager = maid.components().aiChat;
+        this.manager = maid.components.aiChat;
     }
 
     public void updateTokens(int current, int max) {

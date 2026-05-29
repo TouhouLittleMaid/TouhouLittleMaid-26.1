@@ -21,26 +21,26 @@ public class HandleBackpackEvent {
         ItemStack stack = event.getStack();
         Player player = event.getPlayer();
         EntityMaid maid = event.getMaid();
-        IMaidBackpack maidBackpack = maid.components().backpack.getMaidBackpackType();
+        IMaidBackpack maidBackpack = maid.components.backpack.getMaidBackpackType();
         if (stack.is(Tags.Items.TOOLS_SHEAR)) {
-            if (maid.isOwnedBy(player) && !maid.components().backpack.backpackHasDelay() && maidBackpack != BackpackManager.getEmptyBackpack()) {
-                maid.components().backpack.setBackpackDelay();
+            if (maid.isOwnedBy(player) && !maid.components.backpack.backpackHasDelay() && maidBackpack != BackpackManager.getEmptyBackpack()) {
+                maid.components.backpack.setBackpackDelay();
                 player.getCooldowns().addCooldown(stack, 20);
                 player.getInventory().placeItemBackInInventory(maidBackpack.getTakeOffItemStack(stack, player, maid));
                 maidBackpack.onTakeOff(stack, player, maid);
-                maid.components().backpack.setMaidBackpackType(BackpackManager.getEmptyBackpack());
+                maid.components.backpack.setMaidBackpackType(BackpackManager.getEmptyBackpack());
                 stack.hurtAndBreak(1, player, event.getPlayer().getEquipmentSlotForItem(stack));
                 maid.playSound(SoundEvents.HORSE_SADDLE.value(), 0.5F, 1.0F);
                 event.setCanceled(true);
             }
         } else {
             BackpackManager.findBackpack(stack).ifPresent(backpack -> {
-                if (maid.isOwnedBy(player) && !maid.components().backpack.backpackHasDelay() && backpack != BackpackManager.getEmptyBackpack() && backpack != maidBackpack) {
-                    maid.components().backpack.setBackpackDelay();
+                if (maid.isOwnedBy(player) && !maid.components.backpack.backpackHasDelay() && backpack != BackpackManager.getEmptyBackpack() && backpack != maidBackpack) {
+                    maid.components.backpack.setBackpackDelay();
                     BackpackManager.addBackpackCooldown(player);
                     player.getInventory().placeItemBackInInventory(maidBackpack.getTakeOffItemStack(stack, player, maid));
                     maidBackpack.onTakeOff(stack, player, maid);
-                    maid.components().backpack.setMaidBackpackType(backpack);
+                    maid.components.backpack.setMaidBackpackType(backpack);
                     backpack.onPutOn(stack, player, maid);
                     stack.shrink(1);
                     maid.playSound(SoundEvents.HORSE_SADDLE.value(), 0.5F, 1.0F);

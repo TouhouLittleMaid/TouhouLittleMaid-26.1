@@ -64,7 +64,7 @@ public class MaidStealEdibleMoveBlockTask extends MaidMoveToBlockTask {
 
         if (memory.isPresent() && memory.get() == MaidEdibleBlockAction.TRY_STEAL) {
             // 检查背包内有可放置食物么，有就切放置状态
-            CombinedResourceHandler<@NotNull ItemResource> inv = maid.components().item.getAvailableInv(true);
+            CombinedResourceHandler<@NotNull ItemResource> inv = maid.components.item.getAvailableInv(true);
             for (int i = 0; i < inv.size(); i++) {
                 ItemStack stack = inv.getResource(i).toStack();
                 if (stack.isEmpty()) {

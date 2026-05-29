@@ -19,7 +19,7 @@ public class MaidTrackEvent {
         Player player = event.getEntity();
         if (target instanceof EntityMaid maid && player instanceof ServerPlayer serverPlayer) {
             // 如果包含需要同步到客户端的饰品信息，那么同步
-            var syncClientBauble = maid.components().item.getMaidBauble().getSyncClientBauble(maid);
+            var syncClientBauble = maid.components.item.getMaidBauble().getSyncClientBauble(maid);
             if (!syncClientBauble.isEmpty()) {
                 SyncBaublePackage msg = SyncBaublePackage.fullSync(maid.getId(), syncClientBauble);
                 PacketDistributor.sendToPlayer(serverPlayer, msg);

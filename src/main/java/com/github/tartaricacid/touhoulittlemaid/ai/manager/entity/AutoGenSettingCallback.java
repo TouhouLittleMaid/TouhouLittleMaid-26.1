@@ -28,7 +28,7 @@ public class AutoGenSettingCallback extends LLMCallback {
         // 添加自己的提示聊天气泡
         MutableComponent component = Component.translatable("ai.touhou_little_maid.chat.llm.role_no_setting_and_gen_setting");
         TextChatBubbleData bubbleData = TextChatBubbleData.create(30 * 20, component, TYPE_2, DEFAULT_PRIORITY);
-        this.waitingChatBubbleId = this.getMaid().components().chatBubble.addChatBubble(bubbleData);
+        this.waitingChatBubbleId = this.getMaid().components.chatBubble.addChatBubble(bubbleData);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class AutoGenSettingCallback extends LLMCallback {
         if (maid.level instanceof ServerLevel serverLevel) {
             MinecraftServer server = serverLevel.getServer();
             server.submit(() -> {
-                maid.components().chatBubble.removeChatBubble(waitingChatBubbleId);
-                maid.components().chatBubble.addTextChatBubble("ai.touhou_little_maid.chat.llm.auto_gen_setting");
+                maid.components.chatBubble.removeChatBubble(waitingChatBubbleId);
+                maid.components.chatBubble.addTextChatBubble("ai.touhou_little_maid.chat.llm.auto_gen_setting");
             });
         }
     }

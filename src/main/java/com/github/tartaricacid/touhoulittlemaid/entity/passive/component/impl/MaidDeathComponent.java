@@ -50,7 +50,7 @@ public class MaidDeathComponent implements MaidComponent, DeathHook {
 
     @Override
     public void die(DamageSource cause, Consumer<DamageSource> superDie) {
-        boolean baubleCancel = maid.components().item.getMaidBauble().fireEvent((b, s) -> b.onDeath(maid, s, cause));
+        boolean baubleCancel = maid.components.item.getMaidBauble().fireEvent((b, s) -> b.onDeath(maid, s, cause));
         if (!baubleCancel && !NeoForge.EVENT_BUS.post(new MaidDeathEvent(maid, cause)).isCanceled()) {
             // 清除死亡时需要清除的内容
             maid.clearFire();
@@ -119,7 +119,7 @@ public class MaidDeathComponent implements MaidComponent, DeathHook {
             // 支持旅行地图格式
             // [name:"name", x:-136, y:36, z:48, dim:minecraft:the_nether]
             BlockPos blockPos = maid.blockPosition();
-            String name = Identifier.parse(maid.components().profile.getModelId()).getPath();
+            String name = Identifier.parse(maid.components.profile.getModelId()).getPath();
             String msg = """
                     [name:"%s", x:%d, y:%d, z:%d, dim:%s]""".formatted(
                     name,

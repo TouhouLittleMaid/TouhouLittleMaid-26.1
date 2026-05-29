@@ -21,7 +21,7 @@ public class MaidAreaClickEvent {
 
         if (player.getMainHandItem().is(Items.COMPASS) && player instanceof ServerPlayer serverPlayer) {
             if (!maid.level.isClientSide()) {
-                SchedulePos schedulePos = maid.components().task.schedulePos;
+                SchedulePos schedulePos = maid.components.task.schedulePos;
                 if (!schedulePos.getWorkPos().equals(BlockPos.ZERO)) {
                     PacketDistributor.sendToPlayer(serverPlayer,new SyncMaidAreaPackage(maid.getId(), schedulePos));
                 }

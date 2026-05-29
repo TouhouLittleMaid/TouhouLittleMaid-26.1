@@ -126,7 +126,7 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
     }
 
     public int getLevel() {
-        return this.getLevel(maid.components().stats.getFavorability());
+        return this.getLevel(maid.components.stats.getFavorability());
     }
 
     private int getLevel(int favorability) {
@@ -142,7 +142,7 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
     }
 
     public double getLevelPercent() {
-        int favorability = this.maid.components().stats.getFavorability();
+        int favorability = this.maid.components.stats.getFavorability();
         if (favorability < LEVEL_1_POINT) {
             return favorability / (double) LEVEL_1_POINT;
         } else if (favorability < LEVEL_2_POINT) {
@@ -160,7 +160,7 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
             return 0;
         }
         int pointByLevel = getPointByLevel(level + 1);
-        return pointByLevel - this.maid.components().stats.getFavorability();
+        return pointByLevel - this.maid.components.stats.getFavorability();
     }
 
     public int getHealthByLevel(int level) {
@@ -244,10 +244,10 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
     }
 
     public void add(int addPoint) {
-        int favorability = maid.components().stats.getFavorability();
+        int favorability = maid.components.stats.getFavorability();
         int levelBefore = getLevel();
         int result = Mth.clamp(favorability + addPoint, 0, LEVEL_3_POINT);
-        maid.components().stats.setFavorability(result);
+        maid.components.stats.setFavorability(result);
         int levelAfter = getLevel();
 
         if (levelBefore < levelAfter) {
@@ -259,7 +259,7 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
             }
 
             if (health != null) {
-                if (maid.components().stats.isStruckByLightning()) {
+                if (maid.components.stats.isStruckByLightning()) {
                     health.setBaseValue(this.getHealthByLevel(levelAfter) + 20);
                 } else {
                     health.setBaseValue(this.getHealthByLevel(levelAfter));
@@ -286,17 +286,17 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
     }
 
     public void reduce(int reducePoint) {
-        int favorability = maid.components().stats.getFavorability();
+        int favorability = maid.components.stats.getFavorability();
         int pointByLevel = getPointByLevel(getLevel());
         int result = Mth.clamp(favorability - reducePoint, pointByLevel, LEVEL_3_POINT);
-        maid.components().stats.setFavorability(result);
+        maid.components.stats.setFavorability(result);
     }
 
     public void reduceWithoutLevel(int reducePoint) {
-        int favorability = maid.components().stats.getFavorability();
+        int favorability = maid.components.stats.getFavorability();
         int levelBefore = getLevel();
         int result = Mth.clamp(favorability - reducePoint, 0, LEVEL_3_POINT);
-        maid.components().stats.setFavorability(result);
+        maid.components.stats.setFavorability(result);
         int levelAfter = getLevel();
 
         if (levelBefore > levelAfter) {
@@ -308,7 +308,7 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
             }
 
             if (health != null) {
-                if (maid.components().stats.isStruckByLightning()) {
+                if (maid.components.stats.isStruckByLightning()) {
                     health.setBaseValue(this.getHealthByLevel(levelAfter) + 20);
                 } else {
                     health.setBaseValue(this.getHealthByLevel(levelAfter));
@@ -325,7 +325,7 @@ public class FavorabilityComponent implements MaidComponent, AiStepComponent, Sa
 
     public void onFavorabilityLevelChange(int oldLevel, int newLevel) {
         // 最后触发事件和饰品
-        this.maid.components().item.getMaidBauble().fireEvent((b, s) -> {
+        this.maid.components.item.getMaidBauble().fireEvent((b, s) -> {
             b.onFavorabilityLevelChange(this.maid, s, oldLevel, newLevel);
             return false;
         });

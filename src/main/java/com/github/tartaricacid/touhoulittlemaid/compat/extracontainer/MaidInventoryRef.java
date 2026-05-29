@@ -12,7 +12,7 @@ public class MaidInventoryRef implements ContainerRef {
     @Override
     public boolean containing(EntityMaid maid, ItemStack itemToCheck) {
         // 女仆物品栏不存在 O(1) 复杂度的物品包含方法，只能遍历
-        var inv = maid.components().item.getAvailableInv(false);
+        var inv = maid.components.item.getAvailableInv(false);
         for (int i = 0; i < inv.size(); i++) {
             ItemStack stackInSlot = ItemUtil.getStack(inv, i);
             if (stackInSlot.isEmpty()) {
@@ -29,7 +29,7 @@ public class MaidInventoryRef implements ContainerRef {
     public ItemStack insert(EntityMaid maid, ItemStack itemstack, boolean simulate) {
         try (Transaction tx = Transaction.openRoot()) {
             ItemResource resource = ItemResource.of(itemstack);
-            var inv = maid.components().item.getAvailableInv(false);
+            var inv = maid.components.item.getAvailableInv(false);
             int count = inv.insert(resource, itemstack.count(), tx);
             if (!simulate) {
                 tx.commit();
