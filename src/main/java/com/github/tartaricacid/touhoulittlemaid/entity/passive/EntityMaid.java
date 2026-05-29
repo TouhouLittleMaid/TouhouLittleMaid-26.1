@@ -603,6 +603,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         return this.miscManager.getTypeName();
     }
 
+    @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn,
                                         EntitySpawnReason reason, @Nullable SpawnGroupData spawnDataIn) {

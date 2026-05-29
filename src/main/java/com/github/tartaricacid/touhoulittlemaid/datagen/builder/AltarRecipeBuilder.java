@@ -2,64 +2,60 @@ package com.github.tartaricacid.touhoulittlemaid.datagen.builder;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
+import com.google.common.collect.Lists;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class AltarRecipeBuilder implements RecipeBuilder {
     private static final String NAME = "altar_recipe";
+
     private final HolderGetter<Item> items;
-    private final RecipeCategory category;
-    private final Item result;
-    private final NonNullList<Ingredient> ingredients;
-    private final ItemStackTemplate resultStack;
+
+    private final List<Ingredient> ingredients;
+    private final ItemStackTemplate result;
     private float power;
     private Identifier entityType;
     private String langKey;
 
-    public AltarRecipeBuilder(HolderGetter<Item> items, RecipeCategory recipeCategory, ItemLike resultStack, int count) {
-        this(items, recipeCategory, new ItemStackTemplate(resultStack.asItem(), count));
+    public AltarRecipeBuilder(HolderGetter<Item> items, ItemLike result, int count) {
+        this(items, new ItemStackTemplate(result.asItem(), count));
     }
 
-    public AltarRecipeBuilder(HolderGetter<Item> items, RecipeCategory recipeCategory, ItemStackTemplate result) {
+    public AltarRecipeBuilder(HolderGetter<Item> items, ItemStackTemplate result) {
         this.items = items;
-        this.category = recipeCategory;
         this.power = 0;
-        this.result = result.item().value();
-        this.resultStack = result;
+        this.result = result;
         this.entityType = BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.ITEM);
-        this.ingredients = NonNullList.create();
+        this.ingredients = Lists.newArrayList();
         this.langKey = "jei.touhou_little_maid.altar_craft.item_craft.result";
     }
 
-    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, RecipeCategory category, ItemStackTemplate result) {
-        return new AltarRecipeBuilder(items, category, result);
+    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, ItemStackTemplate result) {
+        return new AltarRecipeBuilder(items, result);
     }
 
-    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, RecipeCategory category, ItemLike result) {
-        return shapeless(items, category, result, 1);
+    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, ItemLike result) {
+        return shapeless(items, result, 1);
     }
 
-    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, RecipeCategory category, ItemLike result, int count) {
-        return new AltarRecipeBuilder(items, category, result, count);
+    public static AltarRecipeBuilder shapeless(HolderGetter<Item> items, ItemLike result, int count) {
+        return new AltarRecipeBuilder(items, result, count);
     }
 
     public AltarRecipeBuilder requires(TagKey<Item> tag) {
@@ -119,8 +115,9 @@ public class AltarRecipeBuilder implements RecipeBuilder {
 
     @Override
     public ResourceKey<Recipe<?>> defaultId() {
-        return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID,
-                NAME + "/" + BuiltInRegistries.ITEM.getKey(this.result).getPath()));
+        String path = RecipeBuilder.getDefaultRecipeId(this.result).identifier().getPath();
+        Identifier filePath = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, NAME + "/" + path);
+        return ResourceKey.create(Registries.RECIPE, filePath);
     }
 
     @Override
@@ -129,16 +126,9 @@ public class AltarRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, String recipeId) {
-        ResourceKey<Recipe<?>> key = ResourceKey.create(Registries.RECIPE,
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, NAME + "/" + recipeId));
-        this.save(output, key);
-    }
-
-    @Override
-    public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> id) {
-        CraftingBookCategory bookCategory = RecipeBuilder.determineCraftingBookCategory(this.category);
-        AltarRecipe altarRecipe = new AltarRecipe(NAME, bookCategory, this.ingredients, this.power, this.resultStack, this.entityType, this.langKey);
-        recipeOutput.accept(id, altarRecipe, null);
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
+        List<Ingredient> copyOf = List.copyOf(this.ingredients);
+        AltarRecipe recipe = new AltarRecipe(copyOf, power, result, entityType, langKey);
+        output.accept(id, recipe, null);
     }
 }

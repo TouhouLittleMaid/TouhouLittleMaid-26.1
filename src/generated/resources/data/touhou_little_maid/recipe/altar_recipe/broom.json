@@ -1,8 +1,6 @@
 {
-  "type": "touhou_little_maid:altar_recipe_serializers",
-  "category": "misc",
+  "type": "touhou_little_maid:altar",
   "entity": "minecraft:item",
-  "group": "altar_recipe",
   "ingredients": [
     "minecraft:hay_block",
     "minecraft:hay_block",

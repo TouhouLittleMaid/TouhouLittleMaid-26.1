@@ -200,6 +200,7 @@ public class MaidMiscManager {
                 .orElse(rawTypeName);
     }
 
+    @Nullable
     SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, EntitySpawnReason reason, @Nullable SpawnGroupData spawnDataIn) {
         // 为结构生成的女仆添加特殊标签
         if (reason == EntitySpawnReason.STRUCTURE) {
