@@ -19,9 +19,6 @@ public class EmbeddiumCompat {
 
     public static boolean embeddiumRenderCubesOfBone(AnimatedGeoBone bone, PoseStack poseStack, VertexConsumer buffer, int cubePackedLight,
                                                      int packedOverlay, float red, float green, float blue, float alpha) {
-        if (EmbeddiumCompat.isEmbeddiumInstalled()) {
-            return EmbeddiumGeoRenderer.renderCubesOfBone(bone, poseStack, buffer, cubePackedLight, packedOverlay, red, green, blue, alpha);
-        }
         return false;
     }
 }

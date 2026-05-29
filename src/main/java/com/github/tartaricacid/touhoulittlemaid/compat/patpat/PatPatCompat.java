@@ -13,8 +13,5 @@ public class PatPatCompat {
     }
 
     public static void renderPat(LivingEntity livingEntity, PoseStack matrixStack, float tickDelta) {
-        if (isLoaded) {
-            PatPatRenderer.scaleEntityIfPatted(livingEntity, matrixStack, tickDelta);
-        }
     }
 }

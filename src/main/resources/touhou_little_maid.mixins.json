@@ -2,7 +2,6 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.github.tartaricacid.touhoulittlemaid.mixin",
-  "plugin": "com.github.tartaricacid.touhoulittlemaid.mixin.plugin.MixinPlugin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "ArrowMixin",
