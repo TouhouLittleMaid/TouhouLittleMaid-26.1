@@ -1,13 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Divisor;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.network.chat.Component;
@@ -15,20 +13,19 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
 public class EntityGraphics {
-    private final MultiBufferSource bufferSource;
-    private final PoseStack pose;
-    private final EntityMaid maid;
+    private final SubmitNodeCollector submitNode;
+    private final PoseStack poseStack;
+    private final EntityMaidRenderState state;
     private final int packedLight;
     private final float partialTicks;
 
-    public EntityGraphics(MultiBufferSource bufferSource, PoseStack pose, EntityMaid maid, int packedLight, float partialTicks) {
-        this.bufferSource = bufferSource;
-        this.pose = pose;
-        this.maid = maid;
+    public EntityGraphics(SubmitNodeCollector submitNode, PoseStack poseStack, EntityMaidRenderState state, int packedLight, float partialTicks) {
+        this.submitNode = submitNode;
+        this.poseStack = poseStack;
+        this.state = state;
         this.packedLight = packedLight;
         this.partialTicks = partialTicks;
     }
@@ -46,7 +43,6 @@ public class EntityGraphics {
     }
 
     public void fill(RenderType renderType, int minX, int minY, int maxX, int maxY, int z, int color) {
-        Matrix4f matrix4f = this.pose.last().pose();
         if (minX < maxX) {
             int i = minX;
             minX = maxX;
@@ -57,31 +53,37 @@ public class EntityGraphics {
             minY = maxY;
             maxY = j;
         }
-        VertexConsumer vertexconsumer = this.bufferSource.getBuffer(renderType);
-        vertexconsumer.addVertex(matrix4f, minX, minY, z).setColor(color).setLight(this.packedLight);
-        vertexconsumer.addVertex(matrix4f, minX, maxY, z).setColor(color).setLight(this.packedLight);
-        vertexconsumer.addVertex(matrix4f, maxX, maxY, z).setColor(color).setLight(this.packedLight);
-        vertexconsumer.addVertex(matrix4f, maxX, minY, z).setColor(color).setLight(this.packedLight);
+
+        int finalMinX = minX;
+        int finalMinY = minY;
+        int finalMaxY = maxY;
+        int finalMaxX = maxX;
+
+        this.submitNode.submitCustomGeometry(this.poseStack, renderType, (pose, consumer) -> {
+            Matrix4f matrix4f = pose.pose();
+            consumer.addVertex(matrix4f, finalMinX, finalMinY, z).setColor(color).setLight(this.packedLight);
+            consumer.addVertex(matrix4f, finalMinX, finalMaxY, z).setColor(color).setLight(this.packedLight);
+            consumer.addVertex(matrix4f, finalMaxX, finalMaxY, z).setColor(color).setLight(this.packedLight);
+            consumer.addVertex(matrix4f, finalMaxX, finalMinY, z).setColor(color).setLight(this.packedLight);
+        });
     }
 
-    public int drawString(Font font, FormattedCharSequence text, int x, int y, int color) {
-        return this.drawString(font, text, x, y, color, true);
+    public void drawString(FormattedCharSequence text, int x, int y, int color) {
+        this.drawString(text, x, y, color, true);
     }
 
-    public int drawString(Font font, FormattedCharSequence text, float x, float y, int color, boolean dropShadow) {
-        // TODO
-        // return font.drawInBatch(text, x, y, color, dropShadow, this.pose.last().pose(), this.bufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
-        return 0;
+    public void drawString(FormattedCharSequence text, float x, float y, int color, boolean dropShadow) {
+        this.submitNode.submitText(this.poseStack, x, y, text, dropShadow, Font.DisplayMode.NORMAL, this.packedLight, color, 0, 0);
     }
 
-    public int drawString(Font font, Component text, int x, int y, int color, boolean dropShadow) {
-        return this.drawString(font, text.getVisualOrderText(), x, y, color, dropShadow);
+    public void drawString(Component text, int x, int y, int color, boolean dropShadow) {
+        this.drawString(text.getVisualOrderText(), x, y, color, dropShadow);
     }
 
     public void drawWordWrap(Font font, FormattedText text, int startX, int startY, int lineWidth, int color) {
         int currentY = startY;
         for (FormattedCharSequence lineSequence : font.split(text, lineWidth)) {
-            this.drawString(font, lineSequence, startX, currentY, color, false);
+            this.drawString(lineSequence, startX, currentY, color, false);
             currentY += 9;
         }
     }
@@ -168,19 +170,17 @@ public class EntityGraphics {
     }
 
     public void innerBlit(Identifier atlas, int x1, int x2, int y1, int y2, int z, float minU, float maxU, float minV, float maxV) {
-//        RenderSystem.setShaderTexture(0, atlas);
-//        RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
-//        Matrix4f matrix4f = this.pose.last().pose();
-//        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
-//        bufferBuilder.addVertex(matrix4f, x1, y1, z).setColor(0xFFFFFFFF).setUv(minU, minV).setLight(this.packedLight);
-//        bufferBuilder.addVertex(matrix4f, x1, y2, z).setColor(0xFFFFFFFF).setUv(minU, maxV).setLight(this.packedLight);
-//        bufferBuilder.addVertex(matrix4f, x2, y2, z).setColor(0xFFFFFFFF).setUv(maxU, maxV).setLight(this.packedLight);
-//        bufferBuilder.addVertex(matrix4f, x2, y1, z).setColor(0xFFFFFFFF).setUv(maxU, minV).setLight(this.packedLight);
-//        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        this.submitNode.submitCustomGeometry(this.poseStack, RenderTypes.text(atlas), ((pose, buffer) -> {
+            Matrix4f matrix4f = pose.pose();
+            buffer.addVertex(matrix4f, x1, y1, z).setColor(0xFFFFFFFF).setUv(minU, minV).setLight(this.packedLight);
+            buffer.addVertex(matrix4f, x1, y2, z).setColor(0xFFFFFFFF).setUv(minU, maxV).setLight(this.packedLight);
+            buffer.addVertex(matrix4f, x2, y2, z).setColor(0xFFFFFFFF).setUv(maxU, maxV).setLight(this.packedLight);
+            buffer.addVertex(matrix4f, x2, y1, z).setColor(0xFFFFFFFF).setUv(maxU, minV).setLight(this.packedLight);
+        }));
     }
 
-    public EntityMaid getMaid() {
-        return maid;
+    public EntityMaidRenderState getRenderState() {
+        return state;
     }
 
     public int getPackedLight() {
@@ -191,17 +191,11 @@ public class EntityGraphics {
         return partialTicks;
     }
 
+    public SubmitNodeCollector getSubmitNode() {
+        return submitNode;
+    }
+
     public PoseStack getPoseStack() {
-        return pose;
-    }
-
-    @ApiStatus.AvailableSince("1.4.7")
-    public MultiBufferSource getBufferSource() {
-        return bufferSource;
-    }
-
-    @ApiStatus.AvailableSince("1.4.7")
-    public PoseStack getPose() {
-        return pose;
+        return poseStack;
     }
 }

@@ -62,14 +62,14 @@ public class WaitingChatBubbleRenderer implements IChatBubbleRenderer {
         graphics.getPoseStack().popPose();
 
         if (this.secondaryText == null) {
-            graphics.drawString(font, this.text, 18, (this.height - font.lineHeight) / 2 + 1, 0x000000, false);
+            graphics.drawString(this.text, 18, (this.height - font.lineHeight) / 2 + 1, 0x000000, false);
         } else {
-            graphics.drawString(font, this.text, 18, 2, 0x000000, false);
+            graphics.drawString(this.text, 18, 2, 0x000000, false);
 
             graphics.getPoseStack().pushPose();
             graphics.getPoseStack().translate(18, font.lineHeight + 1, 0);
             graphics.getPoseStack().scale(SECONDARY_TEXT_SCALE, SECONDARY_TEXT_SCALE, 1);
-            graphics.drawString(font, this.secondaryText, 0, 5, SECONDARY_TEXT_COLOR, false);
+            graphics.drawString(this.secondaryText, 0, 5, SECONDARY_TEXT_COLOR, false);
             graphics.getPoseStack().popPose();
         }
     }

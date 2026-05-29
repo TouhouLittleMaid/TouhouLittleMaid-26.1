@@ -1,13 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble;
 
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
-import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleDataCollection;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.client.ClientHooks;
 
 public class ChatBubbleRenderer {
     private final EntityMaidRenderer renderer;
@@ -17,18 +13,8 @@ public class ChatBubbleRenderer {
     }
 
     @SuppressWarnings("all")
-    public void submit(SubmitNodeCollector submitNodeCollector, EntityGraphics graphics) {
-        EntityMaid maid = graphics.getMaid();
-        double distance = renderer.getDispatcher().distanceToSqr(maid);
-        if (!ClientHooks.isNameplateInRenderDistance(maid, distance)) {
-            return;
-        }
-
-        ChatBubbleDataCollection chatBubble = maid.getChatBubbleManager().getChatBubbleDataCollection();
-        if (chatBubble == null || chatBubble.isEmpty()) {
-            return;
-        }
-
+    public void submit(EntityGraphics graphics) {
+        var chatBubble = graphics.getRenderState().chatBubble;
         int size = chatBubble.size();
         boolean isOdd = isOdd(size);
         int sideNum = isOdd ? size - 1 : size;

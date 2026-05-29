@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimatio
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleDataCollection;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.blockentity.state.BannerRenderState;
@@ -37,6 +38,7 @@ public class EntityMaidRenderState extends ArmedEntityRenderState {
 
     public boolean showBubble;
     public Vec3 bubbleOffset;
+    public ChatBubbleDataCollection chatBubble;
 
     public boolean showBackpack;
     @Nullable
