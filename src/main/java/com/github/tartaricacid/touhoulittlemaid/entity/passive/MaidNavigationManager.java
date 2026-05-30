@@ -12,6 +12,7 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import org.jetbrains.annotations.Nullable;
 
+@MaidManagerDef(alias = "navigationManager", exposeView = false)
 public class MaidNavigationManager {
     private final MaidPathNavigation basicNavigation;
     private final AmphibiousPathNavigation waterNavigation;
@@ -25,6 +26,11 @@ public class MaidNavigationManager {
         this.basicNavigation = new MaidPathNavigation(maid, maid.level);
         this.waterNavigation = new MaidUnderWaterPathNavigation(maid, maid.level);
         maid.setNavigation(basicNavigation);
+    }
+
+    public void rebindNavigation() {
+        maid.setNavigation(basicNavigation);
+        mode = Mode.GROUND;
     }
 
     public void tick() {
