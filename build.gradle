@@ -214,6 +214,9 @@ configurations {
 }
 
 dependencies {
+    annotationProcessor files("${rootDir}/buildSrc/build/libs/buildSrc.jar")
+    annotationProcessor 'com.squareup:javapoet:1.13.0'
+
     // Opus 音频解码库
     mcLib "org.gagravarr:vorbis-java-core:0.8"
     mcLib "io.github.jaredmdobson:concentus:1.0.2"

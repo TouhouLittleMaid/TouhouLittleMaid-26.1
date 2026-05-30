@@ -14,6 +14,7 @@ import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 
+@MaidManagerDef(alias = "teleportManager", exposeView = true)
 public class MaidTeleportManager {
     /**
      * 女仆传送到主人处的最大尝试次数

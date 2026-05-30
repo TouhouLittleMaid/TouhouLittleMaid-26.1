@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.favorability;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidFavorabilityLevelChangeEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidManagerDef;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.network.NetworkHandler;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
@@ -24,6 +25,7 @@ import java.util.Map;
 /**
  * FIXME：这个好感度机制太落伍了，未来需要重新设计一个更合理的好感度系统
  */
+@MaidManagerDef(alias = "favorabilityManager", exposeView = false)
 public class FavorabilityManager {
     public static final Map<String, Type> TYPES = Maps.newHashMap();
 

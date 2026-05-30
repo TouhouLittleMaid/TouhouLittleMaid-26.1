@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * 主要管理女仆的游泳逻辑
  */
+@MaidManagerDef(alias = "swimManager", exposeView = false)
 public class MaidSwimManager {
     /**
      * 游泳碰撞箱
