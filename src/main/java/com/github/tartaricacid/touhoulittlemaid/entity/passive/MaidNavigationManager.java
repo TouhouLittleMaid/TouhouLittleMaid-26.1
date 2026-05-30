@@ -28,11 +28,6 @@ public class MaidNavigationManager {
         maid.setNavigation(basicNavigation);
     }
 
-    public void rebindNavigation() {
-        maid.setNavigation(basicNavigation);
-        mode = Mode.GROUND;
-    }
-
     public void tick() {
         if (!level.isClientSide() && maid.isEffectiveAi()) {
             if (mode != Mode.WATER && maid.isInWater() && shouldStartOrStopSwim(5)) {
