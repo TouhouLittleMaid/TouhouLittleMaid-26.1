@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.layer.*;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.*;
+import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeoReplacedEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -13,15 +13,15 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class GeckoEntityMaidRenderer extends GeoReplacedEntityRenderer<EntityMaid, EntityMaidRenderState, GeckoMaidRenderData> {
-    public GeckoEntityMaidRenderer(EntityRendererProvider.Context renderManager) {
-        super(renderManager);
+    public GeckoEntityMaidRenderer(EntityRendererProvider.Context context) {
+        super(context);
         var beRenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher();
         addLayer(new GeckoLayerMaidHeld());
-        addLayer(new GeckoLayerMaidBipedHead(beRenderer));
+        addLayer(new GeckoLayerMaidBipedHead(context));
         addLayer(new GeckoLayerMaidBackpack());
         addLayer(new GeckoLayerMaidBackItem());
         addLayer(new GeckoLayerMaidBanner(beRenderer));
-        addAdditionGeckoEntityMaidRenderer(renderManager);
+        addAdditionGeckoEntityMaidRenderer(context);
     }
 
     @Override

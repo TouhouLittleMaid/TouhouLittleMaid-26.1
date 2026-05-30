@@ -10,27 +10,25 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.entity.HumanoidArm;
 
 public class GeckoLayerMaidHeld implements GeoLayerRenderer<EntityMaidRenderState, GeckoMaidRenderData> {
     @Override
-    public void submit(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, EntityMaidRenderState state, GeckoMaidRenderData data, CameraRenderState camera) {
+    public void submit(SubmitNodeCollector submitNode, PoseStack poseStack, EntityMaidRenderState state, GeckoMaidRenderData data, CameraRenderState camera) {
         if (!state.rightHandItemState.isEmpty()) {
-            data.modelState.visitLocatorGroup(GeoLocatorType.RIGHT_HAND, poseStack, locatorPoseStack -> {
-                this.renderArmWithItem(state, state.rightHandItemState, HumanoidArm.RIGHT, locatorPoseStack, submitNodeCollector);
-            });
+            data.modelState.visitLocatorGroup(GeoLocatorType.RIGHT_HAND, poseStack, locator ->
+                    this.renderArmWithItem(state, state.rightHandItemState, locator, submitNode)
+            );
         }
         if (!state.leftHandItemState.isEmpty()) {
-            data.modelState.visitLocatorGroup(GeoLocatorType.LEFT_HAND, poseStack, locatorPoseStack -> {
-                this.renderArmWithItem(state, state.leftHandItemState, HumanoidArm.LEFT, locatorPoseStack, submitNodeCollector);
-            });
+            data.modelState.visitLocatorGroup(GeoLocatorType.LEFT_HAND, poseStack, locator ->
+                    this.renderArmWithItem(state, state.leftHandItemState, locator, submitNode)
+            );
         }
     }
 
-    protected void renderArmWithItem(EntityMaidRenderState state, ItemStackRenderState item, HumanoidArm arm,
-                                     PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+    protected void renderArmWithItem(EntityMaidRenderState state, ItemStackRenderState itemRender, PoseStack poseStack, SubmitNodeCollector submitNode) {
         poseStack.translate(0, -0.0625, -0.1);
         poseStack.mulPose(Axis.XP.rotationDegrees(-90.0F));
-        item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
+        itemRender.submit(poseStack, submitNode, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
     }
 }

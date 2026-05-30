@@ -41,7 +41,7 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         this.chatBubbleRenderer = new ChatBubbleRenderer(this);
 
         this.addLayer(new LayerMaidHeldItem(this));
-        this.addLayer(new LayerMaidBipedHead(this));
+        this.addLayer(new LayerMaidBipedHead(this, context));
         this.addLayer(new LayerMaidBackpack(this, context.getModelSet()));
         this.addLayer(new LayerMaidBackItem(this));
         // this.addLayer(new LayerMaidBanner(this));

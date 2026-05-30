@@ -12,20 +12,22 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public class GeckoLayerMaidBackItem implements GeoLayerRenderer<EntityMaidRenderState, GeckoMaidRenderData> {
     @Override
-    public void submit(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, EntityMaidRenderState state, GeckoMaidRenderData data, CameraRenderState camera) {
-        if (!state.backItem.isEmpty() && state.backpack != null) {
-            if (data.modelState.locatorGroupSize(GeoLocatorType.BACKPACK) > 0) {
-                data.modelState.visitLocatorGroup(GeoLocatorType.BACKPACK, poseStack, locatorPoseStack -> {
-                    renderBackItem(submitNodeCollector, locatorPoseStack, state);
-                });
-            } else {
-                renderBackItem(submitNodeCollector, poseStack, state);
-            }
+    public void submit(SubmitNodeCollector submitNode, PoseStack poseStack, EntityMaidRenderState state,
+                       GeckoMaidRenderData data, CameraRenderState camera) {
+        if (state.backItem.isEmpty() || state.backpack == null) {
+            return;
+        }
+        if (data.modelState.locatorGroupSize(GeoLocatorType.BACKPACK) > 0) {
+            data.modelState.visitLocatorGroup(GeoLocatorType.BACKPACK, poseStack,
+                    locator -> renderBackItem(submitNode, locator, state));
+        } else {
+            renderBackItem(submitNode, poseStack, state);
         }
     }
 
     public void renderBackItem(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, EntityMaidRenderState state) {
-        // TODO: 判断枪
+        assert state.backpack != null;
+
         poseStack.translate(0, 1, 0.25);
         poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
         poseStack.translate(0, 0.5, -0.25);

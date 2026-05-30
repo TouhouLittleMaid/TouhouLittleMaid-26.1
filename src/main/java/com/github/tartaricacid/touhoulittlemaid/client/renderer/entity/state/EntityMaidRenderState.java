@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidM
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.SpecialMaidModelResolver;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
-import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
@@ -18,22 +17,22 @@ import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.BlockModelResolver;
 import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.blockentity.state.BannerRenderState;
-import net.minecraft.client.renderer.blockentity.state.SkullBlockRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityAttachment;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AbstractSkullBlock;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.ClientHooks;
 import org.jetbrains.annotations.Nullable;
@@ -163,12 +162,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
      */
     public @Nullable BannerRenderState backBanner;
     /**
-     * 头颅渲染
-     */
-    public @Nullable SkullBlockRenderState headSkull;
-    /**
-     * 装饰栏，方块
-     * TODO 应该修改名称和逻辑，护甲栏不能放入普通方块，仅在装饰栏可以渲染
+     * 装饰栏的方块物品，会渲染在头部，故叫做 headBlock
      */
     public final BlockModelRenderState headBlock = new BlockModelRenderState();
     /**
@@ -229,7 +223,6 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         hasBackpack = false;
         backpack = null;
         backBanner = null;
-        headSkull = null;
 
         headBlock.clear();
         simpleHat.clear();
@@ -317,16 +310,27 @@ public class EntityMaidRenderState extends HumanoidRenderState {
             EntityMaidRenderState state,
             BlockModelResolver blockModelResolver
     ) {
-        ItemStack headItem = maid.getItemBySlot(EquipmentSlot.HEAD);
-        if (headItem.getItem() instanceof BlockItem blockItem) {
-            if (!(blockItem.getBlock() instanceof AbstractSkullBlock)) {
-                blockModelResolver.update(state.headBlock, blockItem.getBlock().defaultBlockState(), BLOCK_DISPLAY_CONTEXT);
+        ItemStack showItem = maid.getBackpackShowItem();
+
+        // 如果装饰栏是方块物品，那么就渲染在头上
+        if (showItem.getItem() instanceof BlockItem blockItem) {
+            BlockState blockState = blockItem.getBlock().defaultBlockState();
+
+            // TODO 提供一个事件或者接口，方便第三方模组进行方块属性的设置或者替换
+
+            // 如果是作物，那就随机给点 age
+            if (blockState.hasProperty(CropBlock.AGE)) {
+                int age = (int) (Math.abs(state.randomNumber) % (CropBlock.MAX_AGE + 1));
+                blockState = blockState.setValue(CropBlock.AGE, age);
             }
+
+            blockModelResolver.update(state.headBlock, blockState, BLOCK_DISPLAY_CONTEXT);
             return;
         }
 
-        if (SimpleHatsCompat.isHatItem(headItem)) {
-            SimpleHatsCompat.extract(state.simpleHat, headItem);
+        // 如果是装饰栏是 Simple Hats 的兼容物品，渲染在头上
+        if (SimpleHatsCompat.isHatItem(showItem)) {
+            SimpleHatsCompat.extract(state.simpleHat, showItem);
         }
     }
 
@@ -339,6 +343,15 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         Vec3 bubbleOffset = maid.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, maid.getViewYRot(partialTicks));
         if (bubbleOffset == null || !ClientHooks.isNameplateInRenderDistance(maid, state.distanceToCameraSq)) {
             return;
+        }
+
+        // 依据模型的缩放大小进行 Y 位移
+        float scale = state.modelInfo.getRenderEntityScale();
+        if (state.modelInfo.isGeckoModel()) {
+            // GeckoLib 模型一般偏高
+            bubbleOffset = bubbleOffset.multiply(1, scale + 0.3, 1);
+        } else {
+            bubbleOffset = bubbleOffset.multiply(1, scale, 1);
         }
 
         var chatBubble = maid.getChatBubbleManager().getChatBubbleDataCollection();
@@ -362,18 +375,17 @@ public class EntityMaidRenderState extends HumanoidRenderState {
 
         state.showBackpack = maid.getConfigManager().isShowBackpack();
         state.backpack = state.showBackpack ? maid.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
-        ItemStack backpackShowingItem = maid.getBackpackShowItem();
 
-        if (GunClientUtil.isGun(backpackShowingItem)) {
-            // 目前 26.1 没有枪械模组
-            return;
-        }
-        if (backpackShowingItem.getItem() instanceof BannerItem) {
+        ItemStack showItem = maid.getBackpackShowItem();
+        if (showItem.getItem() instanceof BannerItem) {
             // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBanner
             return;
         }
 
-        itemModelResolver.updateForLiving(state.backItem, backpackShowingItem, ItemDisplayContext.FIXED, maid);
+        // 只有工具类物品才会显示在背部
+        if (showItem.has(DataComponents.TOOL)) {
+            itemModelResolver.updateForLiving(state.backItem, showItem, ItemDisplayContext.FIXED, maid);
+        }
     }
 
     @SuppressWarnings("unchecked")

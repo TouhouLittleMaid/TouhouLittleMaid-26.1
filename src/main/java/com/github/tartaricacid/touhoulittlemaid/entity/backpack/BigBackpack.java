@@ -80,7 +80,7 @@ public class BigBackpack extends IMaidBackpack {
 
     @Override
     public void offsetBackpackItem(PoseStack poseStack) {
-        poseStack.translate(0, 0.25, -0.25);
+        poseStack.translate(0, 0.5, -0.4375);
     }
 
     @Override

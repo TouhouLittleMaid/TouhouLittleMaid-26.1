@@ -82,7 +82,7 @@ public class MiddleBackpack extends IMaidBackpack {
     @Override
     public void offsetBackpackItem(PoseStack poseStack) {
         poseStack.mulPose(Axis.XP.rotationDegrees(-7.5F));
-        poseStack.translate(0, 0.625, -0.25);
+        poseStack.translate(0, 0.625, -0.125);
     }
 
     @Override
