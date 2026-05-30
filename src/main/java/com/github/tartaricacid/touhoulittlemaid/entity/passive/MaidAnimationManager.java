@@ -8,6 +8,7 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.A
 /**
  * 动画管理器，提供一些方法来设置、获取、同步女仆的动画状态
  */
+@MaidManagerDef(alias = "animationManager", exposeView = true)
 public class MaidAnimationManager {
     /**
      * 用于方便特殊动画播放的变量，目前仅支持捡雪球

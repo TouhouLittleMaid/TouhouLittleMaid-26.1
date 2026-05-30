@@ -13,6 +13,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import javax.annotation.Nullable;
 
+@MaidManagerDef(alias = "killRecordManager", exposeView = false)
 public final class MaidKillRecordManager {
     private static final String KILL_RECORD = "KillRecord";
     private static final String TOTAL_COUNT = "TotalCount";

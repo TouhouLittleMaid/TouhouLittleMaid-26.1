@@ -18,6 +18,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * 粒子效果管理器，负责生成各种粒子效果
  */
+@MaidManagerDef(alias = "particleManager", exposeView = true)
 public class MaidParticleManager {
     private final EntityMaid maid;
     private final Level level;
