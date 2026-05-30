@@ -2,7 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
-import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidEquipEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTickEvent;
@@ -14,9 +13,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidBrain;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.control.MaidMoveControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.navigation.MaidPathNavigation;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleDataCollection;
-import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleRegister;
-import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
@@ -73,7 +70,6 @@ import static com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidBrain
 import static com.github.tartaricacid.touhoulittlemaid.inventory.handler.MaidBackpackHandler.BACKPACK_ITEM_SLOT;
 
 public class EntityMaid extends MaidManagerHost implements CrossbowAttackMob {
-
     public static final Identifier ENTITY_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid");
     public static final ResourceKey<EntityType<?>> ENTITY_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ENTITY_ID);
     public static final EntityType<EntityMaid> TYPE = EntityType.
@@ -113,9 +109,9 @@ public class EntityMaid extends MaidManagerHost implements CrossbowAttackMob {
 
     protected EntityMaid(EntityType<EntityMaid> type, Level world) {
         super(type, world);
-        initMaidManagers(this);
+        super.initMaidManagers(this);
+
         this.moveControl = new MaidMoveControl(this);
-        this.navigationManager.rebindNavigation();
         // 启用实体持久化，也许能解决难以复现的女仆实体丢失问题
         this.setPersistenceRequired();
     }
