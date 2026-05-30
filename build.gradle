@@ -195,6 +195,9 @@ neoForge {
 }
 
 sourceSets.main {
+    java {
+        srcDir layout.buildDirectory.dir("generated/sources/annotationProcessor/java/main")
+    }
     resources {
         srcDir 'src/generated/resources'
     }
@@ -214,7 +217,7 @@ configurations {
 }
 
 dependencies {
-    annotationProcessor files("${rootDir}/buildSrc/build/libs/buildSrc.jar")
+    annotationProcessor project(':maid-manager-codegen')
     annotationProcessor 'com.squareup:javapoet:1.13.0'
 
     // Opus 音频解码库
