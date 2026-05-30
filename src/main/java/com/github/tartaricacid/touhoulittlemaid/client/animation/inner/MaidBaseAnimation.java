@@ -4,6 +4,7 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPa
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.animation.inner.EntityBaseAnimation.getBaseFloatDefault;
 import static com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation.INNER_ANIMATION;
@@ -58,7 +59,7 @@ public final class MaidBaseAnimation {
 
     public static IAnimation<EntityMaidRenderState> getHeadBlink() {
         return (state, models) -> {
-            float remainder = (state.ageInTicks + Math.abs(state.uuidLeastSignificantBits) % 10) % 60;
+            float remainder = (state.ageInTicks + Math.abs(state.randomNumber) % 10) % 60;
             boolean visible = state.sleeping || (55 < remainder && remainder < 60);
             setVisible(models.get("blink"), visible);
             setVisible(models.get("blink2"), visible);
@@ -121,7 +122,7 @@ public final class MaidBaseAnimation {
         return (state, models) -> {
             BedrockPart earLeftShake = models.get("earLeftShake");
             BedrockPart earRightShake = models.get("earRightShake");
-            float time = (state.ageInTicks + Math.abs(state.uuidLeastSignificantBits) % 10) % 40;
+            float time = (state.ageInTicks + Math.abs(state.randomNumber) % 10) % 40;
             if (time < Math.PI * 4) {
                 float rotationZ = (float) Math.abs(Math.sin(time * 0.25)) * 0.4f;
                 if (earLeftShake != null) {
@@ -141,7 +142,7 @@ public final class MaidBaseAnimation {
         return (state, models) -> {
             BedrockPart earLeftShake = models.get("earLeftBegShake");
             BedrockPart earRightShake = models.get("earRightBegShake");
-            float time = (state.ageInTicks + Math.abs(state.uuidLeastSignificantBits) % 10) % 40;
+            float time = (state.ageInTicks + Math.abs(state.randomNumber) % 10) % 40;
             if (state.begging && time < Math.PI * 4) {
                 float rotationZ = (float) Math.abs(Math.sin(time * 0.25)) * 0.4f;
                 if (earLeftShake != null) {
@@ -191,9 +192,9 @@ public final class MaidBaseAnimation {
         return (state, models) -> {
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
-            double f1 = 1.0 - Math.pow(1.0 - state.attackAnim, 4);
+            double f1 = 1.0 - Math.pow(1.0 - state.attackTime, 4);
             double f2 = Math.sin(f1 * Math.PI);
-            double f3 = Math.sin(state.attackAnim * Math.PI) * -0.7 * 0.75;
+            double f3 = Math.sin(state.attackTime * Math.PI) * -0.7 * 0.75;
             float limbSwing = state.walkAnimationPos;
             float limbSwingAmount = state.walkAnimationSpeed;
             float ageInTicks = state.ageInTicks;
@@ -202,11 +203,11 @@ public final class MaidBaseAnimation {
                 armLeft.xRot = (float) (-Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
                 armLeft.yRot = armLeft.getInitRotY();
                 armLeft.zRot = (float) (Math.cos(ageInTicks * 0.05) * 0.05 + armLeft.getInitRotZ());
-                if (state.attackAnim > 0.0 && isSwingLeftHand(state)) {
+                if (state.attackTime > 0.0 && isSwingLeftHand(state)) {
                     armLeft.xRot = (float) (armLeft.xRot - (f2 * 1.2 + f3));
-                    armLeft.zRot = (float) (armLeft.zRot + Math.sin(state.attackAnim * Math.PI) * -0.4);
+                    armLeft.zRot = (float) (armLeft.zRot + Math.sin(state.attackTime * Math.PI) * -0.4);
                 }
-                if (state.usingItem && state.usedItemHand == InteractionHand.OFF_HAND) {
+                if (state.isUsingItem && state.useItemHand == InteractionHand.OFF_HAND) {
                     armLeft.xRot = armLeft.getInitRotX() - (float) Math.PI * 80 / 180.0f;
                     armLeft.yRot = armLeft.getInitRotY() + (float) Math.PI * 25 / 180.0f;
                 }
@@ -216,11 +217,11 @@ public final class MaidBaseAnimation {
                 armRight.xRot = (float) (Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
                 armRight.yRot = armRight.getInitRotY();
                 armRight.zRot = (float) (-Math.cos(ageInTicks * 0.05) * 0.05 + armRight.getInitRotZ());
-                if (state.attackAnim > 0.0 && !isSwingLeftHand(state)) {
+                if (state.attackTime > 0.0 && !isSwingLeftHand(state)) {
                     armRight.xRot = (float) (armRight.xRot - (f2 * 1.2 + f3));
-                    armRight.zRot = (float) (armRight.zRot + Math.sin(state.attackAnim * Math.PI) * -0.4);
+                    armRight.zRot = (float) (armRight.zRot + Math.sin(state.attackTime * Math.PI) * -0.4);
                 }
-                if (state.usingItem && state.usedItemHand == InteractionHand.MAIN_HAND) {
+                if (state.isUsingItem && state.useItemHand == InteractionHand.MAIN_HAND) {
                     armRight.xRot = armRight.getInitRotX() - (float) Math.PI * 80 / 180.0f;
                     armRight.yRot = armRight.getInitRotY() - (float) Math.PI * 20 / 180.0f;
                 }
@@ -233,7 +234,7 @@ public final class MaidBaseAnimation {
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
 
-            if (state.hasMainHandItem && state.swingingArms) {
+            if (!state.rightHandItemStack.isEmpty() && state.swingingArms) {
                 if (armLeft != null) {
                     armLeft.xRot = -1.396f;
                     armLeft.yRot = 0.785f;
@@ -259,10 +260,10 @@ public final class MaidBaseAnimation {
                 head.offsetY = 0;
             }
 
-            if (state.passenger) {
+            if (state.isPassenger) {
                 ridingPosture(legLeft, legRight);
                 root.offsetY = 0.3f;
-            } else if (state.maidInSittingPose) {
+            } else if (state.sitting) {
                 sittingPosture(armLeft, armRight, legLeft, legRight);
                 root.offsetY = 0.3f;
             } else {
@@ -283,9 +284,9 @@ public final class MaidBaseAnimation {
                 head.offsetY = 0;
             }
 
-            if (state.passenger) {
+            if (state.isPassenger) {
                 ridingPosture(legLeft, legRight);
-            } else if (state.maidInSittingPose) {
+            } else if (state.sitting) {
                 sittingNoLegPosture(armLeft, armRight);
             }
         };
@@ -293,7 +294,7 @@ public final class MaidBaseAnimation {
 
     public static IAnimation<EntityMaidRenderState> getSitSkirtHidden() {
         return (state, models) -> {
-            boolean sitting = state.passenger || state.maidInSittingPose;
+            boolean sitting = state.isPassenger || state.sitting;
             setVisible(models.get("sittingHiddenSkirt"), !sitting);
             setVisible(models.get("_sittingHiddenSkirt"), sitting);
         };
@@ -303,7 +304,7 @@ public final class MaidBaseAnimation {
         return (state, models) -> {
             BedrockPart sittingRotationSkirt = models.get("sittingRotationSkirt");
             if (sittingRotationSkirt != null) {
-                if (state.passenger || state.maidInSittingPose) {
+                if (state.isPassenger || state.sitting) {
                     sittingRotationSkirt.xRot = -0.567f;
                 } else {
                     sittingRotationSkirt.xRot = sittingRotationSkirt.getInitRotX();
@@ -316,7 +317,7 @@ public final class MaidBaseAnimation {
         return (state, models) -> {
             BedrockPart sittingRotationSwingSkirt = models.get("sittingRotationSwingSkirt");
             if (sittingRotationSwingSkirt != null) {
-                if (state.passenger || state.maidInSittingPose) {
+                if (state.isPassenger || state.sitting) {
                     sittingRotationSwingSkirt.xRot = -0.567f;
                     sittingRotationSwingSkirt.zRot = sittingRotationSwingSkirt.getInitRotZ();
                 } else {
@@ -447,6 +448,6 @@ public final class MaidBaseAnimation {
     }
 
     private static boolean isSwingLeftHand(EntityMaidRenderState state) {
-        return state.swingingArm == InteractionHand.OFF_HAND;
+        return state.attackArm == HumanoidArm.LEFT;
     }
 }

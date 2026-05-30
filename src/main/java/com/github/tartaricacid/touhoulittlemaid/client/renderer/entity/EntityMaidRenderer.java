@@ -7,75 +7,46 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidM
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityMaidRenderer;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackItem;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBipedHead;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidHeldItem;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.models.SpecialMaidModelResolver;
-import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
-import com.github.tartaricacid.touhoulittlemaid.compat.gun.swarfare.SWarfareCompat;
-import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
-import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
-import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelResolver;
-import net.minecraft.client.renderer.block.model.BlockDisplayContext;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.state.ArmedEntityRenderState;
-import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityAttachment;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BannerItem;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.AbstractSkullBlock;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.ClientHooks;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("rawtypes,unchecked")
 public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRenderState, EntityMaidModel> {
-    public static final BlockDisplayContext BLOCK_DISPLAY_CONTEXT = BlockDisplayContext.create();
-
     private static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/empty.png");
-    private static final String DEFAULT_MODEL_ID = "touhou_little_maid:hakurei_reimu";
-    private final ItemModelResolver itemModelResolver;
-    private final BlockModelResolver blockModelResolver;
-    /**
-     * 女仆模组自带的 GeckoLib 模型渲染
-     */
-    private final GeckoEntityMaidRenderer geckoEntityMaidRenderer;
-    private ChatBubbleRenderer chatBubbleRenderer;
-    private CameraRenderState cameraRenderState;
 
-    public EntityMaidRenderer(EntityRendererProvider.Context manager) {
-        super(manager, new EntityMaidModel(), 0.5f);
-        this.itemModelResolver = manager.getItemModelResolver();
-        this.blockModelResolver = manager.getBlockModelResolver();
+    private final BlockModelResolver blockModelResolver;
+    private final GeckoEntityMaidRenderer geckoRenderer;
+    private final ChatBubbleRenderer chatBubbleRenderer;
+
+    public EntityMaidRenderer(EntityRendererProvider.Context context) {
+        super(context, new EntityMaidModel(), 0.5f);
+
+        this.blockModelResolver = context.getBlockModelResolver();
+        this.geckoRenderer = new GeckoEntityMaidRenderer(context);
+        this.chatBubbleRenderer = new ChatBubbleRenderer(this);
+
         this.addLayer(new LayerMaidHeldItem(this));
-        this.addLayer(new LayerMaidBipedHead(this, Minecraft.getInstance().getBlockEntityRenderDispatcher()));
-        this.addLayer(new LayerMaidBackpack(this, manager.getModelSet()));
+        this.addLayer(new LayerMaidBipedHead(this));
+        this.addLayer(new LayerMaidBackpack(this, context.getModelSet()));
         this.addLayer(new LayerMaidBackItem(this));
         // this.addLayer(new LayerMaidBanner(this));
-        this.addAdditionMaidLayer(manager);
-        this.geckoEntityMaidRenderer = new GeckoEntityMaidRenderer(manager);
-        this.chatBubbleRenderer = new ChatBubbleRenderer(this);
+
+        this.addAdditionMaidLayer(context);
     }
 
     @Override
@@ -84,138 +55,32 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void extractRenderState(EntityMaid entity, EntityMaidRenderState state, float partialTicks) {
+    public void extractRenderState(EntityMaid maid, EntityMaidRenderState state, float partialTicks) {
         state.clear();
-        super.extractRenderState(entity, state, partialTicks);
-        ArmedEntityRenderState.extractArmedEntityRenderState(entity, state, itemModelResolver, partialTicks);
-
-        state.customName = entity.getCustomName();
-        state.gameTime = entity.level().getGameTime();
-        state.dimension = entity.level().dimension();
-        state.raining = entity.level().isRaining();
-        state.thundering = entity.level().isThundering();
-        state.uuidLeastSignificantBits = entity.getUUID().getLeastSignificantBits();
-        state.attackAnim = entity.attackAnim;
-        state.swingTime = entity.swingTime;
-        state.sleeping = entity.isSleeping();
-        state.passenger = entity.isPassenger();
-        state.usingItem = entity.isUsingItem();
-        state.usedItemHand = entity.getUsedItemHand();
-        state.swingingArm = entity.swingingArm;
-        state.hasMainHandItem = !entity.getMainHandItem().isEmpty();
-        state.armorValue = entity.getArmorValue();
-        state.health = entity.getHealth();
-        state.maxHealth = entity.getMaxHealth();
-
-        state.begging = entity.isBegging();
-        state.swingingArms = entity.isSwingingArms();
-        state.maidInSittingPose = entity.isMaidInSittingPose();
-        state.hasHelmet = !entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty();
-        state.hasChestPlate = !entity.getItemBySlot(EquipmentSlot.CHEST).isEmpty();
-        state.hasLeggings = !entity.getItemBySlot(EquipmentSlot.LEGS).isEmpty();
-        state.hasBoots = !entity.getItemBySlot(EquipmentSlot.FEET).isEmpty();
-        state.hasBackpack = entity.hasBackpack();
-        state.hurt = entity.hurtTime > 0;
-        state.hasFishingHook = entity.hasFishingHook();
-        state.onClimbable = entity.onClimbable();
-        state.taskId = entity.getTask().getUid().getPath();
-        state.modelId = entity.getModelId();
-
-        // 卓越前线实体隐藏
-        if (SWarfareCompat.shouldHideLivingRender(entity)) {
-            return;
-        }
-
-        // 读取默认模型，用于清除不存在模型的缓存残留
-        CustomPackLoader.MAID_MODELS.getModel(DEFAULT_MODEL_ID).ifPresent(model -> state.bedrockModel = model);
-        CustomPackLoader.MAID_MODELS.getInfo(DEFAULT_MODEL_ID).ifPresent(mainInfo -> state.mainInfo = mainInfo);
-        CustomPackLoader.MAID_MODELS.getAnimation(DEFAULT_MODEL_ID).ifPresent(animations -> state.mainAnimations = animations);
-
-        // 直接特殊模型解析（替代 RenderMaidEvent 事件流）
-        if (!SpecialMaidModelResolver.resolveSpecialModel(state, CustomPackLoader.MAID_MODELS)) {
-            // 通过模型 id 获取对应数据
-            String modelId = state.modelId;
-            CustomPackLoader.MAID_MODELS.getModel(modelId).ifPresent(model -> state.bedrockModel = model);
-            CustomPackLoader.MAID_MODELS.getInfo(modelId).ifPresent(mainInfo -> state.mainInfo = mainInfo);
-            CustomPackLoader.MAID_MODELS.getAnimation(modelId).ifPresent(animations -> state.mainAnimations = animations);
-        }
-
-        // 头部物品
-        ItemStack headItem = entity.getItemBySlot(EquipmentSlot.HEAD);
-        if (headItem.getItem() instanceof BlockItem blockItem) {
-            if (blockItem.getBlock() instanceof AbstractSkullBlock) {
-                // TODO: 复刻 SkullBlockRenderer 的逻辑，extract 至 state.headSkull
-            } else {
-                blockModelResolver.update(state.headBlock, blockItem.getBlock().defaultBlockState(), BLOCK_DISPLAY_CONTEXT);
-            }
-        } else if (SimpleHatsCompat.isHatItem(headItem)) {
-            SimpleHatsCompat.extract(state.simpleHat, headItem);
-        }
-
-        // 暂定只能女仆显示
-        if (MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() && entity.getConfigManager().isChatBubbleShow()) {
-            Vec3 vec3 = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getViewYRot(partialTicks));
-            if (vec3 != null && ClientHooks.isNameplateInRenderDistance(entity, state.distanceToCameraSq)) {
-                var chatBubble = entity.getChatBubbleManager().getChatBubbleDataCollection();
-                if (chatBubble != null && !chatBubble.isEmpty()) {
-                    state.showBubble = true;
-                    state.bubbleOffset = vec3;
-                    state.chatBubble = chatBubble;
-                }
-            }
-        }
-
-        // 背部物品
-        state.showBackpack = entity.getConfigManager().isShowBackpack();
-        if (!entity.isSleeping() && !entity.isInvisible()) {
-            state.backpack = state.showBackpack ? entity.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
-            ItemStack backpackShowingItem = entity.getBackpackShowItem();
-            if (GunClientUtil.isGun(backpackShowingItem)) {
-                // 目前 26.1 没有枪械模组
-            } else if (backpackShowingItem.getItem() instanceof BannerItem item) {
-                // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBanner
-            } else {
-                itemModelResolver.updateForLiving(state.backItem, backpackShowingItem, ItemDisplayContext.FIXED, entity);
-            }
-        }
-
-        state.playerVehicle = entity.getVehicle() instanceof Player;
-        state.sitting = entity.isMaidInSittingPose();
-
-        // Gecko 动画更新要放在最后
-        var geckoEntity = getGeckoEntity(entity);
-        if (geckoEntity != null) {
-            if (state.mainInfo != null && state.mainInfo.isGeckoModel()) {
-                state.modelType = ModelType.GECKO;
-                geckoEntity.setMaidInfo(state.mainInfo);
-                state.geckoUpdateTask = (GeckoUpdateTask<GeckoMaidRenderData>) geckoEntity.createUpdateTask(state);
-            } else {
-                geckoEntity.reset();
-            }
-        }
-
-        if (state.modelType == ModelType.NONE) {
-            state.modelType = ModelType.SIMPLE_BEDROCK;
-        }
+        super.extractRenderState(maid, state, partialTicks);
+        HumanoidMobRenderer.extractHumanoidRenderState(maid, state, partialTicks, itemModelResolver);
+        EntityMaidRenderState.extractRenderState(maid, state, partialTicks, blockModelResolver, itemModelResolver, getGeckoEntity(maid));
     }
 
     @Nullable
+    @SuppressWarnings("unchecked")
     public GeckoMaidEntity<? extends EntityMaid> getGeckoEntity(Mob entity) {
         return entity.getData(GeckoMaidEntity.TYPE);
     }
 
     @Override
     public void submit(EntityMaidRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        // 一般不太可能触发
         if (state.modelType == ModelType.NONE) {
             return;
         }
 
-        this.cameraRenderState = camera;
+        state.camera = camera;
 
-        // 暂定只能女仆显示
-        if (state.showBubble && state.chatBubble != null) {
+        // 聊天气泡渲染
+        if (state.showBubble && state.bubbleOffset != null) {
             poseStack.pushPose();
+
             double offsetY = state.bubbleOffset.y() + 0.5f;
             if (state.sitting) {
                 offsetY -= 0.25f;
@@ -227,20 +92,23 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
 
             EntityGraphics graphics = new EntityGraphics(submitNodeCollector, poseStack, state, state.lightCoords, state.partialTick);
             this.chatBubbleRenderer.submit(graphics);
+
             poseStack.popPose();
         }
 
         // GeckoLib 接管渲染
         if (state.modelType == ModelType.GECKO) {
-            // PatPatCompat.renderPat(state, poseStack, state.partialTick);
-            this.geckoEntityMaidRenderer.submit(state, poseStack, submitNodeCollector, camera);
+            this.geckoRenderer.submit(state, poseStack, submitNodeCollector, camera);
+            return;
         }
 
+        // 普通模型渲染
         if (state.modelType == ModelType.SIMPLE_BEDROCK) {
-            assert state.bedrockModel != null;
+            if (state.bedrockModel == null) {
+                return;
+            }
             this.model = state.bedrockModel;
-            // 模型动画设置
-            this.model.setAnimations(state.mainAnimations);
+            this.model.setAnimations(state.animations);
             super.submit(state, poseStack, submitNodeCollector, camera);
         }
     }
@@ -262,16 +130,16 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
 
     @Override
     protected void scale(EntityMaidRenderState state, PoseStack poseStack) {
-        var scale = state.mainInfo.getRenderEntityScale();
+        var scale = state.modelInfo.getRenderEntityScale();
         poseStack.scale(scale, scale, scale);
     }
 
     @Override
     public Identifier getTextureLocation(EntityMaidRenderState state) {
-        if (state.mainInfo == null) {
+        if (state.modelInfo == null) {
             return DEFAULT_TEXTURE;
         }
-        return state.mainInfo.getTexture();
+        return state.modelInfo.getTexture();
     }
 
     @Override
@@ -279,15 +147,7 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         return super.getWhiteOverlayProgress(state);
     }
 
-    public EntityRenderDispatcher getDispatcher() {
-        return this.entityRenderDispatcher;
-    }
-
-    public CameraRenderState getCameraRenderState() {
-        return this.cameraRenderState;
-    }
-
-    private void addAdditionMaidLayer(EntityRendererProvider.Context renderManager) {
+    protected void addAdditionMaidLayer(EntityRendererProvider.Context renderManager) {
         for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
             littleMaid.addAdditionMaidLayer(this, renderManager);
         }

@@ -4,6 +4,7 @@ import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPa
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation.INNER_ANIMATION;
 
@@ -18,9 +19,9 @@ public final class PlayerMaidAnimation {
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
 
-            double f1 = 1.0 - Math.pow(1.0 - state.attackAnim, 4);
+            double f1 = 1.0 - Math.pow(1.0 - state.attackTime, 4);
             double f2 = Math.sin(f1 * Math.PI);
-            double f3 = Math.sin(state.attackAnim * Math.PI) * -0.7 * 0.75;
+            double f3 = Math.sin(state.attackTime * Math.PI) * -0.7 * 0.75;
             float limbSwing = state.walkAnimationPos;
             float limbSwingAmount = state.walkAnimationSpeed;
             float ageInTicks = state.ageInTicks;
@@ -29,11 +30,11 @@ public final class PlayerMaidAnimation {
                 armLeft.xRot = (float) (-Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
                 armLeft.yRot = 0;
                 armLeft.zRot = (float) (Math.cos(ageInTicks * 0.05) * 0.025 - 0.05);
-                if (state.attackAnim > 0.0 && isSwingLeftHand(state)) {
+                if (state.attackTime > 0.0 && isSwingLeftHand(state)) {
                     armLeft.xRot = (float) (armLeft.xRot - (f2 * 1.2 + f3));
-                    armLeft.zRot = (float) (armLeft.zRot + Math.sin(state.attackAnim * Math.PI) * -0.4);
+                    armLeft.zRot = (float) (armLeft.zRot + Math.sin(state.attackTime * Math.PI) * -0.4);
                 }
-                if (state.usingItem && state.usedItemHand == InteractionHand.OFF_HAND) {
+                if (state.isUsingItem && state.useItemHand == InteractionHand.OFF_HAND) {
                     armLeft.xRot = armLeft.getInitRotX() - (float) Math.PI * 80 / 180.0f;
                     armLeft.yRot = armLeft.getInitRotY() + (float) Math.PI * 25 / 180.0f;
                 }
@@ -43,11 +44,11 @@ public final class PlayerMaidAnimation {
                 armRight.xRot = (float) (Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
                 armRight.yRot = 0;
                 armRight.zRot = (float) (-Math.cos(ageInTicks * 0.05) * 0.025 + 0.05);
-                if (state.attackAnim > 0.0 && !isSwingLeftHand(state)) {
+                if (state.attackTime > 0.0 && !isSwingLeftHand(state)) {
                     armRight.xRot = (float) (armRight.xRot - (f2 * 1.2 + f3));
-                    armRight.zRot = (float) (armRight.zRot + Math.sin(state.attackAnim * Math.PI) * -0.4);
+                    armRight.zRot = (float) (armRight.zRot + Math.sin(state.attackTime * Math.PI) * -0.4);
                 }
-                if (state.usingItem && state.usedItemHand == InteractionHand.MAIN_HAND) {
+                if (state.isUsingItem && state.useItemHand == InteractionHand.MAIN_HAND) {
                     armRight.xRot = armRight.getInitRotX() - (float) Math.PI * 80 / 180.0f;
                     armRight.yRot = armRight.getInitRotY() - (float) Math.PI * 20 / 180.0f;
                 }
@@ -68,10 +69,10 @@ public final class PlayerMaidAnimation {
                 head.offsetY = 0;
             }
 
-            if (state.passenger) {
+            if (state.isPassenger) {
                 playerRidingPosture(legLeft, legRight);
                 root.offsetY = 0.3f;
-            } else if (state.maidInSittingPose) {
+            } else if (state.sitting) {
                 playerSittingPosture(armLeft, armRight, legLeft, legRight);
                 root.offsetY = 0.3f;
             } else {
@@ -119,6 +120,6 @@ public final class PlayerMaidAnimation {
     }
 
     private static boolean isSwingLeftHand(EntityMaidRenderState state) {
-        return state.swingingArm == InteractionHand.OFF_HAND;
+        return state.attackArm == HumanoidArm.LEFT;
     }
 }

@@ -12,9 +12,12 @@ public class ChatBubbleRenderer {
         this.renderer = renderer;
     }
 
-    @SuppressWarnings("all")
     public void submit(EntityGraphics graphics) {
         var chatBubble = graphics.getRenderState().chatBubble;
+        if (chatBubble == null || chatBubble.isEmpty()) {
+            return;
+        }
+
         int size = chatBubble.size();
         boolean isOdd = isOdd(size);
         int sideNum = isOdd ? size - 1 : size;

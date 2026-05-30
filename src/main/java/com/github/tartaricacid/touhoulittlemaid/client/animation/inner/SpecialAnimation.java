@@ -94,7 +94,7 @@ public final class SpecialAnimation {
                 setVisible(otherSideRight, false);
             }
 
-            if (state.hasHelmet) {
+            if (!state.headEquipment.isEmpty()) {
                 setVisible(earthTop, false);
                 setVisible(moonTop, false);
                 setVisible(otherTop, false);
@@ -104,7 +104,7 @@ public final class SpecialAnimation {
 
     public static IAnimation<EntityMaidRenderState> getSpecialWakasagihime() {
         return (state, models) -> {
-            if (!state.maidInSittingPose) {
+            if (!state.sitting) {
                 return;
             }
 

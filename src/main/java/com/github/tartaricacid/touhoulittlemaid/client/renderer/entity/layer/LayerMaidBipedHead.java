@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMai
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.compat.simplehats.SimpleHatsCompat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -14,15 +15,15 @@ public class LayerMaidBipedHead extends RenderLayer<EntityMaidRenderState, Entit
     private final EntityMaidRenderer maidRenderer;
     private final BlockEntityRenderDispatcher beRenderDispatcher;
 
-    public LayerMaidBipedHead(EntityMaidRenderer maidRenderer, BlockEntityRenderDispatcher beRenderDispatcher) {
+    public LayerMaidBipedHead(EntityMaidRenderer maidRenderer) {
         super(maidRenderer);
         this.maidRenderer = maidRenderer;
-        this.beRenderDispatcher = beRenderDispatcher;
+        this.beRenderDispatcher = Minecraft.getInstance().getBlockEntityRenderDispatcher();
     }
 
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, EntityMaidRenderState state, float yRot, float xRot) {
-        boolean allowRenderHead = state.mainInfo.isShowCustomHead() && getParentModel().hasHead();
+        boolean allowRenderHead = state.modelInfo.isShowCustomHead() && getParentModel().hasHead();
         if (!allowRenderHead) {
             return;
         }
@@ -32,7 +33,7 @@ public class LayerMaidBipedHead extends RenderLayer<EntityMaidRenderState, Entit
             this.getParentModel().getHead().translateAndRotate(poseStack);
             poseStack.scale(1.1875F, -1.1875F, -1.1875F);
             poseStack.translate(-0.5D, 0.0D, -0.5D);
-            beRenderDispatcher.submit(state.headSkull, poseStack, submitNodeCollector, maidRenderer.getCameraRenderState());
+            beRenderDispatcher.submit(state.headSkull, poseStack, submitNodeCollector, state.camera);
         }
         if (!state.headBlock.isEmpty()) {
             poseStack.pushPose();
@@ -44,7 +45,7 @@ public class LayerMaidBipedHead extends RenderLayer<EntityMaidRenderState, Entit
         }
 
         if (!state.simpleHat.isEmpty()) {
-            SimpleHatsCompat.submit(state.simpleHat, poseStack, submitNodeCollector, maidRenderer.getCameraRenderState());
+            SimpleHatsCompat.submit(state.simpleHat, poseStack, submitNodeCollector, state.camera);
         }
     }
 }

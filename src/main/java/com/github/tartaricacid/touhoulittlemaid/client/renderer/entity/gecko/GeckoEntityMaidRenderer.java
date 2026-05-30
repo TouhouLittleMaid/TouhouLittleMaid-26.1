@@ -9,7 +9,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.world.entity.Mob;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -58,7 +57,7 @@ public class GeckoEntityMaidRenderer extends GeoReplacedEntityRenderer<EntityMai
 
     @Override
     protected void scale(EntityMaidRenderState state, PoseStack poseStack) {
-        var scale = state.mainInfo.getRenderEntityScale();
+        var scale = state.modelInfo.getRenderEntityScale();
         poseStack.scale(scale, scale, scale);
     }
 }

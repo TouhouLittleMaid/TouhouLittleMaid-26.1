@@ -22,7 +22,8 @@ public class EntityGraphics {
     private final int packedLight;
     private final float partialTicks;
 
-    public EntityGraphics(SubmitNodeCollector submitNode, PoseStack poseStack, EntityMaidRenderState state, int packedLight, float partialTicks) {
+    public EntityGraphics(SubmitNodeCollector submitNode, PoseStack poseStack,
+                          EntityMaidRenderState state, int packedLight, float partialTicks) {
         this.submitNode = submitNode;
         this.poseStack = poseStack;
         this.state = state;

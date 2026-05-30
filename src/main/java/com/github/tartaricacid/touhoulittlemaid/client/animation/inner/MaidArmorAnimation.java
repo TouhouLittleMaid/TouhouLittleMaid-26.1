@@ -30,8 +30,10 @@ public final class MaidArmorAnimation {
         return (state, models) ->
                 setArmorVisible(models,
                         StringUtils.EMPTY, StringUtils.EMPTY,
-                        state.hasHelmet, state.hasChestPlate,
-                        state.hasLeggings, state.hasBoots
+                        !state.headEquipment.isEmpty(),
+                        !state.chestEquipment.isEmpty(),
+                        !state.legsEquipment.isEmpty(),
+                        !state.feetEquipment.isEmpty()
                 );
     }
 
@@ -39,8 +41,10 @@ public final class MaidArmorAnimation {
         return (state, models) ->
                 setArmorVisible(models,
                         "_", StringUtils.EMPTY,
-                        !state.hasHelmet, !state.hasChestPlate,
-                        !state.hasLeggings, !state.hasBoots
+                        state.headEquipment.isEmpty(),
+                        state.chestEquipment.isEmpty(),
+                        state.legsEquipment.isEmpty(),
+                        state.feetEquipment.isEmpty()
                 );
     }
 

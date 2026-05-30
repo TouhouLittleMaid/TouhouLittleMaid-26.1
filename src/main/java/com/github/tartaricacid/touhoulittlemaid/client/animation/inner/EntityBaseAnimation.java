@@ -231,7 +231,7 @@ public final class EntityBaseAnimation {
                 return;
             }
 
-            long index = Math.abs(state.uuidLeastSignificantBits) % randomSelect.length;
+            long index = Math.abs(state.randomNumber) % randomSelect.length;
             for (int i = 0; i < randomSelect.length; i++) {
                 randomSelect[i].visible = i == index;
             }

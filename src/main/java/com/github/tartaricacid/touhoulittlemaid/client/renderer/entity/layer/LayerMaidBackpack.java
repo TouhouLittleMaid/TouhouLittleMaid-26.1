@@ -12,8 +12,6 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
-import java.awt.*;
-
 public class LayerMaidBackpack extends RenderLayer<EntityMaidRenderState, EntityMaidModel> {
     public LayerMaidBackpack(EntityMaidRenderer renderer, EntityModelSet modelSet) {
         super(renderer);
@@ -22,7 +20,7 @@ public class LayerMaidBackpack extends RenderLayer<EntityMaidRenderState, Entity
 
     @Override
     public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, EntityMaidRenderState state, float yRot, float xRot) {
-        if (state.backpack != null && state.mainInfo.isShowBackpack()) {
+        if (state.backpack != null && state.modelInfo.isShowBackpack()) {
             poseStack.pushPose();
             // 稍微缩放，避免整数倍的 z-flight
             poseStack.scale(1.01f, 1.01f, 1.01f);

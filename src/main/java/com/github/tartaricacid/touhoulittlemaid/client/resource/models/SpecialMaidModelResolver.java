@@ -94,8 +94,8 @@ public final class SpecialMaidModelResolver {
 
     private static void applyModel(EntityMaidRenderState state, MaidModels models, String modelId) {
         models.getModel(modelId).ifPresent(model -> state.bedrockModel = model);
-        models.getInfo(modelId).ifPresent(info -> state.mainInfo = info);
-        models.getAnimation(modelId).ifPresent(animations -> state.mainAnimations = animations);
+        models.getInfo(modelId).ifPresent(info -> state.modelInfo = info);
+        models.getAnimation(modelId).ifPresent(animations -> state.animations = animations);
     }
 
     private static void applyModel(
@@ -105,7 +105,7 @@ public final class SpecialMaidModelResolver {
             List<IAnimation<EntityMaidRenderState>> animations
     ) {
         state.bedrockModel = model;
-        state.mainInfo = info;
-        state.mainAnimations = animations;
+        state.modelInfo = info;
+        state.animations = animations;
     }
 }
