@@ -45,7 +45,6 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.M
 /**
  * 无法归类的部分功能，全部放入此 Manager 里
  */
-@MaidManagerDef(alias = "miscManager", exposeView = true)
 public class MaidMiscManager {
     private final EntityMaid maid;
 

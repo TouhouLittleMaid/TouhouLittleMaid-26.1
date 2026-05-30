@@ -19,7 +19,6 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.function.Consumer;
 
-@MaidManagerDef(alias = "deathManager", exposeView = false)
 public class MaidDeathManager {
     private final EntityMaid maid;
     /**

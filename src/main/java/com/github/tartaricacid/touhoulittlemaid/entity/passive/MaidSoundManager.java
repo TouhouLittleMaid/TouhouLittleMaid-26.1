@@ -12,7 +12,6 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import javax.annotation.Nullable;
 
-@MaidManagerDef(alias = "soundManager", exposeView = true)
 public class MaidSoundManager {
     private final EntityMaid maid;
     private int playerHurtSoundCount = 120;

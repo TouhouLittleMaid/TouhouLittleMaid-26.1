@@ -16,7 +16,6 @@ import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
 import com.github.tartaricacid.touhoulittlemaid.data.ChatTokensAttachment;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.ChatBubbleManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidManagerDef;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.TTSSystemAudioToClientPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.CappedQueue;
@@ -44,7 +43,6 @@ import java.util.Map;
 
 import static com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.papi.StringConstant.AUTO_GEN_SETTING;
 
-@MaidManagerDef(alias = "aiChatManager", exposeView = false)
 public final class MaidAIChatManager extends MaidAIChatData {
     private static final String DEEPSEEK_PLATFORM_URL = "https://platform.deepseek.com/";
     private final HistorySummaryManager historySummaryManager;

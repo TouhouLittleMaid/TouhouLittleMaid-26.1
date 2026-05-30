@@ -64,7 +64,6 @@ import static net.minecraft.world.item.enchantment.EnchantmentEffectComponents.P
 /**
  * 物品管理类，各种形式的物品存入与取出
  */
-@MaidManagerDef(alias = "itemManager", exposeView = true)
 public class MaidItemManager {
     public static final String MAID_INVENTORY_TAG = "MaidInventory";
     public static final String MAID_BAUBLE_INVENTORY_TAG = "MaidBaubleInventory";

@@ -8,7 +8,6 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.C
 /**
  * 配置管理器，负责管理女仆的各种配置项
  */
-@MaidManagerDef(alias = "configManager", exposeView = true)
 public class MaidConfigManager {
     private final EntityMaid maid;
 

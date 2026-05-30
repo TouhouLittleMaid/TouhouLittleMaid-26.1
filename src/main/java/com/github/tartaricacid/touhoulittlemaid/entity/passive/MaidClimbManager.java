@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-@MaidManagerDef(alias = "climbManager", exposeView = true)
 public class MaidClimbManager {
     private final EntityMaid maid;
     /**

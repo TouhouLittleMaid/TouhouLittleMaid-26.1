@@ -44,7 +44,6 @@ import java.util.function.BiPredicate;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePost;
 import static net.neoforged.neoforge.common.CommonHooks.onLivingDamagePre;
 
-@MaidManagerDef(alias = "combatManager", exposeView = true)
 public class MaidCombatManager {
     private final EntityMaid maid;
     private final ItemCooldowns cooldowns;

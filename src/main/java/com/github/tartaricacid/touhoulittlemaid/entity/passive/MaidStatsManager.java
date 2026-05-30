@@ -10,7 +10,6 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.S
 /**
  * 女仆状态管理类，主要维护一些非 Attribute 的属性，比如饥饿度、好感度、经验值等
  */
-@MaidManagerDef(alias = "statsManager", exposeView = true)
 public class MaidStatsManager {
     private static final String STRUCTURE_SPAWN_TAG = "StructureSpawn";
 

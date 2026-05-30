@@ -24,7 +24,6 @@ import javax.annotation.Nullable;
 /**
  * 世界交互管理器，主要提供方块放置和破坏的相关方法
  */
-@MaidManagerDef(alias = "worldInteractionManager", exposeView = true)
 public class MaidWorldInteractionManager {
     private final EntityMaid maid;
 

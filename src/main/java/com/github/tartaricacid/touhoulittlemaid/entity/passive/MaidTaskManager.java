@@ -15,7 +15,6 @@ import net.minecraft.world.level.storage.ValueOutput;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.TASK;
 
-@MaidManagerDef(alias = "taskManager", exposeView = true)
 public class MaidTaskManager {
     private final EntityMaid maid;
     private final SchedulePos schedulePos;

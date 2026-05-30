@@ -11,7 +11,6 @@ import java.util.Map;
 /**
  * 女仆游戏相关内容，主要维护管理下棋相关的数据
  */
-@MaidManagerDef(alias = "gameManager", exposeView = false)
 public class MaidGameManager {
     private static final String GOMOKU = "Gomoku";
     private static final byte NONE = 0, WIN = 1, LOSE = 2;

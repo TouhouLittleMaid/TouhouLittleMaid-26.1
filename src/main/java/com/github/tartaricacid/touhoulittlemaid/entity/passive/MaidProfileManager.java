@@ -7,7 +7,6 @@ import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.P
 /**
  * 女仆档案管理器，主要管理女仆的模型和音效包等信息
  */
-@MaidManagerDef(alias = "profileManager", exposeView = true)
 public class MaidProfileManager {
     private final EntityMaid maid;
 
