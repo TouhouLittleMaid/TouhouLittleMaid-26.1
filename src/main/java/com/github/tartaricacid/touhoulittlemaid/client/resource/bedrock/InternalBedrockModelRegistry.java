@@ -40,6 +40,7 @@ public final class InternalBedrockModelRegistry {
     public static final Identifier WCHESS = addModel("wchess");
     public static final Identifier WCHESS_PIECES = addModel("wchess_pieces");
     public static final Identifier SNACK_CABINET = addModel("snack_cabinet");
+    public static final Identifier MAID_BANNER = addModel("maid_banner");
 
     public static final Identifier PINK_MAID_BED = addModel("maid_bed/pink");
     public static final Identifier WHITE_MAID_BED = addModel("maid_bed/white");
@@ -57,7 +58,6 @@ public final class InternalBedrockModelRegistry {
     public static final Identifier BROOM = addEntityModel("broom", BroomModel::new);
 
     public static final Identifier TOMBSTONE = addEntityModel("tombstone");
-    public static final Identifier MAID_BANNER = addEntityModel("maid_banner");
 
     public static final Identifier BIG_BACKPACK = addEntityModel("backpack/big_backpack");
     public static final Identifier MIDDLE_BACKPACK = addEntityModel("backpack/middle_backpack");

@@ -32,6 +32,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.ClientHooks;
@@ -246,7 +247,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         extractAttributeState(maid, state);
         extractBehaviorState(maid, state);
         extractModelState(maid, state);
-        extractHeadDecorationState(maid, state, blockModelResolver);
+        extractBackDecorationState(maid, state, blockModelResolver);
         extractChatBubbleState(maid, state, partialTicks);
         extractBackpackState(maid, state, itemModelResolver);
 
@@ -305,12 +306,21 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         }
     }
 
-    private static void extractHeadDecorationState(
-            EntityMaid maid,
-            EntityMaidRenderState state,
-            BlockModelResolver blockModelResolver
-    ) {
+    private static void extractBackDecorationState(EntityMaid maid, EntityMaidRenderState state, BlockModelResolver blockModelResolver) {
         ItemStack showItem = maid.getBackpackShowItem();
+
+        // 旗帜特殊效果，最优先
+        if (showItem.getItem() instanceof BannerItem bannerItem) {
+            BannerPatternLayers layers = showItem.get(DataComponents.BANNER_PATTERNS);
+            if (layers == null) {
+                return;
+            }
+            BannerRenderState backBanner = new BannerRenderState();
+            backBanner.baseColor = bannerItem.getColor();
+            backBanner.patterns = layers;
+            state.backBanner = backBanner;
+            return;
+        }
 
         // 如果装饰栏是方块物品，那么就渲染在头上
         if (showItem.getItem() instanceof BlockItem blockItem) {
@@ -364,11 +374,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         state.chatBubble = chatBubble;
     }
 
-    private static void extractBackpackState(
-            EntityMaid maid,
-            EntityMaidRenderState state,
-            ItemModelResolver itemModelResolver
-    ) {
+    private static void extractBackpackState(EntityMaid maid, EntityMaidRenderState state, ItemModelResolver itemModelResolver) {
         if (maid.isSleeping() || maid.isInvisible()) {
             return;
         }
@@ -389,10 +395,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
     }
 
     @SuppressWarnings("unchecked")
-    private static void extractGeckoState(
-            EntityMaidRenderState state,
-            @Nullable GeckoMaidEntity<? extends EntityMaid> geckoEntity
-    ) {
+    private static void extractGeckoState(EntityMaidRenderState state, @Nullable GeckoMaidEntity<? extends EntityMaid> geckoEntity) {
         if (geckoEntity != null) {
             if (state.modelInfo != null && state.modelInfo.isGeckoModel()) {
                 state.modelType = ModelType.GECKO;

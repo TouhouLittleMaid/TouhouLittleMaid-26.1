@@ -7,10 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidM
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityMaidRenderer;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackItem;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBackpack;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidBipedHead;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.LayerMaidHeldItem;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.*;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -44,7 +41,7 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         this.addLayer(new LayerMaidBipedHead(this, context));
         this.addLayer(new LayerMaidBackpack(this, context.getModelSet()));
         this.addLayer(new LayerMaidBackItem(this));
-        // this.addLayer(new LayerMaidBanner(this));
+        this.addLayer(new LayerMaidBanner(this, context));
 
         this.addAdditionMaidLayer(context);
     }

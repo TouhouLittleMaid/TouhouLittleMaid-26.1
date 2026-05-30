@@ -7,7 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.Ent
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeoReplacedEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -15,13 +14,12 @@ import org.jspecify.annotations.Nullable;
 public class GeckoEntityMaidRenderer extends GeoReplacedEntityRenderer<EntityMaid, EntityMaidRenderState, GeckoMaidRenderData> {
     public GeckoEntityMaidRenderer(EntityRendererProvider.Context context) {
         super(context);
-        var beRenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher();
-        addLayer(new GeckoLayerMaidHeld());
-        addLayer(new GeckoLayerMaidBipedHead(context));
-        addLayer(new GeckoLayerMaidBackpack());
-        addLayer(new GeckoLayerMaidBackItem());
-        addLayer(new GeckoLayerMaidBanner(beRenderer));
-        addAdditionGeckoEntityMaidRenderer(context);
+        this.addLayer(new GeckoLayerMaidHeld());
+        this.addLayer(new GeckoLayerMaidBipedHead(context));
+        this.addLayer(new GeckoLayerMaidBackpack());
+        this.addLayer(new GeckoLayerMaidBackItem());
+        this.addLayer(new GeckoLayerMaidBanner(context));
+        this.addAdditionGeckoEntityMaidRenderer(context);
     }
 
     @Override
@@ -29,7 +27,7 @@ public class GeckoEntityMaidRenderer extends GeoReplacedEntityRenderer<EntityMai
         return new EntityMaidRenderState();
     }
 
-    private void addAdditionGeckoEntityMaidRenderer(EntityRendererProvider.Context renderManager) {
+    protected void addAdditionGeckoEntityMaidRenderer(EntityRendererProvider.Context renderManager) {
         for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
             littleMaid.addAdditionGeckoMaidLayer(this, renderManager);
         }
