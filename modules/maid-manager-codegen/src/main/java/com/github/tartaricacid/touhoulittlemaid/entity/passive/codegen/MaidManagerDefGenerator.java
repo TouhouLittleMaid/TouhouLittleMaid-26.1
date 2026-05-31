@@ -173,7 +173,7 @@ public class MaidManagerDefGenerator extends AbstractProcessor {
             );
             return null;
         }
-        if (!isValidIdentifier(alias)) {
+        if (!SourceVersion.isIdentifier(alias) || SourceVersion.isKeyword(alias)) {
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
                     "@MaidManagerDef alias is not a valid field name: " + alias,
@@ -216,21 +216,6 @@ public class MaidManagerDefGenerator extends AbstractProcessor {
             }
         }
         return hasErrors;
-    }
-
-    private static boolean isValidIdentifier(String name) {
-        if (name.isEmpty()) {
-            return false;
-        }
-        if (!Character.isJavaIdentifierStart(name.charAt(0))) {
-            return false;
-        }
-        for (int i = 1; i < name.length(); i++) {
-            if (!Character.isJavaIdentifierPart(name.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static CodeBlock commaSeparatedAliases(List<ManagerEntry> entries) {
