@@ -97,6 +97,7 @@ public class TileEntityGarageKitRenderer implements BlockEntityRenderer<TileEnti
 
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         state.entityRenderState = dispatcher.extractEntity(entity, partialTick);
+        state.entityRenderState.lightCoords = state.lightCoords;
     }
 
     @Override

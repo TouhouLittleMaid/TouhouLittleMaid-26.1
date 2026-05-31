@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -19,7 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 public class MaidFishingHookRenderer<T extends MaidFishingHook, S extends MaidFishingHookRenderState> extends EntityRenderer<T, S> {
-    private static final Identifier TEXTURE_LOCATION = Identifier.withDefaultNamespace("textures/entity/fishing_hook.png");
+    private static final Identifier TEXTURE_LOCATION = Identifier.withDefaultNamespace("textures/entity/fishing/fishing_hook.png");
     private static final RenderType RENDER_TYPE = RenderTypes.entityCutoutCull(TEXTURE_LOCATION);
 
     public MaidFishingHookRenderer(EntityRendererProvider.Context context) {
@@ -106,14 +107,14 @@ public class MaidFishingHookRenderer<T extends MaidFishingHook, S extends MaidFi
         float ya = (float) state.lineOriginOffset.y;
         float za = (float) state.lineOriginOffset.z;
         float[] colors = new float[]{state.lineColorR, state.lineColorG, state.lineColorB};
+        float width = Minecraft.getInstance().gameRenderer.getGameRenderState().windowRenderState.appropriateLineWidth;
 
         submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lines(), (pose, buffer) -> {
             for (int i = 0; i <= 16; ++i) {
-                stringVertex(
-                        xa, ya, za, buffer, pose,
-                        fraction(i), fraction(i + 1),
-                        colors[0], colors[1], colors[2]
-                );
+                float fraction1 = fraction(i);
+                float fraction2 = fraction(i + 1);
+                stringVertex(xa, ya, za, width, buffer, pose, fraction1, fraction2, colors[0], colors[1], colors[2]);
+                stringVertex(xa, ya, za, width, buffer, pose, fraction2, fraction1, colors[0], colors[1], colors[2]);
             }
             if (OculusCompat.isOculusInstalled()) {
                 buffer.addVertex(pose, 0.0f, 0.0f, 0.0f)
@@ -148,7 +149,7 @@ public class MaidFishingHookRenderer<T extends MaidFishingHook, S extends MaidFi
                 .setNormal(pose, 0.0F, 1.0F, 0.0F);
     }
 
-    protected static void stringVertex(float pX, float pY, float pZ,
+    protected static void stringVertex(float pX, float pY, float pZ, float width,
                                        VertexConsumer consumer, PoseStack.Pose pose,
                                        float fraction1, float fraction2,
                                        float r, float g, float b) {
@@ -166,6 +167,7 @@ public class MaidFishingHookRenderer<T extends MaidFishingHook, S extends MaidFi
         nz /= sqrt;
 
         consumer.addVertex(pose, x, y, z)
+                .setLineWidth(width)
                 .setColor(r, g, b, 1.0F)
                 .setNormal(pose, nx, ny, nz);
     }

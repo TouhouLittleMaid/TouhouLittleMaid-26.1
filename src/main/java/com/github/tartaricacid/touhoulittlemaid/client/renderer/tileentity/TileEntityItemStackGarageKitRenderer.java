@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
@@ -99,6 +100,7 @@ public class TileEntityItemStackGarageKitRenderer implements SpecialModelRendere
 
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
         state.entityRenderState = dispatcher.extractEntity(entity, 0);
+        state.entityRenderState.lightCoords = LightCoordsUtil.FULL_BRIGHT;
     }
 
     @Override
