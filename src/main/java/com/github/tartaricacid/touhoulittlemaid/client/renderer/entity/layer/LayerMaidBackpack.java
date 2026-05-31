@@ -1,22 +1,22 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
+import com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 
+import static com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager.RENDER_DATA_CACHE;
+
 public class LayerMaidBackpack extends RenderLayer<EntityMaidRenderState, EntityMaidModel> {
-    public LayerMaidBackpack(EntityMaidRenderer renderer, EntityModelSet modelSet) {
+    public LayerMaidBackpack(EntityMaidRenderer renderer) {
         super(renderer);
-        BackpackManager.initClient(modelSet);
     }
 
     @Override
@@ -43,10 +43,15 @@ public class LayerMaidBackpack extends RenderLayer<EntityMaidRenderState, Entity
         }
 
         Identifier id = state.backpack.getId();
-        BackpackManager.findBackpackModel(id).ifPresent(pair -> submitNode.submitModel(
-                pair.getLeft(), state, poseStack, RenderTypes.entityCutout(pair.getRight()),
-                state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null)
-        );
+        MaidBackpackRenderData data = RENDER_DATA_CACHE.apply(id);
+        var backpackModel = data.getBackpackModel();
+        var backpackTexture = data.getBackpackTexture();
+        if (backpackModel != null && backpackTexture != null) {
+            submitNode.submitModel(
+                    backpackModel, state, poseStack, RenderTypes.entityCutout(backpackTexture),
+                    state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null
+            );
+        }
         poseStack.popPose();
     }
 }

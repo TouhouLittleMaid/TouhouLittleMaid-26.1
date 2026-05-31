@@ -1,10 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
-import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.other.CheckSchedulePosGui;
+import com.github.tartaricacid.touhoulittlemaid.network.client.CheckSchedulePosPacketProxy;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -22,17 +19,7 @@ public record CheckSchedulePosPacket(String tips) implements CustomPacketPayload
 
     public static void handle(CheckSchedulePosPacket message, IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            context.enqueueWork(() -> onHandle(message));
-        }
-    }
-
-    private static void onHandle(CheckSchedulePosPacket message) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) {
-            return;
-        }
-        if (mc.screen instanceof AbstractMaidContainerGui<?> parent) {
-            mc.setScreen(new CheckSchedulePosGui(parent, Component.translatable(message.tips)));
+            context.enqueueWork(() -> CheckSchedulePosPacketProxy.handle(message));
         }
     }
 

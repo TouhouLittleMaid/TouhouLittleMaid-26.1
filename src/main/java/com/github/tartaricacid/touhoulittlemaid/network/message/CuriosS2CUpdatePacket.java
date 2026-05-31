@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
+import com.github.tartaricacid.touhoulittlemaid.network.client.CuriosS2CUpdatePacketProxy;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,7 +20,7 @@ public record CuriosS2CUpdatePacket(int page) implements CustomPacketPayload {
 
     public static void handle(CuriosS2CUpdatePacket message, IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            context.enqueueWork(() -> CuriosCompat.clientUpdatePage(message.page()));
+            context.enqueueWork(() -> CuriosS2CUpdatePacketProxy.handle(message));
         }
     }
 

@@ -39,7 +39,7 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
 
         this.addLayer(new LayerMaidHeldItem(this));
         this.addLayer(new LayerMaidBipedHead(this, context));
-        this.addLayer(new LayerMaidBackpack(this, context.getModelSet()));
+        this.addLayer(new LayerMaidBackpack(this));
         this.addLayer(new LayerMaidBackItem(this));
         this.addLayer(new LayerMaidBanner(this, context));
 

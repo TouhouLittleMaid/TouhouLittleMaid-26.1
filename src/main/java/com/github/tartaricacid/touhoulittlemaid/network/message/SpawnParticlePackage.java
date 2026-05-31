@@ -1,17 +1,14 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.network.client.SpawnParticlePackageProxy;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.ByIdMap;
-import net.minecraft.util.Util;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.function.IntFunction;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
@@ -34,48 +31,7 @@ public record SpawnParticlePackage(int entityId, Type particleType, int delayTic
 
     public static void handle(SpawnParticlePackage message, IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            if (message.delayTicks <= 0) {
-                context.enqueueWork(() -> handleSpawnParticle(message));
-            } else {
-                context.enqueueWork(() -> CompletableFuture.runAsync(() -> handleSpawnParticleDelay(message, message.delayTicks), Util.backgroundExecutor()));
-            }
-        }
-    }
-
-    private static void handleSpawnParticleDelay(SpawnParticlePackage message, int delayTicks) {
-        try {
-            Thread.sleep(delayTicks * 50L);
-            Minecraft.getInstance().submitAsync(() -> handleSpawnParticle(message));
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void handleSpawnParticle(SpawnParticlePackage message) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) {
-            return;
-        }
-        Entity e = mc.level.getEntity(message.entityId);
-        if (e instanceof EntityMaid maid && e.isAlive()) {
-            switch (message.particleType) {
-                case EXPLOSION:
-                    maid.spawnExplosionParticle();
-                    return;
-                case BUBBLE:
-                    maid.spawnBubbleParticle();
-                    return;
-                case HEART:
-                    maid.spawnHeartParticle();
-                    return;
-                case RANK_UP:
-                    maid.spawnRankUpParticle();
-                    return;
-                case HEAL:
-                    maid.spawnRestoreHealthParticle(maid.getRandom().nextInt(3) + 7);
-                    return;
-                default:
-            }
+            context.enqueueWork(() -> SpawnParticlePackageProxy.handle(message));
         }
     }
 

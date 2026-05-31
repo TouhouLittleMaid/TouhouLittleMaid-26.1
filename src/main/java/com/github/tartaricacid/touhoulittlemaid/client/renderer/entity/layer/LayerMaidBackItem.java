@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
+import com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
@@ -9,6 +10,9 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.Identifier;
+
+import static com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager.RENDER_DATA_CACHE;
 
 public class LayerMaidBackItem extends RenderLayer<EntityMaidRenderState, EntityMaidModel> {
     public LayerMaidBackItem(EntityMaidRenderer renderer) {
@@ -34,10 +38,13 @@ public class LayerMaidBackItem extends RenderLayer<EntityMaidRenderState, Entity
                 poseStack.translate(0, -0.5, 0.25);
             }
 
+            Identifier id = state.backpack.getId();
+            MaidBackpackRenderData renderData = RENDER_DATA_CACHE.apply(id);
+
             poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
             poseStack.translate(0, 0.5, -0.25);
-            state.backpack.offsetBackpackItem(poseStack);
+            renderData.offsetBackpackItem(poseStack);
             state.backItem.submit(poseStack, submitNode, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
 
             poseStack.popPose();

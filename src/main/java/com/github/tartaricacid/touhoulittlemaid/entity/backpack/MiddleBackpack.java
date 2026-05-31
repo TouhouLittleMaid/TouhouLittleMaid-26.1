@@ -2,18 +2,14 @@ package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
-import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
+import com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.backpack.MiddleBackpackRenderData;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.backpack.MiddleBackpackContainer;
 import com.github.tartaricacid.touhoulittlemaid.item.BackpackLevel;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
@@ -21,10 +17,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nullable;
-
-import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.MIDDLE_BACKPACK;
 
 public class MiddleBackpack extends IMaidBackpack {
     public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "middle_backpack");
@@ -67,22 +59,9 @@ public class MiddleBackpack extends IMaidBackpack {
         return BackpackLevel.MIDDLE_CAPACITY;
     }
 
-    @Nullable
     @Override
-    public EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet) {
-        return InternalBedrockModelRegistry.getEntityModel(MIDDLE_BACKPACK);
-    }
-
-    @Nullable
-    @Override
-    public Identifier getBackpackTexture() {
-        return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/backpack/middle_backpack.png");
-    }
-
-    @Override
-    public void offsetBackpackItem(PoseStack poseStack) {
-        poseStack.mulPose(Axis.XP.rotationDegrees(-7.5F));
-        poseStack.translate(0, 0.625, -0.125);
+    public MaidBackpackRenderData getRenderData() {
+        return new MiddleBackpackRenderData();
     }
 
     @Override

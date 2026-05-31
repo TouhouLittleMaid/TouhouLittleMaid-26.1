@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.manager.site.AvailableSites;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSConfig;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSystemServices;
+import com.github.tartaricacid.touhoulittlemaid.network.client.ai.TTSSystemAudioToClientPackageProxy;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -39,16 +40,8 @@ public record TTSSystemAudioToClientPackage(String siteName, String chatText, TT
 
     public static void handle(TTSSystemAudioToClientPackage message, IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            context.enqueueWork(() -> onHandle(message));
+            context.enqueueWork(() -> TTSSystemAudioToClientPackageProxy.handle(message));
         }
-    }
-
-    private static void onHandle(TTSSystemAudioToClientPackage message) {
-        TTSSite ttsSite = AvailableSites.getTTSSite(message.siteName);
-        if (ttsSite == null || !ttsSite.enabled()) {
-            return;
-        }
-        ttsSite.client().play(message.chatText, message.config, null);
     }
 
     @Override

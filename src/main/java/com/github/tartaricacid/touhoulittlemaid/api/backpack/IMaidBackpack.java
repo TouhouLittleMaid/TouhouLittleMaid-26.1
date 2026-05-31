@@ -1,14 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.api.backpack;
 
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.item.BackpackLevel;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
@@ -37,13 +33,7 @@ public abstract class IMaidBackpack {
 
     public abstract int getAvailableMaxContainerIndex();
 
-    public abstract void offsetBackpackItem(PoseStack poseStack);
-
-    @Nullable
-    public abstract EntityModel<EntityMaidRenderState> getBackpackModel(EntityModelSet modelSet);
-
-    @Nullable
-    public abstract Identifier getBackpackTexture();
+    public abstract MaidBackpackRenderData getRenderData();
 
     protected final void dropAllItems(EntityMaid maid) {
         ItemsUtil.dropEntityItems(maid, maid.getMaidInv(), BackpackLevel.EMPTY_CAPACITY, null);

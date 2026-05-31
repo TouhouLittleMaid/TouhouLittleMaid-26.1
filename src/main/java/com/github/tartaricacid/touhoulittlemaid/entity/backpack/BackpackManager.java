@@ -3,26 +3,30 @@ package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
+import com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+
+import static com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData.EMPTY;
 
 public class BackpackManager {
-    private static Map<Identifier, IMaidBackpack> BACKPACK_ID_MAP;
-    private static Map<Item, IMaidBackpack> BACKPACK_ITEM_MAP;
+    // 渲染数据，客户端才能用
+    public static final Function<Identifier, MaidBackpackRenderData> RENDER_DATA_CACHE = Util.memoize(id ->
+            BackpackManager.findBackpack(id).map(IMaidBackpack::getRenderData).orElse(EMPTY)
+    );
 
-    private static Map<Identifier, Pair<EntityModel<EntityMaidRenderState>, Identifier>> BACKPACK_MODEL_MAP;
-    private static IMaidBackpack EMPTY_BACKPACK;
+    private static Map<Identifier, IMaidBackpack> BACKPACK_ID_MAP = Maps.newHashMap();
+    private static Map<Item, IMaidBackpack> BACKPACK_ITEM_MAP = Maps.newHashMap();
+    private static IMaidBackpack EMPTY_BACKPACK = new EmptyBackpack();
 
     private BackpackManager() {
         EMPTY_BACKPACK = new EmptyBackpack();
@@ -45,16 +49,6 @@ public class BackpackManager {
         BACKPACK_ITEM_MAP = ImmutableMap.copyOf(BACKPACK_ITEM_MAP);
     }
 
-    public static void initClient(EntityModelSet modelSet) {
-        // 有些模组可能会比上面 init 还要早执行这块，所以需要检查一下？
-        if (BACKPACK_ID_MAP == null) {
-            init();
-        }
-        BACKPACK_MODEL_MAP = Maps.newHashMap();
-        BACKPACK_ID_MAP.forEach((id, backpack) -> BACKPACK_MODEL_MAP.put(id, Pair.of(backpack.getBackpackModel(modelSet), backpack.getBackpackTexture())));
-        BACKPACK_MODEL_MAP = ImmutableMap.copyOf(BACKPACK_MODEL_MAP);
-    }
-
     public static IMaidBackpack getEmptyBackpack() {
         return EMPTY_BACKPACK;
     }
@@ -71,18 +65,6 @@ public class BackpackManager {
         for (Item backpack : BACKPACK_ITEM_MAP.keySet()) {
             player.getCooldowns().addCooldown(backpack.getDefaultInstance(), 20);
         }
-    }
-
-    //FIXME 等待EntityMaidRenderState的实现
-    public static Optional<Pair<EntityModel<EntityMaidRenderState>, Identifier>> findBackpackModel(Identifier id) {
-        Pair<EntityModel<EntityMaidRenderState>, Identifier> pair = BACKPACK_MODEL_MAP.get(id);
-        if (pair == null) {
-            return Optional.empty();
-        }
-        if (pair.getLeft() == null) {
-            return Optional.empty();
-        }
-        return Optional.of(pair);
     }
 
     public void add(IMaidBackpack backpack) {

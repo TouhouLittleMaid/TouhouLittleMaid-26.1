@@ -1,12 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import net.minecraft.client.Minecraft;
+import com.github.tartaricacid.touhoulittlemaid.network.client.ItemBreakPackageProxy;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -24,18 +22,7 @@ public record ItemBreakPackage(int id, ItemStack item) implements CustomPacketPa
 
     public static void handle(ItemBreakPackage message, IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            context.enqueueWork(() -> handleBreakItem(message));
-        }
-    }
-
-    private static void handleBreakItem(ItemBreakPackage message) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) {
-            return;
-        }
-        Entity e = mc.level.getEntity(message.id);
-        if (e instanceof LivingEntity livingEntity && livingEntity.isAlive()) {
-            livingEntity.breakItem(message.item);
+            context.enqueueWork(() -> ItemBreakPackageProxy.handle(message));
         }
     }
 

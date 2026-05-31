@@ -1,10 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
-import com.github.tartaricacid.touhoulittlemaid.data.PowerAttachment;
-import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
+import com.github.tartaricacid.touhoulittlemaid.network.client.SyncDataPackageProxy;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -29,16 +26,7 @@ public record SyncDataPackage(float power, int maidNum) implements CustomPacketP
 
     public static void handle(SyncDataPackage message, IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            context.enqueueWork(() -> handleData(message));
+            context.enqueueWork(() -> SyncDataPackageProxy.handle(message));
         }
-    }
-
-    private static void handleData(SyncDataPackage message) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.player == null) {
-            return;
-        }
-        mc.player.setData(InitDataAttachment.POWER_NUM, new PowerAttachment(message.power));
-        mc.player.setData(InitDataAttachment.MAID_NUM, new MaidNumAttachment(message.maidNum));
     }
 }

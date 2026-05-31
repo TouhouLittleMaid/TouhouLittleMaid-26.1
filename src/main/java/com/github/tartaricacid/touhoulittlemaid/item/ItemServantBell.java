@@ -1,14 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
-import com.github.tartaricacid.touhoulittlemaid.client.gui.item.ServantBellSetScreen;
+import com.github.tartaricacid.touhoulittlemaid.client.proxy.ItemServantBellProxy;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidInfo;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -63,7 +62,7 @@ public class ItemServantBell extends Item {
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand usedHand) {
         if (usedHand == InteractionHand.MAIN_HAND && target instanceof EntityMaid maid && maid.isOwnedBy(player)) {
             if (maid.level.isClientSide()) {
-                openServantBellSetScreen(maid);
+                ItemServantBellProxy.openServantBellSetScreen(maid);
             }
             return InteractionResult.SUCCESS;
         }
@@ -153,12 +152,6 @@ public class ItemServantBell extends Item {
 
     private boolean checkMaidUuid(Player player, EntityMaid maid, UUID searchUuid) {
         return maid.isOwnedBy(player) && maid.getUUID().equals(searchUuid);
-    }
-
-    private void openServantBellSetScreen(EntityMaid maid) {
-        if (maid.level.isClientSide()) {
-            Minecraft.getInstance().setScreen(new ServantBellSetScreen(maid));
-        }
     }
 
     @Override

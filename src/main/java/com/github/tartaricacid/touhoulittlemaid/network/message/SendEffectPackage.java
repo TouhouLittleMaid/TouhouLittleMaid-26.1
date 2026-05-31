@@ -1,13 +1,11 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.client.Minecraft;
+import com.github.tartaricacid.touhoulittlemaid.network.client.SendEffectPackageProxy;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.ArrayList;
@@ -34,18 +32,7 @@ public record SendEffectPackage(int id, Collection<MobEffectInstance> effects) i
 
     public static void handle(SendEffectPackage message, IPayloadContext context) {
         if (context.flow().isClientbound()) {
-            context.enqueueWork(() -> handle(message));
-        }
-    }
-
-    private static void handle(SendEffectPackage message) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) {
-            return;
-        }
-        Entity entity = mc.level.getEntity(message.id);
-        if (entity instanceof EntityMaid maid && maid.isAlive()) {
-            maid.setEffects(message.effects.stream().map(EffectData::new).toList());
+            context.enqueueWork(() -> SendEffectPackageProxy.handle(message));
         }
     }
 
