@@ -22,6 +22,7 @@ public class ItemMaidBed extends BlockItem {
     public ItemMaidBed(Identifier id) {
         super(InitBlocks.MAID_BED.get(), (new Item.Properties())
                 .setId(ResourceKey.create(Registries.ITEM, id))
+                .overrideDescription("block.touhou_little_maid.maid_bed")
                 .stacksTo(1));
     }
 

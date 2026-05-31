@@ -34,23 +34,26 @@ public class SoundPackButton extends FlatColorButton {
         super.extractContents(graphics, mouseX, mouseY, pPartialTick);
         Identifier icon = info.getIcon();
         if (icon == null) {
-            GuiTools.blit(graphics, ICON, this.getX() + 4, this.getY() + 5, 32, 32, 0, 16, 32, 32, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, this.getX() + 4, this.getY() + 5, 32, 32,
+                    0, 16, 32, 32, 256, 256);
         } else {
             if (info.getIconAnimation() == CustomModelPack.AnimationState.UNCHECK) {
                 checkIconAnimation(info, icon);
             }
             if (info.getIconAnimation() == CustomModelPack.AnimationState.FALSE) {
-                GuiTools.blit(graphics, icon, this.getX() + 4, this.getY() + 5,
+                GuiTools.guiBlit(graphics, icon, this.getX() + 4, this.getY() + 5,
                         32, 32, 0, 0, 32, 32, 32, 32);
             } else {
                 int time = getTickTime() / info.getIconDelay();
                 int iconIndex = time % info.getIconAspectRatio();
-                GuiTools.blit(graphics, icon, this.getX() + 4, this.getY() + 5,
-                        32, 32, 0, iconIndex * 32, 32, 32, 32, 32 * info.getIconAspectRatio());
+                GuiTools.guiBlit(graphics, icon, this.getX() + 4, this.getY() + 5,
+                        32, 32, 0, iconIndex * 32, 32, 32,
+                        32, 32 * info.getIconAspectRatio());
             }
         }
         if (isUse) {
-            GuiTools.blit(graphics, ICON, this.getX() + this.getWidth() - 20, this.getY() + 13, 16, 16, 32, 0, 16, 16, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, this.getX() + this.getWidth() - 20, this.getY() + 13, 16,
+                    16, 32, 0, 16, 16, 256, 256);
         }
     }
 
@@ -65,24 +68,24 @@ public class SoundPackButton extends FlatColorButton {
         List<String> author = info.getAuthor();
         String date = info.getDate();
 
-        graphics.text(font, packName, startX, startY, ChatFormatting.WHITE.getColor());
+        graphics.text(font, packName, startX, startY, 0xFF000000 | ChatFormatting.WHITE.getColor());
 
         if (StringUtils.isNotBlank(version)) {
             int titleWidth = font.width(packName);
-            graphics.text(font, "§nv" + version, startX + titleWidth + 5, startY, ChatFormatting.AQUA.getColor());
+            graphics.text(font, "§nv" + version, startX + titleWidth + 5, startY, 0xFF000000 | ChatFormatting.AQUA.getColor());
         }
 
         if (!author.isEmpty()) {
             startY += 10;
             String authorListText = StringUtils.joinWith(I18n.get("gui.touhou_little_maid.resources_download.author.delimiter"), author);
             String authorText = I18n.get("gui.touhou_little_maid.resources_download.author", authorListText);
-            graphics.text(font, authorText, startX, startY, ChatFormatting.GOLD.getColor());
+            graphics.text(font, authorText, startX, startY, 0xFF000000 | ChatFormatting.GOLD.getColor());
         }
 
         if (StringUtils.isNotBlank(date)) {
             startY += 10;
             MutableComponent dateText = Component.translatable("gui.touhou_little_maid.skin.text.date", date);
-            graphics.text(font, dateText, startX, startY, ChatFormatting.GREEN.getColor());
+            graphics.text(font, dateText, startX, startY, 0xFF000000 | ChatFormatting.GREEN.getColor());
         }
     }
 

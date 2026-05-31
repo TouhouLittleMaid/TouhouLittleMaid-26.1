@@ -106,13 +106,16 @@ public class MaidBeaconGui extends Screen {
         GuiTools.guiBlit(graphics, BG, leftPos + 146, topPos + 48, 58, 138, (int) (74 * percent), 5);
 
         this.renderPlayerPower(graphics);
-        graphics.text(font, DECIMAL_FORMAT.format(beacon.getStoragePower()), leftPos + 240, topPos + 46, 0xffffff);
+        graphics.text(font, DECIMAL_FORMAT.format(beacon.getStoragePower()), leftPos + 240, topPos + 46, 0xFFffffff);
         if (potionIndex == -1) {
-            this.drawCenteredString(graphics, font, I18n.get("gui.touhou_little_maid.maid_beacon.cost_power", DECIMAL_FORMAT.format(0)), leftPos + 195, topPos + 5, ChatFormatting.DARK_GRAY.getColor());
+            this.drawCenteredString(graphics, font, I18n.get("gui.touhou_little_maid.maid_beacon.cost_power", DECIMAL_FORMAT.format(0)),
+                    leftPos + 195, topPos + 5, 0xFF555555);
         } else {
-            this.drawCenteredString(graphics, font, Component.translatable("gui.touhou_little_maid.maid_beacon.cost_power", DECIMAL_FORMAT.format(beacon.getEffectCost() * 900)).withStyle(ChatFormatting.RED), leftPos + 195, topPos + 5, 0xffffff);
+            this.drawCenteredString(graphics, font, Component.translatable("gui.touhou_little_maid.maid_beacon.cost_power", DECIMAL_FORMAT.format(beacon.getEffectCost() * 900)).withStyle(ChatFormatting.RED),
+                    leftPos + 195, topPos + 5, 0xFFffffff);
         }
-        this.renderables.stream().filter(b -> b instanceof BeaconEffectButton).forEach(b -> ((BeaconEffectButton) b).renderToolTip(graphics, this, mouseX, mouseY));
+        this.renderables.stream().filter(b -> b instanceof BeaconEffectButton).forEach(b -> ((BeaconEffectButton) b)
+                .renderToolTip(graphics, this, mouseX, mouseY));
     }
 
     @Override
@@ -136,7 +139,7 @@ public class MaidBeaconGui extends Screen {
             PowerAttachment power = player.getData(InitDataAttachment.POWER_NUM);
             float percent = power.get() / PowerAttachment.MAX_POWER;
             GuiTools.guiBlit(graphics, BG, leftPos + 146, topPos + 61, 58, 143, (int) (74 * percent), 5);
-            graphics.text(font, DECIMAL_FORMAT.format(power.get()), leftPos + 240, topPos + 60, 0xffffff);
+            graphics.text(font, DECIMAL_FORMAT.format(power.get()), leftPos + 240, topPos + 60, 0xFFffffff);
         }
     }
 

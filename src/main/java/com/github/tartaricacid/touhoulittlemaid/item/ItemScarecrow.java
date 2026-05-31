@@ -18,7 +18,9 @@ import java.util.function.Consumer;
 public class ItemScarecrow extends BlockItem {
     public ItemScarecrow(Identifier id) {
         super(InitBlocks.SCARECROW.get(), new Item.Properties()
-                .setId(ResourceKey.create(Registries.ITEM, id)));
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .overrideDescription("block.touhou_little_maid.scarecrow")
+        );
     }
 
     @Override

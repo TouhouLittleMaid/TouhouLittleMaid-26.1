@@ -381,7 +381,7 @@ public class AIChatScreen extends Screen {
             if (StringUtils.isEmpty(value)) {
                 MutableComponent text = Component.translatable("ai.touhou_little_maid.chat.input.tip")
                         .withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
-                graphics.centeredText(this.font, text, x + w / 2, y + (h - 22) / 2, 0xFFFFFF);
+                graphics.centeredText(this.font, text, x + w / 2, y + (h - 22) / 2, 0xFFFFFFFF);
             }
         }
 

@@ -33,6 +33,7 @@ public class ItemMaidBeacon extends DoubleHighBlockItem {
         super(InitBlocks.MAID_BEACON.get(), (new Item.Properties())
                 .stacksTo(1)
                 .setId(ResourceKey.create(Registries.ITEM, id))
+                .overrideDescription("block.touhou_little_maid.maid_beacon")
                 .attributes(ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 3,
                                 AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)

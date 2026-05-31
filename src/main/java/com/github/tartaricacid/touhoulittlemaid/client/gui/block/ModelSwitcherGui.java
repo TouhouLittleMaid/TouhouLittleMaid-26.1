@@ -165,11 +165,11 @@ public class ModelSwitcherGui extends Screen {
         this.extractBackground(graphics, pMouseX, pMouseY, pPartialTick);
         GuiTools.guiBlit(graphics,BG, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         if (bindUuid != null) {
-            graphics.centeredText(font, bindUuid.toString(), leftPos + 128, topPos - 10, 0xffffff);
+            graphics.centeredText(font, bindUuid.toString(), leftPos + 128, topPos - 10, 0xFFffffff);
         } else {
-            graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.model_switcher.uuid.empty"), leftPos + 128, topPos - 10, 0xffffff);
+            graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.model_switcher.uuid.empty"), leftPos + 128, topPos - 10, 0xFFffffff);
         }
-        graphics.centeredText(font, String.format("%d/%d", page + 1, (infoList.size() - 1) / maxRow + 1), leftPos + 193, topPos + 12, 0xffffff);
+        graphics.centeredText(font, String.format("%d/%d", page + 1, (infoList.size() - 1) / maxRow + 1), leftPos + 193, topPos + 12, 0xFFffffff);
         if (this.description != null) {
             InventoryScreen.extractEntityInInventoryFollowsMouse(
                     graphics,
@@ -197,7 +197,7 @@ public class ModelSwitcherGui extends Screen {
             if (CustomPackLoader.MAID_MODELS.getInfo(modelId).isPresent()) {
                 MaidModelInfo info = CustomPackLoader.MAID_MODELS.getInfo(modelId).get();
                 MutableComponent component = Component.translatable(ParseI18n.getI18nKey(info.getName()));
-                graphics.centeredText(font, component, leftPos + 193, startOffsetY, 0xffffff);
+                graphics.centeredText(font, component, leftPos + 193, startOffsetY, 0xFFffffff);
             }
             startOffsetY += 19;
         }

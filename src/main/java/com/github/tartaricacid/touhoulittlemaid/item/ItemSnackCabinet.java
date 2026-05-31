@@ -17,7 +17,8 @@ import java.util.function.Consumer;
 public class ItemSnackCabinet extends BlockItem {
     public ItemSnackCabinet(Identifier id) {
         super(InitBlocks.SNACK_CABINET.get(), new Item.Properties()
-                .setId(ResourceKey.create(Registries.ITEM, id)));
+                .setId(ResourceKey.create(Registries.ITEM, id))
+                .overrideDescription("block.touhou_little_maid.snack_cabinet"));
     }
 
     @Override

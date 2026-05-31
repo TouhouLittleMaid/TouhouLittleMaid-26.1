@@ -33,8 +33,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ItemHakureiGohei extends ProjectileWeaponItem {
-    public ItemHakureiGohei(Identifier id) {
+public class ItemGohei extends ProjectileWeaponItem {
+    public ItemGohei(Identifier id) {
         super((new Properties())
                 .setId(ResourceKey.create(Registries.ITEM, id))
                 .durability(1200)
@@ -47,7 +47,7 @@ public class ItemHakureiGohei extends ProjectileWeaponItem {
     }
 
     public static boolean isGohei(ItemStack stack) {
-        return stack.getItem() instanceof ItemHakureiGohei;
+        return stack.getItem() instanceof ItemGohei;
     }
 
     @Override
@@ -77,33 +77,40 @@ public class ItemHakureiGohei extends ProjectileWeaponItem {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (context.getHand() == InteractionHand.MAIN_HAND && context.getLevel() instanceof ServerLevel serverLevel) {
-            List<IMultiBlock> multiBlockList = MultiBlockManager.getMultiBlockList();
-            BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
-            BlockPos pos = context.getClickedPos();
+        if (context.getHand() != InteractionHand.MAIN_HAND) {
+            return super.useOn(context);
+        }
 
-            // 检查水平四个方向
-            for (Direction direction : Direction.Plane.HORIZONTAL) {
-                // 有可能玩家点击的是右侧，故需要判断两个位置
-                BlockPos leftPos = pos.relative(direction.getClockWise());
-                BlockState leftBlockState = context.getLevel().getBlockState(leftPos);
+        List<IMultiBlock> multiBlockList = MultiBlockManager.getMultiBlockList();
+        BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
+        BlockPos pos = context.getClickedPos();
 
-                for (IMultiBlock multiBlock : multiBlockList) {
-                    if (multiBlock.isCoreBlock(blockState)
-                        && multiBlock.directionIsSuitable(direction)
-                        && this.checkAndBuild(context, multiBlock, serverLevel, pos, direction)) {
-                        return InteractionResult.SUCCESS;
-                    }
+        if (!(context.getLevel() instanceof ServerLevel serverLevel)) {
+            return InteractionResult.SUCCESS;
+        }
 
-                    if (multiBlock.isCoreBlock(leftBlockState)
-                        && multiBlock.directionIsSuitable(direction)
-                        && this.checkAndBuild(context, multiBlock, serverLevel, leftPos, direction)) {
-                        return InteractionResult.SUCCESS;
-                    }
+        // 检查水平四个方向
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            // 有可能玩家点击的是右侧，故需要判断两个位置
+            BlockPos leftPos = pos.relative(direction.getClockWise());
+            BlockState leftBlockState = context.getLevel().getBlockState(leftPos);
+
+            for (IMultiBlock multiBlock : multiBlockList) {
+                if (multiBlock.isCoreBlock(blockState)
+                    && multiBlock.directionIsSuitable(direction)
+                    && this.checkAndBuild(context, multiBlock, serverLevel, pos, direction)) {
+                    return InteractionResult.SUCCESS;
+                }
+
+                if (multiBlock.isCoreBlock(leftBlockState)
+                    && multiBlock.directionIsSuitable(direction)
+                    && this.checkAndBuild(context, multiBlock, serverLevel, leftPos, direction)) {
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
-        return super.useOn(context);
+
+        return InteractionResult.SUCCESS;
     }
 
     private boolean checkAndBuild(UseOnContext context, IMultiBlock multiBlock, ServerLevel world, BlockPos pos, Direction direction) {

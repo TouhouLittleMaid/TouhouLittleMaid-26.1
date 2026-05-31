@@ -174,14 +174,14 @@ public class HistoryAIChatScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
-        graphics.centeredText(font, HISTORY_TITLE, posX + 210, 8, 0xFFFFFF);
+        graphics.centeredText(font, HISTORY_TITLE, posX + 210, 8, 0xFFFFFFFF);
         this.renderSummaryPanel(graphics);
 
         if (this.historyWidgets.isEmpty()) {
             List<FormattedCharSequence> split = font.split(HISTORY_EMPTY, 150);
             for (int i = 0; i < split.size(); i++) {
                 int height = i * font.lineHeight;
-                graphics.centeredText(font, split.get(i), posX, this.historyTop + 15 + height, 0xff5555);
+                graphics.centeredText(font, split.get(i), posX, this.historyTop + 15 + height, 0xFFff5555);
             }
         } else {
             graphics.enableScissor(posX - 128, this.historyTop, posX + 128, this.historyBottom);
@@ -299,7 +299,7 @@ public class HistoryAIChatScreen extends Screen {
         graphics.fill(left, this.summaryTop, right, this.summaryTop + 1, 0x66FFFFFF);
         graphics.fill(left, this.summaryBottom - 1, right, this.summaryBottom, 0x66FFFFFF);
 
-        graphics.centeredText(font, SUMMARY_TITLE, left + SUMMARY_WIDTH / 2, this.summaryTop + 6, 0xFFFFFF);
+        graphics.centeredText(font, SUMMARY_TITLE, left + SUMMARY_WIDTH / 2, this.summaryTop + 6, 0xFFFFFFFF);
 
         // 依据窗口大小，调整 summary 的显示内容
         if (this.linesCache == null) {

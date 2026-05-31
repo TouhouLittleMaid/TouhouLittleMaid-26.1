@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.item;
 
+import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.other.PicnicBasketContainer;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemContainerTooltip;
@@ -21,7 +22,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
@@ -32,8 +32,8 @@ import java.util.Optional;
 public class ItemPicnicBasket extends BlockItem implements MenuProvider {
     private static final int PICNIC_BASKET_SIZE = 9;
 
-    public ItemPicnicBasket(Identifier id, Block block) {
-        super(block, (new Properties())
+    public ItemPicnicBasket(Identifier id) {
+        super(InitBlocks.PICNIC_MAT.get(), (new Properties())
                 .setId(ResourceKey.create(Registries.ITEM, id))
                 .stacksTo(1)
                 .overrideDescription("item.touhou_little_maid.picnic_basket"));

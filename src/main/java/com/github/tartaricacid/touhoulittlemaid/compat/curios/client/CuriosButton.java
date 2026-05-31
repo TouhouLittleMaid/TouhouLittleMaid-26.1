@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.compat.curios.client;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -52,7 +53,6 @@ public class CuriosButton extends Button implements ITooltipButton {
             i = vOffset + yDiff;
         }
 
-        // RenderSystem.enableDepthTest();
-        pGuiGraphics.blit(pTexture, pX, pY, uOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);
+        GuiTools.guiBlit(pGuiGraphics, pTexture, pX, pY, uOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);
     }
 }

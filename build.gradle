@@ -237,7 +237,7 @@ dependencies {
     implementation "maven.modrinth:jade:26.1.1+neoforge"
 
     // Curios
-    compileOnly "maven.modrinth:curios:15.0.0-beta.2+26.1.2-neoforge"
+    implementation "maven.modrinth:curios:15.0.0-beta.2+26.1.2-neoforge"
 
     // IPN
     // runtimeOnly "maven.modrinth:kotlin-for-forge:6.2.0"

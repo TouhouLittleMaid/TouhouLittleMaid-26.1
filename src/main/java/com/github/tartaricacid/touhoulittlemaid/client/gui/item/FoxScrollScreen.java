@@ -91,7 +91,7 @@ public class FoxScrollScreen extends Screen {
         if (this.data.isEmpty()) {
             int x = this.width / 2;
             int y = this.height / 2 - 5;
-            graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.fox_scroll.empty"), x, y, 0xFF0000);
+            graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.fox_scroll.empty"), x, y, 0xFFFF0000);
             return;
         }
         this.renderMain(graphics);

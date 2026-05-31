@@ -13,7 +13,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemHakureiGohei;
+import com.github.tartaricacid.touhoulittlemaid.item.ItemGohei;
 import com.github.tartaricacid.touhoulittlemaid.network.message.GomokuClientPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
@@ -347,7 +347,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
         Item item = player.getMainHandItem().getItem();
 
         // 拿着御币点击，那么铺满棋盘，只剩三个位置，用来调试满棋盘
-        if (item instanceof ItemHakureiGohei) {
+        if (item instanceof ItemGohei) {
             gomoku.clickWithDebug();
             gomoku.refresh();
             level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);

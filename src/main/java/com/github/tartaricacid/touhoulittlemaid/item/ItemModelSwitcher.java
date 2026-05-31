@@ -34,7 +34,9 @@ public class ItemModelSwitcher extends BlockItem {
     public ItemModelSwitcher(Identifier id) {
         super(InitBlocks.MODEL_SWITCHER.get(), (new Item.Properties())
                 .setId(ResourceKey.create(Registries.ITEM, id))
-                .stacksTo(1));
+                .stacksTo(1)
+                .overrideDescription("block.touhou_little_maid.model_switcher")
+        );
     }
 
     public static ItemStack tileEntityToItemStack(HolderLookup.Provider provider, TileEntityModelSwitcher switcher) {

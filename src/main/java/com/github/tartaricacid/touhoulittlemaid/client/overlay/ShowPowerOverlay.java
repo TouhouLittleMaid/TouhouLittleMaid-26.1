@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.overlay;
 import com.github.tartaricacid.touhoulittlemaid.data.PowerAttachment;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemHakureiGohei;
+import com.github.tartaricacid.touhoulittlemaid.item.ItemGohei;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -26,7 +26,7 @@ public class ShowPowerOverlay implements GuiLayer {
             return;
         }
         ItemStack stack = player.getMainHandItem();
-        if (!ItemHakureiGohei.isGohei(stack)) {
+        if (!ItemGohei.isGohei(stack)) {
             return;
         }
         Font font = Minecraft.getInstance().font;

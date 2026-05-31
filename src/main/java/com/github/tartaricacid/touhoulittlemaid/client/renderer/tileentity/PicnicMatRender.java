@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedro
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.PicnicMatRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
+import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -18,11 +19,14 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -87,7 +91,7 @@ public class PicnicMatRender implements BlockEntityRenderer<TileEntityPicnicMat,
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
             poseStack.pushPose();
             poseStack.last().set(pose);
-            model.renderToBuffer(poseStack, buffer, state.lightCoords, 0);
+            model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
             poseStack.popPose();
         });
         poseStack.popPose();
@@ -125,5 +129,15 @@ public class PicnicMatRender implements BlockEntityRenderer<TileEntityPicnicMat,
     @Override
     public boolean shouldRenderOffScreen() {
         return true;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(TileEntityPicnicMat blockEntity) {
+        BlockState blockState = blockEntity.getBlockState();
+        BlockPos pos = blockEntity.getBlockPos();
+        if (blockState.getValue(BlockPicnicMat.PART).isCenter()) {
+            return RenderHelper.getAABB(pos.offset(-3, 0, -3), pos.offset(3, 1, 3));
+        }
+        return new AABB(pos);
     }
 }

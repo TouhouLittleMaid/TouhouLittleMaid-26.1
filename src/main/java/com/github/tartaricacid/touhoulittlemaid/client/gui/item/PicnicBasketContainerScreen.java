@@ -33,6 +33,6 @@ public class PicnicBasketContainerScreen extends AbstractContainerScreen<PicnicB
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
-        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, -12566464, false);
+        graphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xff404040, false);
     }
 }

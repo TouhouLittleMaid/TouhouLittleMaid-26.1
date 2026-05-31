@@ -142,6 +142,6 @@ public class MaidConfigContainerGui extends AbstractMaidContainerGui<MaidConfigC
 
     @Override
     protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.button.maid_config"), leftPos + 167, topPos + 41, 0xFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.button.maid_config"), leftPos + 167, topPos + 41, 0xFFFFFFFF);
     }
 }

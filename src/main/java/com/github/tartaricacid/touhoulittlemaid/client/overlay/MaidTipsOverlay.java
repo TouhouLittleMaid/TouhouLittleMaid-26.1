@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.compat.kubejs.ModKubeJSCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import net.minecraft.client.DeltaTracker;
@@ -141,7 +142,7 @@ public class MaidTipsOverlay implements GuiLayer {
             List<FormattedCharSequence> split = minecraft.font.split(tip, 120);
             int offset = (screenHeight / 2 - 5) - split.size() * 10;
             guiGraphics.item(itemStack, screenWidth / 2 + 32, offset);
-            guiGraphics.blit(ICON, screenWidth / 2 + 42, offset - 4, 16, 16, 16, 16, 16, 16);
+            GuiTools.guiBlit(guiGraphics, ICON, screenWidth / 2 + 42, offset - 4, 16, 16, 16, 16, 16, 16);
             offset += 18;
             for (FormattedCharSequence sequence : split) {
                 guiGraphics.text(minecraft.font, sequence, screenWidth / 2 + 32, offset, 0xFFFFFFFF);

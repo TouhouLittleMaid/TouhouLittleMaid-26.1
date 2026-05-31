@@ -11,6 +11,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.sound.pojo.SoundPackInfo;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
@@ -193,15 +194,16 @@ public class MaidSoundPackGui extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         graphics.fill(startX, startY, startX + 240, startY + 220, 0xFF2A2A2A);
         graphics.fill(startX + 242, startY, startX + 400, startY + 220, 0xFF2A2A2A);
-        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.custom_sound.pack.title"), startX + 120, startY + 6, 0xFFFFFF);
-        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.custom_sound.sounds.preview"), startX + 321, startY + 6, 0xFFFFFF);
-        graphics.centeredText(font, String.format("%d/%d", packPage + 1, packMaxPage + 1), startX + 120, startY + 206, 0xBBBBBB);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.custom_sound.pack.title"), startX + 120, startY + 6, 0xFFFFFFFF);
+        graphics.centeredText(font, Component.translatable("gui.touhou_little_maid.custom_sound.sounds.preview"), startX + 321, startY + 6, 0xFFFFFFFF);
+        graphics.centeredText(font, String.format("%d/%d", packPage + 1, packMaxPage + 1), startX + 120, startY + 206, 0xFFBBBBBB);
         super.extractRenderState(graphics, pMouseX, pMouseY, pPartialTick);
         if (StringUtils.isNotBlank(selectSoundId) && CustomSoundLoader.CACHE.containsKey(selectSoundId)) {
-            graphics.centeredText(font, String.format("%d/%d", soundPage + 1, soundMaxPage + 1), startX + 321, startY + 206, 0xBBBBBB);
-            graphics.blit(ICON, startX + 359, startY + 20, 0, 0, 16, 16, 256, 256);
-            graphics.blit(ICON, startX + 380, startY + 20, 16, 0, 16, 16, 256, 256);
+            graphics.centeredText(font, String.format("%d/%d", soundPage + 1, soundMaxPage + 1), startX + 321, startY + 206, 0xFFBBBBBB);
+            GuiTools.guiBlit(graphics, ICON, startX + 359, startY + 20, 0, 0, 16, 16, 256, 256);
+            GuiTools.guiBlit(graphics, ICON, startX + 380, startY + 20, 16, 0, 16, 16, 256, 256);
         }
-        this.renderables.stream().filter(b -> b instanceof FlatColorButton).forEach(b -> ((FlatColorButton) b).renderToolTip(graphics, this, pMouseX, pMouseY));
+        this.renderables.stream().filter(b -> b instanceof FlatColorButton)
+                .forEach(b -> ((FlatColorButton) b).renderToolTip(graphics, this, pMouseX, pMouseY));
     }
 }

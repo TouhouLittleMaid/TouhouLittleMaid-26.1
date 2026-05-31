@@ -11,7 +11,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.DanmakuShoot;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemHakureiGohei;
+import com.github.tartaricacid.touhoulittlemaid.item.ItemGohei;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
@@ -115,7 +115,7 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
     public void performRangedAttack(EntityMaid shooter, LivingEntity target, float distanceFactor) {
         shooter.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).ifPresent(livingEntities -> {
             ItemStack mainHandItem = shooter.getMainHandItem();
-            if (ItemHakureiGohei.isGohei(mainHandItem)) {
+            if (ItemGohei.isGohei(mainHandItem)) {
                 long entityCount = livingEntities.stream().filter(test -> enemyEntityTest(shooter, target, test)).count();
                 Level level = shooter.level();
                 // 分为三档
@@ -183,7 +183,7 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
 
     @Override
     public boolean isWeapon(EntityMaid maid, ItemStack stack) {
-        return ItemHakureiGohei.isGohei(stack);
+        return ItemGohei.isGohei(stack);
     }
 
     private boolean enemyEntityTest(EntityMaid shooter, LivingEntity target, LivingEntity test) {
@@ -198,7 +198,7 @@ public class TaskDanmakuAttack implements IRangedAttackTask {
     }
 
     private boolean hasGohei(EntityMaid maid) {
-        return ItemHakureiGohei.isGohei(maid.getMainHandItem());
+        return ItemGohei.isGohei(maid.getMainHandItem());
     }
 
     private boolean farAway(LivingEntity target, EntityMaid maid) {

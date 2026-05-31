@@ -524,7 +524,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
                             .append(": ").withStyle(ChatFormatting.AQUA))
                     .append(Component.translatable("tooltips.touhou_little_maid.info.game_skill.gomoku", maid.getGameManager().getGomokuWinCount(), MaidGomokuAI.getRank(maid))));
 
-            graphics.text(font, FormattedCharSequence.fromList(list.stream().map(Component::getVisualOrderText).toList()), mouseX, mouseY, 0xFFFFFFFF);
+            graphics.setTooltipForNextFrame(font, list, Optional.empty(), mouseX, mouseY);
         }
     }
 

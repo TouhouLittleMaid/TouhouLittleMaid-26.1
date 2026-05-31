@@ -106,11 +106,11 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
         if (this.maxPages > 0) {
             MutableComponent page = Component.literal("%d/%d".formatted(this.page + 1, maxPages + 1));
             int width = font.width(page);
-            graphics.text(font, page, (leftPos + 197) - width / 2, topPos + 150, 0x555555, false);
+            graphics.text(font, page, (leftPos + 197) - width / 2, topPos + 150, 0xFF555555, false);
         } else {
             MutableComponent name = Component.translatable("curios.name");
             int width = font.width(name);
-            graphics.text(font, name, (leftPos + 197) - width / 2, topPos + 150, 0x555555, false);
+            graphics.text(font, name, (leftPos + 197) - width / 2, topPos + 150, 0xFF555555, false);
         }
     }
 
@@ -129,9 +129,6 @@ public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContai
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         super.extractBackground(graphics, mouseX, mouseY, a);
-
-//        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-//        RenderSystem.setShaderTexture(0, CURIOS_BG);
 
         // 护甲、主手、副手背景
         GuiTools.guiBlit(graphics, CURIOS_BG, leftPos + 85, topPos + 36, 0, 0, 57, 58);
