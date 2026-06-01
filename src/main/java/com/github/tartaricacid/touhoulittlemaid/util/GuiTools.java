@@ -82,7 +82,7 @@ public final class GuiTools {
         float u1 = (float) (uOffset + uWidth) / imageWidth;
         float v0 = (float) vOffset / imageHeight;
         float v1 = (float) (vOffset + vHeight) / imageHeight;
-        graphics.blit(atlasLocation, x, y, x + width, x + height, u0, u1, v0, v1);
+        graphics.blit(atlasLocation, x, y, x + width, y + height, u0, u1, v0, v1);
     }
 
     public static void guiBlit(GuiGraphicsExtractor graphics, Identifier atlasLocation, int x, int y, int uOffset, int vOffset, int width, int height) {

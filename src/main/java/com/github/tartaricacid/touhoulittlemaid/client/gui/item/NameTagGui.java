@@ -56,7 +56,6 @@ public class NameTagGui extends Screen {
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int middleX = this.width / 2;
         int middleY = this.height / 2;
-        this.extractBackground(graphics, mouseX, mouseY, partialTicks);
         textField.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         for (Renderable renderable : this.renderables) {
             renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);

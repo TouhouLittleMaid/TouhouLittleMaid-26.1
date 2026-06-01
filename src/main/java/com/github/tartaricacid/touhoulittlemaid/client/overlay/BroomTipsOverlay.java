@@ -39,7 +39,7 @@ public class BroomTipsOverlay implements GuiLayer {
             Component tip = Component.translatable("message.touhou_little_maid.broom.unable_fly");
             List<FormattedCharSequence> split = minecraft.font.split(tip, 150);
             int offset = (screenHeight / 2 - 5) - split.size() * 10;
-            GuiTools.blit(guiGraphics,BG, screenWidth / 2 - 8, offset - 2, 48, 16, 16, 16);
+            GuiTools.guiBlit(guiGraphics,BG, screenWidth / 2 - 8, offset - 2, 48, 16, 16, 16);
             offset += 18;
             for (FormattedCharSequence sequence : split) {
                 int width = minecraft.font.width(sequence);

@@ -47,8 +47,9 @@ public class TaskFeedOwner implements IFeedTask {
     private boolean canRemoveEffect(List<ConsumeEffect> consumeEffects, MobEffectInstance effect) {
         for (ConsumeEffect consumeEffect : consumeEffects) {
             if (consumeEffect instanceof RemoveStatusEffectsConsumeEffect(var effects)) {
-                if (effects.contains(effect.getEffect()))
+                if (effects.contains(effect.getEffect())) {
                     return true;
+                }
             } else if (consumeEffect instanceof ClearAllStatusEffectsConsumeEffect c) {
                 return true;
             }
@@ -59,6 +60,10 @@ public class TaskFeedOwner implements IFeedTask {
     @Override
     public boolean isFood(ItemStack stack, Player owner) {
         Consumable consumable = stack.get(DataComponents.CONSUMABLE);
+        if (consumable == null) {
+            return false;
+        }
+
         List<ConsumeEffect> el = consumable.onConsumeEffects();
         if (stack.getItem() == Items.MILK_BUCKET) {
             for (MobEffectInstance effect : owner.getActiveEffects()) {
@@ -68,14 +73,12 @@ public class TaskFeedOwner implements IFeedTask {
             }
             return false;
         }
-        if (stack.has(net.minecraft.core.component.DataComponents.FOOD)) {
-            if (el
-                    .stream()
+        if (stack.has(DataComponents.FOOD)) {
+            return el.stream()
                     .noneMatch(t ->
                             t instanceof ApplyStatusEffectsConsumeEffect a &&
-                                    a.effects().stream().anyMatch(this::isHarmfulEffect)
-                    ))
-                return true;
+                            a.effects().stream().anyMatch(this::isHarmfulEffect)
+                    );
         }
         return false;
     }
