@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.stt.STTApiType;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai.MaidChatDistanceSlider;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.record.MicrophoneManager;
-import com.github.tartaricacid.touhoulittlemaid.config.GeneralConfig;
+import com.github.tartaricacid.touhoulittlemaid.config.CommonConfig;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
@@ -99,8 +99,8 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
         AIConfig.MAID_CAN_CHAT_DISTANCE.set(this.state.maidCanChatDistance);
         AIConfig.STT_PROXY_ADDRESS.set(this.state.sttProxyAddress);
 
-        if (GeneralConfig.CONFIG != null) {
-            GeneralConfig.CONFIG.save();
+        if (CommonConfig.CONFIG != null) {
+            CommonConfig.CONFIG.save();
         }
     }
 

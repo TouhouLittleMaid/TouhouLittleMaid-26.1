@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -21,6 +21,6 @@ public class DataMapGenerator extends DataMapProvider {
 
     @Override
     protected void gather(HolderLookup.Provider provider) {
-        builder.add(InitEntities.MAID, new ParrotImitation(InitSounds.MAID_IDLE.get()), false);
+        builder.add(EntityMaid.ENTITY_KEY, new ParrotImitation(InitSounds.MAID_IDLE.get()), false);
     }
 }

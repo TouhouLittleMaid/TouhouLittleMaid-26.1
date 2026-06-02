@@ -1,20 +1,25 @@
 package com.github.tartaricacid.touhoulittlemaid.network;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.*;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+@EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID)
 public class NetworkHandler {
-    private static final String VERSION = "1.0.0";
+    private static final String VERSION = "2.0.0";
 
-    public static void registerPacket(final RegisterPayloadHandlersEvent event) {
+    @SubscribeEvent
+    public static void register(final RegisterPayloadHandlersEvent event) {
         final PayloadRegistrar registrar = event.registrar(VERSION);
 
         registrar.playToServer(MaidModelPackage.TYPE, MaidModelPackage.STREAM_CODEC, MaidModelPackage::handle);
@@ -57,10 +62,7 @@ public class NetworkHandler {
         registrar.playToServer(WChessToServerPackage.TYPE, WChessToServerPackage.STREAM_CODEC, WChessToServerPackage::handle);
         registrar.playToServer(SendUserChatPackage.TYPE, SendUserChatPackage.STREAM_CODEC, SendUserChatPackage::handle);
         registrar.playToClient(TTSAudioToClientPackage.TYPE, TTSAudioToClientPackage.STREAM_CODEC, TTSAudioToClientPackage::handle);
-        // registrar.playToClient(SyncAiSettingPackage.TYPE, SyncAiSettingPackage.STREAM_CODEC, SyncAiSettingPackage::handle);
         registrar.playToServer(SaveMaidAIDataPackage.TYPE, SaveMaidAIDataPackage.STREAM_CODEC, SaveMaidAIDataPackage::handle);
-        // registrar.playToServer(GetMaidAIDataPackage.TYPE, GetMaidAIDataPackage.STREAM_CODEC, GetMaidAIDataPackage::handle);
-        // registrar.playToClient(OpenMaidAIDataScreenPackage.TYPE, OpenMaidAIDataScreenPackage.STREAM_CODEC, OpenMaidAIDataScreenPackage::handle);
         registrar.playToClient(TTSSystemAudioToClientPackage.TYPE, TTSSystemAudioToClientPackage.STREAM_CODEC, TTSSystemAudioToClientPackage::handle);
         registrar.playToServer(ClearMaidAIDataPacket.TYPE, ClearMaidAIDataPacket.STREAM_CODEC, ClearMaidAIDataPacket::handle);
         registrar.playToServer(OpenMaidGuiPackage.TYPE, OpenMaidGuiPackage.STREAM_CODEC, OpenMaidGuiPackage::handle);

@@ -94,4 +94,8 @@ public record ChatBubbleDataCollection(Long2ObjectSortedMap<IChatBubbleData> cha
     public ObjectIterator<IChatBubbleData> iterator() {
         return this.chatBubbles.values().iterator();
     }
+
+    public ChatBubbleDataCollection copy() {
+        return new ChatBubbleDataCollection(new Long2ObjectAVLTreeMap<>(this.chatBubbles));
+    }
 }

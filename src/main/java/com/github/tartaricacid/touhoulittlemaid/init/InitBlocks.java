@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public final class InitBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(TouhouLittleMaid.MOD_ID);
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, TouhouLittleMaid.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, TouhouLittleMaid.MOD_ID);
 
     public static DeferredBlock<Block> MAID_BED = BLOCKS.register("maid_bed", BlockMaidBed::new);
     public static DeferredBlock<Block> ALTAR = BLOCKS.register("altar", BlockAltar::new);
@@ -32,48 +32,48 @@ public final class InitBlocks {
     public static DeferredBlock<Block> SCARECROW = BLOCKS.register("scarecrow", BlockScarecrow::new);
     public static DeferredBlock<Block> SNACK_CABINET = BLOCKS.register("snack_cabinet", BlockSnackCabinet::new);
 
-    public static Supplier<BlockEntityType<TileEntityAltar>> ALTAR_TE = TILE_ENTITIES.register("altar",
+    public static Supplier<BlockEntityType<TileEntityAltar>> ALTAR_TE = BLOCK_ENTITY_TYPES.register("altar",
             () -> new BlockEntityType<>(TileEntityAltar::new, ALTAR.get()));
 
-    public static Supplier<BlockEntityType<TileEntityStatue>> STATUE_TE = TILE_ENTITIES.register("statue",
+    public static Supplier<BlockEntityType<TileEntityStatue>> STATUE_TE = BLOCK_ENTITY_TYPES.register("statue",
             () -> new BlockEntityType<>(TileEntityStatue::new, STATUE.get()));
 
-    public static Supplier<BlockEntityType<TileEntityGarageKit>> GARAGE_KIT_TE = TILE_ENTITIES.register("garage_kit", () ->
+    public static Supplier<BlockEntityType<TileEntityGarageKit>> GARAGE_KIT_TE = BLOCK_ENTITY_TYPES.register("garage_kit", () ->
             new BlockEntityType<>(TileEntityGarageKit::new, GARAGE_KIT.get()));
 
-    public static Supplier<BlockEntityType<TileEntityMaidBeacon>> MAID_BEACON_TE = TILE_ENTITIES.register("maid_beacon",
+    public static Supplier<BlockEntityType<TileEntityMaidBeacon>> MAID_BEACON_TE = BLOCK_ENTITY_TYPES.register("maid_beacon",
             () -> new BlockEntityType<>(TileEntityMaidBeacon::new, MAID_BEACON.get()));
 
-    public static Supplier<BlockEntityType<TileEntityModelSwitcher>> MODEL_SWITCHER_TE = TILE_ENTITIES.register("model_switcher",
+    public static Supplier<BlockEntityType<TileEntityModelSwitcher>> MODEL_SWITCHER_TE = BLOCK_ENTITY_TYPES.register("model_switcher",
             () -> new BlockEntityType<>(TileEntityModelSwitcher::new, MODEL_SWITCHER.get()));
 
-    public static Supplier<BlockEntityType<TileEntityGomoku>> GOMOKU_TE = TILE_ENTITIES.register("gomoku",
+    public static Supplier<BlockEntityType<TileEntityGomoku>> GOMOKU_TE = BLOCK_ENTITY_TYPES.register("gomoku",
             () -> new BlockEntityType<>(TileEntityGomoku::new, GOMOKU.get()));
 
-    public static Supplier<BlockEntityType<TileEntityCChess>> CCHESS_TE = TILE_ENTITIES.register("cchess",
+    public static Supplier<BlockEntityType<TileEntityCChess>> CCHESS_TE = BLOCK_ENTITY_TYPES.register("cchess",
             () -> new BlockEntityType<>(TileEntityCChess::new, CCHESS.get()));
 
-    public static Supplier<BlockEntityType<TileEntityWChess>> WCHESS_TE = TILE_ENTITIES.register("wchess",
+    public static Supplier<BlockEntityType<TileEntityWChess>> WCHESS_TE = BLOCK_ENTITY_TYPES.register("wchess",
             () -> new BlockEntityType<>(TileEntityWChess::new, WCHESS.get()));
 
-    public static Supplier<BlockEntityType<TileEntityKeyboard>> KEYBOARD_TE = TILE_ENTITIES.register("keyboard",
+    public static Supplier<BlockEntityType<TileEntityKeyboard>> KEYBOARD_TE = BLOCK_ENTITY_TYPES.register("keyboard",
             () -> new BlockEntityType<>(TileEntityKeyboard::new, KEYBOARD.get()));
 
-    public static Supplier<BlockEntityType<TileEntityBookshelf>> BOOKSHELF_TE = TILE_ENTITIES.register("bookshelf",
+    public static Supplier<BlockEntityType<TileEntityBookshelf>> BOOKSHELF_TE = BLOCK_ENTITY_TYPES.register("bookshelf",
             () -> new BlockEntityType<>(TileEntityBookshelf::new, BOOKSHELF.get()));
 
-    public static Supplier<BlockEntityType<TileEntityComputer>> COMPUTER_TE = TILE_ENTITIES.register("computer",
+    public static Supplier<BlockEntityType<TileEntityComputer>> COMPUTER_TE = BLOCK_ENTITY_TYPES.register("computer",
             () -> new BlockEntityType<>(TileEntityComputer::new, COMPUTER.get()));
 
-    public static Supplier<BlockEntityType<TileEntityShrine>> SHRINE_TE = TILE_ENTITIES.register("shrine",
+    public static Supplier<BlockEntityType<TileEntityShrine>> SHRINE_TE = BLOCK_ENTITY_TYPES.register("shrine",
             () -> new BlockEntityType<>(TileEntityShrine::new, SHRINE.get()));
 
-    public static Supplier<BlockEntityType<TileEntityPicnicMat>> PICNIC_MAT_TE = TILE_ENTITIES.register("picnic_mat",
+    public static Supplier<BlockEntityType<TileEntityPicnicMat>> PICNIC_MAT_TE = BLOCK_ENTITY_TYPES.register("picnic_mat",
             () -> new BlockEntityType<>(TileEntityPicnicMat::new, PICNIC_MAT.get()));
 
-    public static Supplier<BlockEntityType<TileEntityMaidBed>> MAID_BED_TE = TILE_ENTITIES.register("maid_bed",
+    public static Supplier<BlockEntityType<TileEntityMaidBed>> MAID_BED_TE = BLOCK_ENTITY_TYPES.register("maid_bed",
             () -> new BlockEntityType<>(TileEntityMaidBed::new, MAID_BED.get()));
 
-    public static Supplier<BlockEntityType<TileEntitySnackCabinet>> SNACK_CABINET_TE = TILE_ENTITIES.register("snack_cabinet",
+    public static Supplier<BlockEntityType<TileEntitySnackCabinet>> SNACK_CABINET_TE = BLOCK_ENTITY_TYPES.register("snack_cabinet",
             () -> new BlockEntityType<>(TileEntitySnackCabinet::new, SNACK_CABINET.get()));
 }
