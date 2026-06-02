@@ -15,11 +15,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record StorageAndTakePowerPackage(BlockPos pos, float powerNum,
                                          boolean isStorage) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<StorageAndTakePowerPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("save_and_take_power"));
+    public static final CustomPacketPayload.Type<StorageAndTakePowerPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("save_and_take_power"));
     public static final StreamCodec<ByteBuf, StorageAndTakePowerPackage> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,
             StorageAndTakePowerPackage::pos,

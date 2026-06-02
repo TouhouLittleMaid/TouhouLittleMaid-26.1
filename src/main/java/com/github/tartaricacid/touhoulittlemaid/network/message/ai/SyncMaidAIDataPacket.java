@@ -17,11 +17,11 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.Objects;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SyncMaidAIDataPacket(int entityId, CompoundTag configData, int currentTokens,
                                    int maxTokens) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SyncMaidAIDataPacket> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("sync_maid_ai_data"));
+    public static final CustomPacketPayload.Type<SyncMaidAIDataPacket> TYPE = new CustomPacketPayload.Type<>(modLoc("sync_maid_ai_data"));
     public static final StreamCodec<ByteBuf, SyncMaidAIDataPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public SyncMaidAIDataPacket decode(ByteBuf byteBuf) {

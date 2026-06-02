@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -17,7 +17,7 @@ import net.minecraft.world.entity.player.PlayerSkin;
 import java.util.List;
 
 public class HistoryChatWidget extends AbstractWidget {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_history_chat.png");
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/gui/maid_history_chat.png");
     private static final long TICKS_PER_DAY = 24000;
     private static final long TICKS_PER_HOUR = 1000;
 

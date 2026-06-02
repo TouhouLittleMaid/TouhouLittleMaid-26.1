@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.pojo;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
@@ -168,21 +168,21 @@ public class MaidModelInfo implements IModelInfo {
         } else {
             if (animation == null || animation.isEmpty()) {
                 animation = Lists.newArrayList(
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/default.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/blink.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/beg.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/music_shake.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/leg/default.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/default.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/swing.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/vertical.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/sit/default.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/armor/default.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/armor/reverse.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/wing/default.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/tail/default.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/sit/skirt_rotation.js"),
-                        Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/base/float/default.js")
+                        IdentifierUtil.modLoc("animation/maid/default/head/default.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/head/blink.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/head/beg.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/head/music_shake.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/leg/default.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/arm/default.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/arm/swing.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/arm/vertical.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/sit/default.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/armor/default.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/armor/reverse.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/wing/default.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/tail/default.js"),
+                        IdentifierUtil.modLoc("animation/maid/default/sit/skirt_rotation.js"),
+                        IdentifierUtil.modLoc("animation/base/float/default.js")
                 );
             }
         }

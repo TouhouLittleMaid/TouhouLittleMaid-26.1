@@ -22,7 +22,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.CROSSHAIR;
 import static net.neoforged.neoforge.client.gui.VanillaGuiLayers.HOTBAR;
 
@@ -49,8 +49,8 @@ public class ClientSetupEvent {
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(CROSSHAIR, getResourceLocation("tlm_maid_tips"), new MaidTipsOverlay());
-        event.registerAbove(CROSSHAIR, getResourceLocation("tlm_broom_tips"), new BroomTipsOverlay());
-        event.registerAbove(HOTBAR, getResourceLocation("tlm_show_power"), new ShowPowerOverlay());
+        event.registerAbove(CROSSHAIR, modLoc("tlm_maid_tips"), new MaidTipsOverlay());
+        event.registerAbove(CROSSHAIR, modLoc("tlm_broom_tips"), new BroomTipsOverlay());
+        event.registerAbove(HOTBAR, modLoc("tlm_show_power"), new ShowPowerOverlay());
     }
 }

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.MaidBedRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
@@ -30,11 +30,11 @@ import java.util.function.Function;
 
 public class TileEntityMaidBedRenderer implements BlockEntityRenderer<TileEntityMaidBed, MaidBedRenderState> {
     private final Function<DyeColor, SimpleBedrockModel<Unit>> cacheModel = Util.memoize(color -> {
-        Identifier id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/maid_bed/" + color.getName());
+        Identifier id = IdentifierUtil.modLoc("bedrock/block/maid_bed/" + color.getName());
         return InternalBedrockModelRegistry.getModel(id);
     });
     private final Function<DyeColor, Identifier> cacheTexture = Util.memoize(color ->
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/maid_bed/" + color.getName() + ".png"));
+            IdentifierUtil.modLoc("textures/bedrock/block/maid_bed/" + color.getName() + ".png"));
 
     public TileEntityMaidBedRenderer(BlockEntityRendererProvider.Context context) {
     }

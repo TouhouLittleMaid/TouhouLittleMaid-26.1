@@ -8,7 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 /**
  * 用于同步客户端播放动画的消息
@@ -21,7 +21,7 @@ public record MaidAnimationPackage(int maidId, int animationId) implements Custo
     public static final int SWF_RELOAD = 3;
     public static final int SWF_FIRE = 4;
 
-    public static final CustomPacketPayload.Type<MaidAnimationPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("maid_animation"));
+    public static final CustomPacketPayload.Type<MaidAnimationPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("maid_animation"));
     public static final StreamCodec<RegistryFriendlyByteBuf, MaidAnimationPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, MaidAnimationPackage::maidId,
             ByteBufCodecs.VAR_INT, MaidAnimationPackage::animationId,

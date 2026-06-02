@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.util;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -14,7 +13,7 @@ import net.minecraft.util.Mth;
 import java.util.List;
 
 public final class TipsHelper {
-    private static final Identifier BUTTON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_button.png");
+    private static final Identifier BUTTON = IdentifierUtil.modLoc("textures/gui/maid_gui_button.png");
 
     public static void renderTips(GuiGraphicsExtractor graphics, Button button, Component text) {
         if (text.equals(Component.empty())) {

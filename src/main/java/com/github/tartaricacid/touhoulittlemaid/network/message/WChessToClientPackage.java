@@ -8,10 +8,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record WChessToClientPackage(BlockPos pos, String fenData) implements CustomPacketPayload {
-    public static final Type<WChessToClientPackage> TYPE = new Type<>(getResourceLocation("wchess_to_client"));
+    public static final Type<WChessToClientPackage> TYPE = new Type<>(modLoc("wchess_to_client"));
     public static final StreamCodec<ByteBuf, WChessToClientPackage> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,
             WChessToClientPackage::pos,

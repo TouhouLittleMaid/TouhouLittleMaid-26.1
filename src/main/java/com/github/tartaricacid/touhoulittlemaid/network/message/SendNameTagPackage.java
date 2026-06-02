@@ -11,10 +11,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SendNameTagPackage(int id, String name, boolean alwaysShow) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SendNameTagPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("send_name_tag"));
+    public static final CustomPacketPayload.Type<SendNameTagPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("send_name_tag"));
     public static final StreamCodec<ByteBuf, SendNameTagPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             SendNameTagPackage::id,

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IBroomControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.control.BroomControlManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -45,7 +45,7 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
             .sized(1.375F, 0.5625F)
             .clientTrackingRange(10)
             .ridingOffset(0)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "broom")));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("broom")));
 
     private static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> OWNER = SynchedEntityData.defineId(EntityBroom.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
 

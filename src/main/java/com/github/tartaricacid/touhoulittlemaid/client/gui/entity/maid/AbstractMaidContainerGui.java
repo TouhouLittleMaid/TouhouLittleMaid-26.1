@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTaskEnableEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidContainerGuiEvent;
@@ -54,10 +55,10 @@ import java.util.function.Predicate;
 import static com.github.tartaricacid.touhoulittlemaid.util.GuiTools.NO_ACTION;
 
 public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> extends AbstractContainerScreen<T> {
-    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_main.png");
-    private static final Identifier SIDE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_side.png");
-    private static final Identifier BUTTON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_button.png");
-    private static final Identifier TASK = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_task.png");
+    private static final Identifier BG = IdentifierUtil.modLoc("textures/gui/maid_gui_main.png");
+    private static final Identifier SIDE = IdentifierUtil.modLoc("textures/gui/maid_gui_side.png");
+    private static final Identifier BUTTON = IdentifierUtil.modLoc("textures/gui/maid_gui_button.png");
+    private static final Identifier TASK = IdentifierUtil.modLoc("textures/gui/maid_gui_task.png");
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("00");
 

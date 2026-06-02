@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.projectile;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityPowerPoint;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.core.registries.Registries;
@@ -23,7 +23,7 @@ import net.minecraft.world.phys.HitResult;
 
 public class EntityThrowPowerPoint extends ThrowableItemProjectile {
     public static final EntityType<EntityThrowPowerPoint> TYPE = EntityType.Builder.<EntityThrowPowerPoint>of(EntityThrowPowerPoint::new, MobCategory.MISC)
-            .sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "throw_power_point")));
+            .sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("throw_power_point")));
 
     public EntityThrowPowerPoint(EntityType<EntityThrowPowerPoint> type, Level worldIn) {
         super(type, worldIn);

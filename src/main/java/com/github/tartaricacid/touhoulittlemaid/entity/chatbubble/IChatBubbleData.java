@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
@@ -9,8 +9,8 @@ public interface IChatBubbleData {
     /**
      * 默认提供的两种气泡背景，推荐 type2
      */
-    Identifier TYPE_1 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/type1.png");
-    Identifier TYPE_2 = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/type2.png");
+    Identifier TYPE_1 = IdentifierUtil.modLoc("textures/entity/chat_bubble/type1.png");
+    Identifier TYPE_2 = IdentifierUtil.modLoc("textures/entity/chat_bubble/type2.png");
 
     /**
      * 默认的气泡持续时间，15 秒

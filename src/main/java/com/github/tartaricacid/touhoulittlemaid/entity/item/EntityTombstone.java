@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
@@ -35,7 +35,7 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil.canItemIns
 public class EntityTombstone extends Entity {
     public static final EntityType<EntityTombstone> TYPE = EntityType.Builder.<EntityTombstone>of(EntityTombstone::new, MobCategory.MISC)
             .sized(0.8f, 1.2f).clientTrackingRange(10)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "tombstone")));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("tombstone")));
     private static final String OWNER_ID_TAG = "OwnerId";
     private static final String TOMBSTONE_ITEMS_TAG = "TombstoneItems";
     private static final String MAID_NAME_TAG = "MaidName";

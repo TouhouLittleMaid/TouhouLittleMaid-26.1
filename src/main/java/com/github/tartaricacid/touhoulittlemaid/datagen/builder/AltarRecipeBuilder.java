@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.builder;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
 import com.google.common.collect.Lists;
 import net.minecraft.advancements.Criterion;
@@ -116,7 +116,7 @@ public class AltarRecipeBuilder implements RecipeBuilder {
     @Override
     public ResourceKey<Recipe<?>> defaultId() {
         String path = RecipeBuilder.getDefaultRecipeId(this.result).identifier().getPath();
-        Identifier filePath = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, NAME + "/" + path);
+        Identifier filePath = IdentifierUtil.modLoc(NAME + "/" + path);
         return ResourceKey.create(Registries.RECIPE, filePath);
     }
 

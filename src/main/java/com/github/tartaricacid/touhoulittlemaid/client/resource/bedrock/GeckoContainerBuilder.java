@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.DefaultGeckoAnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.controller.ControllerResource;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.controller.collection.ChairControllerCollection;
@@ -51,11 +52,11 @@ public class GeckoContainerBuilder {
                     CHAIR
             },
             new Identifier[]{
-                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid.animation.json"),
-                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/tac.animation.json"),
-                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/iss.animation.json"),
-                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/im.animation.json"),
-                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/chair.animation.json")
+                    IdentifierUtil.modLoc("animation/maid.animation.json"),
+                    IdentifierUtil.modLoc("animation/tac.animation.json"),
+                    IdentifierUtil.modLoc("animation/iss.animation.json"),
+                    IdentifierUtil.modLoc("animation/im.animation.json"),
+                    IdentifierUtil.modLoc("animation/chair.animation.json")
             });
 
     public static final Object2ReferenceOpenHashMap<String, Animation> DEFAULT_MAID_ANIMATIONS = new Object2ReferenceOpenHashMap<>();

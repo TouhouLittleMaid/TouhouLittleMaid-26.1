@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.game.xqwlight.Position;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.CChessPiecesModel;
@@ -34,8 +34,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityCChess, CChessRenderState> {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/cchess.png");
-    private static final Identifier PIECES_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/cchess_pieces.png");
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/cchess.png");
+    private static final Identifier PIECES_TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/cchess_pieces.png");
     private static final int TIPS_RENDER_DISTANCE = 16;
     private static final int PIECE_RENDER_DISTANCE = 24;
     private final Font font;

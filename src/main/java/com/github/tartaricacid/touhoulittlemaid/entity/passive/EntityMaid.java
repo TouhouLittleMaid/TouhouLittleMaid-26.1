@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.ai.manager.entity.MaidAIChatManager;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
@@ -80,7 +81,7 @@ public class EntityMaid extends TamableAnimal implements CrossbowAttackMob,
         MaidDeathManager.View, MaidSoundManager.View, MaidClimbManager.View,
         MaidMiscManager.View, MaidSwimManager.View {
 
-    public static final Identifier ENTITY_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "maid");
+    public static final Identifier ENTITY_ID = IdentifierUtil.modLoc("maid");
     public static final ResourceKey<EntityType<?>> ENTITY_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ENTITY_ID);
     public static final EntityType<EntityMaid> TYPE = EntityType.
             Builder.<EntityMaid>of(EntityMaid::new, MobCategory.CREATURE)

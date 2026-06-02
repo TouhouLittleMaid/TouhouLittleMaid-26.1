@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.init;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.input.DismountBroomKey;
 import com.github.tartaricacid.touhoulittlemaid.client.input.STTChatKey;
 import net.minecraft.client.KeyMapping;
@@ -13,7 +14,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 @EventBusSubscriber(value = Dist.CLIENT, modid = TouhouLittleMaid.MOD_ID)
 public class KeyMappingRegister {
     public static final KeyMapping.Category MAID_CATEGORY = new KeyMapping.Category(
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "main")
+            IdentifierUtil.modLoc("main")
     );
 
     @SubscribeEvent

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.backpack.SmallBackpackRenderData;
@@ -19,7 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class SmallBackpack extends IMaidBackpack {
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "small_backpack");
+    public static final Identifier ID = IdentifierUtil.modLoc("small_backpack");
 
     @Override
     public void onPutOn(ItemStack stack, Player player, EntityMaid maid) {

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.pojo;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.Md5Utils;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonSyntaxException;
@@ -105,7 +105,7 @@ public class CustomModelPack<T extends IModelInfo> {
             author = Collections.EMPTY_LIST;
         }
         if (icon == null) {
-            icon = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/empty_model_pack_icon.png");
+            icon = IdentifierUtil.modLoc("textures/gui/empty_model_pack_icon.png");
         }
         if (iconDelay <= 0) {
             iconDelay = 1;

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jade.provider;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.Identifier;
@@ -16,7 +16,7 @@ public enum TombstoneProvider implements IServerExtensionProvider<ItemStack>, IC
 
     INSTANCE;
 
-    private static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "tombstone");
+    private static final Identifier UID = IdentifierUtil.modLoc("tombstone");
 
     @Override
     public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> list) {

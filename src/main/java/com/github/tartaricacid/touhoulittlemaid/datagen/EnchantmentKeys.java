@@ -15,7 +15,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Block;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public class EnchantmentKeys {
     public static final ResourceKey<Enchantment> IMPEDING = registerKey("impeding");
@@ -23,7 +23,7 @@ public class EnchantmentKeys {
     public static final ResourceKey<Enchantment> ENDERS_ENDER = registerKey("enders_ender");
 
     private static ResourceKey<Enchantment> registerKey(String name) {
-        return ResourceKey.create(Registries.ENCHANTMENT, getResourceLocation(name));
+        return ResourceKey.create(Registries.ENCHANTMENT, modLoc(name));
     }
 
     public static void bootstrap(BootstrapContext<Enchantment> context) {

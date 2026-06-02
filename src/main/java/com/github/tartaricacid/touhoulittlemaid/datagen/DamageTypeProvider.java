@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.Identifier;
@@ -24,6 +24,6 @@ public class DamageTypeProvider {
     }
 
     public static ResourceKey<DamageType> key(String id) {
-        return ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, id));
+        return ResourceKey.create(Registries.DAMAGE_TYPE, IdentifierUtil.modLoc(id));
     }
 }

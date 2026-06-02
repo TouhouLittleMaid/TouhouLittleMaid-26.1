@@ -13,10 +13,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record OpenAIConfigPacket() implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<OpenAIConfigPacket> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("open_ai_config"));
+    public static final CustomPacketPayload.Type<OpenAIConfigPacket> TYPE = new CustomPacketPayload.Type<>(modLoc("open_ai_config"));
     public static final StreamCodec<ByteBuf, OpenAIConfigPacket> STREAM_CODEC = StreamCodec.of(
             (byteBuf, message) -> {
             },

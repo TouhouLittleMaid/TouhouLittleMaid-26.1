@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.BroomModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.EntityBoxModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.EntityFairyModel;
@@ -64,25 +64,25 @@ public final class InternalBedrockModelRegistry {
     public static final Identifier SMALL_BACKPACK = addEntityModel("backpack/small_backpack");
 
     public static Identifier addModel(String name) {
-        Identifier location = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/" + name);
+        Identifier location = IdentifierUtil.modLoc("bedrock/block/" + name);
         MODELS.put(location, SimpleBedrockModel::new);
         return location;
     }
 
     public static Identifier addEntityModel(String name) {
-        Identifier location = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/entity/" + name);
+        Identifier location = IdentifierUtil.modLoc("bedrock/entity/" + name);
         ENTITY_MODELS.put(location, SimpleBedrockEntityModel::new);
         return location;
     }
 
     public static Identifier addModel(String name, Function<InputStream, ? extends SimpleBedrockModel<?>> function) {
-        Identifier location = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/block/" + name);
+        Identifier location = IdentifierUtil.modLoc("bedrock/block/" + name);
         MODELS.put(location, function);
         return location;
     }
 
     public static Identifier addEntityModel(String name, Function<InputStream, ? extends SimpleBedrockEntityModel<? extends EntityRenderState>> function) {
-        Identifier location = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "bedrock/entity/" + name);
+        Identifier location = IdentifierUtil.modLoc("bedrock/entity/" + name);
         ENTITY_MODELS.put(location, function);
         return location;
     }

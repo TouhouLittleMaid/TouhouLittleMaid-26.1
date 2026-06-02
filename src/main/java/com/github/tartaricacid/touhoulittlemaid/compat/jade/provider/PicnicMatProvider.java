@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jade.provider;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.Identifier;
@@ -15,7 +15,7 @@ import java.util.List;
 public enum PicnicMatProvider implements IServerExtensionProvider<ItemStack>, IClientExtensionProvider<ItemStack, ItemView> {
     INSTANCE;
 
-    private static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "picnic_mat");
+    private static final Identifier UID = IdentifierUtil.modLoc("picnic_mat");
 
     @Override
     public List<ClientViewGroup<ItemView>> getClientGroups(Accessor<?> accessor, List<ViewGroup<ItemStack>> list) {

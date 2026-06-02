@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadStatus;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
@@ -18,7 +18,7 @@ import net.minecraft.util.Mth;
 import java.util.List;
 
 public class PackInfoButton extends FlatColorButton {
-    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/download_background.png");
+    private static final Identifier BG = IdentifierUtil.modLoc("textures/gui/download_background.png");
     private final DownloadInfo info;
 
     public PackInfoButton(int pX, int pY, DownloadInfo info, OnPress onPress) {

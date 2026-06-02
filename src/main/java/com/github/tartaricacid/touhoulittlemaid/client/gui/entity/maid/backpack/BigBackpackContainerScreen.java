@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.backpack;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.BaubleButton;
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.CuriosCompat;
@@ -24,7 +24,7 @@ import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
 @IPNGuiHint(button = IPNButton.SHOW_EDITOR, horizontalOffset = -5)
 @IPNGuiHint(button = IPNButton.SETTINGS, horizontalOffset = -5)
 public class BigBackpackContainerScreen extends AbstractMaidContainerGui<BigBackpackContainer> implements IBackpackContainerScreen {
-    private static final Identifier BACKPACK = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_backpack.png");
+    private static final Identifier BACKPACK = IdentifierUtil.modLoc("textures/gui/maid_gui_backpack.png");
     private final EntityMaid maid;
 
     public BigBackpackContainerScreen(BigBackpackContainer container, Inventory inv, Component titleIn) {

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.aquaculture;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.compat.aquaculture.client.AquacultureClientRegister;
 import com.github.tartaricacid.touhoulittlemaid.compat.aquaculture.entity.AquacultureFishingHook;
 import com.github.tartaricacid.touhoulittlemaid.compat.aquaculture.entity.AquacultureFishingType;
@@ -40,7 +40,7 @@ public class AquacultureCompat {
 
     @SubscribeEvent
     public void register(RegisterEvent event) {
-        Identifier id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "aquaculture_fishing_hook");
+        Identifier id = IdentifierUtil.modLoc("aquaculture_fishing_hook");
         event.register(BuiltInRegistries.ENTITY_TYPE.key(), helper ->
                 helper.register(id, AquacultureFishingHook.TYPE)
         );

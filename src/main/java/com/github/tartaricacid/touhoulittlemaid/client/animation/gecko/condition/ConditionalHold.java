@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.isValid;
 
 public class ConditionalHold {
     private static final String EMPTY_MAINHAND = "hold_mainhand:empty";
@@ -53,10 +53,10 @@ public class ConditionalHold {
             return;
         }
         String substring = name.substring(preSize);
-        if (name.startsWith(idPre) && isValidResourceLocation(substring)) {
+        if (name.startsWith(idPre) && isValid(substring)) {
             idTest.add(Identifier.parse(substring));
         }
-        if (name.startsWith(tagPre) && isValidResourceLocation(substring)) {
+        if (name.startsWith(tagPre) && isValid(substring)) {
             tagTest.add(TagKey.create(
                     Registries.ITEM,
                     Identifier.parse(substring)

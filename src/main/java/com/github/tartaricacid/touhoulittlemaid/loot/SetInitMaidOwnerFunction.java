@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.loot;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemSmartSlab;
 import com.mojang.serialization.MapCodec;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class SetInitMaidOwnerFunction extends LootItemConditionalFunction {
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "set_init_maid_owner");
+    public static final Identifier ID = IdentifierUtil.modLoc("set_init_maid_owner");
     public static final MapCodec<SetInitMaidOwnerFunction> CODEC = RecordCodecBuilder.mapCodec(
             instance -> commonFields(instance).apply(instance, SetInitMaidOwnerFunction::new)
     );

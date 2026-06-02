@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityDanmakuRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.EntityDanmaku;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
 
 
 public class EntityDanmakuRenderer extends EntityRenderer<EntityDanmaku, EntityDanmakuRenderState> {
-    private static final Identifier DANMAKU_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/danmaku.png");
+    private static final Identifier DANMAKU_TEXTURE = IdentifierUtil.modLoc("textures/entity/danmaku.png");
     private static final RenderType RENDER_TYPE = RenderTypes.entityTranslucentCullItemTarget(DANMAKU_TEXTURE);
     private static final int TEX_WIDTH = 416;
     private static final int TEX_HEIGHT = 128;

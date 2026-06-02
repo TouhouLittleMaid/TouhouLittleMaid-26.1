@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.SizeTexture;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModelPack;
 import com.github.tartaricacid.touhoulittlemaid.client.sound.pojo.SoundPackInfo;
@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.List;
 
 public class SoundPackButton extends FlatColorButton {
-    private static final Identifier ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_custom_sound.png");
+    private static final Identifier ICON = IdentifierUtil.modLoc("textures/gui/maid_custom_sound.png");
     private final SoundPackInfo info;
     private boolean isUse = false;
 

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.MonsterListButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.isValid;
 
 @IPNPlayerSideOnly
 @IPNGuiHint(button = IPNButton.SORT, horizontalOffset = -36, bottom = -12)
@@ -39,7 +39,7 @@ import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil
 @IPNGuiHint(button = IPNButton.SHOW_EDITOR, horizontalOffset = -5)
 @IPNGuiHint(button = IPNButton.SETTINGS, horizontalOffset = -5)
 public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> {
-    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/attack_task_config.png");
+    private static final Identifier BG = IdentifierUtil.modLoc("textures/gui/attack_task_config.png");
 
     private final Map<Identifier, MonsterType> attackGroups;
     private final List<Identifier> attackGroupsKey;
@@ -121,7 +121,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
         if (StringUtils.isBlank(value)) {
             return;
         }
-        if (!isValidResourceLocation(value)) {
+        if (!isValid(value)) {
             return;
         }
         Identifier id = Identifier.parse(value);

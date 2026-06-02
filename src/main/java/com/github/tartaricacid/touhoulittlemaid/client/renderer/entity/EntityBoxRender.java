@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityBoxRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
@@ -59,6 +59,6 @@ public class EntityBoxRender extends EntityRenderer<EntityBox, EntityBoxRenderSt
 
     private void addBoxTexture(int index) {
         String fileName = "textures/bedrock/entity/cake_box/cake_box_%s.png".formatted(index);
-        texturesGroup.add(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, fileName));
+        texturesGroup.add(IdentifierUtil.modLoc(fileName));
     }
 }

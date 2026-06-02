@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.projectile;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDamage;
@@ -29,7 +29,7 @@ import net.minecraft.world.phys.EntityHitResult;
 
 public class EntityDanmaku extends ThrowableProjectile {
     public static final EntityType<EntityDanmaku> TYPE = EntityType.Builder.<EntityDanmaku>of(EntityDanmaku::new, MobCategory.MISC)
-            .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(10).noSave().build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "danmaku")));
+            .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(10).noSave().build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("danmaku")));
 
     private static final int MAX_TICKS_EXISTED = 200;
     private static final EntityDataAccessor<Integer> DANMAKU_TYPE = SynchedEntityData.defineId(EntityDanmaku.class, EntityDataSerializers.INT);

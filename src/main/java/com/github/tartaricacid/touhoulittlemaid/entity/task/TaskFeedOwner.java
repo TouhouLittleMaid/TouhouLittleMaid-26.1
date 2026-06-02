@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IFeedTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidFeedOwnerTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -32,7 +32,7 @@ import java.util.List;
 //FIXME EffectCures API removed, need to find replacement for milk cure check
 
 public class TaskFeedOwner implements IFeedTask {
-    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "feed");
+    public static final Identifier UID = IdentifierUtil.modLoc("feed");
 
     @Override
     public Identifier getUid() {

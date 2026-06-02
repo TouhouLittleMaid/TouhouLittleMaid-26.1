@@ -17,11 +17,11 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SaveTTSSitePacket(Action action, @Nullable String siteId, boolean enabled,
                                 @Nullable TTSSite site) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SaveTTSSitePacket> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("save_tts_site"));
+    public static final CustomPacketPayload.Type<SaveTTSSitePacket> TYPE = new CustomPacketPayload.Type<>(modLoc("save_tts_site"));
     public static final StreamCodec<ByteBuf, SaveTTSSitePacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public SaveTTSSitePacket decode(ByteBuf byteBuf) {

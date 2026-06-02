@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidFeedAnimalTask;
@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 public class TaskFeedAnimal implements IAttackTask {
-    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "feed_animal");
+    public static final Identifier UID = IdentifierUtil.modLoc("feed_animal");
     private static final int MAX_STOP_ATTACK_DISTANCE = 8;
 
     @Override

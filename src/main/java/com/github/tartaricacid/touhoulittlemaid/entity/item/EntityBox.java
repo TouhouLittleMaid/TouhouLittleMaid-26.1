@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.particles.ParticleTypes;
@@ -37,7 +37,7 @@ public class EntityBox extends Entity {
     private static final EntityDataAccessor<Integer> TEXTURE_INDEX = SynchedEntityData.defineId(EntityBox.class, EntityDataSerializers.INT);
     public static final EntityType<EntityBox> TYPE = EntityType.Builder.<EntityBox>of(EntityBox::new, MobCategory.MISC)
             .sized(2.0f, 2.0f).clientTrackingRange(10)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "box")));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("box")));
     private static final String STAGE_TAG = "OpenStage";
     private static final String TEXTURE_TAG = "TextureIndex";
 

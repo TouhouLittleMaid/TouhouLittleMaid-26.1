@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.block;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.DirectButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.ImageButtonWithId;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ModelSwitcherGui extends Screen {
-    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/model_switcher.png");
+    private static final Identifier BG = IdentifierUtil.modLoc("textures/gui/model_switcher.png");
     private static final Identifier DEFAULT_MODEL_ID = Identifier.parse("touhou_little_maid:hakurei_reimu");
     private final List<TileEntityModelSwitcher.ModeInfo> infoList;
     private final BlockPos pos;

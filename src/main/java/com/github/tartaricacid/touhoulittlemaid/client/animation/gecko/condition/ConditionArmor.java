@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.isValid;
 
 public class ConditionArmor {
     private static final Pattern ID_PRE_REG = Pattern.compile("^(.+?)\\$(.*?)$");
@@ -34,7 +34,7 @@ public class ConditionArmor {
                 return;
             }
             String id = matcherId.group(2);
-            if (!isValidResourceLocation(id)) {
+            if (!isValid(id)) {
                 return;
             }
             Identifier res = Identifier.parse(id);
@@ -49,7 +49,7 @@ public class ConditionArmor {
                 return;
             }
             String id = matcherTag.group(2);
-            if (!isValidResourceLocation(id)) {
+            if (!isValid(id)) {
                 return;
             }
             TagKey<Item> tagKey = TagKey.create(

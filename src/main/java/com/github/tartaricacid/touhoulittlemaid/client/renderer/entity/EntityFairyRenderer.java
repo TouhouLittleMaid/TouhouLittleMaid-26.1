@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityFairyRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
@@ -20,7 +20,7 @@ public class EntityFairyRenderer extends MobRenderer<EntityFairy, EntityFairyRen
     private static final Identifier[] TEXTURE = Util.make(new Identifier[18], array -> {
         for (int i = 0; i < array.length; i++) {
             String name = "textures/bedrock/entity/maid_fairy/maid_fairy_%s.png".formatted(i);
-            array[i] = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name);
+            array[i] = IdentifierUtil.modLoc(name);
         }
     });
 

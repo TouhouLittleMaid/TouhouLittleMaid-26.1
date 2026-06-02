@@ -8,10 +8,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SyncMaidAreaPackage(int id, SchedulePos schedulePos) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SyncMaidAreaPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("sync_maid_area"));
+    public static final CustomPacketPayload.Type<SyncMaidAreaPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("sync_maid_area"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncMaidAreaPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             SyncMaidAreaPackage::id,

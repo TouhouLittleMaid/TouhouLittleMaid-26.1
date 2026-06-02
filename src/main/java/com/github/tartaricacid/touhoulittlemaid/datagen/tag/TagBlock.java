@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.tag;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -70,7 +71,7 @@ public class TagBlock extends BlockTagsProvider {
     }
 
     public static TagKey<Block> createTagKey(String name) {
-        return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name));
+        return TagKey.create(Registries.BLOCK, IdentifierUtil.modLoc(name));
     }
 
     public static TagKey<Block> createTagKey(Identifier resourceLocation) {

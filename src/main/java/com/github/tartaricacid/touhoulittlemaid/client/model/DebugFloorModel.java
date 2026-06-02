@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -12,7 +12,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 
 public class DebugFloorModel extends Model<Unit> {
-    public static ModelLayerLocation LAYER = new ModelLayerLocation(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "main"), "debug_floor");
+    public static ModelLayerLocation LAYER = new ModelLayerLocation(IdentifierUtil.modLoc("main"), "debug_floor");
 
     public DebugFloorModel(ModelPart root) {
         super(root, RenderTypes::entityCutout);

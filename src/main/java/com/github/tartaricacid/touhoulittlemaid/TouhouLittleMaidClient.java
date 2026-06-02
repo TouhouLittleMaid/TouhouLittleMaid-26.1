@@ -8,7 +8,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -26,7 +26,7 @@ public class TouhouLittleMaidClient {
     }
 
     private void registerConfigMenu(ModContainer modContainer) {
-        ModFileInfo clothConfigInfo = LoadingModList.get().getModFileById(CompatRegistry.CLOTH_CONFIG);
+        ModFileInfo clothConfigInfo = FMLLoader.getCurrent().getLoadingModList().getModFileById(CompatRegistry.CLOTH_CONFIG);
         if (clothConfigInfo != null) {
             MenuIntegration.registerModsPage(modContainer);
         } else {

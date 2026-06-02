@@ -12,11 +12,11 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.apache.commons.lang3.tuple.Pair;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record TTSSystemAudioToClientPackage(String siteName, String chatText, TTSConfig config,
                                             TTSSystemServices services) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<TTSSystemAudioToClientPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("tts_system_audio_to_client"));
+    public static final CustomPacketPayload.Type<TTSSystemAudioToClientPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("tts_system_audio_to_client"));
     public static final StreamCodec<ByteBuf, TTSSystemAudioToClientPackage> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public TTSSystemAudioToClientPackage decode(ByteBuf byteBuf) {

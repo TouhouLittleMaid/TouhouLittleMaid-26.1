@@ -10,7 +10,7 @@ import net.minecraft.world.entity.Mob;
 
 import java.util.Set;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.isValid;
 
 public class ConditionalPassenger {
     private static final String EMPTY = "";
@@ -30,10 +30,10 @@ public class ConditionalPassenger {
             return;
         }
         String substring = name.substring(preSize);
-        if (name.startsWith(idPre) && isValidResourceLocation(substring)) {
+        if (name.startsWith(idPre) && isValid(substring)) {
             idTest.add(Identifier.parse(substring));
         }
-        if (name.startsWith(tagPre) && isValidResourceLocation(substring)) {
+        if (name.startsWith(tagPre) && isValid(substring)) {
             tagTest.add(TagKey.create(
                     Registries.ENTITY_TYPE,
                     Identifier.parse(substring)

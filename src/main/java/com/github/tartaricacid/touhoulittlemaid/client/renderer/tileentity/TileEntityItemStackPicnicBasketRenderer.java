@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.PicnicBasketRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
@@ -25,8 +25,8 @@ import java.util.function.Consumer;
  * 使用 submitCustomGeometry 渲染 Bedrock 基岩版模型。
  */
 public class TileEntityItemStackPicnicBasketRenderer implements SpecialModelRenderer<PicnicBasketRenderState> {
-    public static final Identifier PICNIC_BASKET_ITEM_RENDERER = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "picnic_basket_item");
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/picnic_basket.png");
+    public static final Identifier PICNIC_BASKET_ITEM_RENDERER = IdentifierUtil.modLoc("picnic_basket_item");
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/picnic_basket.png");
     private final SimpleBedrockModel<Unit> model;
 
     public TileEntityItemStackPicnicBasketRenderer() {

@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.init;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -56,6 +57,6 @@ public final class InitSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> GECKO_CUSTOM = registerSound("gecko_custom");
 
     private static DeferredHolder<SoundEvent, SoundEvent> registerSound(String name) {
-        return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name), 16.0F));
+        return SOUNDS.register(name, () -> SoundEvent.createFixedRangeEvent(IdentifierUtil.modLoc(name), 16.0F));
     }
 }

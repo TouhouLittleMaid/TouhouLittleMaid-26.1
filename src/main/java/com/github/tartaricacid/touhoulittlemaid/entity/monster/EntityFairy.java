@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.monster;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.goal.FairyAttackGoal;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.goal.FairyNearestAttackableTargetGoal;
@@ -49,9 +49,9 @@ import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operati
 
 public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnimal, IHasPowerPoint {
     public static final EntityType<EntityFairy> TYPE = EntityType.Builder.<EntityFairy>of(EntityFairy::new, MobCategory.MONSTER)
-            .sized(0.6f, 1.5f).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "fairy")));
+            .sized(0.6f, 1.5f).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("fairy")));
 
-    private static final Identifier SPEED_MODIFIER_BABY_ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "baby");
+    private static final Identifier SPEED_MODIFIER_BABY_ID = IdentifierUtil.modLoc("baby");
     private static final AttributeModifier SPEED_MODIFIER_BABY = new AttributeModifier(SPEED_MODIFIER_BABY_ID, 0.2, ADD_MULTIPLIED_BASE);
     private static final EntityDimensions BABY_DIMENSIONS = TYPE.getDimensions().scale(0.75F).withEyeHeight(1);
 

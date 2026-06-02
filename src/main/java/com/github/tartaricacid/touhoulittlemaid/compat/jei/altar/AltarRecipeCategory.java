@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jei.altar;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
 import com.github.tartaricacid.touhoulittlemaid.init.InitRecipes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -29,8 +29,8 @@ import java.util.List;
 public class AltarRecipeCategory implements IRecipeCategory<RecipeHolder<AltarRecipe>> {
     public static final IRecipeHolderType<AltarRecipe> TYPE = IRecipeType.create(InitRecipes.ALTAR_RECIPE.get());
 
-    private static final Identifier ALTAR_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/altar_icon.png");
-    private static final Identifier POWER_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
+    private static final Identifier ALTAR_ICON = IdentifierUtil.modLoc("textures/gui/altar_icon.png");
+    private static final Identifier POWER_ICON = IdentifierUtil.modLoc("textures/entity/power_point.png");
     private static final MutableComponent TITLE = Component.translatable("jei.touhou_little_maid.altar_craft.title");
 
     private static final int WIDTH = 160;

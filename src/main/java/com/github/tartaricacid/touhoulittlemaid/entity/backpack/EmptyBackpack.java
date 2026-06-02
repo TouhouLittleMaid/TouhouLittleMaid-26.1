@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.backpack;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class EmptyBackpack extends IMaidBackpack {
-    public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "empty");
+    public static final Identifier ID = IdentifierUtil.modLoc("empty");
 
     @Override
     public Identifier getId() {

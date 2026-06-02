@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.GarageKitRenderState;
@@ -46,8 +47,8 @@ import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clea
  * 实体预览通过 EntityRenderDispatcher.submit() 渲染。
  */
 public class TileEntityItemStackGarageKitRenderer implements SpecialModelRenderer<GarageKitRenderState> {
-    public static final Identifier GARAGE_KIT_ITEM_RENDERER = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "garage_kit_item");
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/statue_base.png");
+    public static final Identifier GARAGE_KIT_ITEM_RENDERER = IdentifierUtil.modLoc("garage_kit_item");
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/statue_base.png");
     private final SimpleBedrockModel<Unit> baseModel;
 
     public TileEntityItemStackGarageKitRenderer() {
@@ -156,7 +157,7 @@ public class TileEntityItemStackGarageKitRenderer implements SpecialModelRendere
     }
 
     public record Unbaked() implements SpecialModelRenderer.Unbaked<GarageKitRenderState> {
-        public static final Identifier ID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "garage_kit");
+        public static final Identifier ID = IdentifierUtil.modLoc("garage_kit");
         public static final MapCodec<TileEntityItemStackGarageKitRenderer.Unbaked> MAP_CODEC = MapCodec.unit(TileEntityItemStackGarageKitRenderer.Unbaked::new);
 
         @Override

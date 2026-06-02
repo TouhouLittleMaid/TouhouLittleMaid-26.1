@@ -17,14 +17,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SyncAISitesPacket(
         Map<String, LLMSite> llmSites,
         Map<String, TTSSite> ttsSites,
         boolean insufficientPermissions
 ) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SyncAISitesPacket> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("sync_ai_sites"));
+    public static final CustomPacketPayload.Type<SyncAISitesPacket> TYPE = new CustomPacketPayload.Type<>(modLoc("sync_ai_sites"));
     public static final StreamCodec<ByteBuf, SyncAISitesPacket> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public SyncAISitesPacket decode(ByteBuf byteBuf) {

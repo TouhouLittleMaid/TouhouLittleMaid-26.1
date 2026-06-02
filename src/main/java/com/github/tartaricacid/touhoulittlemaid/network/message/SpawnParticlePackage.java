@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.client.SpawnParticlePackageProxy;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -11,14 +10,14 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.function.IntFunction;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SpawnParticlePackage(int entityId, Type particleType, int delayTicks) implements CustomPacketPayload {
     public SpawnParticlePackage(int entityId, Type particleType) {
         this(entityId, particleType, 0);
     }
 
-    public static final CustomPacketPayload.Type<SpawnParticlePackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("spawn_particle"));
+    public static final CustomPacketPayload.Type<SpawnParticlePackage> TYPE = new CustomPacketPayload.Type<>(modLoc("spawn_particle"));
     public static final StreamCodec<ByteBuf, SpawnParticlePackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             SpawnParticlePackage::entityId,

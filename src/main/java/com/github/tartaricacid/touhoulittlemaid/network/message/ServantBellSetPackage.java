@@ -9,10 +9,10 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record ServantBellSetPackage(int id, String tip) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ServantBellSetPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("servant_bell_set"));
+    public static final CustomPacketPayload.Type<ServantBellSetPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("servant_bell_set"));
     public static final StreamCodec<ByteBuf, ServantBellSetPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT,
             ServantBellSetPackage::id,

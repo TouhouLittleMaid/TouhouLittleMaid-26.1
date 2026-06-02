@@ -14,11 +14,11 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SetAttackListPackage(int entityId,
                                    Map<Identifier, MonsterType> attackGroups) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SetAttackListPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("set_attack_list"));
+    public static final CustomPacketPayload.Type<SetAttackListPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("set_attack_list"));
     public static final StreamCodec<ByteBuf, Map<Identifier, MonsterType>> LIST_STREAM_CODEC = ByteBufCodecs.map(HashMap::new,
             Identifier.STREAM_CODEC,
             ByteBufCodecs.fromCodec(MonsterType.CODEC),

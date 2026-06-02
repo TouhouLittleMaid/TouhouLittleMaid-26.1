@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -11,7 +11,7 @@ import net.minecraft.resources.Identifier;
 import java.util.function.Consumer;
 
 public class ModelDetailsButton extends TouhouStateSwitchButton {
-    private static final Identifier BUTTON_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_detail.png");
+    private static final Identifier BUTTON_TEXTURE = IdentifierUtil.modLoc("textures/gui/skin_detail.png");
     private final Consumer<Boolean> onClick;
     private final MutableComponent name;
 

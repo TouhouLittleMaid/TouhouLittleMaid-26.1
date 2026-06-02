@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -10,8 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class PlayerMaidModel extends EntityMaidModel {
-    private static final Identifier STEVE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid.json");
-    private static final Identifier ALEX = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/player_maid_slim.json");
+    private static final Identifier STEVE = IdentifierUtil.modLoc("models/bedrock/entity/player_maid.json");
+    private static final Identifier ALEX = IdentifierUtil.modLoc("models/bedrock/entity/player_maid_slim.json");
 
     public PlayerMaidModel(InputStream stream) {
         super(stream);

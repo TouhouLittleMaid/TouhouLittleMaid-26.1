@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.isValidResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.isValid;
 
 public class ConditionTAC {
     private static final String EMPTY = "";
@@ -25,7 +25,7 @@ public class ConditionTAC {
             return;
         }
         String itemId = split[1];
-        if (isValidResourceLocation(itemId)) {
+        if (isValid(itemId)) {
             nameTest.add(name);
             idTest.add(Identifier.parse(itemId));
         }

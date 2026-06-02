@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.datapack.resources;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.datapack.KaomojiData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 public class KaomojiDataReloadListener implements ResourceManagerReloadListener {
-    private static final Identifier FILE_PATH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "chat_bubble/kaomoji.json");
+    private static final Identifier FILE_PATH = IdentifierUtil.modLoc("chat_bubble/kaomoji.json");
     private static final Gson GSON = new Gson();
 
     @Override

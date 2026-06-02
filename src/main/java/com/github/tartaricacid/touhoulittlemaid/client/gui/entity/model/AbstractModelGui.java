@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.ImageButtonWithId;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.texture.SizeTexture;
@@ -41,9 +41,9 @@ public abstract class AbstractModelGui<T extends LivingEntity, E extends IModelI
     public static final Button.OnPress NO_PRESS = (b) -> {
     };
 
-    private static final Identifier BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_select.png");
-    private static final Identifier SIDE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/skin_select_side.png");
-    private static final Identifier EMPTY_ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/empty_model_pack_icon.png");
+    private static final Identifier BG = IdentifierUtil.modLoc("textures/gui/skin_select.png");
+    private static final Identifier SIDE = IdentifierUtil.modLoc("textures/gui/skin_select_side.png");
+    private static final Identifier EMPTY_ICON = IdentifierUtil.modLoc("textures/gui/empty_model_pack_icon.png");
 
     private static final SimpleTexture EMPTY_ICON_TEXTURE = new SimpleTexture(EMPTY_ICON);
 

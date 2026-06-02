@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement.TextChatBubbleData;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement.WaitingChatBubbleData;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -89,7 +89,7 @@ public class ChatBubbleManager {
 
     public long addThinkingText(String langKey, @Nullable Component secondaryText) {
         MutableComponent component = Component.translatable(langKey).withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC);
-        Identifier icon = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/chat_bubble/yinyang_orb.png");
+        Identifier icon = IdentifierUtil.modLoc("textures/entity/chat_bubble/yinyang_orb.png");
         return this.addChatBubble(WaitingChatBubbleData.create(90 * 20, TYPE_2, DEFAULT_PRIORITY, component, secondaryText, icon));
     }
 

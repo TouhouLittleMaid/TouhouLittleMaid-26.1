@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.block.multiblock;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IMultiBlock;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
@@ -18,10 +18,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public class MultiBlockAltar implements IMultiBlock {
-    private static final Identifier ALTAR_SOUTH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_south");
-    private static final Identifier ALTAR_NORTH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_north");
-    private static final Identifier ALTAR_EAST = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_east");
-    private static final Identifier ALTAR_WEST = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "altar_west");
+    private static final Identifier ALTAR_SOUTH = IdentifierUtil.modLoc("altar_south");
+    private static final Identifier ALTAR_NORTH = IdentifierUtil.modLoc("altar_north");
+    private static final Identifier ALTAR_EAST = IdentifierUtil.modLoc("altar_east");
+    private static final Identifier ALTAR_WEST = IdentifierUtil.modLoc("altar_west");
+
     private static final BlockPos SOUTH_POS = new BlockPos(-4, -3, 0);
     private static final BlockPos NORTH_POS = new BlockPos(-3, -3, -7);
     private static final BlockPos EAST_POS = new BlockPos(0, -3, -3);

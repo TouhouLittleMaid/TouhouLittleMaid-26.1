@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.client.SyncBaublePackageProxy;
 import com.github.tartaricacid.touhoulittlemaid.util.ByteBufUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
@@ -12,11 +11,11 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SyncBaublePackage(boolean isFull, int entityId,
                                 Int2ObjectSortedMap<ItemStack> baubles) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SyncBaublePackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("sync_bauble"));
+    public static final CustomPacketPayload.Type<SyncBaublePackage> TYPE = new CustomPacketPayload.Type<>(modLoc("sync_bauble"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncBaublePackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.BOOL,
             SyncBaublePackage::isFull,

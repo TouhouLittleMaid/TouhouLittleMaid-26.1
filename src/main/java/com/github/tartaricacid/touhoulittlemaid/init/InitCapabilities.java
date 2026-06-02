@@ -11,12 +11,12 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID)
 public class InitCapabilities {
-    public static final EntityCapability<ResourceHandler<ItemResource>, @Nullable Direction> HAND_ITEM = EntityCapability.createSided(getResourceLocation("hand_item"), ResourceHandler.asClass());
-    public static final EntityCapability<ResourceHandler<ItemResource>, @Nullable Direction> ARMOR_ITEM = EntityCapability.createSided(getResourceLocation("armor_item"), ResourceHandler.asClass());
+    public static final EntityCapability<ResourceHandler<ItemResource>, @Nullable Direction> HAND_ITEM = EntityCapability.createSided(modLoc("hand_item"), ResourceHandler.asClass());
+    public static final EntityCapability<ResourceHandler<ItemResource>, @Nullable Direction> ARMOR_ITEM = EntityCapability.createSided(modLoc("armor_item"), ResourceHandler.asClass());
 
     @SubscribeEvent
     public static void register(RegisterCapabilitiesEvent event) {

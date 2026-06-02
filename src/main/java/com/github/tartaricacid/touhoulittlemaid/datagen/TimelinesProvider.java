@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
@@ -44,6 +44,6 @@ public class TimelinesProvider {
     }
 
     public static ResourceKey<Timeline> key(String id) {
-        return ResourceKey.create(Registries.TIMELINE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, id));
+        return ResourceKey.create(Registries.TIMELINE, IdentifierUtil.modLoc(id));
     }
 }

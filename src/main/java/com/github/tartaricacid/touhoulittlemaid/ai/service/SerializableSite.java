@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.ai.service;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -49,6 +50,6 @@ public interface SerializableSite<T extends Site> {
      * 工具方法，通过站点 ID 获取一个默认图标地址
      */
     static Identifier defaultIcon(String id) {
-        return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/ai_chat/%s.png".formatted(id));
+        return IdentifierUtil.modLoc("textures/gui/ai_chat/%s.png".formatted(id));
     }
 }

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsTTSSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveTTSSitePacket;
@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 public class TTSSiteButton extends Button {
-    private static final Identifier MISC = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/ai_chat/misc.png");
+    private static final Identifier MISC = IdentifierUtil.modLoc("textures/gui/ai_chat/misc.png");
 
     private final TTSSite site;
     private final AIChatSettingsTTSSiteScreen parent;

@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -23,7 +24,7 @@ public class RegistryDataGenerator extends DatapackBuiltinEntriesProvider {
             .add(Registries.TIMELINE, TimelinesProvider::bootstrap);
 
     private static void genPainting(BootstrapContext<PaintingVariant> ctx) {
-        var id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "wine_fox");
+        var id = IdentifierUtil.modLoc("wine_fox");
         ctx.register(ResourceKey.create(Registries.PAINTING_VARIANT, id),
                 new PaintingVariant(2, 3, id, Optional.empty(), Optional.empty()));
     }

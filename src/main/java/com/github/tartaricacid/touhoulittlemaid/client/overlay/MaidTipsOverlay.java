@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.overlay;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.compat.kubejs.ModKubeJSCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -34,7 +35,7 @@ import java.util.Map;
 import static com.github.tartaricacid.touhoulittlemaid.config.subconfig.RenderConfig.*;
 
 public class MaidTipsOverlay implements GuiLayer {
-    private static final Identifier ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_tips_icon.png");
+    private static final Identifier ICON = IdentifierUtil.modLoc("textures/gui/maid_tips_icon.png");
 
     private static Map<Item, MutableComponent> TIPS = Maps.newHashMap();
     private static Map<Item, ModConfigSpec.BooleanValue> TIPS_CONFIG = Maps.newHashMap();

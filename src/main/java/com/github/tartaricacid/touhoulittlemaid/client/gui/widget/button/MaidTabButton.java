@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.google.common.collect.Lists;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class MaidTabButton extends Button implements ITooltipButton {
-    private static final Identifier SIDE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_side.png");
+    private static final Identifier SIDE = IdentifierUtil.modLoc("textures/gui/maid_gui_side.png");
     private final int left;
     private final List<Component> tooltips;
 

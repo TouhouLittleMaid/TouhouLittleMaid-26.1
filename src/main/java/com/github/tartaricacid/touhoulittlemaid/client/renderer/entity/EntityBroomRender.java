@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityBroomRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
@@ -12,7 +12,7 @@ import net.minecraft.resources.Identifier;
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.BROOM;
 
 public class EntityBroomRender extends LivingEntityRenderer<EntityBroom, EntityBroomRenderState, EntityModel<EntityBroomRenderState>> {
-    private static final Identifier BROOM_TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/broom.png");
+    private static final Identifier BROOM_TEXTURE = IdentifierUtil.modLoc("textures/bedrock/entity/broom.png");
 
     public EntityBroomRender(EntityRendererProvider.Context context) {
         super(context, InternalBedrockModelRegistry.getEntityModel(BROOM), 0.5f);

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.advancement;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.MaidEventTrigger;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.datagen.LootTableGenerator;
@@ -96,7 +96,7 @@ public class BaseAdvancement {
         MutableComponent desc = Component.translatable(String.format("advancements.touhou_little_maid.base.%s.description", key));
 
         return Advancement.Builder.advancement().display(item, title, desc,
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
+                IdentifierUtil.modLoc("textures/advancements/backgrounds/stone.png"),
                 AdvancementType.TASK, true, true, false);
     }
 
@@ -105,7 +105,7 @@ public class BaseAdvancement {
         MutableComponent desc = Component.translatable(String.format("advancements.touhou_little_maid.base.%s.description", key));
 
         return Advancement.Builder.advancement().display(ItemStackTemplate.fromNonEmptyStack(item), title, desc,
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
+                IdentifierUtil.modLoc("textures/advancements/backgrounds/stone.png"),
                 AdvancementType.TASK, true, true, false);
     }
 
@@ -114,12 +114,12 @@ public class BaseAdvancement {
         MutableComponent desc = Component.translatable(String.format("advancements.touhou_little_maid.base.%s.description", key));
 
         return Advancement.Builder.advancement().display(item, title, desc,
-                Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/advancements/backgrounds/stone.png"),
+                IdentifierUtil.modLoc("textures/advancements/backgrounds/stone.png"),
                 AdvancementType.GOAL, true, true, false);
     }
 
     private static Identifier id(String id) {
-        return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, id);
+        return IdentifierUtil.modLoc(id);
     }
 
     private static ResourceKey<Recipe<?>> recipeKey(String id) {

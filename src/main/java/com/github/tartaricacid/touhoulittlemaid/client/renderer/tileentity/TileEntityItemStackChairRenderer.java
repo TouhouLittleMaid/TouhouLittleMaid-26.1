@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityChairRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.ChairRenderRenderState;
@@ -26,7 +26,7 @@ import java.util.function.Consumer;
  * submit 仿照 EntityChairRenderer.submitChair 渲染逻辑。
  */
 public class TileEntityItemStackChairRenderer implements SpecialModelRenderer<ChairRenderRenderState> {
-    public static final Identifier CHAIR_ITEM_RENDERER = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "chair_item");
+    public static final Identifier CHAIR_ITEM_RENDERER = IdentifierUtil.modLoc("chair_item");
     /**
      * 默认兜底模型 ID，与 {@code EntityChairRenderer.DEFAULT_CHAIR_ID} 保持一致
      */

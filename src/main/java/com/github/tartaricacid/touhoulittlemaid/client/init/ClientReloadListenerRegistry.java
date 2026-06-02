@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.init;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelManager;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.listener.CustomPackReloadListener;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.listener.EmojiReloadListener;
@@ -28,6 +29,6 @@ public final class ClientReloadListenerRegistry {
     }
 
     private static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, path);
+        return IdentifierUtil.modLoc(path);
     }
 }

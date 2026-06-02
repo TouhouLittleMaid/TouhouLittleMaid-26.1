@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,7 +29,7 @@ import java.util.List;
 public class EntityExtinguishingAgent extends Entity {
     public static final EntityType<EntityExtinguishingAgent> TYPE = EntityType.Builder.<EntityExtinguishingAgent>of(EntityExtinguishingAgent::new, MobCategory.MISC)
             .sized(0.2f, 0.2f).clientTrackingRange(10)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "extinguishing_agent")));
+            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("extinguishing_agent")));
     private static final int MAX_AGE = 3 * 20;
     private static final int REMOVE_FIRE_AGE = 5;
     private List<Monster> cacheFireImmuneMonster = Lists.newArrayList();

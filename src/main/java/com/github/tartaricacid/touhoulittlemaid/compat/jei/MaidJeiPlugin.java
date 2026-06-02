@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jei;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.event.ClientRecipeEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.compat.jei.altar.AltarRecipeCategory;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @JeiPlugin
 public class MaidJeiPlugin implements IModPlugin {
-    private static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "jei");
+    private static final Identifier UID = IdentifierUtil.modLoc("jei");
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {

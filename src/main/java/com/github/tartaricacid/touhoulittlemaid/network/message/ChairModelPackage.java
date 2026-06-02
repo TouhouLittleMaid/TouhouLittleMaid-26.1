@@ -14,11 +14,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record ChairModelPackage(int id, Identifier modelId, float mountedHeight, boolean tameableCanRide,
                                 boolean noGravity) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ChairModelPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("chair_model"));
+    public static final CustomPacketPayload.Type<ChairModelPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("chair_model"));
     public static final StreamCodec<ByteBuf, ChairModelPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             ChairModelPackage::id,

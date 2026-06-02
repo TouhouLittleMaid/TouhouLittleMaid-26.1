@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityPowerPointRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityPowerPoint;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 
 public class EntityPowerPointRenderer extends EntityRenderer<EntityPowerPoint, EntityPowerPointRenderState> {
-    private static final Identifier POWER_POINT_TEXTURES = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/entity/power_point.png");
+    private static final Identifier POWER_POINT_TEXTURES = IdentifierUtil.modLoc("textures/entity/power_point.png");
     private static final RenderType RENDER_TYPE = RenderTypes.entityTranslucentCullItemTarget(POWER_POINT_TEXTURES);
 
     public EntityPowerPointRenderer(EntityRendererProvider.Context renderManager) {

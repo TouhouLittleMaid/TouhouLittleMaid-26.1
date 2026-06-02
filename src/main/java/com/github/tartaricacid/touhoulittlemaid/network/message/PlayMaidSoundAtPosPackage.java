@@ -8,12 +8,12 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record PlayMaidSoundAtPosPackage(Identifier soundEvent, String id,
                                         double x, double y, double z,
                                         float volume, float pitch) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<PlayMaidSoundAtPosPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("play_maid_sound_at_pos"));
+    public static final CustomPacketPayload.Type<PlayMaidSoundAtPosPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("play_maid_sound_at_pos"));
     public static final StreamCodec<ByteBuf, PlayMaidSoundAtPosPackage> STREAM_CODEC = StreamCodec.of(
             (buf, msg) -> {
                 Identifier.STREAM_CODEC.encode(buf, msg.soundEvent);

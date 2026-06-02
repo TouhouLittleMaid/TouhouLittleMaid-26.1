@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.implement;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.EntityGraphics;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
@@ -28,7 +28,7 @@ public class EmojiChatBubbleRenderer implements IChatBubbleRenderer {
             }
         } else {
             // 如果没有表情资源，就使用一个默认的空白资源
-            this.emoji = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/chat_bubble/maid_emoji/emoji_0.png");
+            this.emoji = IdentifierUtil.modLoc("textures/chat_bubble/maid_emoji/emoji_0.png");
             this.width = 24;
             this.height = 24;
         }

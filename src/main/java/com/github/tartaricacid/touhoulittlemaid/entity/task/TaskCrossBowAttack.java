@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAttackStrafingTask;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskCrossBowAttack implements IRangedAttackTask {
-    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "crossbow_attack");
+    public static final Identifier UID = IdentifierUtil.modLoc("crossbow_attack");
 
     @Override
     public Identifier getUid() {

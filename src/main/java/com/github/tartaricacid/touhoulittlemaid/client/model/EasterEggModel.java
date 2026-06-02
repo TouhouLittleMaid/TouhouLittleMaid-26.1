@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.model;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import net.minecraft.client.Minecraft;
@@ -12,8 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class EasterEggModel extends EntityMaidModel {
-    private static final Identifier MODEL_PATH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "models/bedrock/entity/easter_egg_model.json");
-    private static final Identifier TEXTURE_PATH = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/entity/easter_egg_model.png");
+    private static final Identifier MODEL_PATH = IdentifierUtil.modLoc("models/bedrock/entity/easter_egg_model.json");
+    private static final Identifier TEXTURE_PATH = IdentifierUtil.modLoc("textures/bedrock/entity/easter_egg_model.png");
 
     private static @Nullable EasterEggModel MODEL;
     private static @Nullable MaidModelInfo INFO;

@@ -10,10 +10,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record RefreshMaidBrainPackage(int entityId) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<RefreshMaidBrainPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("refresh_maid_brain"));
+    public static final CustomPacketPayload.Type<RefreshMaidBrainPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("refresh_maid_brain"));
     public static final StreamCodec<ByteBuf, RefreshMaidBrainPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             RefreshMaidBrainPackage::entityId,

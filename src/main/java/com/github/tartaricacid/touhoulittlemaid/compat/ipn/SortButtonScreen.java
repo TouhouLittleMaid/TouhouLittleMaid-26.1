@@ -1,13 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.ipn;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModList;
 
 public class SortButtonScreen {
-    private static final Identifier SIDE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_side.png");
+    private static final Identifier SIDE = IdentifierUtil.modLoc("textures/gui/maid_gui_side.png");
     private static final String IPN_ID = "inventoryprofilesnext";
 
     public static void renderBackground(GuiGraphicsExtractor graphics, int x, int y) {

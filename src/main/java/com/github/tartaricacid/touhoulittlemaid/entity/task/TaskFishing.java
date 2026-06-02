@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.ride.MaidRideFindWaterTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidFindSitTask;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class TaskFishing implements IMaidTask {
-    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "fishing");
+    public static final Identifier UID = IdentifierUtil.modLoc("fishing");
 
     @Override
     public Identifier getUid() {

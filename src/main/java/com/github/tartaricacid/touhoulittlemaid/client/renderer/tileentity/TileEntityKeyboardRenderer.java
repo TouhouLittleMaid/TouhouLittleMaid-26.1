@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.JoyRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 
 public class TileEntityKeyboardRenderer extends TileEntityJoyRenderer<TileEntityKeyboard> {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/keyboard.png");
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/keyboard.png");
     private final SimpleBedrockModel<Unit> model;
 
     public TileEntityKeyboardRenderer(BlockEntityRendererProvider.Context context) {

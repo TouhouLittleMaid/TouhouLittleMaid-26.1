@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.item;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.WirelessIOButton;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.other.WirelessIOContainer;
@@ -18,7 +18,7 @@ import org.anti_ad.mc.ipn.api.IPNIgnore;
 
 @IPNIgnore
 public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOContainer> {
-    private static final Identifier MAIN = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/wireless_io.png");
+    private static final Identifier MAIN = IdentifierUtil.modLoc("textures/gui/wireless_io.png");
     private boolean isMaidToChest;
     private boolean isBlacklist;
 

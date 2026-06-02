@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockMaidBed;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockScarecrow;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
@@ -59,7 +59,7 @@ public class LootTableGenerator {
     public static final ResourceKey<LootTable> MAID_BURIED_TREASURE = getLootTableKey("chest/maid_buried_treasure");
 
     public static ResourceKey<LootTable> getLootTableKey(String name) {
-        return ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, name));
+        return ResourceKey.create(Registries.LOOT_TABLE, IdentifierUtil.modLoc(name));
     }
 
     public static record AdvancementLootTables(HolderLookup.Provider registries) implements LootTableSubProvider {

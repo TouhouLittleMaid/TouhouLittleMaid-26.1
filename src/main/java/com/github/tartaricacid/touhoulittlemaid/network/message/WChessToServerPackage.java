@@ -10,11 +10,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record WChessToServerPackage(BlockPos pos, int move, boolean maidLost,
                                     boolean playerLost) implements CustomPacketPayload {
-    public static final Type<WChessToServerPackage> TYPE = new Type<>(getResourceLocation("wchess_to_server"));
+    public static final Type<WChessToServerPackage> TYPE = new Type<>(modLoc("wchess_to_server"));
     public static final StreamCodec<ByteBuf, WChessToServerPackage> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, WChessToServerPackage::pos,
             ByteBufCodecs.VAR_INT, WChessToServerPackage::move,

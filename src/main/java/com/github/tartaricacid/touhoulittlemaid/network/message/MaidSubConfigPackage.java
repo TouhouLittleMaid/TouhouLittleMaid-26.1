@@ -11,10 +11,10 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.CONFIG;
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record MaidSubConfigPackage(int id, ConfigData configData) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<MaidSubConfigPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("maid_sub_config"));
+    public static final CustomPacketPayload.Type<MaidSubConfigPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("maid_sub_config"));
     public static final StreamCodec<RegistryFriendlyByteBuf, MaidSubConfigPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, MaidSubConfigPackage::id,
             ConfigData.STREAM_CODEC, MaidSubConfigPackage::configData,

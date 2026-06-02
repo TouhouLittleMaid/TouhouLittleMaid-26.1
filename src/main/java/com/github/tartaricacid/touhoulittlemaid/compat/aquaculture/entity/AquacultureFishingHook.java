@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.aquaculture.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.projectile.MaidFishingHook;
 import com.teammetallurgy.aquaculture.api.fishing.Hook;
@@ -50,7 +50,7 @@ public class AquacultureFishingHook extends MaidFishingHook implements IEntityWi
             .clientTrackingRange(4).updateInterval(5)
             .build(ResourceKey.create(
                     Registries.ENTITY_TYPE,
-                    Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "aquaculture_fishing_hook")
+                    IdentifierUtil.modLoc("aquaculture_fishing_hook")
             ));
 
     private Hook hook = Hooks.EMPTY;

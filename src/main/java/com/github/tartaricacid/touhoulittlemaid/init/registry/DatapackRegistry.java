@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.init.registry;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.datapack.resources.KaomojiDataReloadListener;
 import com.github.tartaricacid.touhoulittlemaid.datapack.resources.SkillsDataReloadListener;
 import net.minecraft.resources.Identifier;
@@ -12,7 +13,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 public class DatapackRegistry {
     @SubscribeEvent
     public static void onAddReloadListenerEvent(AddServerReloadListenersEvent event) {
-        event.addListener(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "kaomoji"), new KaomojiDataReloadListener());
-        event.addListener(Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "skill"), new SkillsDataReloadListener());
+        event.addListener(IdentifierUtil.modLoc("kaomoji"), new KaomojiDataReloadListener());
+        event.addListener(IdentifierUtil.modLoc("skill"), new SkillsDataReloadListener());
     }
 }

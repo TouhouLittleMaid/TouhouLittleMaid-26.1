@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.JoyRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 
 public class TileEntityBookshelfRenderer extends TileEntityJoyRenderer<TileEntityBookshelf> {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/bedrock/block/bookshelf.png");
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/bookshelf.png");
     private final SimpleBedrockModel<Unit> model;
 
     public TileEntityBookshelfRenderer(BlockEntityRendererProvider.Context context) {

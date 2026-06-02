@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.config;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.MaidConfigButton;
 import com.github.tartaricacid.touhoulittlemaid.entity.data.ConfigData;
@@ -27,7 +27,7 @@ import org.jspecify.annotations.NonNull;
 @IPNGuiHint(button = IPNButton.SHOW_EDITOR, horizontalOffset = -5)
 @IPNGuiHint(button = IPNButton.SETTINGS, horizontalOffset = -5)
 public class MaidConfigContainerGui extends AbstractMaidContainerGui<MaidConfigContainer> {
-    private static final Identifier ICON = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_config.png");
+    private static final Identifier ICON = IdentifierUtil.modLoc("textures/gui/maid_gui_config.png");
     private ConfigData configData;
 
     public MaidConfigContainerGui(MaidConfigContainer screenContainer, Inventory inv, Component titleIn) {

@@ -7,10 +7,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record TTSAudioToClientPackage(int maidId, byte[] data) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<TTSAudioToClientPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("tts_audio_to_client"));
+    public static final CustomPacketPayload.Type<TTSAudioToClientPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("tts_audio_to_client"));
     public static final StreamCodec<ByteBuf, TTSAudioToClientPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             TTSAudioToClientPackage::maidId,

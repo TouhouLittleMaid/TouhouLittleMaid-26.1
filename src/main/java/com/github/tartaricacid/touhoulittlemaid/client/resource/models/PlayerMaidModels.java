@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.models;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.model.PlayerMaidModel;
@@ -28,12 +28,12 @@ public final class PlayerMaidModels {
 
     private static List<IAnimation<EntityMaidRenderState>> PLAYER_MAID_ANIMATIONS = List.of();
     private static final List<Identifier> PLAYER_MAID_ANIMATION_IDS = Lists.newArrayList(
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/default.js"),
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/head/beg.js"),
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/leg/default.js"),
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/player/arm/default.js"),
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/default/arm/swing.js"),
-            Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "animation/maid/player/sit/default.js")
+            IdentifierUtil.modLoc("animation/maid/default/head/default.js"),
+            IdentifierUtil.modLoc("animation/maid/default/head/beg.js"),
+            IdentifierUtil.modLoc("animation/maid/default/leg/default.js"),
+            IdentifierUtil.modLoc("animation/maid/player/arm/default.js"),
+            IdentifierUtil.modLoc("animation/maid/default/arm/swing.js"),
+            IdentifierUtil.modLoc("animation/maid/player/sit/default.js")
     );
 
     private static final Map<String, MaidModelInfo> INFOS = Maps.newHashMap();

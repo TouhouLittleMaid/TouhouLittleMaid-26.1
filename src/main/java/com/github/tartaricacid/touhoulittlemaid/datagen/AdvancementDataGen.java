@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.advancements.rewards.GiveSmartSlabConfigTrigger;
 import com.github.tartaricacid.touhoulittlemaid.datagen.advancement.BaseAdvancement;
 import com.github.tartaricacid.touhoulittlemaid.datagen.advancement.ChallengeAdvancement;
@@ -33,7 +33,7 @@ public class AdvancementDataGen extends AdvancementProvider {
             Advancement.Builder.advancement()
                     .addCriterion("tick", GiveSmartSlabConfigTrigger.Instance.instance())
                     .rewards(AdvancementRewards.Builder.loot(LootTableGenerator.GIVE_SMART_SLAB))
-                    .save(saver, Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "give_smart_slab"));
+                    .save(saver, IdentifierUtil.modLoc("give_smart_slab"));
         }
     }
 

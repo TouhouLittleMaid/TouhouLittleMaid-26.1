@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidBoardGameTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class TaskBoardGames implements IMaidTask {
-    public static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "board_games");
+    public static final Identifier UID = IdentifierUtil.modLoc("board_games");
 
     @Override
     public Identifier getUid() {

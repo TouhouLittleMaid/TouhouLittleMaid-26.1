@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IFarmTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.ISpecialCropHandler;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagItem;
@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 public class TaskNormalFarm implements IFarmTask {
-    private static final Identifier NAME = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "farm");
+    private static final Identifier NAME = IdentifierUtil.modLoc("farm");
 
     @Override
     public Identifier getUid() {

@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.curios.client;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import net.minecraft.client.Minecraft;
@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 public class CuriosButton extends Button implements ITooltipButton {
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/bauble_button.png");
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/gui/bauble_button.png");
     private final int vStart;
     private final Component tooltip;
 

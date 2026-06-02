@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.curios.client;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.backpack.IBackpackContainerScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.BaubleButton;
@@ -34,7 +34,7 @@ import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 @IPNGuiHint(button = IPNButton.SHOW_EDITOR, horizontalOffset = -5)
 @IPNGuiHint(button = IPNButton.SETTINGS, horizontalOffset = -5)
 public class CuriosContainerScreen extends AbstractMaidContainerGui<CuriosContainer> implements IBackpackContainerScreen {
-    private static final Identifier CURIOS_BG = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "textures/gui/maid_gui_curios.png");
+    private static final Identifier CURIOS_BG = IdentifierUtil.modLoc("textures/gui/maid_gui_curios.png");
 
     private static final int PREV = 0;
     private static final int NEXT = 1;

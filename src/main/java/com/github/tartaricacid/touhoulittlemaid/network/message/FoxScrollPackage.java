@@ -15,10 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record FoxScrollPackage(Map<String, List<FoxScrollData>> data) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<FoxScrollPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("fox_scroll"));
+    public static final CustomPacketPayload.Type<FoxScrollPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("fox_scroll"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, List<FoxScrollData>> LIST_STREAM_CODEC = ByteBufCodecs.collection(
             ArrayList::new,

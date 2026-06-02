@@ -12,10 +12,10 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.Nullable;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record OpenMaidGuiPackage(int entityId, int tabId) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<OpenMaidGuiPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("open_maid_gui"));
+    public static final CustomPacketPayload.Type<OpenMaidGuiPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("open_maid_gui"));
     public static final StreamCodec<ByteBuf, OpenMaidGuiPackage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, OpenMaidGuiPackage::entityId,
             ByteBufCodecs.VAR_INT, OpenMaidGuiPackage::tabId,

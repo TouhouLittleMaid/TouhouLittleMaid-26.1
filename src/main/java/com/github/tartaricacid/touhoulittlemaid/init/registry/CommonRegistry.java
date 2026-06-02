@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.init.registry;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.context.GameContextRegister;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.skill.SkillLoader;
 import com.github.tartaricacid.touhoulittlemaid.ai.agent.tool.ToolRegister;
@@ -42,7 +43,7 @@ public final class CommonRegistry {
         if (event.getRegistry().equals(BuiltInRegistries.MENU)) {
             // Curios 兼容
             if (ModList.get().isLoaded(CompatRegistry.CURIOS)) {
-                Identifier id = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "curios_container");
+                Identifier id = IdentifierUtil.modLoc("curios_container");
                 event.register(BuiltInRegistries.MENU.key(), id, () -> CuriosContainer.TYPE);
             }
         }

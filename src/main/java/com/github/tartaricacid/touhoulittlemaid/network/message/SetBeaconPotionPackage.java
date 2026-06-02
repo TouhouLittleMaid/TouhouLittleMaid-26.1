@@ -11,10 +11,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import static com.github.tartaricacid.touhoulittlemaid.util.ResourceLocationUtil.getResourceLocation;
+import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SetBeaconPotionPackage(BlockPos pos, int potionIndex) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<SetBeaconPotionPackage> TYPE = new CustomPacketPayload.Type<>(getResourceLocation("set_beacon_potion"));
+    public static final CustomPacketPayload.Type<SetBeaconPotionPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("set_beacon_potion"));
     public static final StreamCodec<ByteBuf, SetBeaconPotionPackage> STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,
             SetBeaconPotionPackage::pos,

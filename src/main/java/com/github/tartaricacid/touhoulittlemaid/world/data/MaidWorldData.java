@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.world.data;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityTombstone;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.google.common.collect.Lists;
@@ -37,7 +37,7 @@ public class MaidWorldData extends SavedData {
             Codec.BOOL.fieldOf("dirty").forGetter(SavedData::isDirty)
     ).apply(ins, (MaidWorldData::new)));
 
-    private static final Identifier IDENTIFIER = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "world_data");
+    private static final Identifier IDENTIFIER = IdentifierUtil.modLoc("world_data");
     private final Map<UUID, List<MaidInfo>> infos;
     private final Map<UUID, List<MaidInfo>> tombstones;
 

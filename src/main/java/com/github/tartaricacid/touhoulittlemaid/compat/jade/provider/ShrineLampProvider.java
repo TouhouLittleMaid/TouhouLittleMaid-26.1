@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jade.provider;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBeacon;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
 import net.minecraft.network.chat.Component;
@@ -13,7 +13,7 @@ import snownee.jade.api.config.IPluginConfig;
 public enum ShrineLampProvider implements IBlockComponentProvider {
     INSTANCE;
 
-    private static final Identifier UID = Identifier.fromNamespaceAndPath(TouhouLittleMaid.MOD_ID, "shrine_lamp");
+    private static final Identifier UID = IdentifierUtil.modLoc("shrine_lamp");
 
     @Override
     public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
