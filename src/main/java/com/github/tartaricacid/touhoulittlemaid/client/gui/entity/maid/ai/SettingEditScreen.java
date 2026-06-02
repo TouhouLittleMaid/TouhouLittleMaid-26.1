@@ -77,11 +77,11 @@ public class SettingEditScreen extends Screen {
         this.ownerName.setResponder(s -> manager.ownerName = s);
 
 
-        this.customSetting = MultiLineEditBox.builder()
+        this.customSetting = this.addRenderableWidget(MultiLineEditBox.builder()
                 .setX(posX)
                 .setY(70)
                 .setPlaceholder(Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.edit_custom_setting.edit"))
-                .build(font, boxWidth, this.height - 100, Component.literal("Custom Setting Box"));
+                .build(font, boxWidth, this.height - 100, Component.literal("Custom Setting Box")));
         this.customSetting.setValue(manager.customSetting);
         this.customSetting.setCharacterLimit(4096);
         this.customSetting.setValueListener(s -> manager.customSetting = s);
@@ -164,11 +164,14 @@ public class SettingEditScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
         super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+
         graphics.text(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.owner_name"),
                 ownerName.getX() + 2, ownerName.getY() - 12, 0xFFFFFF);
         graphics.text(font, Component.translatable("gui.touhou_little_maid.button.maid_ai_chat_config.custom_setting"),
                 customSetting.getX() + 2, customSetting.getY() - 12, 0xFFFFFF);
+
         drawMaid(graphics, customSetting.getX() + customSetting.getWidth() + 73, customSetting.getY() + 96, maid);
 
         long time = System.currentTimeMillis() - this.tipTimestamp;
@@ -212,7 +215,8 @@ public class SettingEditScreen extends Screen {
                 0.1F,
                 posX - 15,
                 posY,
-                maid);
+                maid
+        );
     }
 
     @Override
@@ -222,10 +226,8 @@ public class SettingEditScreen extends Screen {
 
     @Override
     public void onClose() {
-        if (this.minecraft != null) {
-            Screen screen = Objects.requireNonNullElse(this.parent, new AIChatScreen(this.maid));
-            this.minecraft.setScreen(screen);
-        }
+        Screen screen = Objects.requireNonNullElse(this.parent, new AIChatScreen(this.maid));
+        this.minecraft.setScreen(screen);
     }
 
     private void saveConfig() {

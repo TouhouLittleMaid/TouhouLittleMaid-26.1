@@ -89,6 +89,7 @@ public class AIChatSettingsLLMSiteScreen extends AIChatSettingsHubScreen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         this.renderListScrollbar(graphics, this.state.llmSites.size(), this.getVisibleListCount(ROW_HEIGHT));
         this.renderInsufficientPermissions(graphics);
@@ -96,7 +97,7 @@ public class AIChatSettingsLLMSiteScreen extends AIChatSettingsHubScreen {
 
     public void openLLMSiteEditor(String siteId) {
         LLMSite site = this.state.llmSites.get(siteId);
-        if (!(site instanceof LLMOpenAISite) || this.minecraft == null) {
+        if (!(site instanceof LLMOpenAISite)) {
             return;
         }
         boolean supportsReasoning = "openai".equals(site.id());
@@ -105,7 +106,7 @@ public class AIChatSettingsLLMSiteScreen extends AIChatSettingsHubScreen {
 
     public void openNewLLMSiteEditor(LLMApiType apiType) {
         LLMSite site = this.createDefaultLLMSite(apiType);
-        if (!(site instanceof LLMOpenAISite) || this.minecraft == null) {
+        if (!(site instanceof LLMOpenAISite)) {
             return;
         }
         this.minecraft.setScreen(new LLMSiteEditorScreen(this, site, true));

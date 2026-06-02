@@ -20,9 +20,6 @@ import static com.github.tartaricacid.touhoulittlemaid.ai.manager.setting.papi.S
  * 女仆实时上下文的注册与取值由 context skill 系统负责
  */
 public class PapiReplacer {
-    private PapiReplacer() {
-    }
-
     /**
      * 基础设定提示词的关键字替换
      */

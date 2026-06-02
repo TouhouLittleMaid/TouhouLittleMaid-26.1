@@ -11,24 +11,22 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.SupportLanguage;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.system.TTSSystemSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveMaidAIDataPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendUserChatPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.OpenAIConfigPacket;
+import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveMaidAIDataPackage;
 import com.google.common.collect.Lists;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -367,6 +365,11 @@ public class AIChatScreen extends Screen {
     }
 
     @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        // 不渲染背景
+    }
+
+    @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (this.input != null) {
             int x = this.input.getX();
@@ -466,7 +469,7 @@ public class AIChatScreen extends Screen {
         graphics.pose().scale(scale);
         int scaledX = Math.round((left + right) / 2.0f / scale) - this.font.width(text) / 2;
         int scaledY = Math.round(tokenY / scale);
-        graphics.text(this.font, text, scaledX, scaledY, 0xFFADADAD, false);
+        graphics.text(this.font, text, scaledX, scaledY, 0xFFADADAD);
         graphics.pose().popMatrix();
     }
 

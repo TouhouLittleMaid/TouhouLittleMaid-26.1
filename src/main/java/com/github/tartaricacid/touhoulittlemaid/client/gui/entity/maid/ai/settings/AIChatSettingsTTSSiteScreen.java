@@ -54,6 +54,7 @@ public class AIChatSettingsTTSSiteScreen extends AIChatSettingsHubScreen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         this.renderListScrollbar(graphics, this.state.ttsSites.size(), this.getVisibleListCount(ROW_HEIGHT));
         this.renderInsufficientPermissions(graphics);
@@ -61,7 +62,7 @@ public class AIChatSettingsTTSSiteScreen extends AIChatSettingsHubScreen {
 
     public void openTTSSiteEditor(String siteId) {
         TTSSite site = this.state.ttsSites.get(siteId);
-        if (site == null || this.minecraft == null) {
+        if (site == null) {
             return;
         }
         this.minecraft.setScreen(new TTSSiteEditorScreen(this, site));

@@ -13,9 +13,6 @@ public final class MaidContexts {
     public static final String CATEGORY = "status";
     private static final String SUMMARY = "Self some status";
 
-    private MaidContexts() {
-    }
-
     public static void registerAll(GameContextRegister register) {
         register.registerCategory(CATEGORY, SUMMARY, true);
         register.registerContext(CATEGORY, new MaidHealthContext());
@@ -86,9 +83,6 @@ public final class MaidContexts {
                 return "not";
             }
             Identifier type = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.getType());
-            if (type == null) {
-                return "not";
-            }
             return "riding %s".formatted(type);
         }
     }

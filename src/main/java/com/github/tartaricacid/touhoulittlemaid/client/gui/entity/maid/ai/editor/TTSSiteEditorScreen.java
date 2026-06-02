@@ -22,7 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -220,7 +219,6 @@ public class TTSSiteEditorScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        this.extractBackground(graphics, mouseX, mouseY, partialTick);
         graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
 
         // 居中标题
@@ -237,9 +235,7 @@ public class TTSSiteEditorScreen extends Screen {
             this.renderModelArea(graphics, mouseX, mouseY, partialTick);
         }
 
-        for (Renderable renderable : this.renderables) {
-            renderable.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        }
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         // 保存提示
         if (System.currentTimeMillis() - this.tipTimestamp < 2000) {
@@ -348,9 +344,7 @@ public class TTSSiteEditorScreen extends Screen {
 
     @Override
     public void onClose() {
-        if (this.minecraft != null) {
-            this.minecraft.setScreen(this.parent);
-        }
+        this.minecraft.setScreen(this.parent);
     }
 
     private int getVisibleModelCount() {

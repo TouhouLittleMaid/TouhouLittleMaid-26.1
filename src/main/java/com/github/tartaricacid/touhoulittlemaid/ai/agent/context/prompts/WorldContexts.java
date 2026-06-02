@@ -15,9 +15,6 @@ public final class WorldContexts {
     public static final String CATEGORY = "world";
     private static final String SUMMARY = "Time, weather, dimension, and biome around";
 
-    private WorldContexts() {
-    }
-
     public static void registerAll(GameContextRegister register) {
         register.registerCategory(CATEGORY, SUMMARY, true);
         register.registerContext(CATEGORY, new GameTimeContext());

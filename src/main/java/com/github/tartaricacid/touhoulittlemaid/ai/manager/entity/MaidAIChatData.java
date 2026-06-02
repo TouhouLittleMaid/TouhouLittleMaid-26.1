@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 
 @SuppressWarnings("all")
@@ -47,10 +46,7 @@ public abstract class MaidAIChatData extends MaidAIChatSerializable {
         super.read(input);
         input.read(MAID_HISTORY_CHAT_TAG, LLMMessage.CODEC.listOf()).ifPresent(list -> {
             this.history.getDeque().clear();
-            ListIterator<LLMMessage> iterator = list.listIterator(list.size());
-            while (iterator.hasPrevious()) {
-                history.add(iterator.previous());
-            }
+            list.reversed().forEach(this.history::add);
         });
 
         this.compressedSummary = input.getStringOr(MAID_HISTORY_SUMMARY_TAG, StringUtils.EMPTY);

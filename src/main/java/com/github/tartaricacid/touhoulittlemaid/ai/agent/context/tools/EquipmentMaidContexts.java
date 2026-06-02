@@ -17,9 +17,6 @@ public final class EquipmentMaidContexts {
     public static final String CATEGORY = "equipment";
     private static final String SUMMARY = "Held items, backpack inventory, and equipped armor.";
 
-    private EquipmentMaidContexts() {
-    }
-
     public static void registerAll(GameContextRegister register) {
         register.registerCategory(CATEGORY, SUMMARY, false);
         register.registerContext(CATEGORY, new MainHandItemContext());

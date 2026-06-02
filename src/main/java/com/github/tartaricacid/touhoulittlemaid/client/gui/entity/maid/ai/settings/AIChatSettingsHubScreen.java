@@ -176,9 +176,6 @@ public abstract class AIChatSettingsHubScreen extends Screen {
     }
 
     protected void switchTo(Type type) {
-        if (this.minecraft == null) {
-            return;
-        }
         this.persistTransientState();
         this.minecraft.setScreen(this.createTabScreen(type));
     }
@@ -196,9 +193,6 @@ public abstract class AIChatSettingsHubScreen extends Screen {
      * 服务端同步站点数据后，用新数据重新打开当前标签页
      */
     public void reopenSelf(Map<String, LLMSite> llmSites, Map<String, TTSSite> ttsSites) {
-        if (this.minecraft == null) {
-            return;
-        }
         this.persistTransientState();
         this.state.llmSites.clear();
         this.state.llmSites.putAll(llmSites);

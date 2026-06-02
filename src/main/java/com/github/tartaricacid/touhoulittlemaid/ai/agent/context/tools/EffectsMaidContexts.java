@@ -15,9 +15,6 @@ public final class EffectsMaidContexts {
     public static final String CATEGORY = "effects";
     private static final String SUMMARY = "Self active effects.";
 
-    private EffectsMaidContexts() {
-    }
-
     public static void registerAll(GameContextRegister register) {
         register.registerCategory(CATEGORY, SUMMARY, false);
         register.registerContext(CATEGORY, new MaidEffectsContext());

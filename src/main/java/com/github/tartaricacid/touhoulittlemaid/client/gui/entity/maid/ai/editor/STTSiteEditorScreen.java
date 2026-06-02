@@ -9,7 +9,6 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatCol
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
@@ -113,7 +112,6 @@ public class STTSiteEditorScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        this.extractBackground(graphics, mouseX, mouseY, partialTick);
         graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
 
         // 居中标题
@@ -125,9 +123,7 @@ public class STTSiteEditorScreen extends Screen {
             this.renderInputField(graphics, field.box, mouseX, mouseY, partialTick);
         }
 
-        for (Renderable renderable : this.renderables) {
-            renderable.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        }
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         // 警告信息
         if (System.currentTimeMillis() - this.tipTimestamp < 2000) {
@@ -159,9 +155,7 @@ public class STTSiteEditorScreen extends Screen {
 
     @Override
     public void onClose() {
-        if (this.minecraft != null) {
-            this.minecraft.setScreen(this.parent);
-        }
+        this.minecraft.setScreen(this.parent);
     }
 
     private void saveSite() {

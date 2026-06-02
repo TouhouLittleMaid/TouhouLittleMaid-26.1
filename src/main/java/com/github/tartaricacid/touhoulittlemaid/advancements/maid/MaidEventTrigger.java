@@ -13,7 +13,8 @@ import java.util.Optional;
 
 public class MaidEventTrigger extends SimpleCriterionTrigger<MaidEventTrigger.Instance> {
     public static Criterion<Instance> create(String eventName) {
-        return InitTrigger.MAID_EVENT.get().createCriterion(new MaidEventTrigger.Instance(Optional.empty(), eventName));
+        Instance instance = new Instance(Optional.empty(), eventName);
+        return InitTrigger.MAID_EVENT.get().createCriterion(instance);
     }
 
     public void trigger(ServerPlayer serverPlayer, String eventName) {

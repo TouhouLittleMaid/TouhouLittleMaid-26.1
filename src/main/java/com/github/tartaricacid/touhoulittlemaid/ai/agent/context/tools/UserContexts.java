@@ -17,9 +17,6 @@ public final class UserContexts {
     public static final String CATEGORY = "user";
     private static final String SUMMARY = "User identity, health, and equipment information.";
 
-    private UserContexts() {
-    }
-
     public static void registerAll(GameContextRegister register) {
         register.registerCategory(CATEGORY, SUMMARY, false);
         register.registerContext(CATEGORY, new UserNameContext());

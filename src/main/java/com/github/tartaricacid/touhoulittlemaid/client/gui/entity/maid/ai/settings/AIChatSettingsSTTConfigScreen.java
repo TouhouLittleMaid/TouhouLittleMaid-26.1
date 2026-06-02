@@ -132,6 +132,7 @@ public class AIChatSettingsSTTConfigScreen extends AIChatSettingsHubScreen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
         MutableComponent enable = Component.translatable("config.touhou_little_maid.global_ai.stt_enable");

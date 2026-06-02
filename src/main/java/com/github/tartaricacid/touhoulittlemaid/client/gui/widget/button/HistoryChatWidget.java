@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.PlayerSkin;
+import net.minecraft.world.item.component.ResolvableProfile;
 
 import java.util.List;
 
@@ -30,15 +31,15 @@ public class HistoryChatWidget extends AbstractWidget {
      */
     private final boolean isTool;
 
-    private final PlayerSkin playerSkin;
+    private final ResolvableProfile playerProfile;
     private final Component time;
 
-    public HistoryChatWidget(int pX, int pY, int width, int height, Component message, PlayerSkin playerSkin,
+    public HistoryChatWidget(int pX, int pY, int width, int height, Component message, ResolvableProfile playerProfile,
                              long gameTime, boolean isLeft, boolean isTool) {
         super(pX, pY, width, height, message);
         this.isLeft = isLeft;
         this.isTool = isTool;
-        this.playerSkin = playerSkin;
+        this.playerProfile = playerProfile;
         this.time = convertGameTime(gameTime);
     }
 
@@ -79,6 +80,8 @@ public class HistoryChatWidget extends AbstractWidget {
     private void renderToolText(GuiGraphicsExtractor graphics, Font font) {
         float scale = 0.5f;
         int width = (int) (this.getWidth() / scale);
+        float posX = this.getX() / scale + width / 2f;
+        float posY = this.getY() / scale;
 
         graphics.pose().pushMatrix();
         graphics.pose().scale(scale, scale);
@@ -86,10 +89,7 @@ public class HistoryChatWidget extends AbstractWidget {
         List<FormattedCharSequence> lines = font.split(this.getMessage(), width);
 
         for (int i = 0; i < lines.size(); i++) {
-            int lineWidth = font.width(lines.get(i));
-            int x = (int) ((this.getX() + this.getWidth() / 2f - lineWidth / 2f) / scale);
-            int y = (int) (this.getY() / scale) + i * font.lineHeight;
-            graphics.text(font, lines.get(i), x, y, 0x999999, false);
+            graphics.centeredText(font, lines.get(i), (int) posX, (int) posY + i * font.lineHeight, 0xFF999999);
         }
 
         graphics.pose().popMatrix();
@@ -102,18 +102,19 @@ public class HistoryChatWidget extends AbstractWidget {
         if (isLeft) {
             GuiTools.guiBlit(graphics, TEXTURE, this.getX() + xOffset, this.getHeightMiddle(size), 0, 16, size, size,128,128);
         } else {
+            PlayerSkin playerSkin = Minecraft.getInstance().playerSkinRenderCache().getOrDefault(this.playerProfile).playerSkin();
             PlayerFaceExtractor.extractRenderState(graphics, playerSkin,this.getX() + xOffset, this.getHeightMiddle(size), size, 0xFFFFFFFF);
-//            GuiTools.guiBlit(graphics, this.playerSkin, this.getX() + xOffset, this.getHeightMiddle(size), 0, 16, size, size);
         }
     }
 
     private void drawBackground(GuiGraphicsExtractor graphics) {
         int heightMiddle = this.getHeightMiddle(14);
+        GuiTools.blitNineSliced(graphics, TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(),
+                8, 4, 100, 16, 0, this.getTextureY());
         if (isLeft) {
-            GuiTools.blitNineSliced(graphics, TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(),
-                    8, 4, 100, 16, 0, this.getTextureY());
+            GuiTools.guiBlit(graphics, TEXTURE, this.getX() - 4, heightMiddle, 100, 16, 6, 14);
         } else {
-            GuiTools.guiBlit(graphics, TEXTURE, this.getX() + this.getWidth() - 2, heightMiddle, 6, 14, 100, 0);
+            GuiTools.guiBlit(graphics, TEXTURE, this.getX() + this.getWidth() - 2, heightMiddle, 100, 0, 6, 14);
         }
     }
 

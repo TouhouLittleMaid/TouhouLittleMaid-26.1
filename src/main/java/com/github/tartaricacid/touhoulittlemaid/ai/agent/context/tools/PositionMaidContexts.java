@@ -12,9 +12,6 @@ public final class PositionMaidContexts {
     public static final String CATEGORY = "position";
     private static final String SUMMARY = "Self and user positions, distance between them, and light level.";
 
-    private PositionMaidContexts() {
-    }
-
     public static void registerAll(GameContextRegister register) {
         register.registerCategory(CATEGORY, SUMMARY, false);
         register.registerContext(CATEGORY, new MaidPositionContext());

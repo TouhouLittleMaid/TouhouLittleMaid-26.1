@@ -53,14 +53,15 @@ public class AIChatSettingsSTTSiteScreen extends AIChatSettingsHubScreen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        super.extractBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        graphics.fillGradient(0, 0, this.width, this.height, 0xc0101010, 0xc0101010);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         this.renderListScrollbar(graphics, this.state.sttSites.size(), this.getVisibleListCount(ROW_HEIGHT));
     }
 
     public void openSTTSiteEditor(String siteId) {
         STTSite site = this.state.sttSites.get(siteId);
-        if (site == null || this.minecraft == null) {
+        if (site == null) {
             return;
         }
         this.state.selectedSttSiteId = siteId;

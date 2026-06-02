@@ -22,9 +22,6 @@ public final class NearbyEntityMaidContexts {
     private static final String SUMMARY = "Nearby living entities, including type, entity id, distance to self, and distance to user.";
     private static final int MAX_ENTITIES = 20;
 
-    private NearbyEntityMaidContexts() {
-    }
-
     public static void registerAll(GameContextRegister register) {
         register.registerCategory(CATEGORY, SUMMARY, false);
         register.registerContext(CATEGORY, new NearbyEntitiesContext());

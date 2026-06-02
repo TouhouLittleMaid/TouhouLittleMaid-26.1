@@ -13,8 +13,13 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Optional;
 
 public class GivePatchouliBookConfigTrigger extends SimpleCriterionTrigger<GivePatchouliBookConfigTrigger.Instance> {
+    public static Criterion<GivePatchouliBookConfigTrigger.Instance> create() {
+        Instance instance = new Instance(Optional.empty());
+        return InitTrigger.GIVE_PATCHOULI_BOOK_CONFIG.get().createCriterion(instance);
+    }
+
     public void trigger(ServerPlayer serverPlayer) {
-        super.trigger(serverPlayer, instance -> MiscConfig.GIVE_PATCHOULI_BOOK.get());
+        super.trigger(serverPlayer, _ -> MiscConfig.GIVE_PATCHOULI_BOOK.get());
     }
 
     @Override
@@ -26,9 +31,5 @@ public class GivePatchouliBookConfigTrigger extends SimpleCriterionTrigger<GiveP
         public static final Codec<GivePatchouliBookConfigTrigger.Instance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(GivePatchouliBookConfigTrigger.Instance::player))
                 .apply(instance, GivePatchouliBookConfigTrigger.Instance::new));
-
-        public static Criterion<GivePatchouliBookConfigTrigger.Instance> instance() {
-            return InitTrigger.GIVE_PATCHOULI_BOOK_CONFIG.get().createCriterion(new GivePatchouliBookConfigTrigger.Instance(Optional.empty()));
-        }
     }
 }

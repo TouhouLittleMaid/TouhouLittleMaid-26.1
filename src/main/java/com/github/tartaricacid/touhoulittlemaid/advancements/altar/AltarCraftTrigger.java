@@ -13,6 +13,11 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Optional;
 
 public class AltarCraftTrigger extends SimpleCriterionTrigger<AltarCraftTrigger.Instance> {
+    public static Criterion<Instance> create(Identifier recipeId) {
+        Instance instance = new Instance(Optional.empty(), recipeId);
+        return InitTrigger.ALTAR_CRAFT.get().createCriterion(instance);
+    }
+
     public void trigger(ServerPlayer serverPlayer, Identifier recipeId) {
         super.trigger(serverPlayer, instance -> instance.matches(recipeId));
     }
@@ -22,8 +27,7 @@ public class AltarCraftTrigger extends SimpleCriterionTrigger<AltarCraftTrigger.
         return AltarCraftTrigger.Instance.CODEC;
     }
 
-    public record Instance(Optional<ContextAwarePredicate> player,
-                           Identifier recipeId) implements SimpleInstance {
+    public record Instance(Optional<ContextAwarePredicate> player, Identifier recipeId) implements SimpleInstance {
         public static final Codec<AltarCraftTrigger.Instance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                         EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("player").forGetter(AltarCraftTrigger.Instance::player),
                         Identifier.CODEC.fieldOf("recipe_id").forGetter(AltarCraftTrigger.Instance::recipeId))
@@ -31,10 +35,6 @@ public class AltarCraftTrigger extends SimpleCriterionTrigger<AltarCraftTrigger.
 
         public boolean matches(Identifier recipeIdIn) {
             return this.recipeId.equals(recipeIdIn);
-        }
-
-        public static Criterion<Instance> recipe(Identifier recipeId) {
-            return InitTrigger.ALTAR_CRAFT.get().createCriterion(new AltarCraftTrigger.Instance(Optional.empty(), recipeId));
         }
     }
 }

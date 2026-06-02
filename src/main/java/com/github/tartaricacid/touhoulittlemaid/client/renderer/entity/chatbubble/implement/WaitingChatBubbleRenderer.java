@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 
 public class WaitingChatBubbleRenderer implements IChatBubbleRenderer {
     private static final float SECONDARY_TEXT_SCALE = 0.5f;
-    private static final int SECONDARY_TEXT_COLOR = 0x666666;
 
     private final Font font;
     private final int width;
@@ -62,14 +61,14 @@ public class WaitingChatBubbleRenderer implements IChatBubbleRenderer {
         graphics.getPoseStack().popPose();
 
         if (this.secondaryText == null) {
-            graphics.drawString(this.text, 18, (this.height - font.lineHeight) / 2 + 1, 0x000000, false);
+            graphics.drawString(this.text, 18, (this.height - font.lineHeight) / 2 + 1, 0xFF000000, false);
         } else {
-            graphics.drawString(this.text, 18, 2, 0x000000, false);
+            graphics.drawString(this.text, 18, 2, 0xFF000000, false);
 
             graphics.getPoseStack().pushPose();
             graphics.getPoseStack().translate(18, font.lineHeight + 1, 0);
             graphics.getPoseStack().scale(SECONDARY_TEXT_SCALE, SECONDARY_TEXT_SCALE, 1);
-            graphics.drawString(this.secondaryText, 0, 5, SECONDARY_TEXT_COLOR, false);
+            graphics.drawString(this.secondaryText, 0, 5, 0xFF666666, false);
             graphics.getPoseStack().popPose();
         }
     }
