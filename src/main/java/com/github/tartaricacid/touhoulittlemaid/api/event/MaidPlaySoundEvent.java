@@ -9,7 +9,6 @@ import net.neoforged.bus.api.ICancellableEvent;
  * 这个事件是 {@link #isCanceled() canceled}，如果取消，那么女仆播放音效会被取消。<br>
  * 该事件在服务端触发。
  */
-
 public class MaidPlaySoundEvent extends Event implements ICancellableEvent {
     private final EntityMaid maid;
 

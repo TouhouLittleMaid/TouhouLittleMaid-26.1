@@ -13,7 +13,6 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -191,12 +190,10 @@ public class BaubleItemHandler extends ItemStacksResourceHandler {
         return -1;
     }
 
-    @ApiStatus.AvailableSince("1.4.3")
     public boolean containsItem(Item item) {
         return baubleItemsCache.contains(item);
     }
 
-    @ApiStatus.AvailableSince("1.4.7")
     public void clearAll() {
         this.stacks.clear();
         this.baubles.clear();
@@ -206,7 +203,6 @@ public class BaubleItemHandler extends ItemStacksResourceHandler {
     /**
      * 获取需要同步到客户端饰品
      */
-    @ApiStatus.AvailableSince("1.4.7")
     public Int2ObjectSortedMap<ItemStack> getSyncClientBauble(EntityMaid maid) {
         Int2ObjectSortedMap<ItemStack> sync = new Int2ObjectRBTreeMap<>();
         for (var entry : baubles.int2ObjectEntrySet()) {

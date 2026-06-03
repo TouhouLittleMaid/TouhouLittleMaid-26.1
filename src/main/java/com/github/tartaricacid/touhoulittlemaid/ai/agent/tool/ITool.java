@@ -8,7 +8,6 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.llm.openai.request.Ch
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -87,7 +86,6 @@ public interface ITool<T> {
      * @param client     当前调用的 LLM 客户端实例，必要时可以通过它发起新的对话请求
      * @return 异步回调结果
      */
-    @ApiStatus.AvailableSince("1.5.2")
     default CompletableFuture<LLMCallback> onCallAsync(
             String toolCallId, T result, LLMCallback callback, LLMClient client
     ) {
@@ -116,7 +114,6 @@ public interface ITool<T> {
      * @param result 解码后的参数对象
      * @return Component 形式的摘要信息
      */
-    @ApiStatus.AvailableSince("1.5.2")
     default Component invocationSummaryComponent(T result) {
         return Component.empty();
     }

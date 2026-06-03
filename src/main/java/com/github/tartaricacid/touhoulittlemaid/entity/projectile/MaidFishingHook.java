@@ -1,12 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.projectile;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidFishedEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskFishing;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -16,7 +16,6 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerEntity;
@@ -367,7 +366,7 @@ public class MaidFishingHook extends Projectile {
                 // 添加额外的物品
                 this.addExtraLoot(randomItems);
 
-                event = new MaidFishedEvent(randomItems, this.onGround() ? 2 : 1, this);
+                event = new MaidFishedEvent(randomItems, this.onGround() ? 2 : 1, maid, this);
                 NeoForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) {
                     this.discard();

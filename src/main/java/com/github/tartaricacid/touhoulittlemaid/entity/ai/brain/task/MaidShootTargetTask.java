@@ -19,26 +19,12 @@ import java.util.Optional;
 import static com.github.tartaricacid.touhoulittlemaid.datagen.EnchantmentKeys.getEnchantmentLevel;
 
 public class MaidShootTargetTask extends Behavior<EntityMaid> {
-    /**
-     * @deprecated 该字段已弃用，现在已经使用属性 {@link InitAttribute#MAID_SHOOT_COOLDOWN} 来调整攻击间隔
-     */
-    @Deprecated(since = "1.4.7")
-    private final int attackCooldown = 2;
-
     private int attackTime = -1;
     private int seeTime;
 
     public MaidShootTargetTask() {
         super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryStatus.REGISTERED,
                 MemoryModuleType.ATTACK_TARGET, MemoryStatus.VALUE_PRESENT), 1200);
-    }
-
-    /**
-     * @deprecated 现在已经使用属性 {@link InitAttribute#MAID_SHOOT_COOLDOWN} 来调整攻击间隔
-     */
-    @Deprecated(since = "1.4.7")
-    public MaidShootTargetTask(int attackCooldown) {
-        this();
     }
 
     @Override
@@ -105,7 +91,7 @@ public class MaidShootTargetTask extends Behavior<EntityMaid> {
                         if (attributeInstance != null) {
                             this.attackTime = (int) attributeInstance.getValue();
                         } else {
-                            this.attackTime = this.attackCooldown;
+                            this.attackTime = 2;
                         }
                     }
                 }

@@ -10,7 +10,6 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.behavior.BlockPosTracker;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Map;
 
@@ -75,7 +74,6 @@ public abstract class MaidMoveToBlockTask extends MaidCheckRateTask {
     /**
      * 获取水平搜索范围
      */
-    @ApiStatus.AvailableSince("1.4.7")
     protected int getHorizontalSearchRange(EntityMaid maid) {
         return (int) maid.getHomeRadius();
     }
@@ -121,11 +119,6 @@ public abstract class MaidMoveToBlockTask extends MaidCheckRateTask {
      * @return 是否符合判定条件
      */
     protected abstract boolean shouldMoveTo(ServerLevel worldIn, EntityMaid entityIn, BlockPos pos);
-
-    @Deprecated(forRemoval = true)
-    protected boolean checkPathReach(EntityMaid maid, BlockPos pos) {
-        return maid.canPathReach(pos);
-    }
 
     protected boolean checkPathReach(EntityMaid maid, MaidPathFindingBFS pathFinding, BlockPos pos) {
         return pathFinding.canPathReach(pos);

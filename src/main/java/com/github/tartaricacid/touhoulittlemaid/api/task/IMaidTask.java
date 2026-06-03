@@ -15,7 +15,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -85,7 +84,6 @@ public interface IMaidTask {
      * @param maid 女仆对象
      * @return 当前 Task 是否在切换界面隐藏
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default boolean isHidden(EntityMaid maid) {
         return false;
     }
@@ -259,7 +257,6 @@ public interface IMaidTask {
      * @param maid 女仆实体
      * @return 函数调用场景下的切换结果
      */
-    @ApiStatus.AvailableSince("1.4.7")
     default FunctionCallSwitchResult onFunctionCallSwitch(EntityMaid maid) {
         return FunctionCallSwitchResult.OK;
     }
@@ -270,7 +267,6 @@ public interface IMaidTask {
      * 该文本应当是适合大模型理解的英文硬编码描述，强调任务用途与关键前置条件。
      * 若未覆写，则默认返回 task id 的 path 部分，作为最低保底摘要。
      */
-    @ApiStatus.AvailableSince("1.5.1")
     default String getMaidActionSummary() {
         return getUid().getPath();
     }

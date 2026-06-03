@@ -19,14 +19,6 @@ import java.util.Optional;
 import static com.github.tartaricacid.touhoulittlemaid.datagen.EnchantmentKeys.getEnchantmentLevel;
 
 public class MaidTridentTargetTask extends Behavior<EntityMaid> {
-    /**
-     * 一秒的间隔使用时间，模拟忠诚后的三叉戟击中目标返回来所需要的时间，不然就太 IMBA 了...
-     *
-     * @deprecated 该字段已弃用，现在已经使用属性 {@link InitAttribute#MAID_TRIDENT_COOLDOWN} 来调整攻击间隔
-     */
-    @Deprecated(since = "1.4.7")
-    private final int attackCooldown = 20;
-
     private int attackTime = -1;
     private int seeTime;
 
@@ -99,7 +91,7 @@ public class MaidTridentTargetTask extends Behavior<EntityMaid> {
                         if (attributeInstance != null) {
                             this.attackTime = (int) attributeInstance.getValue();
                         } else {
-                            this.attackTime = this.attackCooldown;
+                            this.attackTime = 20;
                         }
                     }
                 }

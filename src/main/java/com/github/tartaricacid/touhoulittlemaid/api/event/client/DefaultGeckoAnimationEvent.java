@@ -6,7 +6,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.file.AnimationFile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.Event;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,22 +24,6 @@ public class DefaultGeckoAnimationEvent extends Event {
         this.animationFiles = animationFiles;
     }
 
-    @Deprecated(since = "1.4.7")
-    public AnimationFile getMaidAnimationFile() {
-        return animationFiles.get(AnimationType.MAID);
-    }
-
-    @Deprecated(since = "1.4.7")
-    public AnimationFile getTacAnimationFile() {
-        return animationFiles.get(AnimationType.TAC);
-    }
-
-    @Deprecated(since = "1.4.7")
-    public AnimationFile getChairAnimationFile() {
-        return animationFiles.get(AnimationType.CHAIR);
-    }
-
-    @ApiStatus.AvailableSince("1.4.7")
     public AnimationFile getAnimationFile(AnimationType type) {
         return animationFiles.get(type);
     }
@@ -53,7 +36,6 @@ public class DefaultGeckoAnimationEvent extends Event {
         }
     }
 
-    @ApiStatus.AvailableSince("1.4.7")
     public void addAnimation(AnimationType type, Identifier file) {
         AnimationFile animationFile = animationFiles.get(type);
         if (animationFile != null) {

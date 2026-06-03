@@ -6,9 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Random;
 
@@ -33,7 +31,6 @@ public interface IMaidBauble {
      * @param damage     伤害值，可修改此值来改变最终伤害
      * @return 是否取消此次伤害，返回 true 则取消伤害，返回 false 则不取消伤害，取消伤害后，后续饰品不再触发此方法
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default boolean onInjured(EntityMaid maid, ItemStack baubleItem, DamageSource source, MutableFloat damage) {
         return false;
     }
@@ -46,7 +43,6 @@ public interface IMaidBauble {
      * @param source     伤害类型
      * @return 是否取消此次死亡，返回 true 则取消死亡，返回 false 则不取消死亡，取消死亡后，后续饰品不再触发此方法
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default boolean onDeath(EntityMaid maid, ItemStack baubleItem, DamageSource source) {
         return false;
     }
@@ -57,7 +53,6 @@ public interface IMaidBauble {
      * @param maid       女仆
      * @param baubleItem 饰品物品
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default void onPutOn(EntityMaid maid, ItemStack baubleItem) {
     }
 
@@ -67,7 +62,6 @@ public interface IMaidBauble {
      * @param maid       女仆
      * @param baubleItem 饰品物品
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default void onTakeOff(EntityMaid maid, ItemStack baubleItem) {
     }
 
@@ -78,7 +72,6 @@ public interface IMaidBauble {
      * @param baubleItem 饰品物品
      * @param target     近战攻击目标
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default void onMeleeAttack(EntityMaid maid, ItemStack baubleItem, Entity target) {
     }
 
@@ -89,7 +82,6 @@ public interface IMaidBauble {
      * @param baubleItem 饰品物品
      * @param task       远程攻击任务，一定是 IRangedAttackTask 的子类，可能是弓兵、弹幕，三叉戟、枪械，或者其他附属模组使用的远程攻击方法
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default void onRangedAttack(EntityMaid maid, ItemStack baubleItem, IRangedAttackTask task) {
     }
 
@@ -101,7 +93,6 @@ public interface IMaidBauble {
      * @param foodItem   食物物品
      * @param mealType   进食类型，是工作餐还是回血餐还是家庭餐
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default void onMaidEat(EntityMaid maid, ItemStack baubleItem, ItemStack foodItem, MaidMealType mealType) {
     }
 
@@ -116,7 +107,6 @@ public interface IMaidBauble {
      * @param oldLevel   旧等级
      * @param newLevel   新等级
      */
-    @ApiStatus.AvailableSince("1.4.2")
     default void onFavorabilityLevelChange(EntityMaid maid, ItemStack baubleItem, int oldLevel, int newLevel) {
     }
 
@@ -130,20 +120,7 @@ public interface IMaidBauble {
      * @param baubleItem 饰品物品堆
      * @return 若需同步到客户端返回 true，否则返回 false
      */
-    @ApiStatus.AvailableSince("1.4.7")
     default boolean syncClient(EntityMaid maid, ItemStack baubleItem) {
         return false;
-    }
-
-    /**
-     * Get a chat bubble when maid has the bauble
-     * <p>
-     * 已废弃，不再使用
-     *
-     * @return chat bubble id
-     */
-    @Deprecated
-    default String getChatBubbleId() {
-        return StringUtils.EMPTY;
     }
 }

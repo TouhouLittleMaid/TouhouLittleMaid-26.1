@@ -3,7 +3,6 @@ package com.github.tartaricacid.touhoulittlemaid.api.event;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * 女仆背包变化事件
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.ApiStatus;
  * 注意：如果仅是物品数量发生变化，那么不会触发此事件
  * </p>
  */
-@ApiStatus.AvailableSince("1.4.3")
 public abstract class MaidBackpackChangeEvent extends LivingEvent {
     private final EntityMaid maid;
     private final ItemStack itemStack;

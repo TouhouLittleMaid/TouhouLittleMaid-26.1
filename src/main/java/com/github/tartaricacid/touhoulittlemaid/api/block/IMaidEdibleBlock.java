@@ -6,7 +6,6 @@ import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * 方块食物接口，用于让女仆与方块类食物进行交互。
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.ApiStatus;
  *     <li>从物品堆放置为方块食物的逻辑（可选）</li>
  * </ul>
  */
-@ApiStatus.AvailableSince("1.4.7")
 public interface IMaidEdibleBlock {
     /**
      * 工具方法，用于判断指定方块下方是否为零食架方块。

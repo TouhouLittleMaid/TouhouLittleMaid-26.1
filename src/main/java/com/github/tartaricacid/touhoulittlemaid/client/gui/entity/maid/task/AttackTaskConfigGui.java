@@ -1,12 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.MonsterListButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
+import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.TaskConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetAttackListPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -26,7 +27,6 @@ import org.anti_ad.mc.ipn.api.IPNPlayerSideOnly;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +48,7 @@ public class AttackTaskConfigGui extends MaidTaskConfigGui<TaskConfigContainer> 
 
     public AttackTaskConfigGui(TaskConfigContainer screenContainer, Inventory inv, Component titleIn) {
         super(screenContainer, inv, titleIn);
-        // TODO 应该读取实体攻击列表
-        this.attackGroups = Collections.emptyMap();
+        this.attackGroups = this.getMaid().getData(InitDataAttachment.ATTACK_LIST).attackGroups();
         this.attackGroupsKey = Lists.newArrayList();
         this.sortKey();
     }

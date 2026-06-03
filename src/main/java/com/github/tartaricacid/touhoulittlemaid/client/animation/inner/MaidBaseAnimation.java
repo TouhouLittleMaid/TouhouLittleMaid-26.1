@@ -326,12 +326,6 @@ public final class MaidBaseAnimation {
         };
     }
 
-    @Deprecated
-    public static IAnimation<EntityMaidRenderState> getStatusBackpackLevel() {
-        return (ignoredState, ignoredModels) -> {
-        };
-    }
-
     public static IAnimation<EntityMaidRenderState> getTailDefault() {
         return (state, models) -> {
             BedrockPart tail = models.get("tail");

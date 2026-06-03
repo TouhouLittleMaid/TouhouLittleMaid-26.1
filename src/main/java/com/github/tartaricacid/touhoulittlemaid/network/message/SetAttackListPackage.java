@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.data.AttackListData;
 import com.github.tartaricacid.touhoulittlemaid.entity.misc.MonsterType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import io.netty.buffer.ByteBuf;
@@ -14,6 +15,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment.ATTACK_LIST;
 import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SetAttackListPackage(int entityId,
@@ -42,8 +44,7 @@ public record SetAttackListPackage(int entityId,
     private static void writeList(SetAttackListPackage message, Player sender) {
         Entity entity = sender.level.getEntity(message.entityId);
         if (entity instanceof EntityMaid maid && maid.isOwnedBy(sender)) {
-            // TODO
-            // maid.setAndSyncData(InitTaskData.ATTACK_LIST, new AttackListData(message.attackGroups));
+            maid.setData(ATTACK_LIST, new AttackListData(message.attackGroups));
         }
     }
 

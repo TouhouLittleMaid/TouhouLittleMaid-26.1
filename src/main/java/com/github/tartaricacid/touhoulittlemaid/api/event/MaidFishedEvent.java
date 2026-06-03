@@ -16,8 +16,8 @@ public class MaidFishedEvent extends Event implements ICancellableEvent {
     private final MaidFishingHook hook;
     private int rodDamage;
 
-    public MaidFishedEvent(List<ItemStack> drops, int rodDamage, MaidFishingHook hook) {
-        this.maid = hook.getMaidOwner();
+    public MaidFishedEvent(List<ItemStack> drops, int rodDamage, EntityMaid maid, MaidFishingHook hook) {
+        this.maid = maid;
         this.drops.addAll(drops);
         this.rodDamage = rodDamage;
         this.hook = hook;

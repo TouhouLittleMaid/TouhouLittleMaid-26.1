@@ -45,7 +45,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.common.NeoForge;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import java.text.DecimalFormat;
@@ -698,7 +697,6 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         return maid;
     }
 
-    @ApiStatus.AvailableSince("1.5.1")
     public Map<String, AbstractWidget> getEventAddButtons() {
         return eventAddButtons;
     }
