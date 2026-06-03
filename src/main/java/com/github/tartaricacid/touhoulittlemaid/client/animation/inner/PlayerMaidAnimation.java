@@ -59,16 +59,11 @@ public final class PlayerMaidAnimation {
 
     public static IAnimation<EntityMaidRenderState> getPlayerSitDefault() {
         return (state, models) -> {
-            BedrockPart head = models.get("head");
             BedrockPart legLeft = models.get("legLeft");
             BedrockPart legRight = models.get("legRight");
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
             BedrockPart root = IAnimation.root(models);
-
-            if (head != null) {
-                head.offsetY = 0;
-            }
 
             if (state.isPassenger) {
                 playerRidingPosture(legLeft, legRight);
@@ -76,8 +71,6 @@ public final class PlayerMaidAnimation {
             } else if (state.sitting) {
                 playerSittingPosture(armLeft, armRight, legLeft, legRight);
                 root.offsetY = 0.3f;
-            } else {
-                root.offsetY = 0f;
             }
         };
     }

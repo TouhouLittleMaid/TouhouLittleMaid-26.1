@@ -83,12 +83,6 @@ public final class MaidBaseAnimation {
                 }
                 setVisible(begShow, true);
             } else {
-                if (head != null) {
-                    head.zRot = head.getInitRotZ();
-                }
-                if (ahoge != null) {
-                    ahoge.zRot = ahoge.getInitRotZ();
-                }
                 setVisible(begShow, false);
             }
         };
@@ -132,9 +126,6 @@ public final class MaidBaseAnimation {
                 if (earRightShake != null) {
                     earRightShake.zRot = earRightShake.getInitRotZ() - rotationZ;
                 }
-            } else {
-                resetZ(earLeftShake);
-                resetZ(earRightShake);
             }
         };
     }
@@ -152,9 +143,6 @@ public final class MaidBaseAnimation {
                 if (earRightShake != null) {
                     earRightShake.zRot = earRightShake.getInitRotZ() - rotationZ;
                 }
-            } else {
-                resetZ(earLeftShake);
-                resetZ(earRightShake);
             }
         };
     }
@@ -174,8 +162,6 @@ public final class MaidBaseAnimation {
                     leftRad -= 0.3927;
                 }
                 legLeft.xRot = (float) leftRad;
-                legLeft.yRot = legLeft.getInitRotY();
-                legLeft.zRot = legLeft.getInitRotZ();
             }
             if (legRight != null) {
                 double rightRad = -Math.cos(limbSwing * 0.67) * 0.3 * limbSwingAmount;
@@ -183,8 +169,6 @@ public final class MaidBaseAnimation {
                     rightRad -= 0.3927;
                 }
                 legRight.xRot = (float) rightRad;
-                legRight.yRot = legRight.getInitRotY();
-                legRight.zRot = legRight.getInitRotZ();
             }
         };
     }
@@ -202,7 +186,6 @@ public final class MaidBaseAnimation {
 
             if (armLeft != null) {
                 armLeft.xRot = (float) (-Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
-                armLeft.yRot = armLeft.getInitRotY();
                 armLeft.zRot = (float) (Math.cos(ageInTicks * 0.05) * 0.05 + armLeft.getInitRotZ());
                 if (state.attackTime > 0.0 && isSwingLeftHand(state)) {
                     armLeft.xRot = (float) (armLeft.xRot - (f2 * 1.2 + f3));
@@ -216,7 +199,6 @@ public final class MaidBaseAnimation {
 
             if (armRight != null) {
                 armRight.xRot = (float) (Math.cos(limbSwing * 0.67) * 0.7 * limbSwingAmount);
-                armRight.yRot = armRight.getInitRotY();
                 armRight.zRot = (float) (-Math.cos(ageInTicks * 0.05) * 0.05 + armRight.getInitRotZ());
                 if (state.attackTime > 0.0 && !isSwingLeftHand(state)) {
                     armRight.xRot = (float) (armRight.xRot - (f2 * 1.2 + f3));
@@ -250,16 +232,11 @@ public final class MaidBaseAnimation {
 
     public static IAnimation<EntityMaidRenderState> getSitDefault() {
         return (state, models) -> {
-            BedrockPart head = models.get("head");
             BedrockPart legLeft = models.get("legLeft");
             BedrockPart legRight = models.get("legRight");
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
             BedrockPart root = IAnimation.root(models);
-
-            if (head != null) {
-                head.offsetY = 0;
-            }
 
             if (state.isPassenger) {
                 ridingPosture(legLeft, legRight);
@@ -267,23 +244,16 @@ public final class MaidBaseAnimation {
             } else if (state.sitting) {
                 sittingPosture(armLeft, armRight, legLeft, legRight);
                 root.offsetY = 0.3f;
-            } else {
-                root.offsetY = 0f;
             }
         };
     }
 
     public static IAnimation<EntityMaidRenderState> getSitNoLeg() {
         return (state, models) -> {
-            BedrockPart head = models.get("head");
             BedrockPart legLeft = models.get("legLeft");
             BedrockPart legRight = models.get("legRight");
             BedrockPart armLeft = models.get("armLeft");
             BedrockPart armRight = models.get("armRight");
-
-            if (head != null) {
-                head.offsetY = 0;
-            }
 
             if (state.isPassenger) {
                 ridingPosture(legLeft, legRight);
@@ -304,12 +274,8 @@ public final class MaidBaseAnimation {
     public static IAnimation<EntityMaidRenderState> getSitSkirtRotation() {
         return (state, models) -> {
             BedrockPart sittingRotationSkirt = models.get("sittingRotationSkirt");
-            if (sittingRotationSkirt != null) {
-                if (state.isPassenger || state.sitting) {
-                    sittingRotationSkirt.xRot = -0.567f;
-                } else {
-                    sittingRotationSkirt.xRot = sittingRotationSkirt.getInitRotX();
-                }
+            if (sittingRotationSkirt != null && (state.isPassenger || state.sitting)) {
+                sittingRotationSkirt.xRot = -0.567f;
             }
         };
     }
@@ -320,9 +286,7 @@ public final class MaidBaseAnimation {
             if (sittingRotationSwingSkirt != null) {
                 if (state.isPassenger || state.sitting) {
                     sittingRotationSwingSkirt.xRot = -0.567f;
-                    sittingRotationSwingSkirt.zRot = sittingRotationSwingSkirt.getInitRotZ();
                 } else {
-                    sittingRotationSwingSkirt.xRot = sittingRotationSwingSkirt.getInitRotX();
                     float rotationZ = (float) Math.sin(state.ageInTicks * 0.05) * 0.03f;
                     sittingRotationSwingSkirt.zRot = sittingRotationSwingSkirt.getInitRotZ() + rotationZ;
                 }
@@ -439,12 +403,6 @@ public final class MaidBaseAnimation {
     private static void setVisible(BedrockPart part, boolean visible) {
         if (part != null) {
             part.visible = visible;
-        }
-    }
-
-    private static void resetZ(BedrockPart part) {
-        if (part != null) {
-            part.zRot = part.getInitRotZ();
         }
     }
 
