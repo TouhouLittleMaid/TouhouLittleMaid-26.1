@@ -15,7 +15,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.crop.SpecialCropManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.meal.MaidMealManager;
-import com.github.tartaricacid.touhoulittlemaid.inventory.chest.ChestManager;
 import com.github.tartaricacid.touhoulittlemaid.item.bauble.BaubleManager;
 import net.minecraft.util.VisibleForDebug;
 
@@ -54,14 +53,6 @@ public interface ILittleMaid {
      * @param manager 注册器
      */
     default void addMultiBlock(MultiBlockManager manager) {
-    }
-
-    /**
-     * 添加箱子类型，用于隙间饰品的箱子识别
-     *
-     * @param manager 注册器
-     */
-    default void addChestType(ChestManager manager) {
     }
 
     /**

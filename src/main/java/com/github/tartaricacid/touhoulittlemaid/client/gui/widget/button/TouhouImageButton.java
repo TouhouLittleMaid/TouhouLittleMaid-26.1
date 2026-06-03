@@ -42,12 +42,12 @@ public class TouhouImageButton extends Button {
         this.renderTexture(pGuiGraphics, this.resourceLocation, this.getX(), this.getY(), this.xTexStart, this.yTexStart, this.yDiffTex, this.width, this.height, this.textureWidth, this.textureHeight);
     }
 
-    public void renderTexture(GuiGraphicsExtractor pGuiGraphics, Identifier pTexture, int pX, int pY, int pUOffset, int pVOffset, int p_283472_, int pWidth, int pHeight, int pTextureWidth, int pTextureHeight) {
+    public void renderTexture(GuiGraphicsExtractor pGuiGraphics, Identifier pTexture, int pX, int pY, int pUOffset, int pVOffset, int diff, int pWidth, int pHeight, int pTextureWidth, int pTextureHeight) {
         int i = pVOffset;
         if (!this.isActive()) {
-            i = pVOffset + p_283472_ * 2;
+            i = pVOffset + diff * 2;
         } else if (this.isHoveredOrFocused()) {
-            i = pVOffset + p_283472_;
+            i = pVOffset + diff;
         }
 
         GuiTools.guiBlit(pGuiGraphics, pTexture, pX, pY, pUOffset, i, pWidth, pHeight, pTextureWidth, pTextureHeight);

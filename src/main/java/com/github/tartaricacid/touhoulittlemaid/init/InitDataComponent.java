@@ -101,7 +101,7 @@ public class InitDataComponent {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> FILTER_LIST_TAG =
             DATA_COMPONENTS.register(FILTER_LIST_TAG_NAME, () -> DataComponentType.<List<ItemStack>>builder()
                     .persistent(ItemStack.OPTIONAL_CODEC.listOf())
-                    .networkSynchronized(ByteBufCodecs.collection(ArrayList::new, ItemStack.STREAM_CODEC))
+                    .networkSynchronized(ByteBufCodecs.collection(ArrayList::new, ItemStack.OPTIONAL_STREAM_CODEC))
                     .build());
 
     public static final String BINDING_POS_NAME = "binding_pos";
