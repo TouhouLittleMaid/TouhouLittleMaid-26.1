@@ -11,6 +11,9 @@ plugins {
 
     // Shadow 插件，用于打包依赖到 jar 包里
     id 'com.gradleup.shadow' version '9.4.1'
+
+    // 发布到 maven 仓库的插件
+    id 'maven-publish'
 }
 
 // ALL 为下载 gradle 源码，方便查看调试
@@ -343,4 +346,19 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            // 使用 shadowJar 作为主要产物
+            artifact(shadowJar.archiveFile) {
+                classifier = null
+                builtBy shadowJar
+            }
+        }
+    }
+    repositories {
+        mavenLocal()  // JitPack 需要发布到本地仓库
+    }
 }
