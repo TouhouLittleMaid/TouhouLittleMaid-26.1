@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.loader;
 
-import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
+import com.github.tartaricacid.touhoulittlemaid.api.animation.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.models.AbstractClientModels;

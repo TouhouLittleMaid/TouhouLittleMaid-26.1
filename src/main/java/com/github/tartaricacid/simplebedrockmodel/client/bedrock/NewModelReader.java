@@ -157,6 +157,12 @@ public final class NewModelReader {
                                 texWidth, texHeight, faceUv));
                     }
 
+                    // 保存自己的初始位置和旋转角度，动画需要
+                    cubeRenderer.setInitialPose(PartPose.offsetAndRotation(
+                            cubeRenderer.x, cubeRenderer.y, cubeRenderer.z,
+                            cubeRenderer.xRot, cubeRenderer.yRot, cubeRenderer.zRot
+                    ));
+
                     // 添加进父骨骼中
                     model.addChild(cubeName, cubeRenderer);
                 }

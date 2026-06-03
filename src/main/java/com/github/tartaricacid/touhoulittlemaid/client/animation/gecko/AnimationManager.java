@@ -1,10 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.gecko;
 
-import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingAnimationProvider;
-import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingState;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.condition.*;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.controller.IAnimationPredicate;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.magic.MagicCastingAnimationManager;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.compat.gun.common.GunClientUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
@@ -13,7 +10,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidGameManager;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.AnimatableEntity;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.PlayState;
-import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.AnimationBuilder;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.builder.LoopType;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.AnimationEvent;
 import com.github.tartaricacid.touhoulittlemaid.network.message.MaidAnimationPackage;
@@ -299,66 +295,6 @@ public final class AnimationManager {
         if (StringUtils.isNoneBlank(name)) {
             return playAnimation(event, name, LoopType.LOOP);
         }
-        return PlayState.STOP;
-    }
-
-    public static PlayState predicateMagicCastingAnimation(AnimationEvent<GeckoMaidEntity<?>> event) {
-        EntityMaid maid = event.getAnimatableEntity().getMaid();
-
-        var controller = event.getCodedController();
-        var geckoEntity = event.getAnimatableEntity();
-        var lastPhase = geckoEntity.getLastCastingPhase();
-
-        // 遍历所有注册的提供器，按优先级顺序
-        for (IMagicCastingAnimationProvider provider : MagicCastingAnimationManager.getProviders()) {
-            IMagicCastingState state = provider.getMagicCastingState(maid);
-
-            // 如果咏唱被取消，跳过当前提供器，检查下一个
-            if (state != null && state.isCancelled()) {
-                // 清理取消标记，避免提供器没有清除状态
-                state.setCancelled(false);
-                continue;
-            }
-
-            // 获取当前 phase
-            var currentPhase = (state != null) ? state.getCurrentPhase() : IMagicCastingState.CastingPhase.NONE;
-
-            // 检查状态是否有效
-            if (currentPhase == IMagicCastingState.CastingPhase.NONE) {
-                // 当前 phase 为 NONE，检查是否需要让动画播放完毕
-                // 从 INSTANT 或 END 过渡到 NONE 时，继续播放直到动画结束
-                // TODO: 待验证
-                if ((lastPhase == IMagicCastingState.CastingPhase.INSTANT || lastPhase == IMagicCastingState.CastingPhase.END)
-                    && !controller.isAnimFinished()) {
-                    return PlayState.CONTINUE;
-                }
-                // 从 START 或 CASTING 过渡到 NONE 时，允许终止
-                geckoEntity.setLastCastingPhase(IMagicCastingState.CastingPhase.NONE);
-                continue;
-            }
-
-            // 更新 lastPhase
-            geckoEntity.setLastCastingPhase(currentPhase);
-
-            // 尝试获取自定义动画
-            AnimationBuilder builder = provider.getAnimationBuilder(maid, state);
-            if (builder != null && !builder.isEmpty()) {
-                if (lastPhase != IMagicCastingState.CastingPhase.START && lastPhase != IMagicCastingState.CastingPhase.CASTING) {
-                    controller.indicateReload();
-                }
-                controller.setAnimation(builder.animationName(), builder.loopType());
-                return PlayState.CONTINUE;
-            }
-
-            // builder 为 null，但 phase 有效，继续播放当前动画
-            if (!controller.isAnimFinished()) {
-                return PlayState.CONTINUE;
-            }
-        }
-
-        // 没有任何附属提供有效的动画
-        geckoEntity.setLastCastingPhase(IMagicCastingState.CastingPhase.NONE);
-        controller.reset();
         return PlayState.STOP;
     }
 

@@ -1,8 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.api.event.client.AddMaidLayerEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.ChatBubbleRenderer;
@@ -12,6 +10,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.layer.*;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.ModelType;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -22,6 +21,7 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Mob;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRenderState, EntityMaidModel> {
@@ -44,7 +44,7 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
         this.addLayer(new LayerMaidBackItem(this));
         this.addLayer(new LayerMaidBanner(this, context));
 
-        this.addAdditionMaidLayer(context);
+        NeoForge.EVENT_BUS.post(new AddMaidLayerEvent.Legacy(context, this));
     }
 
     @Override
@@ -121,9 +121,6 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
             poseStack.mulPose(Axis.ZN.rotationDegrees(65));
             poseStack.mulPose(Axis.YN.rotationDegrees(-80));
         }
-
-        // 其他时候的旋转
-        // HardcodedAnimationManger.setupRotations(mob, poseStack, state.ageInTicks, state.yRot, state.partialTick, state.mainInfo.isGeckoModel());
     }
 
     @Override
@@ -143,11 +140,5 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
     @Override
     public float getWhiteOverlayProgress(EntityMaidRenderState state) {
         return super.getWhiteOverlayProgress(state);
-    }
-
-    protected void addAdditionMaidLayer(EntityRendererProvider.Context renderManager) {
-        for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
-            littleMaid.addAdditionMaidLayer(this, renderManager);
-        }
     }
 }

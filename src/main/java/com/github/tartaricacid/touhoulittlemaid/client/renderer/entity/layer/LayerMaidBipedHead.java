@@ -44,9 +44,9 @@ public class LayerMaidBipedHead extends RenderLayer<EntityMaidRenderState, Entit
 
         poseStack.pushPose();
 
-        // 依据 root 模型的位移对整体进行物品进行偏移
+        // 依据 root 模型的位移对整体进行物品进行偏移、旋转和缩放
         if (parentModel.root() instanceof BedrockPart part) {
-            poseStack.translate(part.offsetX, part.offsetY, part.offsetZ);
+            part.translateAndRotate(poseStack);
         }
 
         if (state.wornHeadType != null) {

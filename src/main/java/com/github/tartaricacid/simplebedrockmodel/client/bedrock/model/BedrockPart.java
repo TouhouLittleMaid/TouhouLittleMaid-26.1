@@ -31,6 +31,14 @@ public class BedrockPart extends ModelPart {
     }
 
     @Override
+    public void resetPose() {
+        super.resetPose();
+        this.offsetX = 0;
+        this.offsetY = 0;
+        this.offsetZ = 0;
+    }
+
+    @Override
     public void render(PoseStack poseStack, VertexConsumer consumer, int lightmap, int overlay, int color) {
         int cubePackedLight = illuminated ? MAX_LIGHT_TEXTURE : lightmap;
         if (this.visible) {

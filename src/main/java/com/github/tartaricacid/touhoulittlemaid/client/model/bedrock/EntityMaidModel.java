@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.model.bedrock;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockModelPOJO;
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.pojo.BedrockVersion;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
+import com.github.tartaricacid.touhoulittlemaid.api.animation.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -41,6 +41,7 @@ public class EntityMaidModel extends SimpleBedrockEntityModel<EntityMaidRenderSt
     @Override
     @NullMarked
     public void setupAnim(EntityMaidRenderState state) {
+        super.setupAnim(state);
         if (animations == null || animations.isEmpty()) {
             return;
         }

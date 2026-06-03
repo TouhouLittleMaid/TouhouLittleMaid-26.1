@@ -47,9 +47,9 @@ public class LayerMaidBanner extends RenderLayer<EntityMaidRenderState, EntityMa
         if (state.backBanner != null && state.modelInfo.isShowBackpack()) {
             poseStack.pushPose();
 
-            // 依据 root 模型的位移对整体进行物品进行偏移
+            // 依据 root 模型的位移对整体进行物品进行偏移、旋转和缩放
             if (this.getParentModel().root() instanceof BedrockPart part) {
-                poseStack.translate(part.offsetX, part.offsetY, part.offsetZ);
+                part.translateAndRotate(poseStack);
             }
 
             poseStack.translate(0, -0.25, 0.25);

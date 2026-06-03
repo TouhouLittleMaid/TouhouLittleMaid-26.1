@@ -1,21 +1,26 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.special;
 
-import com.github.tartaricacid.touhoulittlemaid.api.animation.ICustomAnimation;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.tags.FluidTags;
+import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
+import com.github.tartaricacid.touhoulittlemaid.api.animation.IAnimation;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Mob;
 
-public class SwimAnimation implements ICustomAnimation<Mob> {
+import java.util.HashMap;
+
+public class SwimAnimation implements IAnimation<EntityMaidRenderState> {
     @Override
-    public void setupRotations(Mob mob, PoseStack poseStack, float ageInTicks, float rotationYaw, float partialTicks) {
-        boolean inSwim = mob.isInWater() && mob.getFluidHeight(FluidTags.WATER) > mob.getFluidJumpThreshold();
-        float xRot = 90 + (inSwim ? mob.getXRot() : 0);
-        float xRotLerp = Mth.lerp(mob.getSwimAmount(partialTicks), 0, -xRot);
-        poseStack.mulPose(Axis.XP.rotationDegrees(xRotLerp));
-        if (mob.isVisuallySwimming()) {
-            poseStack.translate(0F, -1F, 0.3F);
+    public void setupAnimation(EntityMaidRenderState state, HashMap<String, BedrockPart> models) {
+        boolean isSwimming = state.isSwimming;
+        float xRot = 90 + (isSwimming ? state.xRot : 0);
+        float xRotLerp = Mth.lerp(state.swimAmount, 0, -xRot);
+
+        BedrockPart root = IAnimation.root(models);
+        root.xRot = -Mth.DEG_TO_RAD * xRotLerp;
+
+        if (state.isVisuallySwimming) {
+            root.offsetX = 0;
+            root.offsetY = 1.25f;
+            root.offsetZ = -0.5F;
         }
     }
 }

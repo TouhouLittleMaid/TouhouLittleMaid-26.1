@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.loader;
 
+import com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidPackLoaderEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.accessor.ResourceAccessor;
@@ -8,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.CustomModel
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.resource.GeckoContainer;
 import com.google.gson.reflect.TypeToken;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
@@ -33,12 +35,14 @@ final class MaidPackLoader {
     private static void loadMaidElement(ResourceAccessor accessor, MaidModelInfo info) throws IOException {
         if (info.isGeckoModel()) {
             loadGeckoMaidModelElement(accessor, info);
+            NeoForge.EVENT_BUS.post(new MaidPackLoaderEvent.Gecko(info));
         } else {
-            loadMaidModelElement(accessor, info);
+            EntityMaidModel model = loadMaidModelElement(accessor, info);
+            NeoForge.EVENT_BUS.post(new MaidPackLoaderEvent.Legacy(info, model));
         }
     }
 
-    private static void loadMaidModelElement(ResourceAccessor accessor, MaidModelInfo info) {
+    private static EntityMaidModel loadMaidModelElement(ResourceAccessor accessor, MaidModelInfo info) {
         EntityMaidModel modelJson = CustomPackBedrockModelParser.loadMaidModel(accessor, info.getModel());
         CustomPackLoader.registerTexture(accessor, info.getTexture());
         if (modelJson != null) {
@@ -49,6 +53,7 @@ final class MaidPackLoader {
                 putModelData(info, modelJson);
             }
         }
+        return modelJson;
     }
 
     private static void loadGeckoMaidModelElement(ResourceAccessor accessor, MaidModelInfo info) throws IOException {

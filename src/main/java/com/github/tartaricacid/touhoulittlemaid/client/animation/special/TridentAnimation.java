@@ -1,28 +1,24 @@
 package com.github.tartaricacid.touhoulittlemaid.client.animation.special;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
-import com.github.tartaricacid.touhoulittlemaid.api.animation.ICustomAnimation;
-import com.github.tartaricacid.touhoulittlemaid.api.animation.IModelRenderer;
-import net.minecraft.client.Minecraft;
+import com.github.tartaricacid.touhoulittlemaid.api.animation.IAnimation;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.item.TridentItem;
+import net.neoforged.neoforge.common.Tags;
 
 import java.util.HashMap;
 
-public class TridentAnimation implements ICustomAnimation<Mob> {
+public class TridentAnimation implements IAnimation<EntityMaidRenderState> {
     @Override
-    public void setRotationAngles(Mob mob, HashMap<String, ? extends IModelRenderer> models,
-                                  float limbSwing, float limbSwingAmount, float ageInTicks,
-                                  float netHeadYaw, float headPitch) {
-        if (!mob.isSleeping() && mob.isUsingItem() && mob.getUsedItemHand() == InteractionHand.MAIN_HAND
-            && mob.getMainHandItem().getItem() instanceof TridentItem) {
-            int tick = mob.getTicksUsingItem();
-            BedrockPart armRight = ICustomAnimation.getPartOrNull(models, "armRight");
+    public void setupAnimation(EntityMaidRenderState state, HashMap<String, BedrockPart> models) {
+        if (!state.sleeping && state.isUsingItem
+            && state.useItemHand == InteractionHand.MAIN_HAND
+            && state.getMainHandItemStack().is(Tags.Items.TOOLS_TRIDENT)
+        ) {
+            BedrockPart armRight = models.get("armRight");
             if (armRight != null) {
-                float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
-                float rot = (tick + partialTick) / 10f;
+                float rot = state.ticksUsingItem / 10f;
                 armRight.xRot = (armRight.getInitRotX() - 80) - Math.min(rot, Mth.PI / 2) - 10;
                 armRight.zRot = -Math.min(rot, Mth.PI / 6);
             }

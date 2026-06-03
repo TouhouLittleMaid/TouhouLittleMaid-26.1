@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.client.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.api.animation.IMagicCastingState;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.molang.MolangEventWrapper;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
@@ -49,11 +48,6 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> {
     private boolean fireInitEvent = false;
     private IValue wrappedUpdateHandler = null;
     private final BooleanList updateHandlerArgs = new BooleanArrayList(1);
-
-    /**
-     * 上一次的魔法咏唱阶段，用于判断阶段过渡时的动画行为
-     */
-    private IMagicCastingState.CastingPhase lastCastingPhase = IMagicCastingState.CastingPhase.NONE;
 
     public GeckoMaidEntity(T maid) {
         super(maid, maid.renderState == MaidRenderState.ENTITY);
@@ -249,13 +243,5 @@ public class GeckoMaidEntity<T extends EntityMaid> extends AnimatableEntity<T> {
         waitForAsyncUpdate();
         super.reset();
         this.maidInfo = null;
-    }
-
-    public IMagicCastingState.CastingPhase getLastCastingPhase() {
-        return lastCastingPhase;
-    }
-
-    public void setLastCastingPhase(IMagicCastingState.CastingPhase phase) {
-        this.lastCastingPhase = phase;
     }
 }

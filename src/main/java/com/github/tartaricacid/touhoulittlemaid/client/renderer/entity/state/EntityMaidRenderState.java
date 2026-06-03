@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state;
 
+import com.github.tartaricacid.touhoulittlemaid.api.animation.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.api.backpack.IMaidBackpack;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoMaidEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoMaidRenderData;
@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.EntityAttachment;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BannerItem;
@@ -124,6 +125,10 @@ public class EntityMaidRenderState extends HumanoidRenderState {
      */
     public boolean hasFishingHook;
     /**
+     * 女仆是否处于游泳状态
+     */
+    public boolean isSwimming;
+    /**
      * 女仆当前工作模式 ID
      */
     public String taskId;
@@ -214,6 +219,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         begging = false;
         hurt = false;
         hasFishingHook = false;
+        isSwimming = false;
         taskId = null;
         armorValue = 0;
         health = 0;
@@ -281,6 +287,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         state.hasBackpack = maid.hasBackpack();
         state.hurt = maid.hurtTime > 0;
         state.hasFishingHook = maid.hasFishingHook();
+        state.isSwimming = maid.isInWater() && maid.getFluidHeight(FluidTags.WATER) > maid.getFluidJumpThreshold();
         state.taskId = maid.getTask().getUid().getPath();
     }
 
@@ -383,11 +390,6 @@ public class EntityMaidRenderState extends HumanoidRenderState {
         state.backpack = state.showBackpack ? maid.getMaidBackpackType() : BackpackManager.getEmptyBackpack();
 
         ItemStack showItem = maid.getBackpackShowItem();
-        if (showItem.getItem() instanceof BannerItem) {
-            // TODO: 复刻 BannerRenderer 的逻辑，extract 至 state.backBanner
-            return;
-        }
-
         // 只有工具类物品才会显示在背部
         if (showItem.has(DataComponents.TOOL)) {
             itemModelResolver.updateForLiving(state.backItem, showItem, ItemDisplayContext.FIXED, maid);

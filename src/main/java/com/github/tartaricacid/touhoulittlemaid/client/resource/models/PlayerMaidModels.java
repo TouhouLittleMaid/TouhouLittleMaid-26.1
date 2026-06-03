@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.models;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.IAnimation;
+import com.github.tartaricacid.touhoulittlemaid.api.animation.IAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.animation.inner.InnerAnimation;
 import com.github.tartaricacid.touhoulittlemaid.client.model.PlayerMaidModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityMaidModel;

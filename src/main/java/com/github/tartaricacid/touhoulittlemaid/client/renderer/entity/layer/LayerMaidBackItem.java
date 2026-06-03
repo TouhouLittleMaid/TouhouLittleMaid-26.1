@@ -25,9 +25,9 @@ public class LayerMaidBackItem extends RenderLayer<EntityMaidRenderState, Entity
             poseStack.pushPose();
             EntityMaidModel parentModel = this.getParentModel();
 
-            // 依据 root 模型的位移对整体进行物品进行偏移
+            // 依据 root 模型的位移对整体进行物品进行偏移、旋转和缩放
             if (parentModel.root() instanceof BedrockPart part) {
-                poseStack.translate(part.offsetX, part.offsetY, part.offsetZ);
+                part.translateAndRotate(poseStack);
             }
 
             // 如果有背包，那么和背包适配位移

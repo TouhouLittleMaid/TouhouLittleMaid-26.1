@@ -1,36 +1,32 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko;
 
-import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
+import com.github.tartaricacid.touhoulittlemaid.api.event.client.AddMaidLayerEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.layer.*;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeoReplacedEntityRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.neoforged.neoforge.common.NeoForge;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class GeckoEntityMaidRenderer extends GeoReplacedEntityRenderer<EntityMaid, EntityMaidRenderState, GeckoMaidRenderData> {
     public GeckoEntityMaidRenderer(EntityRendererProvider.Context context) {
         super(context);
+
         this.addLayer(new GeckoLayerMaidHeld());
         this.addLayer(new GeckoLayerMaidBipedHead(context));
         this.addLayer(new GeckoLayerMaidBackpack());
         this.addLayer(new GeckoLayerMaidBackItem());
         this.addLayer(new GeckoLayerMaidBanner(context));
-        this.addAdditionGeckoEntityMaidRenderer(context);
+
+        NeoForge.EVENT_BUS.post(new AddMaidLayerEvent.Gecko(context, this));
     }
 
     @Override
     public @NonNull EntityMaidRenderState createRenderState() {
         return new EntityMaidRenderState();
-    }
-
-    protected void addAdditionGeckoEntityMaidRenderer(EntityRendererProvider.Context renderManager) {
-        for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
-            littleMaid.addAdditionGeckoMaidLayer(this, renderManager);
-        }
     }
 
     @Override
