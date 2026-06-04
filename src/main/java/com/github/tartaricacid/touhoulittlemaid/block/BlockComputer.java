@@ -18,10 +18,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockComputer extends BlockJoy {
-    public static final VoxelShape SHAPE = Shapes.or(Block.box(0, 0, 0, 16, 3, 16),
+    public static final VoxelShape SHAPE = Shapes.or(
+            Block.box(0, 0, 0, 16, 3, 16),
             Block.box(6, 3, 6, 10, 9, 10),
             Block.box(1, 9, 1, 15, 12, 15),
-            Block.box(0, 12, 0, 16, 14, 16));
+            Block.box(0, 12, 0, 16, 14, 16)
+    );
+
     private static final MapCodec<BlockComputer> CODEC = simpleCodec(BlockComputer::new);
 
     public BlockComputer(Properties properties) {
@@ -49,8 +52,8 @@ public class BlockComputer extends BlockJoy {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityComputer(pPos, pState);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TileEntityComputer(pos, state);
     }
 
     @Override

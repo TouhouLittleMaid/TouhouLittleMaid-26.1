@@ -70,38 +70,46 @@ public class BlockPicnicMat extends Block implements EntityBlock {
     }
 
     public void startMaidSit(EntityMaid maid, BlockState state, Level worldIn, BlockPos pos) {
-        if (worldIn instanceof ServerLevel serverLevel && worldIn.getBlockEntity(pos) instanceof TileEntityPicnicMat picnicMat) {
-            // 只能选中中心方块
-            if (!state.getValue(PART).isCenter()) {
-                return;
+        if (!(worldIn instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!(worldIn.getBlockEntity(pos) instanceof TileEntityPicnicMat picnicMat)) {
+            return;
+        }
+        // 只能选中中心方块
+        if (!state.getValue(PART).isCenter()) {
+            return;
+        }
+
+        // 遍历，寻找是否有空位
+        boolean hasEmptySit = false;
+        int sitIndex = -1;
+        for (UUID uuid : picnicMat.getSitIds()) {
+            sitIndex++;
+            if (uuid.equals(Util.NIL_UUID)) {
+                hasEmptySit = true;
+                break;
             }
-            // 遍历，寻找是否有空位
-            boolean hasEmptySit = false;
-            int sitIndex = -1;
-            for (UUID uuid : picnicMat.getSitIds()) {
-                sitIndex++;
-                if (uuid.equals(Util.NIL_UUID)) {
-                    hasEmptySit = true;
-                    break;
-                }
-                Entity oldSitEntity = serverLevel.getEntity(uuid);
-                if (oldSitEntity == null || !oldSitEntity.isAlive()) {
-                    hasEmptySit = true;
-                    break;
-                }
+            Entity oldSitEntity = serverLevel.getEntity(uuid);
+            if (oldSitEntity == null || !oldSitEntity.isAlive()) {
+                hasEmptySit = true;
+                break;
             }
-            if (hasEmptySit) {
-                Vec3 sitPosition = this.sitPosition(sitIndex);
-                Vec3 corner = Vec3.atLowerCornerWithOffset(pos, sitPosition.x, sitPosition.y + 0.0625, sitPosition.z);
-                EntitySit newSitEntity = new EntitySit(worldIn, corner, Type.ON_HOME_MEAL.getTypeName(), pos);
-                double y = sitPosition.z < 0 ? -1 : 1;
-                double x = sitPosition.x < 0 ? -1 : 1;
-                double rotOffset = Math.toDegrees(Math.atan2(y, x));
-                newSitEntity.setYRot((float) rotOffset + 90);
-                worldIn.addFreshEntity(newSitEntity);
-                picnicMat.setSitId(sitIndex, newSitEntity.getUUID());
-                maid.startRiding(newSitEntity);
-            }
+        }
+
+        if (hasEmptySit) {
+            Vec3 sitPos = this.sitPosition(sitIndex);
+            Vec3 corner = Vec3.atLowerCornerWithOffset(pos, sitPos.x, sitPos.y + 0.0625, sitPos.z);
+            EntitySit newSitEntity = new EntitySit(worldIn, corner, Type.ON_HOME_MEAL.getTypeName(), pos);
+
+            double y = sitPos.z < 0 ? -1 : 1;
+            double x = sitPos.x < 0 ? -1 : 1;
+            float rotOffset = (float) Math.toDegrees(Math.atan2(y, x));
+
+            newSitEntity.setYRot(rotOffset + 90);
+            worldIn.addFreshEntity(newSitEntity);
+            picnicMat.setSitId(sitIndex, newSitEntity.getUUID());
+            maid.startRiding(newSitEntity);
         }
     }
 
@@ -130,30 +138,29 @@ public class BlockPicnicMat extends Block implements EntityBlock {
         if (!(worldIn.getBlockEntity(centerPos) instanceof TileEntityPicnicMat picnicMatCenter)) {
             return InteractionResult.FAIL;
         }
-        ItemStack itemInHand = playerIn.getItemInHand(hand);
-        if (itemInHand.get(DataComponents.FOOD) != null) {
-            return placeFood(itemInHand, playerIn, picnicMatCenter);
+        if (itemStack.get(DataComponents.FOOD) != null) {
+            return placeFood(itemStack, picnicMatCenter);
         }
-        if (itemInHand.isEmpty() && playerIn.isDiscrete()) {
+        if (itemStack.isEmpty() && playerIn.isDiscrete()) {
             return takeFood(playerIn, picnicMatCenter);
         }
         return InteractionResult.PASS;
     }
 
-
-    private static InteractionResult placeFood(ItemStack food, Player playerIn, TileEntityPicnicMat picnicMatCenter) {
+    private static InteractionResult placeFood(ItemStack food, TileEntityPicnicMat picnicMatCenter) {
         try (Transaction tx = Transaction.openRoot()) {
             ItemStacksResourceHandler handler = picnicMatCenter.getHandler();
             int count = food.getCount();
             int shrinkCount = handler.insert(ItemResource.of(food), count, tx);
-            tx.commit();
-
-            picnicMatCenter.refresh();
             if (shrinkCount <= 0) {
                 return InteractionResult.FAIL;
             }
+
             food.shrink(shrinkCount);
-            return InteractionResult.SUCCESS;
+
+            tx.commit();
+            picnicMatCenter.refresh();
+            return InteractionResult.SUCCESS_SERVER;
         }
     }
 
@@ -165,11 +172,16 @@ public class BlockPicnicMat extends Block implements EntityBlock {
                 ItemResource resource = handler.getResource(i);
                 if (!resource.isEmpty()) {
                     int extractCount = handler.extract(i, resource, handler.getAmountAsInt(i), tx);
-                    tx.commit();
+                    if (extractCount <= 0) {
+                        return InteractionResult.FAIL;
+                    }
 
+                    ItemStack extract = resource.toStack(extractCount);
+                    playerIn.getInventory().placeItemBackInInventory(extract);
+
+                    tx.commit();
                     picnicMatCenter.refresh();
-                    playerIn.getInventory().placeItemBackInInventory(resource.toStack(extractCount));
-                    return InteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS_SERVER;
                 }
             }
             return InteractionResult.FAIL;
@@ -178,13 +190,13 @@ public class BlockPicnicMat extends Block implements EntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
-        handlePicnicMatRemove(world, pos, state);
+        handlePicnicMatRemove(world, pos, player);
         return super.playerWillDestroy(world, pos, state, player);
     }
 
     @Override
     public void onBlockExploded(BlockState state, ServerLevel world, BlockPos pos, Explosion explosion) {
-        handlePicnicMatRemove(world, pos, state);
+        handlePicnicMatRemove(world, pos, null);
         super.onBlockExploded(state, world, pos, explosion);
     }
 
@@ -200,7 +212,8 @@ public class BlockPicnicMat extends Block implements EntityBlock {
                 }
             }
         }
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        Direction opposite = context.getHorizontalDirection().getOpposite();
+        return this.defaultBlockState().setValue(FACING, opposite);
     }
 
     @Override
@@ -209,6 +222,7 @@ public class BlockPicnicMat extends Block implements EntityBlock {
         if (worldIn.isClientSide()) {
             return;
         }
+
         for (int i = -2; i < 3; i++) {
             for (int j = -2; j < 3; j++) {
                 BlockPos searchPos = pos.offset(i, 0, j);
@@ -222,6 +236,7 @@ public class BlockPicnicMat extends Block implements EntityBlock {
                 }
             }
         }
+
         // 给中心方块存入物品
         BlockEntity blockEntity = worldIn.getBlockEntity(pos);
         if (blockEntity instanceof TileEntityPicnicMat picnicMat && stack.is(InitItems.PICNIC_BASKET.get())) {
@@ -252,44 +267,48 @@ public class BlockPicnicMat extends Block implements EntityBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return AABB;
     }
 
     @Override
-    public BlockState rotate(BlockState pState, Rotation pRot) {
-        return pState.setValue(FACING, pRot.rotate(pState.getValue(FACING)));
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
+    public BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
-    private static void handlePicnicMatRemove(Level world, BlockPos pos, BlockState state) {
-        if (world.isClientSide()) {
+    private static void handlePicnicMatRemove(Level world, BlockPos pos, @Nullable Player player) {
+        if (!(world instanceof ServerLevel serverLevel)) {
             return;
         }
         if (!(world.getBlockEntity(pos) instanceof TileEntityPicnicMat picnicMat)) {
             return;
         }
+
         BlockPos centerPos = picnicMat.getCenterPos();
         if (world.getBlockEntity(centerPos) instanceof TileEntityPicnicMat picnicMatCenter) {
             ItemStack stack = InitItems.PICNIC_BASKET.get().getDefaultInstance();
             ItemPicnicBasket.setContainer(stack, picnicMatCenter.getHandler());
-            popResource(world, centerPos, stack);
-            if (world instanceof ServerLevel serverLevel) {
-                for (UUID uuid : picnicMatCenter.getSitIds()) {
-                    if (uuid.equals(Util.NIL_UUID)) {
-                        continue;
-                    }
-                    Entity entity = serverLevel.getEntity(uuid);
-                    if (entity instanceof EntitySit) {
-                        entity.discard();
-                    }
+
+            if (player == null || !player.isCreative()) {
+                popResource(world, centerPos, stack);
+            }
+
+            for (UUID uuid : picnicMatCenter.getSitIds()) {
+                if (uuid.equals(Util.NIL_UUID)) {
+                    continue;
+                }
+                Entity entity = serverLevel.getEntity(uuid);
+                if (entity instanceof EntitySit) {
+                    entity.discard();
                 }
             }
         }
+
         for (int i = -2; i < 3; i++) {
             for (int j = -2; j < 3; j++) {
                 BlockPos offset = centerPos.offset(i, 0, j);

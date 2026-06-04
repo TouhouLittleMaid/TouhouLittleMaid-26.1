@@ -60,6 +60,7 @@ import java.util.UUID;
 public class BlockCChess extends BlockJoy implements IBoardGameBlock {
     public static final EnumProperty<GomokuPart> PART = EnumProperty.create("part", GomokuPart.class);
     public static final VoxelShape AABB = Block.box(0, 0, 0, 16, 2, 16);
+
     private static final MapCodec<BlockCChess> CODEC = simpleCodec(BlockCChess::new);
 
     public BlockCChess(Identifier id) {
@@ -79,17 +80,22 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
         super(properties);
     }
 
-    private static void handleCChessRemove(Level world, BlockPos pos, BlockState state) {
+    private static void handleCChessRemove(Level world, BlockPos pos, BlockState state, @Nullable Player player) {
         if (world.isClientSide()) {
             return;
         }
+
         GomokuPart part = state.getValue(PART);
         BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
+        if (player == null || !player.isCreative()) {
+            popResource(world, centerPos, InitItems.CCHESS.get().getDefaultInstance());
+        }
+
         BlockEntity te = world.getBlockEntity(centerPos);
-        popResource(world, centerPos, InitItems.CCHESS.get().getDefaultInstance());
         if (!(te instanceof TileEntityCChess)) {
             return;
         }
+
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 world.setBlockAndUpdate(centerPos.offset(i, 0, j), Blocks.AIR.defaultBlockState());
@@ -98,90 +104,105 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
     }
 
     public static void maidMove(ServerPlayer player, Level level, BlockPos pos, int move, boolean maidLost, boolean playerLost) {
-        if (level.getBlockEntity(pos) instanceof TileEntityCChess chess) {
-            if (chess.isPlayerTurn()) {
-                return;
-            }
+        if (!(level.getBlockEntity(pos) instanceof TileEntityCChess chess)) {
+            return;
+        }
+        if (chess.isPlayerTurn()) {
+            return;
+        }
 
-            Position chessData = chess.getChessData();
-            UUID sitId = chess.getSitId();
-            // 女仆输，以防作弊，再检查一次
-            if (maidLost && CChessUtil.isMaid(chessData) && chessData.isMate()) {
-                chess.setCheckmate(true);
-                chess.refresh();
+        Position chessData = chess.getChessData();
+        UUID sitId = chess.getSitId();
 
-                if (level instanceof ServerLevel serverLevel && serverLevel.getEntity(sitId) instanceof EntitySit sit
-                    && sit.getFirstPassenger() instanceof EntityMaid maid && maid.isOwnedBy(player)) {
-                    // TODO: 暂时不加段位系统
-                    maid.getFavorabilityManager().apply(Type.CCHESS_WIN);
-                    maid.getGameManager().markStatue(false);
-                    InitTrigger.MAID_EVENT.get().trigger(player, TriggerType.WIN_CCHESS);
-                }
-
-                return;
-            }
-
-            boolean notChecked = chessData.makeMove(move);
-            // 如果吃子了，那么重置计数器（该计数器用于判断自然限着和长将）
-            if (notChecked && chessData.captured()) {
-                chessData.setIrrev();
-            }
-            chess.setSelectChessPoint(Position.DST(move));
-            chess.setCheckmate(playerLost);
-
-            // 如果玩家没输，那么检查其他和局情况
-            if (!playerLost) {
-                if (CChessUtil.reachMoveLimit(chessData)) {
-                    // 判断是否六十回自然限着
-                    chess.setMoveNumberLimit(true);
-                } else if (CChessUtil.isRepeat(chessData)) {
-                    // 判断是否长打
-                    chess.setRepeat(true);
-                }
-            }
+        // 女仆输，以防作弊，再检查一次
+        if (maidLost && CChessUtil.isMaid(chessData) && chessData.isMate()) {
+            chess.setCheckmate(true);
+            chess.refresh();
 
             if (level instanceof ServerLevel serverLevel
                 && serverLevel.getEntity(sitId) instanceof EntitySit sit
-                && sit.getFirstPassenger() instanceof EntityMaid maid) {
-                maid.swing(InteractionHand.MAIN_HAND);
-                if (playerLost) {
-                    maid.getGameManager().markStatue(true);
-                }
+                && sit.getFirstPassenger() instanceof EntityMaid maid
+                && maid.isOwnedBy(player)
+            ) {
+                // 暂时不加段位系统
+                maid.getFavorabilityManager().apply(Type.CCHESS_WIN);
+                maid.getGameManager().markStatue(false);
+                InitTrigger.MAID_EVENT.get().trigger(player, TriggerType.WIN_CCHESS);
             }
-            level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
-                    1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
-            chess.refresh();
+
+            return;
         }
+
+        // 如果吃子了，那么重置计数器（该计数器用于判断自然限着和长将）
+        boolean notChecked = chessData.makeMove(move);
+        if (notChecked && chessData.captured()) {
+            chessData.setIrrev();
+        }
+        chess.setSelectChessPoint(Position.DST(move));
+        chess.setCheckmate(playerLost);
+
+        // 如果玩家没输，那么检查其他和局情况
+        if (!playerLost) {
+            if (CChessUtil.reachMoveLimit(chessData)) {
+                // 判断是否六十回自然限着
+                chess.setMoveNumberLimit(true);
+            } else if (CChessUtil.isRepeat(chessData)) {
+                // 判断是否长打
+                chess.setRepeat(true);
+            }
+        }
+
+        if (level instanceof ServerLevel serverLevel
+            && serverLevel.getEntity(sitId) instanceof EntitySit sit
+            && sit.getFirstPassenger() instanceof EntityMaid maid
+        ) {
+            maid.swing(InteractionHand.MAIN_HAND);
+            if (playerLost) {
+                maid.getGameManager().markStatue(true);
+            }
+        }
+
+        chess.refresh();
+        level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
+                1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
     }
 
     @Override
-    public void startMaidSit(EntityMaid maid, BlockState state, Level worldIn, BlockPos pos) {
-        if (worldIn instanceof ServerLevel serverLevel && worldIn.getBlockEntity(pos) instanceof TileEntityJoy joy) {
-            Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
-            if (oldSitEntity != null && oldSitEntity.isAlive()) {
-                return;
-            }
-            Direction face = state.getValue(FACING).getOpposite();
-            Vec3 position = new Vec3(0.5 + face.getStepX() * 2, 0.1, 0.5 + face.getStepZ() * 2);
-            Vec3 corner = Vec3.atLowerCornerWithOffset(pos, position.x, position.y, position.z);
-            EntitySit newSitEntity = new EntitySit(worldIn, corner, this.getTypeName(), pos);
-            newSitEntity.setYRot(face.getOpposite().toYRot() + this.sitYRot());
-            worldIn.addFreshEntity(newSitEntity);
-            joy.setSitId(newSitEntity.getUUID());
-            joy.setChanged();
-            maid.startRiding(newSitEntity);
+    public void startMaidSit(EntityMaid maid, BlockState state, Level level, BlockPos pos) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
         }
+        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+            return;
+        }
+        Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
+        if (oldSitEntity != null && oldSitEntity.isAlive()) {
+            return;
+        }
+
+        Direction face = state.getValue(FACING).getOpposite();
+        Vec3 position = new Vec3(0.5 + face.getStepX() * 2, 0.1, 0.5 + face.getStepZ() * 2);
+        Vec3 corner = Vec3.atLowerCornerWithOffset(pos, position.x, position.y, position.z);
+
+        EntitySit newSitEntity = new EntitySit(level, corner, this.getTypeName(), pos);
+        newSitEntity.setYRot(face.getOpposite().toYRot() + this.sitYRot());
+        level.addFreshEntity(newSitEntity);
+
+        joy.setSitId(newSitEntity.getUUID());
+        joy.setChanged();
+
+        maid.startRiding(newSitEntity);
     }
 
     @Override
     public BlockState playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
-        handleCChessRemove(world, pos, state);
+        handleCChessRemove(world, pos, state, player);
         return super.playerWillDestroy(world, pos, state, player);
     }
 
     @Override
     public void onBlockExploded(BlockState state, ServerLevel world, BlockPos pos, Explosion explosion) {
-        handleCChessRemove(world, pos, state);
+        handleCChessRemove(world, pos, state, null);
         super.onBlockExploded(state, world, pos, explosion);
     }
 
@@ -189,15 +210,17 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos centerPos = context.getClickedPos();
+        Level level = context.getLevel();
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 BlockPos searchPos = centerPos.offset(i, 0, j);
-                if (!context.getLevel().getBlockState(searchPos).canBeReplaced(context)) {
+                BlockState blockState = level.getBlockState(searchPos);
+                if (!blockState.canBeReplaced(context)) {
                     return null;
                 }
             }
         }
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return super.getStateForPlacement(context);
     }
 
     @Override
@@ -220,139 +243,144 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
     @Override
     public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
                                        Player player, InteractionHand hand, BlockHitResult hit) {
-        if (level instanceof ServerLevel serverLevel && hand == InteractionHand.MAIN_HAND) {
-            GomokuPart part = state.getValue(PART);
-            BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
-            BlockEntity te = level.getBlockEntity(centerPos);
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return InteractionResult.PASS;
+        }
+        if (hand != InteractionHand.MAIN_HAND) {
+            return InteractionResult.PASS;
+        }
 
-            if (!(te instanceof TileEntityCChess chess)) {
-                return InteractionResult.FAIL;
-            }
-            if (!chess.isPlayerTurn() && !chess.isCheckmate()) {
-                return InteractionResult.FAIL;
-            }
+        GomokuPart part = state.getValue(PART);
+        BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
+        BlockEntity te = level.getBlockEntity(centerPos);
 
-            ItemStack heldItem = player.getMainHandItem();
-            // 只能空手操作
-            if (!heldItem.isEmpty()) {
-                return InteractionResult.FAIL;
-            }
-
-            // 点击坐标的转换
-            Direction facing = state.getValue(FACING);
-            Vec3 clickPos = hit.getLocation()
-                    .subtract(pos.getX(), pos.getY(), pos.getZ())
-                    .add(part.getPosX() - 0.5, 0, part.getPosY() - 0.5)
-                    .yRot(facing.toYRot() * Mth.DEG_TO_RAD);
-
-            // 重置棋盘
-            boolean clickResetArea = CChessUtil.isClickResetArea(clickPos);
-            if (clickResetArea) {
-                level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(),
-                        SoundSource.BLOCKS, 1.0f, 1.0f);
-                chess.reset();
-                chess.refresh();
-
-                // 重置女仆棋类动画
-                Entity sitEntity = serverLevel.getEntity(chess.getSitId());
-                if (sitEntity != null && sitEntity.isAlive()
-                    && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
-                    maid.getGameManager().resetStatue();
-                }
-
-                return InteractionResult.SUCCESS;
-            }
-
-            // 检查女仆
-            Entity sitEntity = serverLevel.getEntity(chess.getSitId());
-            if (sitEntity == null || !sitEntity.isAlive() || !(sitEntity.getFirstPassenger() instanceof EntityMaid maid)) {
-                player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.no_maid"));
-                return InteractionResult.FAIL;
-            }
-            // 检查是不是自己的女仆
-            if (MaidConfig.MAID_GOMOKU_OWNER_LIMIT.get() && !maid.isOwnedBy(player)) {
-                player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.not_owner"));
-                return InteractionResult.FAIL;
-            }
-
-            // 没有点击到棋盘上，返回
-            int nowClick = CChessUtil.getClickPosition(clickPos);
-            if (nowClick < 0 || !Position.IN_BOARD(nowClick)) {
-                return InteractionResult.PASS;
-            }
-
-            // 玩家已经输了，不能下棋
-            if (chess.isCheckmate() && chess.isPlayerTurn()) {
-                return InteractionResult.FAIL;
-            }
-
-            // 60 回合自然限着、长将不能下棋
-            if (chess.isMoveNumberLimit() || chess.isRepeat()) {
-                return InteractionResult.FAIL;
-            }
-
-            // 处理点击棋子的逻辑
-            Position chessData = chess.getChessData();
-            byte[] squares = chessData.squares;
-            int preClick = chess.getSelectChessPoint();
-            if (preClick < 0 || squares.length <= preClick) {
-                preClick = 0;
-            }
-            byte prePiece = squares[preClick];
-            byte nowPiece = squares[nowClick];
-
-            // 如果前一个选择为空，或者选中的是黑方，说明没有选中棋子
-            if (prePiece <= 0 || CChessUtil.isBlack(prePiece)) {
-                // 当前点击的是红方棋子
-                if (CChessUtil.isRed(nowPiece)) {
-                    chess.setSelectChessPoint(nowClick);
-                    chess.refresh();
-                    level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
-                            1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
-                }
-                return InteractionResult.SUCCESS;
-            }
-
-            // 如果选的都是红方棋子，重选
-            if (CChessUtil.isRed(prePiece) && CChessUtil.isRed(nowPiece)) {
-                chess.setSelectChessPoint(nowClick);
-                chess.refresh();
-                level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
-                        1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
-                return InteractionResult.SUCCESS;
-            }
-
-            // 判断移动是否合法
-            int move = Position.MOVE(preClick, nowClick);
-            if (!chessData.legalMove(move)) {
-                return InteractionResult.FAIL;
-            }
-
-            // 没有将军，正常移动
-            boolean notChecked = chessData.makeMove(move);
-            if (notChecked) {
-                // 如果吃子了，那么重置计数器（该计数器用于判断自然限着和长将）
-                if (chessData.captured()) {
-                    chessData.setIrrev();
-                }
-                chess.addChessCounter();
-                chess.setSelectChessPoint(nowClick);
-                chess.refresh();
-                level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
-                        1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
-                if (player instanceof ServerPlayer serverPlayer) {
-                    PacketDistributor.sendToPlayer(serverPlayer, new CChessToClientPackage(centerPos, chessData.toFen()));
-                }
-                return InteractionResult.SUCCESS;
-            }
-
-            // 如果将军，那么给予提示
-            player.sendSystemMessage(Component.translatable("message.touhou_little_maid.cchess.check"));
-            level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS,
-                    1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
+        if (!(te instanceof TileEntityCChess chess)) {
             return InteractionResult.FAIL;
         }
-        return InteractionResult.PASS;
+        if (!chess.isPlayerTurn() && !chess.isCheckmate()) {
+            return InteractionResult.FAIL;
+        }
+
+        // 只能空手操作
+        if (!itemStack.isEmpty()) {
+            return InteractionResult.FAIL;
+        }
+
+        // 点击坐标的转换
+        Direction facing = state.getValue(FACING);
+        Vec3 clickPos = hit.getLocation()
+                .subtract(pos.getX(), pos.getY(), pos.getZ())
+                .add(part.getPosX() - 0.5, 0, part.getPosY() - 0.5)
+                .yRot(facing.toYRot() * Mth.DEG_TO_RAD);
+
+        // 重置棋盘
+        boolean clickResetArea = CChessUtil.isClickResetArea(clickPos);
+        if (clickResetArea) {
+            level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(),
+                    SoundSource.BLOCKS, 1.0f, 1.0f);
+            chess.reset();
+            chess.refresh();
+
+            // 重置女仆棋类动画
+            Entity sitEntity = serverLevel.getEntity(chess.getSitId());
+            if (sitEntity != null && sitEntity.isAlive()
+                && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
+                maid.getGameManager().resetStatue();
+            }
+
+            return InteractionResult.SUCCESS;
+        }
+
+        // 检查女仆
+        Entity sitEntity = serverLevel.getEntity(chess.getSitId());
+        if (sitEntity == null || !sitEntity.isAlive() || !(sitEntity.getFirstPassenger() instanceof EntityMaid maid)) {
+            player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.no_maid"));
+            return InteractionResult.FAIL;
+        }
+
+        // 检查是不是自己的女仆
+        if (MaidConfig.MAID_GOMOKU_OWNER_LIMIT.get() && !maid.isOwnedBy(player)) {
+            player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.not_owner"));
+            return InteractionResult.FAIL;
+        }
+
+        // 没有点击到棋盘上，返回
+        int nowClick = CChessUtil.getClickPosition(clickPos);
+        if (nowClick < 0 || !Position.IN_BOARD(nowClick)) {
+            return InteractionResult.PASS;
+        }
+
+        // 玩家已经输了，不能下棋
+        if (chess.isCheckmate() && chess.isPlayerTurn()) {
+            return InteractionResult.FAIL;
+        }
+
+        // 60 回合自然限着、长将不能下棋
+        if (chess.isMoveNumberLimit() || chess.isRepeat()) {
+            return InteractionResult.FAIL;
+        }
+
+        // 处理点击棋子的逻辑
+        Position chessData = chess.getChessData();
+        byte[] squares = chessData.squares;
+        int preClick = chess.getSelectChessPoint();
+        if (preClick < 0 || squares.length <= preClick) {
+            preClick = 0;
+        }
+        byte prePiece = squares[preClick];
+        byte nowPiece = squares[nowClick];
+
+        // 如果前一个选择为空，或者选中的是黑方，说明没有选中棋子
+        if (prePiece <= 0 || CChessUtil.isBlack(prePiece)) {
+            // 当前点击的是红方棋子
+            if (CChessUtil.isRed(nowPiece)) {
+                chess.setSelectChessPoint(nowClick);
+                chess.refresh();
+                level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
+                        1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        // 如果选的都是红方棋子，重选
+        if (CChessUtil.isRed(prePiece) && CChessUtil.isRed(nowPiece)) {
+            chess.setSelectChessPoint(nowClick);
+            chess.refresh();
+            level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
+                    1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
+            return InteractionResult.SUCCESS;
+        }
+
+        // 判断移动是否合法
+        int move = Position.MOVE(preClick, nowClick);
+        if (!chessData.legalMove(move)) {
+            return InteractionResult.FAIL;
+        }
+
+        // 没有将军，正常移动
+        boolean notChecked = chessData.makeMove(move);
+        if (notChecked) {
+            // 如果吃子了，那么重置计数器（该计数器用于判断自然限着和长将）
+            if (chessData.captured()) {
+                chessData.setIrrev();
+            }
+            chess.addChessCounter();
+            chess.setSelectChessPoint(nowClick);
+            chess.refresh();
+            level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
+                    1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
+            if (player instanceof ServerPlayer serverPlayer) {
+                PacketDistributor.sendToPlayer(serverPlayer, new CChessToClientPackage(centerPos, chessData.toFen()));
+            }
+            return InteractionResult.SUCCESS;
+        }
+
+        // 如果将军，那么给予提示
+        player.sendSystemMessage(Component.translatable("message.touhou_little_maid.cchess.check"));
+        level.playSound(null, pos, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS,
+                1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
+
+        return InteractionResult.FAIL;
     }
 
     @Override
@@ -390,7 +418,7 @@ public class BlockCChess extends BlockJoy implements IBoardGameBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return AABB;
     }
 }

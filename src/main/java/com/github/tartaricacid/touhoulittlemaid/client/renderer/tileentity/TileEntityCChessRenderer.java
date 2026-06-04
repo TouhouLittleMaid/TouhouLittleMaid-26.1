@@ -127,12 +127,12 @@ public class TileEntityCChessRenderer implements BlockEntityRenderer<TileEntityC
         poseStack.mulPose(Axis.XN.rotationDegrees(camera.xRot));
         poseStack.scale(0.03F, -0.03F, 0.03F);
         submitNodeCollector.submitText(poseStack, loseTipsWidth, -10, loseSeq, true,
-                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFF, 0, 0);
+                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFFFF, 0, 0);
         poseStack.scale(0.5F, 0.5F, 0.5F);
         submitNodeCollector.submitText(poseStack, roundTipsWidth, -30, roundSeq, true,
-                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFF, 0, 0);
+                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFFFF, 0, 0);
         submitNodeCollector.submitText(poseStack, resetTipsWidth, 0, resetSeq, true,
-                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFF, 0, 0);
+                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFFFF, 0, 0);
         poseStack.popPose();
     }
 

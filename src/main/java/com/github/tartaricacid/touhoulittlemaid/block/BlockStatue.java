@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
@@ -42,22 +41,23 @@ public class BlockStatue extends Block implements EntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
-        if (!worldIn.isClientSide()) {
-            this.getStatue(worldIn, pos).ifPresent(statue -> {
-                this.restoreClayBlock(worldIn, pos, statue);
-                if (!player.isCreative()) {
-                    Block.popResource(worldIn, pos, new ItemStack(Blocks.CLAY));
-                }
-            });
+        if (worldIn.isClientSide()) {
+            return super.playerWillDestroy(worldIn, pos, state, player);
         }
+        this.getStatue(worldIn, pos).ifPresent(statue -> {
+            this.restoreClayBlock(worldIn, pos, statue);
+            if (!player.isCreative()) {
+                Block.popResource(worldIn, pos, new ItemStack(Blocks.CLAY));
+            }
+        });
         return super.playerWillDestroy(worldIn, pos, state, player);
     }
 
     @Override
     public void onBlockExploded(BlockState state, ServerLevel world, BlockPos pos, Explosion explosion) {
-        if (!world.isClientSide()) {
-            this.getStatue(world, pos).ifPresent(statue -> this.restoreClayBlock(world, pos, statue));
-        }
+        this.getStatue(world, pos).ifPresent(statue ->
+                this.restoreClayBlock(world, pos, statue)
+        );
         super.onBlockExploded(state, world, pos, explosion);
     }
 
@@ -79,19 +79,22 @@ public class BlockStatue extends Block implements EntityBlock {
 
     private Optional<TileEntityStatue> getStatue(BlockGetter world, BlockPos pos) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityStatue) {
-            return Optional.of((TileEntityStatue) te);
+        if (te instanceof TileEntityStatue statue) {
+            return Optional.of(statue);
         }
         return Optional.empty();
     }
 
-    private void restoreClayBlock(@Nonnull Level worldIn, @Nonnull BlockPos pos, TileEntityStatue statue) {
+    private void restoreClayBlock(Level worldIn, BlockPos pos, TileEntityStatue statue) {
         List<BlockPos> posList = statue.getAllBlocks();
         for (BlockPos storagePos : posList) {
-            if (!storagePos.equals(pos)) {
-                getStatue(worldIn, storagePos).ifPresent(s ->
-                        worldIn.setBlock(storagePos, Blocks.CLAY.defaultBlockState(), Block.UPDATE_ALL));
+            if (storagePos.equals(pos)) {
+                continue;
             }
+            getStatue(worldIn, storagePos).ifPresent(_ -> {
+                BlockState clay = Blocks.CLAY.defaultBlockState();
+                worldIn.setBlock(storagePos, clay, Block.UPDATE_ALL);
+            });
         }
     }
 
@@ -101,18 +104,17 @@ public class BlockStatue extends Block implements EntityBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource random) {
-        if (worldIn.getBlockState(pos.below()).is(Blocks.FIRE)) {
-            getStatue(worldIn, pos).ifPresent(statue -> {
-                worldIn.setBlockAndUpdate(pos, InitBlocks.GARAGE_KIT.get().defaultBlockState());
-                {
-                    worldIn.levelEvent(LevelEvent.SOUND_EXTINGUISH_FIRE, pos, 0);
-                }
-                BlockEntity te = worldIn.getBlockEntity(pos);
-                if (te instanceof TileEntityGarageKit && statue.getExtraMaidData() != null) {
-                    ((TileEntityGarageKit) te).setData(statue.getFacing(), statue.getExtraMaidData());
-                }
-            });
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (!level.getBlockState(pos.below()).is(Blocks.FIRE)) {
+            return;
         }
+        getStatue(level, pos).ifPresent(statue -> {
+            level.setBlockAndUpdate(pos, InitBlocks.GARAGE_KIT.get().defaultBlockState());
+            level.levelEvent(LevelEvent.SOUND_EXTINGUISH_FIRE, pos, 0);
+            BlockEntity te = level.getBlockEntity(pos);
+            if (te instanceof TileEntityGarageKit kit && statue.getExtraMaidData() != null) {
+                kit.setData(statue.getFacing(), statue.getExtraMaidData());
+            }
+        });
     }
 }

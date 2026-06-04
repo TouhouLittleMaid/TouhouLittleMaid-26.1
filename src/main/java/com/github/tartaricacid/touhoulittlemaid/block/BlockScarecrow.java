@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 
 public class BlockScarecrow extends HorizontalDirectionalBlock {
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+
     protected static final VoxelShape LOWER_AABB = Shapes.or(
             Block.box(1, 0, 1, 15, 4, 15),
             Block.box(2, 4, 2, 14, 8, 14),
@@ -41,6 +42,7 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
     protected static final VoxelShape UPPER_AABB_SOUTH = VoxelShapeUtils.rotateHorizontal(UPPER_AABB_NORTH, Direction.SOUTH);
     protected static final VoxelShape UPPER_AABB_EAST = VoxelShapeUtils.rotateHorizontal(UPPER_AABB_NORTH, Direction.EAST);
     protected static final VoxelShape UPPER_AABB_WEST = VoxelShapeUtils.rotateHorizontal(UPPER_AABB_NORTH, Direction.WEST);
+
     private static final MapCodec<BlockScarecrow> CODEC = simpleCodec(BlockScarecrow::new);
 
     public BlockScarecrow(Identifier id) {
@@ -82,17 +84,18 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+        if (level.isClientSide() || !player.isCreative()) {
+            return super.playerWillDestroy(level, pos, state, player);
+        }
         // 阻止创造模式破坏掉落双份物品
-        if (!level.isClientSide() && player.isCreative()) {
-            DoubleBlockHalf half = state.getValue(HALF);
-            if (half == DoubleBlockHalf.UPPER) {
-                BlockPos belowPos = pos.below();
-                BlockState belowState = level.getBlockState(belowPos);
-                if (belowState.is(state.getBlock()) && belowState.getValue(HALF) == DoubleBlockHalf.LOWER) {
-                    BlockState empty = belowState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
-                    level.setBlock(belowPos, empty, Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS);
-                    level.levelEvent(player, LevelEvent.PARTICLES_DESTROY_BLOCK, belowPos, Block.getId(belowState));
-                }
+        DoubleBlockHalf half = state.getValue(HALF);
+        if (half == DoubleBlockHalf.UPPER) {
+            BlockPos belowPos = pos.below();
+            BlockState belowState = level.getBlockState(belowPos);
+            if (belowState.is(state.getBlock()) && belowState.getValue(HALF) == DoubleBlockHalf.LOWER) {
+                BlockState empty = belowState.getFluidState().is(Fluids.WATER) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
+                level.setBlock(belowPos, empty, Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS);
+                level.levelEvent(player, LevelEvent.PARTICLES_DESTROY_BLOCK, belowPos, Block.getId(belowState));
             }
         }
         return super.playerWillDestroy(level, pos, state, player);
@@ -106,13 +109,15 @@ public class BlockScarecrow extends HorizontalDirectionalBlock {
         BlockPos abovePos = clickedPos.above();
         if (clickedPos.getY() < level.getMaxY() - 1 && level.getBlockState(abovePos).canBeReplaced(context)) {
             Direction horizontalDirection = context.getHorizontalDirection();
-            return this.defaultBlockState().setValue(FACING, horizontalDirection).setValue(HALF, DoubleBlockHalf.LOWER);
+            return this.defaultBlockState()
+                    .setValue(FACING, horizontalDirection)
+                    .setValue(HALF, DoubleBlockHalf.LOWER);
         }
         return null;
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), Block.UPDATE_ALL);
     }
 

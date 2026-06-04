@@ -44,8 +44,8 @@ public class TileEntityAltar extends BlockEntity {
         super(InitBlocks.ALTAR_TE.get(), blockPos, blockState);
     }
 
-    public void setForgeData(BlockState storageState, boolean isRender, boolean canPlaceItem, Direction direction,
-                             PosListData blockPosList, PosListData canPlaceItemPosList) {
+    public void setData(BlockState storageState, boolean isRender, boolean canPlaceItem, Direction direction,
+                        PosListData blockPosList, PosListData canPlaceItemPosList) {
         this.isRender = isRender;
         this.canPlaceItem = canPlaceItem;
         this.storageState = storageState;
@@ -57,6 +57,7 @@ public class TileEntityAltar extends BlockEntity {
 
     @Override
     public void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         output.putBoolean(IS_RENDER, isRender);
         output.putBoolean(CAN_PLACE_ITEM, canPlaceItem);
         output.putInt(STORAGE_STATE_ID, Block.getId(storageState));
@@ -64,7 +65,6 @@ public class TileEntityAltar extends BlockEntity {
         output.store(DIRECTION, Direction.CODEC, direction);
         output.putChild(STORAGE_BLOCK_LIST, blockPosList);
         output.putChild(CAN_PLACE_ITEM_POS_LIST, canPlaceItemPosList);
-        super.saveAdditional(output);
     }
 
     @Override

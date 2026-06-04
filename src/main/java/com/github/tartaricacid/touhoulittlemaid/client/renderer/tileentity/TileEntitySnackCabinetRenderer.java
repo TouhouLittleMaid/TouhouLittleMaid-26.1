@@ -1,12 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockSnackCabinet;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.SnackCabinetRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntitySnackCabinet;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -16,8 +17,10 @@ import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -49,6 +52,26 @@ public class TileEntitySnackCabinetRenderer implements BlockEntityRenderer<TileE
     @Override
     public void submit(SnackCabinetRenderState state, PoseStack poseStack,
                        SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        poseStack.pushPose();
+        poseStack.translate(0.5, 1.5, 0.5);
+        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+        poseStack.mulPose(Axis.YN.rotationDegrees(180 - state.facing.get2DDataValue() * 90));
+        submitNodeCollector.submitCustomGeometry(
+                poseStack, RenderTypes.entityCutout(TEXTURE),
+                (pose, buffer) -> {
+                    // 动画需要在这里，否则会因为渲染延迟问题导致出错
+                    this.hideAnimation(state);
+
+                    poseStack.pushPose();
+                    poseStack.last().set(pose);
+                    this.model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
+                    poseStack.popPose();
+                }
+        );
+        poseStack.popPose();
+    }
+
+    private void hideAnimation(SnackCabinetRenderState state) {
         if (state.type == BlockSnackCabinet.TYPE_FULL) {
             this.full.visible = true;
             this.half.visible = false;
@@ -59,20 +82,16 @@ public class TileEntitySnackCabinetRenderer implements BlockEntityRenderer<TileE
             this.full.visible = false;
             this.half.visible = false;
         }
+    }
 
-        poseStack.pushPose();
-        poseStack.translate(0.5, 1.5, 0.5);
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-        poseStack.mulPose(Axis.YN.rotationDegrees(180 - state.facing.get2DDataValue() * 90));
-        submitNodeCollector.submitCustomGeometry(
-                poseStack, RenderTypes.entityCutout(TEXTURE),
-                (pose, buffer) -> {
-                    poseStack.pushPose();
-                    poseStack.last().set(pose);
-                    this.model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
-                    poseStack.popPose();
-                }
-        );
-        poseStack.popPose();
+    @Override
+    public boolean shouldRenderOffScreen() {
+        return true;
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(TileEntitySnackCabinet blockEntity) {
+        BlockPos pos = blockEntity.getBlockPos();
+        return RenderHelper.getAABB(pos.offset(0, 0, 0), pos.offset(1, 2, 1));
     }
 }

@@ -44,8 +44,8 @@ public class BlockBookshelf extends BlockJoy {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityBookshelf(pPos, pState);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TileEntityBookshelf(pos, state);
     }
 
     @Override

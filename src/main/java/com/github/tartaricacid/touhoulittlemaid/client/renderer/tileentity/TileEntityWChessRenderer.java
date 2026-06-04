@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.game.chess.Position;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
 import com.github.tartaricacid.touhoulittlemaid.client.model.WChessPiecesModel;
@@ -8,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedro
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.state.WChessRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityWChess;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.github.tartaricacid.touhoulittlemaid.util.WChessUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -127,12 +127,12 @@ public class TileEntityWChessRenderer implements BlockEntityRenderer<TileEntityW
         poseStack.mulPose(Axis.XN.rotationDegrees(camera.xRot));
         poseStack.scale(0.03F, -0.03F, 0.03F);
         submitNodeCollector.submitText(poseStack, loseTipsWidth, -10, loseSeq, true,
-                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFF, 0, 0);
+                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFFFF, 0, 0);
         poseStack.scale(0.5F, 0.5F, 0.5F);
         submitNodeCollector.submitText(poseStack, roundTipsWidth, -30, roundSeq, true,
-                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFF, 0, 0);
+                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFFFF, 0, 0);
         submitNodeCollector.submitText(poseStack, resetTipsWidth, 0, resetSeq, true,
-                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFF, 0, 0);
+                Font.DisplayMode.POLYGON_OFFSET, state.lightCoords, 0xFFFFFFFF, 0, 0);
         poseStack.popPose();
     }
 

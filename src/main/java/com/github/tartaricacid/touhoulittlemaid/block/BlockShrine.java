@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,6 +46,7 @@ public class BlockShrine extends BaseEntityBlock {
     public static final VoxelShape SHAPE = Shapes.or(Block.box(0, 0, 0, 16, 5, 16),
             Block.box(2, 5, 2, 14, 10, 14),
             Block.box(4, 10, 4, 12, 16, 12));
+
     private static final MapCodec<BlockShrine> CODEC = simpleCodec(BlockShrine::new);
 
     public BlockShrine(Identifier id) {
@@ -70,46 +72,59 @@ public class BlockShrine extends BaseEntityBlock {
     @Override
     public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos,
                                        Player playerIn, InteractionHand hand, BlockHitResult hit) {
-        if (hand == InteractionHand.MAIN_HAND && worldIn.getBlockEntity(pos) instanceof TileEntityShrine shrine) {
-            if (playerIn.isShiftKeyDown()) {
-                if (!shrine.isEmpty()) {
-                    ItemStack storageItem = shrine.extractStorageItem();
-                    playerIn.getInventory().placeItemBackInInventory(storageItem);
-                    worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.PLAYERS, 1, 1);
-                    return InteractionResult.SUCCESS;
-                }
-                return InteractionResult.PASS;
+        if (hand != InteractionHand.MAIN_HAND) {
+            return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
+        }
+        if (!(worldIn.getBlockEntity(pos) instanceof TileEntityShrine shrine)) {
+            return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
+        }
+
+        if (playerIn.isShiftKeyDown()) {
+            if (!shrine.isEmpty()) {
+                ItemStack storageItem = shrine.extractStorageItem();
+                playerIn.getInventory().placeItemBackInInventory(storageItem);
+                worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
+                        SoundSource.PLAYERS, 1, 1);
+                return InteractionResult.SUCCESS;
             }
-            if (shrine.isEmpty()) {
-                if (shrine.canInsert(playerIn.getMainHandItem())) {
-                    shrine.insertStorageItem(playerIn.getMainHandItem().copyWithCount(1));
-                    playerIn.getMainHandItem().shrink(1);
-                    worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.PLAYERS, 1, 1);
-                    return InteractionResult.SUCCESS;
-                }
-                if (!worldIn.isClientSide()) {
-                    playerIn.sendSystemMessage(Component.translatable("message.touhou_little_maid.shrine.not_film"));
-                }
-                return InteractionResult.PASS;
+            return InteractionResult.PASS;
+        }
+
+        if (shrine.isEmpty()) {
+            if (shrine.canInsert(itemStack)) {
+                ItemStack split = itemStack.split(1);
+                shrine.insertStorageItem(split);
+                worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM,
+                        SoundSource.PLAYERS, 1, 1);
+                return InteractionResult.SUCCESS;
             }
-            if (playerIn.getMainHandItem().isEmpty()) {
-                // 创造模式玩家可以随意复活
-                if (!playerIn.isCreative()) {
-                    if (playerIn.getHealth() < (playerIn.getMaxHealth() / 2) + 1) {
-                        if (!worldIn.isClientSide()) {
-                            playerIn.sendSystemMessage(Component.translatable("message.touhou_little_maid.shrine.health_low"));
-                        }
-                        return InteractionResult.FAIL;
+            if (!worldIn.isClientSide()) {
+                MutableComponent component = Component.translatable("message.touhou_little_maid.shrine.not_film");
+                playerIn.sendSystemMessage(component);
+            }
+            return InteractionResult.PASS;
+        }
+
+        if (itemStack.isEmpty()) {
+            // 创造模式玩家可以随意复活
+            if (!playerIn.isCreative()) {
+                if (playerIn.getHealth() < (playerIn.getMaxHealth() / 2) + 1) {
+                    if (!worldIn.isClientSide()) {
+                        MutableComponent component = Component.translatable("message.touhou_little_maid.shrine.health_low");
+                        playerIn.sendSystemMessage(component);
                     }
-                    playerIn.setHealth(0.25f);
+                    return InteractionResult.FAIL;
                 }
-                ItemStack film = shrine.getStorageItem();
-                ItemFilm.filmToMaid(film, worldIn, pos.above(), playerIn);
-                if (playerIn instanceof ServerPlayer serverPlayer) {
-                    InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.SHRINE_REBORN_MAID);
-                }
+                playerIn.setHealth(0.25f);
+            }
+
+            ItemStack film = shrine.getStorageItem();
+            ItemFilm.filmToMaid(film, worldIn, pos.above(), playerIn);
+            if (playerIn instanceof ServerPlayer serverPlayer) {
+                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.SHRINE_REBORN_MAID);
             }
         }
+
         return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
     }
 
@@ -126,7 +141,8 @@ public class BlockShrine extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        Direction opposite = context.getHorizontalDirection().getOpposite();
+        return this.defaultBlockState().setValue(FACING, opposite);
     }
 
     @Override
@@ -141,17 +157,18 @@ public class BlockShrine extends BaseEntityBlock {
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn,
+                               BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    public BlockState rotate(BlockState pState, Rotation pRot) {
-        return pState.setValue(FACING, pRot.rotate(pState.getValue(FACING)));
+    public BlockState rotate(BlockState state, Rotation rot) {
+        return state.setValue(FACING, rot.rotate(state.getValue(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
+    public BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 }

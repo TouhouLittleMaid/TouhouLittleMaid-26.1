@@ -65,18 +65,19 @@ public class BlockModelSwitcher extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityModelSwitcher(pPos, pState);
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TileEntityModelSwitcher(pos, state);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        Direction opposite = context.getHorizontalDirection().getOpposite();
+        return this.defaultBlockState().setValue(FACING, opposite);
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(FACING);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
     }
 
     @Override
@@ -84,30 +85,43 @@ public class BlockModelSwitcher extends BaseEntityBlock {
         if (level.isClientSide()) {
             return;
         }
+
         Direction direction = state.getValue(FACING);
         Direction counterClockWise = direction.getCounterClockWise();
         Direction clockWise = direction.getClockWise();
-        boolean leftSignal = level.getSignal(pos.offset(counterClockWise.getUnitVec3i()), counterClockWise) > 0;
-        boolean rightSignal = level.getSignal(pos.offset(clockWise.getUnitVec3i()), clockWise) > 0;
+
+        BlockPos leftPos = pos.offset(counterClockWise.getUnitVec3i());
+        BlockPos rightPos = pos.offset(clockWise.getUnitVec3i());
+
+        boolean leftSignal = level.getSignal(leftPos, counterClockWise) > 0;
+        boolean rightSignal = level.getSignal(rightPos, clockWise) > 0;
         boolean hasSignal = leftSignal || rightSignal;
+
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof TileEntityModelSwitcher switcher && level instanceof ServerLevel serverLevel) {
-            if (switcher.isPowered() != hasSignal) {
-                switcher.setPowered(!switcher.isPowered());
-                if (!switcher.isPowered()) {
-                    return;
-                }
-                UUID uuid = switcher.getUuid();
-                if (uuid == null) {
-                    return;
-                }
-                int index = calculateIndex(leftSignal, switcher.getInfoList().size(), switcher.getIndex());
-                switcher.setIndex(index);
-                Entity entity = serverLevel.getEntity(uuid);
-                if (entity instanceof EntityMaid && entity.isAlive()) {
-                    this.setMaidData(switcher, (EntityMaid) entity);
-                }
-            }
+        if (!(blockEntity instanceof TileEntityModelSwitcher switcher)) {
+            return;
+        }
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (switcher.isPowered() == hasSignal) {
+            return;
+        }
+
+        switcher.setPowered(!switcher.isPowered());
+        if (!switcher.isPowered()) {
+            return;
+        }
+        UUID uuid = switcher.getUuid();
+        if (uuid == null) {
+            return;
+        }
+
+        int index = calculateIndex(leftSignal, switcher.getInfoList().size(), switcher.getIndex());
+        switcher.setIndex(index);
+        Entity entity = serverLevel.getEntity(uuid);
+        if (entity instanceof EntityMaid maid && entity.isAlive()) {
+            this.setMaidData(switcher, maid);
         }
     }
 
@@ -160,11 +174,11 @@ public class BlockModelSwitcher extends BaseEntityBlock {
     }
 
     @Override
-    public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, @Nullable LivingEntity pPlacer, ItemStack pStack) {
-        BlockEntity te = pLevel.getBlockEntity(pPos);
-        if (te instanceof TileEntityModelSwitcher tileEntityModelSwitcher) {
-            ItemModelSwitcher.itemStackToTileEntity(pLevel.registryAccess(), pStack, tileEntityModelSwitcher);
-            tileEntityModelSwitcher.refresh();
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        BlockEntity te = level.getBlockEntity(pos);
+        if (te instanceof TileEntityModelSwitcher switcher) {
+            ItemModelSwitcher.itemStackToTileEntity(level.registryAccess(), stack, switcher);
+            switcher.refresh();
         }
     }
 
@@ -174,12 +188,12 @@ public class BlockModelSwitcher extends BaseEntityBlock {
     }
 
     @Override
-    public BlockState rotate(BlockState pState, Rotation pRot) {
-        return pState.setValue(FACING, pRot.rotate(pState.getValue(FACING)));
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
+    public BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 }

@@ -98,17 +98,22 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
         super(properties);
     }
 
-    private static void handleGomokuRemove(Level world, BlockPos pos, BlockState state) {
+    private static void handleGomokuRemove(Level world, BlockPos pos, BlockState state, @Nullable Player player) {
         if (world.isClientSide()) {
             return;
         }
+
         GomokuPart part = state.getValue(PART);
         BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
+        if (player == null || !player.isCreative()) {
+            popResource(world, centerPos, InitItems.GOMOKU.get().getDefaultInstance());
+        }
+
         BlockEntity te = world.getBlockEntity(centerPos);
-        popResource(world, centerPos, InitItems.GOMOKU.get().getDefaultInstance());
         if (!(te instanceof TileEntityGomoku)) {
             return;
         }
+
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 world.setBlockAndUpdate(centerPos.offset(i, 0, j), Blocks.AIR.defaultBlockState());
@@ -161,6 +166,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
                 return 0.125 <= x && x <= 0.4375 && 0 <= y && y <= 0.3125;
             }
         }
+
         if (direction.getAxis() == Direction.Axis.X) {
             if (part == GomokuPart.LEFT_UP) {
                 return 0.6875 <= x && x <= 1 && 0.125 <= y && y <= 0.4375;
@@ -173,15 +179,23 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     }
 
     @Nullable
-    private static int[] getData(double x, double y, double xOffset, double yOffset, double xStartOffset, double yStartOffset, int xIndexOffset, int yIndexOffset) {
+    private static int[] getData(
+            double x, double y,
+            double xOffset, double yOffset,
+            double xStartOffset, double yStartOffset,
+            int xIndexOffset, int yIndexOffset
+    ) {
         int xIndex = (int) ((x - xOffset) / 0.1316);
         int yIndex = (int) ((y - yOffset) / 0.1316);
+
         double xStart = xStartOffset + xIndex * 0.1316;
         double xEnd = xStart + 0.07;
         double yStart = yStartOffset + yIndex * 0.1316;
         double yEnd = yStart + 0.07;
+
         xIndex += xIndexOffset;
         yIndex += yIndexOffset;
+
         boolean checkIndex = 0 <= xIndex && xIndex <= 14 && 0 <= yIndex && yIndex <= 14;
         boolean checkClick = xStart < x && x < xEnd && yStart < y && y < yEnd;
         if (checkIndex && checkClick) {
@@ -207,13 +221,13 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
 
     @Override
     public BlockState playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
-        handleGomokuRemove(world, pos, state);
+        handleGomokuRemove(world, pos, state, player);
         return super.playerWillDestroy(world, pos, state, player);
     }
 
     @Override
     public void onBlockExploded(BlockState state, ServerLevel world, BlockPos pos, Explosion explosion) {
-        handleGomokuRemove(world, pos, state);
+        handleGomokuRemove(world, pos, state, null);
         super.onBlockExploded(state, world, pos, explosion);
     }
 
@@ -221,15 +235,17 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos centerPos = context.getClickedPos();
+        Level level = context.getLevel();
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
                 BlockPos searchPos = centerPos.offset(i, 0, j);
-                if (!context.getLevel().getBlockState(searchPos).canBeReplaced(context)) {
+                BlockState blockState = level.getBlockState(searchPos);
+                if (!blockState.canBeReplaced(context)) {
                     return null;
                 }
             }
         }
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return super.getStateForPlacement(context);
     }
 
     @Override
@@ -252,105 +268,137 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     @Override
     public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos,
                                        Player player, InteractionHand hand, BlockHitResult hit) {
-        if (level instanceof ServerLevel serverLevel && hand == InteractionHand.MAIN_HAND) {
-            GomokuPart part = state.getValue(PART);
-            BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
-            BlockEntity te = level.getBlockEntity(centerPos);
-            if (!(te instanceof TileEntityGomoku gomoku)) {
-                return InteractionResult.FAIL;
-            }
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return InteractionResult.PASS;
+        }
+        if (hand != InteractionHand.MAIN_HAND) {
+            return InteractionResult.PASS;
+        }
 
-            Vec3 location = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
-            Direction facing = state.getValue(FACING);
+        GomokuPart part = state.getValue(PART);
+        BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
+        BlockEntity te = level.getBlockEntity(centerPos);
 
-            // 如果是创造模式，有特殊用法
-            if (player.getAbilities().instabuild) {
-                InteractionResult success = this.onCreativePlayerClick(level, pos, player, gomoku, centerPos, location, part, facing);
-                if (success != null) {
-                    return success;
-                }
-            }
+        if (!(te instanceof TileEntityGomoku gomoku)) {
+            return InteractionResult.FAIL;
+        }
 
-            // 然后是下棋，必须空手
-            if (!itemStack.isEmpty()) {
-                return InteractionResult.PASS;
-            }
+        Vec3 location = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
+        Direction facing = state.getValue(FACING);
 
-            if (isClickChessBox(location.x, location.z, part, facing)) {
-                level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
-                gomoku.reset();
-                gomoku.refresh();
-
-                // 重置女仆棋类动画
-                Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
-                if (sitEntity != null && sitEntity.isAlive() && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
-                    maid.getGameManager().resetStatue();
-                }
-
-                return InteractionResult.SUCCESS;
-            }
-            Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
-            if (sitEntity == null || !sitEntity.isAlive() || !(sitEntity.getFirstPassenger() instanceof EntityMaid maid)) {
-                player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.no_maid"));
-                return InteractionResult.FAIL;
-            }
-            // 检查是不是自己的女仆
-            if (MaidConfig.MAID_GOMOKU_OWNER_LIMIT.get() && !maid.isOwnedBy(player)) {
-                player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.not_owner"));
-                return InteractionResult.FAIL;
-            }
-            if (!gomoku.isPlayerTurn()) {
-                return InteractionResult.FAIL;
-            }
-            byte[][] chessData = gomoku.getChessData();
-            int[] clickPos = getChessPos(location.x, location.z, part);
-            if (clickPos == null) {
-                return InteractionResult.FAIL;
-            }
-            Point playerPoint = new Point(clickPos[0], clickPos[1], Point.BLACK);
-            if (gomoku.getStatue() == Statue.IN_PROGRESS && chessData[playerPoint.x][playerPoint.y] == Point.EMPTY) {
-                gomoku.setChessData(playerPoint.x, playerPoint.y, playerPoint.type);
-                Statue statue = MaidGomokuAI.getStatue(chessData, playerPoint);
-                // 但是和其他人的女仆对弈不加好感哦
-                if (statue == Statue.WIN && maid.isOwnedBy(player)) {
-                    maid.getFavorabilityManager().apply(Type.GOMOKU_WIN);
-                    maid.getGameManager().markStatue(false);
-                    int rankBefore = MaidGomokuAI.getRank(maid);
-                    maid.getGameManager().increaseGomokuWinCount();
-                    int rankAfter = MaidGomokuAI.getRank(maid);
-                    // 女仆升段啦
-                    if (rankBefore < rankAfter) {
-                        if (player instanceof ServerPlayer serverPlayer) {
-                            PacketDistributor.sendToPlayer(serverPlayer, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.RANK_UP));
-                        }
-                    }
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.WIN_GOMOKU);
-                    }
-                }
-                gomoku.setStatue(statue);
-                level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
-                if (gomoku.getStatue() == Statue.IN_PROGRESS && player instanceof ServerPlayer serverPlayer) {
-                    gomoku.setPlayerTurn(false);
-                    PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(centerPos, chessData, playerPoint, maid.getGameManager().getGomokuWinCount()));
-                }
-                gomoku.refresh();
-                return InteractionResult.SUCCESS;
+        // 如果是创造模式，有特殊用法
+        if (player.isCreative()) {
+            InteractionResult success = this.onCreativePlayerClick(
+                    level, pos, player, gomoku,
+                    centerPos, location, part
+            );
+            if (success != null) {
+                return success;
             }
         }
-        return InteractionResult.PASS;
+
+        // 然后是下棋，必须空手
+        if (!itemStack.isEmpty()) {
+            return InteractionResult.PASS;
+        }
+
+        // 点击棋盒，重置棋盘
+        if (isClickChessBox(location.x, location.z, part, facing)) {
+            level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+            gomoku.reset();
+            gomoku.refresh();
+
+            // 重置女仆棋类动画
+            Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
+            if (sitEntity != null && sitEntity.isAlive() && sitEntity.getFirstPassenger() instanceof EntityMaid maid) {
+                maid.getGameManager().resetStatue();
+            }
+
+            return InteractionResult.SUCCESS_SERVER;
+        }
+
+        // 检查女仆是否存在
+        Entity sitEntity = serverLevel.getEntity(gomoku.getSitId());
+        if (sitEntity == null || !sitEntity.isAlive() || !(sitEntity.getFirstPassenger() instanceof EntityMaid maid)) {
+            player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.no_maid"));
+            return InteractionResult.FAIL;
+        }
+
+        // 检查是不是自己的女仆
+        if (MaidConfig.MAID_GOMOKU_OWNER_LIMIT.get() && !maid.isOwnedBy(player)) {
+            player.sendSystemMessage(Component.translatable("message.touhou_little_maid.gomoku.not_owner"));
+            return InteractionResult.FAIL;
+        }
+
+        // 是不是自己的回合
+        if (!gomoku.isPlayerTurn()) {
+            return InteractionResult.FAIL;
+        }
+
+        // 是否点对了位置
+        byte[][] chessData = gomoku.getChessData();
+        int[] clickPos = getChessPos(location.x, location.z, part);
+        if (clickPos == null) {
+            return InteractionResult.FAIL;
+        }
+
+        // 点击位置是否能下棋
+        Point playerPoint = new Point(clickPos[0], clickPos[1], Point.BLACK);
+        if (gomoku.getStatue() != Statue.IN_PROGRESS || chessData[playerPoint.x][playerPoint.y] != Point.EMPTY) {
+            return InteractionResult.PASS;
+        }
+
+        gomoku.setChessData(playerPoint.x, playerPoint.y, playerPoint.type);
+        Statue statue = MaidGomokuAI.getStatue(chessData, playerPoint);
+
+        // 和其他人的女仆对弈不加好感哦
+        if (statue == Statue.WIN && maid.isOwnedBy(player)) {
+            maid.getFavorabilityManager().apply(Type.GOMOKU_WIN);
+            maid.getGameManager().markStatue(false);
+
+            int rankBefore = MaidGomokuAI.getRank(maid);
+            maid.getGameManager().increaseGomokuWinCount();
+            int rankAfter = MaidGomokuAI.getRank(maid);
+
+            // 女仆升段啦
+            if (rankBefore < rankAfter) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    PacketDistributor.sendToPlayer(serverPlayer, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.RANK_UP));
+                }
+            }
+
+            if (player instanceof ServerPlayer serverPlayer) {
+                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.WIN_GOMOKU);
+            }
+        }
+
+        gomoku.setStatue(statue);
+        level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
+                1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
+
+        if (gomoku.getStatue() == Statue.IN_PROGRESS && player instanceof ServerPlayer serverPlayer) {
+            gomoku.setPlayerTurn(false);
+            PacketDistributor.sendToPlayer(serverPlayer, new GomokuClientPackage(
+                    centerPos, chessData, playerPoint,
+                    maid.getGameManager().getGomokuWinCount())
+            );
+        }
+
+        gomoku.refresh();
+        return InteractionResult.SUCCESS_SERVER;
     }
 
     @Nullable
     private InteractionResult onCreativePlayerClick(Level level, BlockPos pos, Player player, TileEntityGomoku gomoku,
-                                                    BlockPos centerPos, Vec3 location, GomokuPart part, Direction facing) {
+                                                    BlockPos centerPos, Vec3 location, GomokuPart part) {
         Item item = player.getMainHandItem().getItem();
 
         // 拿着御币点击，那么铺满棋盘，只剩三个位置，用来调试满棋盘
         if (item instanceof ItemGohei) {
             gomoku.clickWithDebug();
             gomoku.refresh();
-            level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, centerPos, InitSounds.GOMOKU_RESET.get(),
+                    SoundSource.BLOCKS, 1.0f, 1.0f);
             return InteractionResult.SUCCESS;
         }
 
@@ -363,7 +411,8 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
             int type = gomoku.isPlayerTurn() ? Point.BLACK : Point.WHITE;
             Point playerPoint = new Point(clickPos[0], clickPos[1], type);
             gomoku.setChessData(playerPoint.x, playerPoint.y, playerPoint.type);
-            level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
+            level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS,
+                    1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
             gomoku.setPlayerTurn(!gomoku.isPlayerTurn());
             gomoku.refresh();
             return InteractionResult.SUCCESS;
@@ -373,21 +422,30 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     }
 
     @Override
-    public void startMaidSit(EntityMaid maid, BlockState state, Level worldIn, BlockPos pos) {
-        if (worldIn instanceof ServerLevel serverLevel && worldIn.getBlockEntity(pos) instanceof TileEntityJoy joy) {
-            Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
-            if (oldSitEntity != null && oldSitEntity.isAlive()) {
-                return;
-            }
-            Direction face = state.getValue(FACING).getClockWise();
-            Vec3 position = new Vec3(0.5 + face.getStepX() * 1.5, 0.1, 0.5 + face.getStepZ() * 1.5);
-            EntitySit newSitEntity = new EntitySit(worldIn, Vec3.atLowerCornerWithOffset(pos, position.x, position.y, position.z), this.getTypeName(), pos);
-            newSitEntity.setYRot(face.getOpposite().toYRot() + this.sitYRot());
-            worldIn.addFreshEntity(newSitEntity);
-            joy.setSitId(newSitEntity.getUUID());
-            joy.setChanged();
-            maid.startRiding(newSitEntity);
+    public void startMaidSit(EntityMaid maid, BlockState state, Level level, BlockPos pos) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
         }
+        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+            return;
+        }
+
+        Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
+        if (oldSitEntity != null && oldSitEntity.isAlive()) {
+            return;
+        }
+
+        Direction face = state.getValue(FACING).getClockWise();
+        Vec3 position = new Vec3(0.5 + face.getStepX() * 1.5, 0.1, 0.5 + face.getStepZ() * 1.5);
+        Vec3 corner = Vec3.atLowerCornerWithOffset(pos, position.x, position.y, position.z);
+        EntitySit newSitEntity = new EntitySit(level, corner, this.getTypeName(), pos);
+        newSitEntity.setYRot(face.getOpposite().toYRot() + this.sitYRot());
+        level.addFreshEntity(newSitEntity);
+
+        joy.setSitId(newSitEntity.getUUID());
+        joy.setChanged();
+
+        maid.startRiding(newSitEntity);
     }
 
     @Override

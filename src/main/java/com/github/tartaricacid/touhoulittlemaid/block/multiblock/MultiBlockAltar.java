@@ -81,7 +81,7 @@ public class MultiBlockAltar implements IMultiBlock {
             if (te instanceof TileEntityAltar altar) {
                 boolean isRender = currentPos.equals(currentCenterPos);
                 boolean canPlaceItem = blockInfo.pos().getY() == 2 && blockInfo.state().is(Blocks.OAK_LOG);
-                altar.setForgeData(currentState, isRender,
+                altar.setData(currentState, isRender,
                         canPlaceItem, direction, posList, canPlaceItemPosList);
             }
         }

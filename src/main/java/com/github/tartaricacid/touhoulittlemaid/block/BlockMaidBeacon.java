@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
+import com.github.tartaricacid.touhoulittlemaid.block.properties.BeaconPosition;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBeacon;
@@ -13,7 +14,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,12 +36,13 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
-import java.util.Locale;
 
 public class BlockMaidBeacon extends BaseEntityBlock {
-    public static final EnumProperty<Position> POSITION = EnumProperty.create("position", Position.class);
+    public static final EnumProperty<BeaconPosition> POSITION = EnumProperty.create("position", BeaconPosition.class);
+
     private static final VoxelShape UP_AABB = Block.box(3, 1, 3, 13, 16, 13);
     private static final VoxelShape DOWN_AABB = Block.box(6.5, 0, 6.5, 9.5, 26, 9.5);
+
     private static final MapCodec<BlockMaidBeacon> CODEC = simpleCodec(BlockMaidBeacon::new);
 
     public BlockMaidBeacon(Identifier id) {
@@ -50,8 +51,9 @@ public class BlockMaidBeacon extends BaseEntityBlock {
                 .sound(SoundType.WOOD)
                 .strength(2, 2)
                 .noOcclusion()
-                .lightLevel(s -> s.getValue(POSITION) == Position.DOWN ? 0 : 15));
-        this.registerDefaultState(this.stateDefinition.any().setValue(POSITION, Position.DOWN));
+                .lightLevel(s -> s.getValue(POSITION) == BeaconPosition.DOWN ? 0 : 15));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(POSITION, BeaconPosition.DOWN));
     }
 
     public BlockMaidBeacon(Properties properties) {
@@ -66,7 +68,7 @@ public class BlockMaidBeacon extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        if (state.getValue(BlockMaidBeacon.POSITION) != Position.DOWN) {
+        if (state.getValue(BlockMaidBeacon.POSITION) != BeaconPosition.DOWN) {
             return new TileEntityMaidBeacon(pos, state);
         }
         return null;
@@ -75,7 +77,10 @@ public class BlockMaidBeacon extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide() ? null : createTickerHelper(type, InitBlocks.MAID_BEACON_TE.get(), TileEntityMaidBeacon::serverTick);
+        return level.isClientSide() ? null : createTickerHelper(
+                type, InitBlocks.MAID_BEACON_TE.get(),
+                TileEntityMaidBeacon::serverTick
+        );
     }
 
     @Override
@@ -92,8 +97,8 @@ public class BlockMaidBeacon extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
-        Position position = state.getValue(POSITION);
-        return position == Position.DOWN ? DOWN_AABB : UP_AABB;
+        BeaconPosition position = state.getValue(POSITION);
+        return position == BeaconPosition.DOWN ? DOWN_AABB : UP_AABB;
     }
 
     @Override
@@ -101,16 +106,17 @@ public class BlockMaidBeacon extends BaseEntityBlock {
                                   BlockPos pos, Direction facing, BlockPos neighbourPos,
                                   BlockState neighbourState, RandomSource random) {
         if (facing.getAxis() == Direction.Axis.Y) {
-            Position position = stateIn.getValue(POSITION);
-            if (position == Position.DOWN && facing == Direction.UP) {
-                if (!neighbourState.is(this) || neighbourState.getValue(POSITION) == Position.DOWN) {
+            BeaconPosition position = stateIn.getValue(POSITION);
+            if (position == BeaconPosition.DOWN && facing == Direction.UP) {
+                if (!neighbourState.is(this) || neighbourState.getValue(POSITION) == BeaconPosition.DOWN) {
                     return Blocks.AIR.defaultBlockState();
                 }
             }
-            if (position != Position.DOWN && facing == Direction.DOWN) {
+            if (position != BeaconPosition.DOWN && facing == Direction.DOWN) {
                 if (!neighbourState.is(this)
-                    || neighbourState.getValue(POSITION) == Position.UP_W_E
-                    || neighbourState.getValue(POSITION) == Position.UP_N_S) {
+                    || neighbourState.getValue(POSITION) == BeaconPosition.UP_W_E
+                    || neighbourState.getValue(POSITION) == BeaconPosition.UP_N_S
+                ) {
                     return Blocks.AIR.defaultBlockState();
                 }
             }
@@ -120,17 +126,20 @@ public class BlockMaidBeacon extends BaseEntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level worldIn, BlockPos pos, BlockState state, Player player) {
-        if (!worldIn.isClientSide() && player.isCreative()) {
-            Position position = state.getValue(POSITION);
-            if (position != Position.DOWN) {
-                BlockPos belowPos = pos.below();
-                BlockState belowState = worldIn.getBlockState(belowPos);
-                if (belowState.is(this) && belowState.getValue(POSITION) == Position.DOWN) {
-                    worldIn.setBlock(belowPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS);
-                    worldIn.levelEvent(player, LevelEvent.PARTICLES_DESTROY_BLOCK, belowPos, Block.getId(belowState));
-                }
+        if (worldIn.isClientSide() || !player.isCreative()) {
+            return super.playerWillDestroy(worldIn, pos, state, player);
+        }
+
+        BeaconPosition position = state.getValue(POSITION);
+        if (position != BeaconPosition.DOWN) {
+            BlockPos belowPos = pos.below();
+            BlockState belowState = worldIn.getBlockState(belowPos);
+            if (belowState.is(this) && belowState.getValue(POSITION) == BeaconPosition.DOWN) {
+                worldIn.setBlock(belowPos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS);
+                worldIn.levelEvent(player, LevelEvent.PARTICLES_DESTROY_BLOCK, belowPos, Block.getId(belowState));
             }
         }
+
         return super.playerWillDestroy(worldIn, pos, state, player);
     }
 
@@ -158,18 +167,20 @@ public class BlockMaidBeacon extends BaseEntityBlock {
 
     @Override
     public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        Direction facing = getHorizontalDirection(placer);
+        Direction facing = placer == null ? Direction.NORTH : placer.getDirection();
+
         BlockState stateUp;
         if (facing == Direction.SOUTH || facing == Direction.NORTH) {
-            stateUp = this.defaultBlockState().setValue(BlockMaidBeacon.POSITION, BlockMaidBeacon.Position.UP_N_S);
+            stateUp = this.defaultBlockState().setValue(POSITION, BeaconPosition.UP_N_S);
         } else {
-            stateUp = this.defaultBlockState().setValue(BlockMaidBeacon.POSITION, BlockMaidBeacon.Position.UP_W_E);
+            stateUp = this.defaultBlockState().setValue(POSITION, BeaconPosition.UP_W_E);
         }
+
         worldIn.setBlock(pos.above(), stateUp, Block.UPDATE_ALL);
         BlockEntity te = worldIn.getBlockEntity(pos.above());
-        if (te instanceof TileEntityMaidBeacon tileEntityMaidBeacon) {
-            ItemMaidBeacon.itemStackToTileEntity(stack, tileEntityMaidBeacon);
-            tileEntityMaidBeacon.refresh();
+        if (te instanceof TileEntityMaidBeacon beacon) {
+            ItemMaidBeacon.itemStackToTileEntity(stack, beacon);
+            beacon.refresh();
         }
     }
 
@@ -178,11 +189,11 @@ public class BlockMaidBeacon extends BaseEntityBlock {
         switch (direction) {
             case CLOCKWISE_90:
             case COUNTERCLOCKWISE_90:
-                if (state.getValue(POSITION) == Position.UP_N_S) {
-                    return state.setValue(POSITION, Position.UP_W_E);
+                if (state.getValue(POSITION) == BeaconPosition.UP_N_S) {
+                    return state.setValue(POSITION, BeaconPosition.UP_W_E);
                 }
-                if (state.getValue(POSITION) == Position.UP_W_E) {
-                    return state.setValue(POSITION, Position.UP_N_S);
+                if (state.getValue(POSITION) == BeaconPosition.UP_W_E) {
+                    return state.setValue(POSITION, BeaconPosition.UP_N_S);
                 }
                 return state;
             default:
@@ -193,24 +204,5 @@ public class BlockMaidBeacon extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(POSITION);
-    }
-
-    private Direction getHorizontalDirection(@Nullable LivingEntity placer) {
-        return placer == null ? Direction.NORTH : placer.getDirection();
-    }
-
-    public enum Position implements StringRepresentable {
-        // Beacon State
-        UP_N_S, UP_W_E, DOWN;
-
-        @Override
-        public String getSerializedName() {
-            return this.name().toLowerCase(Locale.US);
-        }
-
-        @Override
-        public String toString() {
-            return getSerializedName();
-        }
     }
 }

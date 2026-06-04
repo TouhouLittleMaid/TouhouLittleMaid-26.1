@@ -17,18 +17,12 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.*;
 
-@SuppressWarnings({"removal", "deprecation"})
+@SuppressWarnings("deprecation")
 public class InitDataComponent {
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, TouhouLittleMaid.MOD_ID);
 
     public static final String ENTITY_ID_TAG_NAME = "id";
     public static final String OWNER_UUID_TAG_NAME = "owner_uuid";
-
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> RECIPES_ID_TAG =
-            DATA_COMPONENTS.register("recipe_id", () -> DataComponentType.<String>builder()
-                    .persistent(Codec.STRING)
-                    .networkSynchronized(ByteBufCodecs.STRING_UTF8)
-                    .build());
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CustomData>> MAID_INFO =
             DATA_COMPONENTS.register("maid_info", () -> DataComponentType.<CustomData>builder()

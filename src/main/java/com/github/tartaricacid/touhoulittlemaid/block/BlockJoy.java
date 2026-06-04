@@ -9,11 +9,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -26,6 +24,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 public abstract class BlockJoy extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -58,43 +57,64 @@ public abstract class BlockJoy extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos, Player playerIn, InteractionHand hand, BlockHitResult hit) {
-        if (worldIn instanceof ServerLevel serverLevel && playerIn.getItemInHand(hand).isEmpty() && worldIn.getBlockEntity(pos) instanceof TileEntityJoy joy) {
-            Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
-            if (oldSitEntity != null && oldSitEntity.isAlive()) {
-                return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
-            }
-            Vec3 corner = Vec3.atLowerCornerWithOffset(pos, this.sitPosition().x, this.sitPosition().y, this.sitPosition().z);
-            EntitySit newSitEntity = new EntitySit(worldIn, corner, this.getTypeName(), pos);
-            newSitEntity.setYRot(state.getValue(FACING).getOpposite().toYRot() + this.sitYRot());
-            worldIn.addFreshEntity(newSitEntity);
-            joy.setSitId(newSitEntity.getUUID());
-            joy.setChanged();
-            playerIn.startRiding(newSitEntity);
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hitResult) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            // 客户端必须返回 SUCCESS，否则会有额外的异常提醒
             return InteractionResult.SUCCESS;
         }
-        return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
-    }
-
-    public void startMaidSit(EntityMaid maid, BlockState state, Level worldIn, BlockPos pos) {
-        if (worldIn instanceof ServerLevel serverLevel && worldIn.getBlockEntity(pos) instanceof TileEntityJoy joy) {
-            Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
-            if (oldSitEntity != null && oldSitEntity.isAlive()) {
-                return;
-            }
-            Vec3 corner = Vec3.atLowerCornerWithOffset(pos, this.sitPosition().x, this.sitPosition().y, this.sitPosition().z);
-            EntitySit newSitEntity = new EntitySit(worldIn, corner, this.getTypeName(), pos);
-            newSitEntity.setYRot(state.getValue(FACING).getOpposite().toYRot() + this.sitYRot());
-            worldIn.addFreshEntity(newSitEntity);
-            joy.setSitId(newSitEntity.getUUID());
-            joy.setChanged();
-            maid.startRiding(newSitEntity);
+        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+            return InteractionResult.PASS;
         }
+        Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
+        if (oldSitEntity != null && oldSitEntity.isAlive()) {
+            return InteractionResult.PASS;
+        }
+
+        Vec3 sitPos = this.sitPosition();
+        Vec3 corner = Vec3.atLowerCornerWithOffset(pos, sitPos.x, sitPos.y, sitPos.z);
+
+        EntitySit newSitEntity = new EntitySit(level, corner, this.getTypeName(), pos);
+        newSitEntity.setYRot(state.getValue(FACING).getOpposite().toYRot() + this.sitYRot());
+        level.addFreshEntity(newSitEntity);
+
+        joy.setSitId(newSitEntity.getUUID());
+        joy.setChanged();
+
+        player.startRiding(newSitEntity);
+        return InteractionResult.SUCCESS_SERVER;
     }
 
+    public void startMaidSit(EntityMaid maid, BlockState state, Level level, BlockPos pos) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+            return;
+        }
+        Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
+        if (oldSitEntity != null && oldSitEntity.isAlive()) {
+            return;
+        }
+
+        Vec3 sitPos = this.sitPosition();
+        Vec3 corner = Vec3.atLowerCornerWithOffset(pos, sitPos.x, sitPos.y, sitPos.z);
+
+        EntitySit newSitEntity = new EntitySit(level, corner, this.getTypeName(), pos);
+        newSitEntity.setYRot(state.getValue(FACING).getOpposite().toYRot() + this.sitYRot());
+        level.addFreshEntity(newSitEntity);
+
+        joy.setSitId(newSitEntity.getUUID());
+        joy.setChanged();
+
+        maid.startRiding(newSitEntity);
+    }
+
+    @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        Direction opposite = context.getHorizontalDirection().getOpposite();
+        return this.defaultBlockState().setValue(FACING, opposite);
     }
 
     @Override
@@ -103,12 +123,12 @@ public abstract class BlockJoy extends BaseEntityBlock {
     }
 
     @Override
-    public BlockState rotate(BlockState pState, Rotation pRot) {
-        return pState.setValue(FACING, pRot.rotate(pState.getValue(FACING)));
+    public BlockState rotate(BlockState state, Rotation rotation) {
+        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    public BlockState mirror(BlockState pState, Mirror pMirror) {
-        return pState.rotate(pMirror.getRotation(pState.getValue(FACING)));
+    public BlockState mirror(BlockState state, Mirror mirror) {
+        return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 }
