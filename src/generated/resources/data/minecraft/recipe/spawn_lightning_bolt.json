@@ -1,0 +1,17 @@
+{
+  "type": "touhou_little_maid:altar",
+  "entity": "minecraft:lightning_bolt",
+  "ingredients": [
+    "#c:gunpowders",
+    "#c:gunpowders",
+    "#c:gunpowders",
+    "minecraft:blaze_powder",
+    "minecraft:blaze_powder",
+    "minecraft:blaze_powder"
+  ],
+  "lang": "jei.touhou_little_maid.altar_craft.spawn_lightning_bolt.result",
+  "power": 0.2,
+  "result": {
+    "id": "minecraft:light"
+  }
+}

@@ -1,14 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -162,6 +161,7 @@ public class EntityBox extends Entity {
             LootParams params = builder.create(LootContextParamSets.ENTITY);
             lootTable.getRandomItems(params, 0, (i) -> this.spawnAtLocation(serverLevel, i));
         });
+        super.kill(serverLevel);
     }
 
     private void applyInvisibilityEffect(TamableAnimal tameable) {

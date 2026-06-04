@@ -1,0 +1,17 @@
+{
+  "type": "touhou_little_maid:altar",
+  "entity": "touhou_little_maid:box",
+  "ingredients": [
+    "#c:gems/diamond",
+    "#c:gems/lapis",
+    "#c:ingots/gold",
+    "#c:dusts/redstone",
+    "#c:ingots/iron",
+    "minecraft:coal"
+  ],
+  "lang": "jei.touhou_little_maid.altar_craft.spawn_box.result",
+  "power": 0.5,
+  "result": {
+    "id": "touhou_little_maid:maid_spawn_egg"
+  }
+}

@@ -128,8 +128,8 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
         this.fillGradient(graphics, BOTTOM_STATUS_BAR_SIZE, 0xfe282c34);
         String name = String.format("%s %s", "✔", I18n.get(ParseI18n.getI18nKey(modelInfo.getName())));
         String info = String.format("%d FPS %.2f%%", Minecraft.fps, scale * 100 / 80);
-        graphics.text(font, name, 136, this.height - 12, 0xcacad4, false);
-        graphics.text(font, info, this.width - font.width(info) - 4, this.height - 12, 0xcacad4, false);
+        graphics.text(font, name, 136, this.height - 12, 0xFFcacad4, false);
+        graphics.text(font, info, this.width - font.width(info) - 4, this.height - 12, 0xFFcacad4, false);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.client.gui.ITooltipButton;
 import com.github.tartaricacid.touhoulittlemaid.api.event.MaidTaskEnableEvent;
 import com.github.tartaricacid.touhoulittlemaid.api.event.client.MaidContainerGuiEvent;
@@ -21,6 +20,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.MaidTaskPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.RequestEffectPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -609,7 +609,8 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         String text = formatScale((long) value);
         graphics.pose().pushMatrix();
         graphics.pose().scale(0.5f, 0.5f);
-        graphics.text(font, text, posX * 2, posY * 2 + font.lineHeight / 2, ChatFormatting.DARK_GRAY.getColor(), false);
+        graphics.text(font, text, posX * 2, posY * 2 + font.lineHeight / 2,
+                0xFF_000000 | ChatFormatting.DARK_GRAY.getColor(), false);
         graphics.pose().popMatrix();
     }
 
