@@ -1,19 +1,22 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.item;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityChairRenderer;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.state.ChairRenderRenderState;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.item.state.ChairRenderRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
+import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemChair;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.special.SpecialModelRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.joml.Vector3fc;
 
 import java.util.function.Consumer;
@@ -22,8 +25,8 @@ import java.util.function.Consumer;
  * 椅子物品的 SpecialModelRenderer（替代旧的 BlockEntityWithoutLevelRenderer）
  * <p>
  * 参考 {@link com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityChairRenderer} 的渲染模式实现。
- * extractArgument 仿照 EntityChairRenderer.extractRenderState 提取模型、纹理数据，
- * submit 仿照 EntityChairRenderer.submitChair 渲染逻辑。
+ * extractArgument 仿照旧版 BlockEntityWithoutLevelRenderer 创建椅子实体预览，
+ * submit 通过新版 EntityRenderDispatcher 提交实体渲染状态。
  */
 public class ChairItemRenderer implements SpecialModelRenderer<ChairRenderRenderState> {
     public static final Identifier CHAIR_ITEM_RENDERER = IdentifierUtil.modLoc("chair_item");
@@ -49,13 +52,20 @@ public class ChairItemRenderer implements SpecialModelRenderer<ChairRenderRender
         String modelId = data.modelId();
         state.modelId = modelId;
 
-        // 读取模型数据（仿照 EntityChairRenderer.extractRenderState）
-        CustomPackLoader.CHAIR_MODELS.getModel(modelId).ifPresent(model -> state.bedrockModel = model);
-        CustomPackLoader.CHAIR_MODELS.getInfo(modelId).ifPresent(info -> {
-            state.chairInfo = info;
-            state.texture = info.getTexture();
-            state.renderItemScale = info.getRenderItemScale();
-        });
+        CustomPackLoader.CHAIR_MODELS.getInfo(modelId).ifPresent(
+                info -> state.renderItemScale = info.getRenderItemScale()
+        );
+
+        Level level = Minecraft.getInstance().level;
+        if (level == null) {
+            return state;
+        }
+
+        EntityChair chair = EntityCacheUtil.getChair(level, EntitySpawnReason.LOAD);
+        chair.setModelId(modelId);
+
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        state.entityRenderState = dispatcher.extractEntity(chair, 0);
 
         return state;
     }
@@ -77,36 +87,19 @@ public class ChairItemRenderer implements SpecialModelRenderer<ChairRenderRender
             return;
         }
 
-        // 确保有可用模型：优先使用指定模型，找不到则兜底
-        EntityChairModel model = state.bedrockModel;
-        if (model == null) {
-            model = CustomPackLoader.CHAIR_MODELS.getModel(DEFAULT_CHAIR_ID).orElse(null);
-        }
-        if (model == null) {
+        if (state.entityRenderState == null) {
             return;
         }
-
-        // 纹理：优先 chairInfo，兜底 empty
-        Identifier texture = state.texture != null
-                ? state.texture
-                : EntityChairRenderer.DEFAULT_TEXTURE;
 
         // 缩放：优先 renderItemScale，兜底 1.0
         float scale = state.renderItemScale > 0 ? state.renderItemScale : 1.0f;
 
-        // 仿照 EntityChairRenderer 的缩放逻辑
         poseStack.pushPose();
-        poseStack.translate(0.5, 1.5, 0.5);
-        poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         poseStack.scale(scale, scale, scale);
-        EntityChairModel finalModel = model;
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture), (pose, buffer) -> {
-            poseStack.pushPose();
-            poseStack.last().set(pose);
-
-            finalModel.renderToBuffer(poseStack, buffer, lightCoords, overlayCoords);
-            poseStack.popPose();
-        });
+        state.entityRenderState.lightCoords = lightCoords;
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        CameraRenderState camera = new CameraRenderState();
+        dispatcher.submit(state.entityRenderState, camera, 1 / scale - 0.125, 0.25, 0.75, poseStack, collector);
         poseStack.popPose();
     }
 

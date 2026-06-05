@@ -1,12 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.BroomModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.EntityBoxModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.EntityFairyModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.NewEntityFairyModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockEntityModel;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Maps;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.Identifier;
@@ -30,7 +30,6 @@ public final class InternalBedrockModelRegistry {
     public static final Identifier COMPUTER = addModel("computer");
     public static final Identifier KEYBOARD = addModel("keyboard");
     public static final Identifier PICNIC_MAT = addModel("picnic_mat");
-    public static final Identifier PICNIC_BASKET = addModel("picnic_basket");
     public static final Identifier STATUE_BASE = addModel("statue_base");
     public static final Identifier SHRINE = addModel("shrine");
     public static final Identifier GOMOKU = addModel("gomoku");

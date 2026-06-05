@@ -1,10 +1,21 @@
 {
-  "oversized_in_gui": true,
   "model": {
-    "type": "minecraft:special",
-    "base": "touhou_little_maid:item/picnic_basket",
-    "model": {
-      "type": "touhou_little_maid:picnic_basket_item"
-    }
+    "type": "minecraft:select",
+    "cases": [
+      {
+        "model": {
+          "type": "minecraft:model",
+          "model": "touhou_little_maid:item/picnic_basket"
+        },
+        "when": [
+          "gui"
+        ]
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "touhou_little_maid:item/picnic_basket_in_hand"
+    },
+    "property": "minecraft:display_context"
   }
 }
