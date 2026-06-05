@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemGarageKit;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGarageKit;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityGarageKit;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -93,16 +93,16 @@ public class BlockGarageKit extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TileEntityGarageKit(pos, state);
+        return new BlockEntityGarageKit(pos, state);
     }
 
     @Override
     protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         List<ItemStack> drops = Lists.newArrayList(super.getDrops(state, params));
         BlockEntity parameter = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (parameter instanceof TileEntityGarageKit te) {
+        if (parameter instanceof BlockEntityGarageKit kit) {
             ItemStack stack = new ItemStack(InitBlocks.GARAGE_KIT.get());
-            stack.set(InitDataComponent.MAID_INFO, CustomData.of(te.getExtraData()));
+            stack.set(InitDataComponent.MAID_INFO, CustomData.of(kit.getExtraData()));
             drops.add(stack);
         }
         return drops;
@@ -137,7 +137,7 @@ public class BlockGarageKit extends Block implements EntityBlock {
             return InteractionResult.PASS;
         }
         BlockEntity be = worldIn.getBlockEntity(pos);
-        if (!(be instanceof TileEntityGarageKit garageKit)) {
+        if (!(be instanceof BlockEntityGarageKit garageKit)) {
             return InteractionResult.PASS;
         }
         EntityType<?> type = SpawnEggItem.getType(stack);
@@ -172,9 +172,9 @@ public class BlockGarageKit extends Block implements EntityBlock {
         return stack;
     }
 
-    private Optional<TileEntityGarageKit> getGarageKit(BlockGetter world, BlockPos pos) {
+    private Optional<BlockEntityGarageKit> getGarageKit(BlockGetter world, BlockPos pos) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityGarageKit kit) {
+        if (te instanceof BlockEntityGarageKit kit) {
             return Optional.of(kit);
         }
         return Optional.empty();

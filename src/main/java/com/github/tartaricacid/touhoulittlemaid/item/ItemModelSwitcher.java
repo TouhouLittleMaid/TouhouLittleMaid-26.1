@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.item;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityModelSwitcher;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityModelSwitcher;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
@@ -39,13 +39,13 @@ public class ItemModelSwitcher extends BlockItem {
         );
     }
 
-    public static ItemStack tileEntityToItemStack(HolderLookup.Provider provider, TileEntityModelSwitcher switcher) {
+    public static ItemStack blockEntityToItemStack(HolderLookup.Provider provider, BlockEntityModelSwitcher switcher) {
         ItemStack itemStack = Objects.requireNonNull(InitItems.MODEL_SWITCHER.get().getDefaultInstance());
         itemStack.set(STORAGE_DATA_TAG, switcher.saveWithoutMetadata(provider));
         return itemStack;
     }
 
-    public static void itemStackToTileEntity(HolderLookup.Provider provider, ItemStack stack, TileEntityModelSwitcher switcher) {
+    public static void itemStackToBlockEntity(HolderLookup.Provider provider, ItemStack stack, BlockEntityModelSwitcher switcher) {
         CompoundTag tag = stack.get(STORAGE_DATA_TAG);
         if (tag != null && !tag.isEmpty()) {
             switcher.loadAdditional(TagValueInput.create(ProblemReporter.DISCARDING, provider, tag));
@@ -56,7 +56,7 @@ public class ItemModelSwitcher extends BlockItem {
     public InteractionResult interactLivingEntity(ItemStack stack, Player pPlayer, LivingEntity pInteractionTarget, InteractionHand pUsedHand) {
         if (pInteractionTarget instanceof EntityMaid maid) {
             CompoundTag tag = stack.getOrDefault(STORAGE_DATA_TAG, new CompoundTag());
-            tag.store(TileEntityModelSwitcher.ENTITY_UUID, UUIDUtil.CODEC, maid.getUUID());
+            tag.store(BlockEntityModelSwitcher.ENTITY_UUID, UUIDUtil.CODEC, maid.getUUID());
             stack.set(STORAGE_DATA_TAG, tag);
             return InteractionResult.SUCCESS;
         }
@@ -66,7 +66,7 @@ public class ItemModelSwitcher extends BlockItem {
     private boolean hasMaidInfo(ItemStack stack) {
         CompoundTag tag = stack.get(STORAGE_DATA_TAG);
         if (tag != null && !tag.isEmpty()) {
-            return tag.read(TileEntityModelSwitcher.ENTITY_UUID, UUIDUtil.CODEC).isPresent();
+            return tag.read(BlockEntityModelSwitcher.ENTITY_UUID, UUIDUtil.CODEC).isPresent();
         }
         return false;
     }

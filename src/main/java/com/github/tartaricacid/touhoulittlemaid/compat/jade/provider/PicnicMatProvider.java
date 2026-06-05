@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jade.provider;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityPicnicMat;
 import com.google.common.collect.Lists;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -24,8 +24,8 @@ public enum PicnicMatProvider implements IServerExtensionProvider<ItemStack>, IC
 
     @Override
     public @Nullable List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
-        if (accessor.getTarget() instanceof TileEntityPicnicMat picnicMat) {
-            if (accessor.getLevel().getBlockEntity(picnicMat.getCenterPos()) instanceof TileEntityPicnicMat picnicMatCenter) {
+        if (accessor.getTarget() instanceof BlockEntityPicnicMat picnicMat) {
+            if (accessor.getLevel().getBlockEntity(picnicMat.getCenterPos()) instanceof BlockEntityPicnicMat picnicMatCenter) {
                 var handler = picnicMatCenter.getHandler();
                 List<ItemStack> list = Lists.newArrayList();
                 for (int i = 0; i < handler.size(); i++) {

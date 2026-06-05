@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityModelSwitcher;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityModelSwitcher;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -17,13 +17,13 @@ import java.util.List;
 import static com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil.modLoc;
 
 public record SaveSwitcherDataPackage(BlockPos pos,
-                                      List<TileEntityModelSwitcher.ModeInfo> modeInfos) implements CustomPacketPayload {
+                                      List<BlockEntityModelSwitcher.ModeInfo> modeInfos) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<SaveSwitcherDataPackage> TYPE = new CustomPacketPayload.Type<>(modLoc("save_switcher_data"));
 
-    public static final StreamCodec<ByteBuf, List<TileEntityModelSwitcher.ModeInfo>> COLLECTION_STREAM_CODEC =
+    public static final StreamCodec<ByteBuf, List<BlockEntityModelSwitcher.ModeInfo>> COLLECTION_STREAM_CODEC =
             ByteBufCodecs.collection(
                     ArrayList::new,
-                    TileEntityModelSwitcher.ModeInfo.MODE_INFO_STREAM_CODEC,
+                    BlockEntityModelSwitcher.ModeInfo.MODE_INFO_STREAM_CODEC,
                     1024);
 
     public static final StreamCodec<ByteBuf, SaveSwitcherDataPackage> STREAM_CODEC = StreamCodec.composite(
@@ -41,8 +41,8 @@ public record SaveSwitcherDataPackage(BlockPos pos,
                 Level world = sender.level();
                 if (world.isLoaded(message.pos)) {
                     BlockEntity te = world.getBlockEntity(message.pos);
-                    if (te instanceof TileEntityModelSwitcher) {
-                        ((TileEntityModelSwitcher) te).setInfoList(message.modeInfos);
+                    if (te instanceof BlockEntityModelSwitcher switcher) {
+                        switcher.setInfoList(message.modeInfos);
                     }
                 }
             });

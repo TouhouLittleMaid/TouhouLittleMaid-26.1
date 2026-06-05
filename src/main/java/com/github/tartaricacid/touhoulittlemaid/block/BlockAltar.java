@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
 import com.github.tartaricacid.touhoulittlemaid.init.InitRecipes;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityAltar;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.PosListData;
 import com.google.common.collect.Lists;
@@ -65,7 +65,7 @@ public class BlockAltar extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TileEntityAltar(pos, state);
+        return new BlockEntityAltar(pos, state);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class BlockAltar extends Block implements EntityBlock {
         if (optional.isEmpty()) {
             return super.useItemOn(itemStack, state, worldIn, pos, player, handIn, hit);
         }
-        TileEntityAltar altar = optional.get();
+        BlockEntityAltar altar = optional.get();
         if (player.isShiftKeyDown() || player.getMainHandItem().isEmpty()) {
             takeOutItem(worldIn, altar, player);
         } else {
@@ -150,7 +150,7 @@ public class BlockAltar extends Block implements EntityBlock {
         worldIn.playSound(null, currentPos, BEACON_DEACTIVATE, BLOCKS, 1.5f, 1);
     }
 
-    private void takeOutItem(Level world, TileEntityAltar altar, Player player) {
+    private void takeOutItem(Level world, BlockEntityAltar altar, Player player) {
         if (altar.isCanPlaceItem() && !ItemUtil.getStack(altar.handler, 0).isEmpty()) {
             ItemStack extractItem = ItemsUtil.extractItem(altar.handler, 0, 1, false, null);
             player.getInventory().placeItemBackInInventory(extractItem);
@@ -159,7 +159,7 @@ public class BlockAltar extends Block implements EntityBlock {
         }
     }
 
-    private void takeInOrCraft(Level world, TileEntityAltar altar, Player playerIn) {
+    private void takeInOrCraft(Level world, BlockEntityAltar altar, Player playerIn) {
         if (altar.isCanPlaceItem() && ItemUtil.getStack(altar.handler, 0).isEmpty()) {
             ItemsUtil.setStackInSlot(altar.handler, 0, playerIn.getMainHandItem().copyWithCount(1));
             if (!playerIn.isCreative()) {
@@ -170,13 +170,13 @@ public class BlockAltar extends Block implements EntityBlock {
         }
     }
 
-    private void altarCraft(Level world, TileEntityAltar altar, Player playerIn) {
+    private void altarCraft(Level world, BlockEntityAltar altar, Player playerIn) {
         List<ItemStack> items = Lists.newArrayList();
         List<BlockPos> posList = altar.getCanPlaceItemPosList().getData();
 
         for (int i = 0; i < posList.size(); i++) {
             BlockEntity te = world.getBlockEntity(posList.get(i));
-            if (te instanceof TileEntityAltar altarOther) {
+            if (te instanceof BlockEntityAltar altarOther) {
                 items.add(i, altarOther.getStorageItem());
             }
         }
@@ -195,9 +195,9 @@ public class BlockAltar extends Block implements EntityBlock {
         }
     }
 
-    private Optional<TileEntityAltar> getAltar(BlockGetter world, BlockPos pos) {
+    private Optional<BlockEntityAltar> getAltar(BlockGetter world, BlockPos pos) {
         BlockEntity te = world.getBlockEntity(pos);
-        if (te instanceof TileEntityAltar altar) {
+        if (te instanceof BlockEntityAltar altar) {
             return Optional.of(altar);
         }
         return Optional.empty();
@@ -205,7 +205,7 @@ public class BlockAltar extends Block implements EntityBlock {
 
     private void spawnResultEntity(Level world, Player playerIn, PowerAttachment power,
                                    RecipeHolder<AltarRecipe> holder, List<ItemStack> inventory,
-                                   TileEntityAltar altar
+                                   BlockEntityAltar altar
     ) {
         ResourceKey<Recipe<?>> key = holder.id();
         AltarRecipe recipe = holder.value();
@@ -247,7 +247,7 @@ public class BlockAltar extends Block implements EntityBlock {
         return new BlockPos(x / 8, y, z / 8);
     }
 
-    private void removeAllAltarItem(Level world, TileEntityAltar altar) {
+    private void removeAllAltarItem(Level world, BlockEntityAltar altar) {
         for (BlockPos pos : altar.getCanPlaceItemPosList().getData()) {
             this.getAltar(world, pos).ifPresent(te -> {
                 te.handler.set(0, ItemResource.EMPTY, 0);

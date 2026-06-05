@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBeacon;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -30,8 +30,8 @@ public record SetBeaconPotionPackage(BlockPos pos, int potionIndex) implements C
                 Level world = sender.level();
                 if (world.isLoaded(message.pos)) {
                     BlockEntity te = world.getBlockEntity(message.pos);
-                    if (te instanceof TileEntityMaidBeacon) {
-                        ((TileEntityMaidBeacon) te).setPotionIndex(message.potionIndex);
+                    if (te instanceof BlockEntityMaidBeacon beacon) {
+                        beacon.setPotionIndex(message.potionIndex);
                     }
                 }
             });

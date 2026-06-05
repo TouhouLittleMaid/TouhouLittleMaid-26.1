@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.init;
 
 import com.github.tartaricacid.touhoulittlemaid.client.model.DebugFloorModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.*;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.tileentity.*;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.monster.EntityFairy;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
@@ -35,19 +35,19 @@ public final class InitEntitiesRender {
         EntityRenderers.register(EntityBroom.TYPE, EntityBroomRender::new);
         EntityRenderers.register(MaidFishingHook.TYPE, MaidFishingHookRenderer::new);
 
-        BlockEntityRenderers.register(InitBlocks.ALTAR_TE.get(), TileEntityAltarRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.STATUE_TE.get(), TileEntityStatueRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.GARAGE_KIT_TE.get(), TileEntityGarageKitRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.GOMOKU_TE.get(), TileEntityGomokuRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.CCHESS_TE.get(), TileEntityCChessRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.WCHESS_TE.get(), TileEntityWChessRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.KEYBOARD_TE.get(), TileEntityKeyboardRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.BOOKSHELF_TE.get(), TileEntityBookshelfRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.COMPUTER_TE.get(), TileEntityComputerRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.SHRINE_TE.get(), TileEntityShrineRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.PICNIC_MAT_TE.get(), PicnicMatRender::new);
-        BlockEntityRenderers.register(InitBlocks.MAID_BED_TE.get(), TileEntityMaidBedRenderer::new);
-        BlockEntityRenderers.register(InitBlocks.SNACK_CABINET_TE.get(), TileEntitySnackCabinetRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.ALTAR_BE.get(), BlockEntityAltarRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.STATUE_BE.get(), BlockEntityStatueRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.GARAGE_KIT_BE.get(), BlockEntityGarageKitRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.GOMOKU_BE.get(), BlockEntityGomokuRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.CCHESS_BE.get(), BlockEntityCChessRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.WCHESS_BE.get(), BlockEntityWChessRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.KEYBOARD_BE.get(), BlockEntityKeyboardRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.BOOKSHELF_BE.get(), BlockEntityBookshelfRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.COMPUTER_BE.get(), BlockEntityComputerRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.SHRINE_BE.get(), BlockEntityShrineRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.PICNIC_MAT_BE.get(), PicnicMatRender::new);
+        BlockEntityRenderers.register(InitBlocks.MAID_BED_BE.get(), BlockEntityMaidBedRenderer::new);
+        BlockEntityRenderers.register(InitBlocks.SNACK_CABINET_BE.get(), BlockEntitySnackCabinetRenderer::new);
     }
 
     @SubscribeEvent

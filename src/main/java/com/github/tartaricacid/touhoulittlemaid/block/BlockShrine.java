@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.block;
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemFilm;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityShrine;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityShrine;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -75,7 +75,7 @@ public class BlockShrine extends BaseEntityBlock {
         if (hand != InteractionHand.MAIN_HAND) {
             return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
         }
-        if (!(worldIn.getBlockEntity(pos) instanceof TileEntityShrine shrine)) {
+        if (!(worldIn.getBlockEntity(pos) instanceof BlockEntityShrine shrine)) {
             return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
         }
 
@@ -132,7 +132,7 @@ public class BlockShrine extends BaseEntityBlock {
     protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         List<ItemStack> drops = Lists.newArrayList(super.getDrops(state, params));
         BlockEntity parameter = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (parameter instanceof TileEntityShrine shrine) {
+        if (parameter instanceof BlockEntityShrine shrine) {
             ItemStack storageItem = shrine.extractStorageItem();
             drops.add(storageItem);
         }
@@ -153,7 +153,7 @@ public class BlockShrine extends BaseEntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState blockState) {
-        return new TileEntityShrine(pos, blockState);
+        return new BlockEntityShrine(pos, blockState);
     }
 
     @Override

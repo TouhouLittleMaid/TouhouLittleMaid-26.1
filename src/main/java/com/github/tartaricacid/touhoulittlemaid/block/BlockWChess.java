@@ -4,6 +4,8 @@ import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IBoardGameBlock;
 import com.github.tartaricacid.touhoulittlemaid.api.game.chess.Position;
 import com.github.tartaricacid.touhoulittlemaid.block.properties.GomokuPart;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityJoy;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityWChess;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
@@ -12,8 +14,6 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.network.message.WChessToClientPackage;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityJoy;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityWChess;
 import com.github.tartaricacid.touhoulittlemaid.util.WChessUtil;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -91,7 +91,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
         }
 
         BlockEntity te = world.getBlockEntity(centerPos);
-        if (te instanceof TileEntityWChess) {
+        if (te instanceof BlockEntityWChess) {
             for (int i = -1; i < 2; i++) {
                 for (int j = -1; j < 2; j++) {
                     world.setBlockAndUpdate(centerPos.offset(i, 0, j), Blocks.AIR.defaultBlockState());
@@ -102,7 +102,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
 
 
     public static void maidMove(ServerPlayer player, Level level, BlockPos pos, int move, boolean maidLost, boolean playerLost) {
-        if (!(level.getBlockEntity(pos) instanceof TileEntityWChess chess)) {
+        if (!(level.getBlockEntity(pos) instanceof BlockEntityWChess chess)) {
             return;
         }
         if (chess.isPlayerTurn()) {
@@ -172,7 +172,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+        if (!(level.getBlockEntity(pos) instanceof BlockEntityJoy joy)) {
             return;
         }
         Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
@@ -252,7 +252,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
         BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
         BlockEntity te = level.getBlockEntity(centerPos);
 
-        if (!(te instanceof TileEntityWChess chess)) {
+        if (!(te instanceof BlockEntityWChess chess)) {
             return InteractionResult.FAIL;
         }
 
@@ -291,7 +291,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
                 maid.getGameManager().resetStatue();
             }
 
-            return InteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS_SERVER;
         }
 
         // 检查女仆
@@ -310,7 +310,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
         // 没有点击到棋盘上，返回
         int nowClick = WChessUtil.getClickPosition(clickPos);
         if (nowClick < 0 || !Position.IN_BOARD(nowClick)) {
-            return InteractionResult.PASS;
+            return InteractionResult.FAIL;
         }
 
         // 玩家已经输了，不能下棋
@@ -341,7 +341,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
                 chess.refresh();
                 level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS_SERVER;
         }
 
         // 如果选的都是白方棋子，重选
@@ -349,7 +349,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
             chess.setSelectChessPoint(nowClick);
             chess.refresh();
             level.playSound(null, pos, InitSounds.GOMOKU.get(), SoundSource.BLOCKS, 1.0f, 0.8F + level.getRandom().nextFloat() * 0.4F);
-            return InteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS_SERVER;
         }
 
         // 判断移动是否合法
@@ -373,7 +373,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
             if (player instanceof ServerPlayer serverPlayer) {
                 PacketDistributor.sendToPlayer(serverPlayer, new WChessToClientPackage(centerPos, chessData.toFen()));
             }
-            return InteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS_SERVER;
         }
 
         // 如果将军，那么给予提示
@@ -406,7 +406,7 @@ public class BlockWChess extends BlockJoy implements IBoardGameBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         if (state.getValue(PART).isCenter()) {
-            return new TileEntityWChess(pos, state);
+            return new BlockEntityWChess(pos, state);
         }
         return null;
     }

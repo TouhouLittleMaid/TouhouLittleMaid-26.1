@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetBeaconPotionPackage;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBeacon;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -25,7 +25,7 @@ public class BeaconEffectButton extends TouhouStateSwitchButton {
     private final Consumer<Boolean> onClick;
     private Identifier sprite;
 
-    public BeaconEffectButton(TileEntityMaidBeacon.BeaconEffect effect, int xIn, int yIn, int potionIndex, TileEntityMaidBeacon beacon, Consumer<Boolean> onClick) {
+    public BeaconEffectButton(BlockEntityMaidBeacon.BeaconEffect effect, int xIn, int yIn, int potionIndex, BlockEntityMaidBeacon beacon, Consumer<Boolean> onClick) {
         super(xIn, yIn, 22, 22, potionIndex == effect.ordinal());
         this.initTextureValues(0, 111, 22, 22, BG);
         Holder<MobEffect> effectHolder = effect.getEffect();

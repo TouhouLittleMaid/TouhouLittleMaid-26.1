@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityBookshelf;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityBookshelf;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -45,7 +45,7 @@ public class BlockBookshelf extends BlockJoy {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TileEntityBookshelf(pos, state);
+        return new BlockEntityBookshelf(pos, state);
     }
 
     @Override

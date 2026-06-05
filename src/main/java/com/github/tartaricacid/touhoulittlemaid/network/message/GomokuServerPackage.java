@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.MaidGomokuAI;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityGomoku;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
@@ -38,7 +38,7 @@ public record GomokuServerPackage(BlockPos pos, Point point) implements CustomPa
                 if (!level.isLoaded(message.pos)) {
                     return;
                 }
-                if (level.getBlockEntity(message.pos) instanceof TileEntityGomoku gomoku) {
+                if (level.getBlockEntity(message.pos) instanceof BlockEntityGomoku gomoku) {
                     Statue statue = gomoku.getStatue();
                     if (statue != Statue.IN_PROGRESS || gomoku.isPlayerTurn() || gomoku.getChessCounter() <= 0) {
                         return;

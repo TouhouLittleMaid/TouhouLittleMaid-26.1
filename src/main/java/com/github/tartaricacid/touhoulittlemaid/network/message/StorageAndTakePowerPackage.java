@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.network.message;
 import com.github.tartaricacid.touhoulittlemaid.data.MaidNumAttachment;
 import com.github.tartaricacid.touhoulittlemaid.data.PowerAttachment;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBeacon;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -37,7 +37,7 @@ public record StorageAndTakePowerPackage(BlockPos pos, float powerNum,
                 Level world = sender.level();
                 if (world.isLoaded(message.pos)) {
                     BlockEntity te = world.getBlockEntity(message.pos);
-                    if (te instanceof TileEntityMaidBeacon beacon) {
+                    if (te instanceof BlockEntityMaidBeacon beacon) {
                         PowerAttachment power = sender.getData(InitDataAttachment.POWER_NUM);
                         MaidNumAttachment maidNum = sender.getData(InitDataAttachment.MAID_NUM);
                         if (message.isStorage) {
@@ -53,7 +53,7 @@ public record StorageAndTakePowerPackage(BlockPos pos, float powerNum,
         }
     }
 
-    private static void storageLogic(float powerNum, PowerAttachment playerPower, TileEntityMaidBeacon beacon) {
+    private static void storageLogic(float powerNum, PowerAttachment playerPower, BlockEntityMaidBeacon beacon) {
         boolean playerPowerIsEnough = powerNum <= playerPower.get();
         boolean beaconNotFull = powerNum + beacon.getStoragePower() <= beacon.getMaxStorage();
         if (playerPowerIsEnough) {
@@ -67,7 +67,7 @@ public record StorageAndTakePowerPackage(BlockPos pos, float powerNum,
         }
     }
 
-    private static void takeLogic(float powerNum, PowerAttachment playerPower, TileEntityMaidBeacon beacon) {
+    private static void takeLogic(float powerNum, PowerAttachment playerPower, BlockEntityMaidBeacon beacon) {
         boolean beaconIsEnough = powerNum <= beacon.getStoragePower();
         boolean playerNotFull = powerNum + playerPower.get() < PowerAttachment.MAX_POWER;
         if (beaconIsEnough) {

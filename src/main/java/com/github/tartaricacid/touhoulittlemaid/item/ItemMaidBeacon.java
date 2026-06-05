@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBeacon;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -42,13 +42,13 @@ public class ItemMaidBeacon extends DoubleHighBlockItem {
                         .build()));
     }
 
-    public static ItemStack tileEntityToItemStack(HolderLookup.Provider provider, TileEntityMaidBeacon beacon) {
+    public static ItemStack blockEntityToItemStack(HolderLookup.Provider provider, BlockEntityMaidBeacon beacon) {
         ItemStack stack = InitItems.MAID_BEACON.get().getDefaultInstance();
         stack.set(STORAGE_DATA_TAG, beacon.saveWithoutMetadata(provider));
         return stack;
     }
 
-    public static void itemStackToTileEntity(ItemStack stack, TileEntityMaidBeacon beacon) {
+    public static void itemStackToBlockEntity(ItemStack stack, BlockEntityMaidBeacon beacon) {
         CompoundTag tag = stack.get(STORAGE_DATA_TAG);
         if (tag != null && !tag.isEmpty()) {
             beacon.loadData(tag);
@@ -60,8 +60,8 @@ public class ItemMaidBeacon extends DoubleHighBlockItem {
         float numPower = 0f;
         CompoundTag tag = stack.get(STORAGE_DATA_TAG);
         if (tag != null && !tag.isEmpty()) {
-            if (tag.contains(TileEntityMaidBeacon.STORAGE_POWER_TAG)) {
-                numPower = tag.getFloatOr(TileEntityMaidBeacon.STORAGE_POWER_TAG, 0f);
+            if (tag.contains(BlockEntityMaidBeacon.STORAGE_POWER_TAG)) {
+                numPower = tag.getFloatOr(BlockEntityMaidBeacon.STORAGE_POWER_TAG, 0f);
             }
         }
         tooltip.accept(Component.translatable("tooltips.touhou_little_maid.maid_beacon.desc", DECIMAL_FORMAT.format(numPower)).withStyle(ChatFormatting.GRAY));

@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitPoi;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityJoy;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityJoy;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -82,7 +82,7 @@ public class MaidJoyTask extends MaidCheckRateTask {
 
     private boolean isOccupied(ServerLevel worldIn, BlockPos pos) {
         BlockEntity te = worldIn.getBlockEntity(pos);
-        if (te instanceof TileEntityJoy joy) {
+        if (te instanceof BlockEntityJoy joy) {
             return worldIn.getEntity(joy.getSitId()) != null;
         }
         return true;

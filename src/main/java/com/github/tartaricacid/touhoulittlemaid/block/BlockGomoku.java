@@ -16,8 +16,8 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemGohei;
 import com.github.tartaricacid.touhoulittlemaid.network.message.GomokuClientPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityGomoku;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityJoy;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityGomoku;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityJoy;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -109,8 +109,8 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
             popResource(world, centerPos, InitItems.GOMOKU.get().getDefaultInstance());
         }
 
-        BlockEntity te = world.getBlockEntity(centerPos);
-        if (!(te instanceof TileEntityGomoku)) {
+        BlockEntity be = world.getBlockEntity(centerPos);
+        if (!(be instanceof BlockEntityGomoku)) {
             return;
         }
 
@@ -277,9 +277,9 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
 
         GomokuPart part = state.getValue(PART);
         BlockPos centerPos = pos.subtract(new Vec3i(part.getPosX(), 0, part.getPosY()));
-        BlockEntity te = level.getBlockEntity(centerPos);
+        BlockEntity be = level.getBlockEntity(centerPos);
 
-        if (!(te instanceof TileEntityGomoku gomoku)) {
+        if (!(be instanceof BlockEntityGomoku gomoku)) {
             return InteractionResult.FAIL;
         }
 
@@ -389,7 +389,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     }
 
     @Nullable
-    private InteractionResult onCreativePlayerClick(Level level, BlockPos pos, Player player, TileEntityGomoku gomoku,
+    private InteractionResult onCreativePlayerClick(Level level, BlockPos pos, Player player, BlockEntityGomoku gomoku,
                                                     BlockPos centerPos, Vec3 location, GomokuPart part) {
         Item item = player.getMainHandItem().getItem();
 
@@ -426,7 +426,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+        if (!(level.getBlockEntity(pos) instanceof BlockEntityJoy joy)) {
             return;
         }
 
@@ -457,7 +457,7 @@ public class BlockGomoku extends BlockJoy implements IBoardGameBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         if (state.getValue(PART).isCenter()) {
-            return new TileEntityGomoku(pos, state);
+            return new BlockEntityGomoku(pos, state);
         }
         return null;
     }

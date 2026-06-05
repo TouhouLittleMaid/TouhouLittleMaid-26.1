@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityKeyboard;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityKeyboard;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -46,7 +46,7 @@ public class BlockKeyboard extends BlockJoy {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new TileEntityKeyboard(pPos, pState);
+        return new BlockEntityKeyboard(pPos, pState);
     }
 
     @Override

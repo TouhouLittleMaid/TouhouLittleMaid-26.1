@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jade.provider;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityAltar;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +24,7 @@ public enum AltarProvider implements IServerExtensionProvider<ItemStack>, IClien
 
     @Override
     public @Nullable List<ViewGroup<ItemStack>> getGroups(Accessor<?> accessor) {
-        if (accessor.getTarget() instanceof TileEntityAltar altar) {
+        if (accessor.getTarget() instanceof BlockEntityAltar altar) {
             ItemStack storageItem = altar.getStorageItem();
             if (!storageItem.isEmpty()) {
                 return List.of(new ViewGroup<>(Collections.singletonList(storageItem.copy())));

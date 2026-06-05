@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.block.IMultiBlock;
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityAltar;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityAltar;
 import com.github.tartaricacid.touhoulittlemaid.util.PosListData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -78,7 +78,7 @@ public class MultiBlockAltar implements IMultiBlock {
             BlockState currentState = worldIn.getBlockState(currentPos);
             worldIn.setBlock(currentPos, InitBlocks.ALTAR.get().defaultBlockState(), Block.UPDATE_ALL);
             BlockEntity te = worldIn.getBlockEntity(currentPos);
-            if (te instanceof TileEntityAltar altar) {
+            if (te instanceof BlockEntityAltar altar) {
                 boolean isRender = currentPos.equals(currentCenterPos);
                 boolean canPlaceItem = blockInfo.pos().getY() == 2 && blockInfo.state().is(Blocks.OAK_LOG);
                 altar.setData(currentState, isRender,

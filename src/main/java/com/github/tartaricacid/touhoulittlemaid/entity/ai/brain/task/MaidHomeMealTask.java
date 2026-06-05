@@ -8,7 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.meal.MaidMealManager;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityPicnicMat;
 import com.github.tartaricacid.touhoulittlemaid.util.HandUtils;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.google.common.collect.ImmutableMap;
@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MaidHomeMealTask extends MaidCheckRateTask {
     private static final int MAX_DELAY_TIME = 50;
-    private @Nullable TileEntityPicnicMat tmpPicnicMat = null;
+    private @Nullable BlockEntityPicnicMat tmpPicnicMat = null;
     private long handFullBubbleKey = -1;
     private long mealEmptyBubbleKey = -1;
 
@@ -47,7 +47,7 @@ public class MaidHomeMealTask extends MaidCheckRateTask {
         }
         if (maid.getVehicle() instanceof EntitySit sit && sit.getJoyType().equals(Type.ON_HOME_MEAL.getTypeName())) {
             BlockPos blockPos = sit.getAssociatedBlockPos();
-            if (serverLevel.getBlockEntity(blockPos) instanceof TileEntityPicnicMat picnicMat) {
+            if (serverLevel.getBlockEntity(blockPos) instanceof BlockEntityPicnicMat picnicMat) {
                 this.tmpPicnicMat = picnicMat;
                 return true;
             }

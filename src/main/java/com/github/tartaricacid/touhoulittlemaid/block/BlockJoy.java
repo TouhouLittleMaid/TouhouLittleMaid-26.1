@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityJoy;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityJoy;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -63,7 +63,7 @@ public abstract class BlockJoy extends BaseEntityBlock {
             // 客户端必须返回 SUCCESS，否则会有额外的异常提醒
             return InteractionResult.SUCCESS;
         }
-        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+        if (!(level.getBlockEntity(pos) instanceof BlockEntityJoy joy)) {
             return InteractionResult.PASS;
         }
         Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());
@@ -89,7 +89,7 @@ public abstract class BlockJoy extends BaseEntityBlock {
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (!(level.getBlockEntity(pos) instanceof TileEntityJoy joy)) {
+        if (!(level.getBlockEntity(pos) instanceof BlockEntityJoy joy)) {
             return;
         }
         Entity oldSitEntity = serverLevel.getEntity(joy.getSitId());

@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBed;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBed;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBed;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -102,7 +102,7 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
         // 获取床头位置和方块实体
         BlockPos headPos = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(state.getValue(FACING));
         BlockEntity blockEntity = level.getBlockEntity(headPos);
-        if (!(blockEntity instanceof TileEntityMaidBed bed)) {
+        if (!(blockEntity instanceof BlockEntityMaidBed bed)) {
             return InteractionResult.PASS;
         }
         if (bed.getColor() == dyeColor) {
@@ -175,7 +175,7 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
         worldIn.updateNeighborsAt(pos, Blocks.AIR);
         state.updateNeighbourShapes(worldIn, pos, Block.UPDATE_ALL);
 
-        if (worldIn.getBlockEntity(headPos) instanceof TileEntityMaidBed bed) {
+        if (worldIn.getBlockEntity(headPos) instanceof BlockEntityMaidBed bed) {
             bed.setColor(ItemMaidBed.getColor(stack));
         }
     }
@@ -235,7 +235,7 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
     @Nullable
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         if (state.getValue(PART) == BedPart.HEAD) {
-            return new TileEntityMaidBed(pos, state);
+            return new BlockEntityMaidBed(pos, state);
         }
         return null;
     }
@@ -244,7 +244,7 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         List<ItemStack> stacks = super.getDrops(state, params);
         BlockEntity parameter = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
-        if (parameter instanceof TileEntityMaidBed bed) {
+        if (parameter instanceof BlockEntityMaidBed bed) {
             stacks.forEach(stack -> {
                 if (stack.getItem() instanceof ItemMaidBed) {
                     ItemMaidBed.setColor(bed.getColor(), stack);
@@ -260,14 +260,14 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
 
         // 获取床的颜色信息
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof TileEntityMaidBed bed) {
+        if (blockEntity instanceof BlockEntityMaidBed bed) {
             ItemMaidBed.setColor(bed.getColor(), stack);
         } else {
             // 如果当前是脚部分，尝试获取头部分的方块实体
             if (state.getValue(PART) == BedPart.FOOT) {
                 BlockPos headPos = pos.relative(state.getValue(FACING));
                 BlockEntity headEntity = level.getBlockEntity(headPos);
-                if (headEntity instanceof TileEntityMaidBed bed) {
+                if (headEntity instanceof BlockEntityMaidBed bed) {
                     ItemMaidBed.setColor(bed.getColor(), stack);
                 }
             }

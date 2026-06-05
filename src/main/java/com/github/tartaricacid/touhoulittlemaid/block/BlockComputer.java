@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityComputer;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityComputer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -53,7 +53,7 @@ public class BlockComputer extends BlockJoy {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TileEntityComputer(pos, state);
+        return new BlockEntityComputer(pos, state);
     }
 
     @Override

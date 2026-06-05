@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntitySnackCabinet;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntitySnackCabinet;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -99,7 +99,7 @@ public class BlockSnackCabinet extends BaseEntityBlock {
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof TileEntitySnackCabinet cabinet) {
+        if (blockEntity instanceof BlockEntitySnackCabinet cabinet) {
             cabinet.recheckOpen();
         }
     }
@@ -118,7 +118,7 @@ public class BlockSnackCabinet extends BaseEntityBlock {
     @Override
     @Nullable
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TileEntitySnackCabinet(pos, state);
+        return new BlockEntitySnackCabinet(pos, state);
     }
 
     @Override

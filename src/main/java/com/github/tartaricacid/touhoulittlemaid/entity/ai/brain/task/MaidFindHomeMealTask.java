@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.block.BlockPicnicMat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitPoi;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityPicnicMat;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityPicnicMat;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -78,7 +78,7 @@ public class MaidFindHomeMealTask extends MaidCheckRateTask {
 
     private boolean isOccupied(ServerLevel worldIn, BlockPos pos) {
         BlockEntity te = worldIn.getBlockEntity(pos);
-        if (te instanceof TileEntityPicnicMat picnicMat) {
+        if (te instanceof BlockEntityPicnicMat picnicMat) {
             for (UUID uuid : picnicMat.getSitIds()) {
                 if (uuid.equals(Util.NIL_UUID)) {
                     return false;

@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.compat.jade.provider;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBeacon;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBeacon;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
@@ -17,7 +17,7 @@ public enum ShrineLampProvider implements IBlockComponentProvider {
 
     @Override
     public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
-        if (blockAccessor.getBlockEntity() instanceof TileEntityMaidBeacon lamp) {
+        if (blockAccessor.getBlockEntity() instanceof BlockEntityMaidBeacon lamp) {
             float storagePower = lamp.getStoragePower();
             float costPower = lamp.getEffectCost() * 900;
             iTooltip.add(Component.translatable("tooltips.touhou_little_maid.maid_beacon.desc", ItemMaidBeacon.DECIMAL_FORMAT.format(storagePower)));

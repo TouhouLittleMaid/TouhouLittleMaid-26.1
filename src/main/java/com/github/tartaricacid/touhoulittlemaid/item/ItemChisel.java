@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityStatue;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityStatue;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -71,9 +71,9 @@ public class ItemChisel extends Item {
     private void genStatueBlocks(@Nonnull Player player, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull Direction facing) {
         CustomData compoundData = player.getOffhandItem().get(InitDataComponent.MAID_INFO);
         if (compoundData != null) {
-            TileEntityStatue.Size[] sizes = TileEntityStatue.Size.values();
+            BlockEntityStatue.Size[] sizes = BlockEntityStatue.Size.values();
             for (int i = sizes.length - 1; i >= 0; i--) {
-                TileEntityStatue.Size size = sizes[i];
+                BlockEntityStatue.Size size = sizes[i];
                 Vec3i dimension = size.getDimension();
                 BlockPos[] posList = checkBlocks(worldIn, pos, dimension, facing);
                 if (posList != null) {
@@ -81,7 +81,7 @@ public class ItemChisel extends Item {
                     for (BlockPos posIn : posList) {
                         worldIn.setBlock(posIn, InitBlocks.STATUE.get().defaultBlockState().setValue(BlockStatue.IS_TINY, isTiny), Block.UPDATE_ALL);
                         BlockEntity te = worldIn.getBlockEntity(posIn);
-                        if (te instanceof TileEntityStatue statue) {
+                        if (te instanceof BlockEntityStatue statue) {
                             if (posIn.equals(pos)) {
                                 statue.setForgeData(size, true, pos, facing,
                                         Lists.newArrayList(posList), compoundData.copyTag());

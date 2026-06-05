@@ -5,7 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBeacon;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenBeaconGuiPackage;
-import com.github.tartaricacid.touhoulittlemaid.tileentity.TileEntityMaidBeacon;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBeacon;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -69,7 +69,7 @@ public class BlockMaidBeacon extends BaseEntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         if (state.getValue(BlockMaidBeacon.POSITION) != BeaconPosition.DOWN) {
-            return new TileEntityMaidBeacon(pos, state);
+            return new BlockEntityMaidBeacon(pos, state);
         }
         return null;
     }
@@ -78,15 +78,15 @@ public class BlockMaidBeacon extends BaseEntityBlock {
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return level.isClientSide() ? null : createTickerHelper(
-                type, InitBlocks.MAID_BEACON_TE.get(),
-                TileEntityMaidBeacon::serverTick
+                type, InitBlocks.MAID_BEACON_BE.get(),
+                BlockEntityMaidBeacon::serverTick
         );
     }
 
     @Override
     public InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level worldIn, BlockPos pos,
                                        Player player, InteractionHand handIn, BlockHitResult hit) {
-        if (worldIn.getBlockEntity(pos) instanceof TileEntityMaidBeacon) {
+        if (worldIn.getBlockEntity(pos) instanceof BlockEntityMaidBeacon) {
             if (!worldIn.isClientSide() && player instanceof ServerPlayer serverPlayer) {
                 PacketDistributor.sendToPlayer(serverPlayer, new OpenBeaconGuiPackage(pos));
             }
@@ -178,8 +178,8 @@ public class BlockMaidBeacon extends BaseEntityBlock {
 
         worldIn.setBlock(pos.above(), stateUp, Block.UPDATE_ALL);
         BlockEntity te = worldIn.getBlockEntity(pos.above());
-        if (te instanceof TileEntityMaidBeacon beacon) {
-            ItemMaidBeacon.itemStackToTileEntity(stack, beacon);
+        if (te instanceof BlockEntityMaidBeacon beacon) {
+            ItemMaidBeacon.itemStackToBlockEntity(stack, beacon);
             beacon.refresh();
         }
     }
