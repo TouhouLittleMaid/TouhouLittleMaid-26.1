@@ -1,153 +1,63 @@
-# AGENTS.md - Touhou Little Maid
+# AGENTS.md
 
-## Language policy
+## Agent behavior
 
-- 默认使用简体中文回答。
-- 除非我明确要求英文，否则不要切换英文叙述。
-- 代码、命令、报错、API 名称保持原文，不要强行翻译。
-- 提问澄清时也使用中文。
+- Default to Simplified Chinese for user-facing replies; keep code, commands, identifiers, logs, and API names verbatim.
 
-## Tech Stack
+## Project shape
 
-- **NeoForge** 26.1.2.36-beta (Minecraft 26.1.2 = 1.21.1)
-- **Java 25** toolchain (CI builds with JDK 21)
-- **Gradle 9.4.1** with NeoGradle moddev plugin v2.0.141
-- **Shadow** v9.4.1 for jar-in-jar library bundling
-- **Mixin** compatibilityLevel `JAVA_25`
+- This is a single NeoForge ModDev Gradle project for `touhou_little_maid`, not an Architectury/multi-loader repo.
+- Current project coordinates come from `gradle.properties`: Minecraft `26.1.2`, NeoForge `26.1.2.68-beta`, group `com.github.tartaricacid`.
+- Root mod sources live in `src/main/java/com/github/tartaricacid/touhoulittlemaid`; `modules/maid-manager-codegen` is
+  the only included subproject.
+- Main entrypoints are `TouhouLittleMaid.java` (`@Mod`) and `TouhouLittleMaidClient.java`
+  (`@Mod(..., dist = Dist.CLIENT)`).
+- Registry wiring is centralized in `TouhouLittleMaid.initRegister(...)` through `init/Init*` DeferredRegisters;
+  client-only registration is under `client/` and client `@EventBusSubscriber` classes.
+- Network payloads are registered in `network/NetworkHandler.register(RegisterPayloadHandlersEvent)` via each packet's
+  `TYPE`, `STREAM_CODEC`, and `handle`; prefer existing `sendToClientPlayer`/`sendToNearby` helpers for sends.
+- `src/main/resources/META-INF/neoforge.mods.toml` wires the mixin config and access transformer; keep it in sync with
+  `touhou_little_maid.mixins.json` and `META-INF/accesstransformer.cfg`.
 
-## Build Commands
+## Source map
 
-```bash
-./gradlew build                    # full build (includes shadowJar)
-./gradlew clean                    # clean build artifacts
-./gradlew runClient                # launch client (username: tartaric_acid)
-./gradlew runServer                # launch dedicated server
-./gradlew runData                  # run data generators
-./gradlew runGameTestServer        # game test server
-./gradlew test                     # JUnit 4 tests (note: no test sources exist currently)
-```
+- `init/` holds DeferredRegister declarations; `init/registry/` holds event-driven bootstrap such as common setup,
+  commands, compat, datapack reload/listener wiring, and spawn/datapack sync hooks.
+- `entity/`, `item/`, `block/`, `blockentity/`, `inventory/`, `crafting/`, `loot/`, `advancements/`, and `world/` are
+  the main gameplay/content areas.
+- `client/` is client-only code: renderers, GUI/screens, model/reload handling, key input, overlays, and client events.
+- `network/` contains payload registration and packet implementations; `network/message/ai/` contains AI-related
+  packets.
+- `ai/` is the LLM/chat-agent feature area; `compat/` is runtime soft integration with other mods.
+- `datagen/` contains data providers used by `runData`; `datapack/` contains runtime datapack reload/data logic.
+- `mixin/` contains common mixins, `mixin/client/` client mixins, and `mixin/accessor/` accessors.
+- `src/main/resources/` is handwritten assets/data/config wiring; `src/generated/resources/` is datagen output.
 
-**Important**: `assemble` depends on `shadowJar`. The default `jar` task is disabled. The output artifact is
-`build/libs/touhoulittlemaid-<version>-all.jar`.
+## Commands
 
-`compileJava` is configured to never be up-to-date to force Mixin refmap regeneration.
+- Use the wrapper from the repo root. On Windows: `.\gradlew.bat <task>`; on Unix-like shells: `./gradlew <task>`.
+- Full verification/build: `.\gradlew.bat build` or `.\gradlew.bat check`.
+- Tests: `.\gradlew.bat test`; no committed Java tests were found, and `src/test` is ignored.
+- Package the distributable jar with `.\gradlew.bat assemble` or `.\gradlew.bat shadowJar`; the normal `jar` task is
+  disabled and `assemble` depends on `shadowJar`.
+- NeoForge runs: `.\gradlew.bat runClient`, `runServer`, `runGameTestServer`, and `runData`.
+- Focused codegen module check: `.\gradlew.bat :maid-manager-codegen:build`.
+- Local publish target is Maven local only: `.\gradlew.bat publishToMavenLocal`.
 
-## Project Structure
+## Build and generated-source gotchas
 
-```
-src/main/java/com/github/tartaricacid/touhoulittlemaid/
-├── TouhouLittleMaid.java          # @Mod main class (both sides)
-├── TouhouLittleMaidClient.java    # @Mod client-only class (dist = Dist.CLIENT)
-├── init/                          # DeferredRegister registries (blocks, items, entities, etc.)
-│   └── registry/                  # Sub-registries (CommandRegistry, CompatRegistry, CommonRegistry, etc.)
-├── entity/                        # Custom entities + AI tasks
-├── ai/                            # LLM AI chat system
-├── client/                        # Client-only code
-│   ├── init/                      # Client-side registration (renderers, GUIs, key bindings)
-│   ├── event/                     # Client event handlers (14+ classes)
-│   ├── model/                     # Entity models
-│   ├── renderer/                  # Entity/block renderers
-│   └── gui/                       # GUI screens
-├── event/                         # Server-side event handlers
-│   └── maid/                      # Maid-specific event handlers (12+ classes)
-├── network/                       # Network packets (RegisterPayloadHandlersEvent pattern)
-│   └── message/                   # Payload implementations
-│       └── ai/                    # AI-related packets
-├── block/                         # Custom blocks
-├── tileentity/                    # Block entities
-├── item/                          # Custom items
-├── inventory/                     # Container/screen menus
-├── api/                           # Public API (ILittleMaid extension interface)
-├── compat/                        # Soft compat with other mods (aquaculture, create, etc.)
-├── config/                        # Config (GeneralConfig, ServerConfig)
-├── datagen/                       # Data generators
-├── datapack/                      # Datapack-related code
-├── mixing/                        # Mixin classes (common + client subdirs)
-│   └── plugin/MixinPlugin.java    # Mixin plugin (conditional InvTweaks compat)
-├── molang/                        # MoLang expression interpreter
-├── command/                       # Commands
-├── crafting/                      # Custom crafting recipes
-├── data/                          # Data attachment types
-├── advancements/                  # Custom advancements
-├── geckolib3/                     # GeckoLib integration
-├── world/                         # World-gen, POI types
-├── debug/                         # Dev/debug utilities (condition: TouhouLittleMaid.DEBUG)
-├── loot/                          # Loot modifiers/conditions
-└── util/                          # Utility classes
-```
-
-Resources:
-
-```
-src/main/resources/
-├── META-INF/neoforge.mods.toml    # Mod metadata (uses Gradle property expansion)
-├── META-INF/accesstransformer.cfg # Access transformers
-├── touhou_little_maid.mixins.json  # Mixin config
-├── assets/                        # Client assets (textures, models, sounds, lang)
-├── data/                          # Data pack data (recipes, loot tables, tags)
-└── pack.mcmeta                    # pack_format: 34 (1.21.1)
-
-src/generated/resources/           # Generated resources (data gen output)
-└── data/                          # Auto-generated datapack data
-```
-
-## Registration Pattern
-
-All registries use `DeferredRegister` in `init/` package classes. They are registered in
-`TouhouLittleMaid.initRegister()`:
-
-```java
-InitEntities.ENTITY_TYPES.register(eventBus);
-InitItems.ITEMS.
-
-register(eventBus);
-// ... etc
-```
-
-When adding new content:
-
-1. Add the `DeferredRegister` field to the appropriate `Init*` class
-2. Register its `Supplier` entries
-3. Add the `.register(eventBus)` call in `TouhouLittleMaid.initRegister()`
-
-## Event Bus Subscribers
-
-Lifecycle event handlers use the standalone `@EventBusSubscriber` annotation (from
-`net.neoforged.fml.common.EventBusSubscriber`), **not** `@Mod.EventBusSubscriber`. Key subscriber classes:
-
-- `InitEntities` — entity attributes, spawn placements
-- `CommonRegistry` — `FMLCommonSetupEvent` (manager init, pack reload, YSM compat)
-- `CompatRegistry` — `InterModEnqueueEvent` (soft compat)
-- `DatapackRegistry` — `AddServerReloadListenersEvent`
-- `DataGenerator` — `GatherDataEvent` (data providers)
-- `client/init/ClientSetupEvent` — `FMLClientSetupEvent`, overlays, reload listeners
-
-## Network
-
-Uses modern NeoForge `RegisterPayloadHandlersEvent` pattern. All packets defined in `NetworkHandler.registerPacket()`.
-
-Packets extend `CustomPacketPayload`, use `STREAM_CODEC`, and handle via a static `handle()` method.
-
-Sending packets: use `NetworkHandler.sendToClientPlayer()`, `sendToNearby()` helpers.
-
-## Mixins
-
-- Config: `touhou_little_maid.mixins.json`
-- Plugin: `MixinPlugin` — conditionally applies `client.compat.InvTweaksMixin` when InvTweaks is loaded on client
-- Common mixins in `mixin/`, client-only in `mixin/client/`, accessors in `mixin/accessor/`
-- Compatibility level: `JAVA_25`
-
-## Key Conventions
-
-- **Encoding**: UTF-8 (enforced in JavaCompile tasks)
-- **Package root**: `com.github.tartaricacid.touhoulittlemaid`
-- **Mod ID**: `touhou_little_maid`
-- **Soft compat**: Mods are included as `compileOnly` dependencies. Check `CompatRegistry` to see which mod's load
-  status is tracked. Use `LoadingModList` or `ModList.get().isLoaded()` at runtime.
-- **DEBUG flag**: `TouhouLittleMaid.DEBUG` — `true` outside production (dev env). Debug utilities in `debug/` package
-  should gate on this.
-- **Jar-in-jar**: `mcLib` configuration collects libraries (opus decoder, mp3 decoder, snakeyaml); Shadow plugin
-  relocates them under `com.github.tartaricacid.touhoulittlemaid.libs.*`
-- **No README** exists in the repo
-- **.gitignore excludes** `src/test`, so test sources under `src/test/` are not tracked
-- **Project uses Eclipse** format (`.classpath`, `.project`, `.settings/`) but also generates IDEA config
+- The root project requests Java 25; `:maid-manager-codegen` requests Java 21. `settings.gradle` enables Foojay
+  toolchain resolution, so prefer Gradle toolchains over hardcoding `JAVA_HOME`.
+- `runData` writes generated resources to `src/generated/resources/`, which is included in the main resources source
+  set; avoid hand-editing datagen output unless that is explicitly intended.
+- Annotation processing writes Java sources under `build/generated/sources/annotationProcessor/java/main`, also included
+  in `sourceSets.main`.
+- `MaidManagerDefGenerator` generates `MaidManagers`, `MaidManagerBootstrap`, and `MaidManagerHost` from
+  `@MaidManagerDef`; if those classes appear missing, run `compileJava`/`build` instead of creating them manually.
+- `compileJava` is intentionally forced out-of-date to regenerate refmap output, so do not assume it will be a cheap
+  up-to-date check.
+- Soft integrations are mostly `compileOnly` dependencies plus runtime `ModList`/`CompatRegistry` checks. Libraries
+  bundled through `mcLib` are shaded/relocated by `shadowJar`; do not add broad dependencies to the published jar
+  accidentally.
+- No Spotless/Checkstyle/PMD/Prettier-style lint or formatter config was found; rely on existing Java style and Gradle
+  `check`.
