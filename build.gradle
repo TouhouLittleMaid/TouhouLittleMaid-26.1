@@ -350,6 +350,11 @@ java {
     withSourcesJar()
 }
 
+tasks.named('sourcesJar') {
+    // sourcesJar 会打包 annotationProcessor 生成的源码目录，显式依赖 compileJava
+    dependsOn tasks.named('compileJava')
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
 }
