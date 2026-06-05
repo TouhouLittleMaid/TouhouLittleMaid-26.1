@@ -1,4 +1,4 @@
-package com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity;
+package com.github.tartaricacid.touhoulittlemaid.client.renderer.item;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
@@ -25,14 +25,14 @@ import java.util.function.Consumer;
  * extractArgument 仿照 EntityChairRenderer.extractRenderState 提取模型、纹理数据，
  * submit 仿照 EntityChairRenderer.submitChair 渲染逻辑。
  */
-public class BlockEntityItemStackChairRenderer implements SpecialModelRenderer<ChairRenderRenderState> {
+public class ChairItemRenderer implements SpecialModelRenderer<ChairRenderRenderState> {
     public static final Identifier CHAIR_ITEM_RENDERER = IdentifierUtil.modLoc("chair_item");
     /**
      * 默认兜底模型 ID，与 {@code EntityChairRenderer.DEFAULT_CHAIR_ID} 保持一致
      */
     private static final String DEFAULT_CHAIR_ID = "touhou_little_maid:cushion";
 
-    public BlockEntityItemStackChairRenderer() {
+    public ChairItemRenderer() {
     }
 
     /**
@@ -119,16 +119,16 @@ public class BlockEntityItemStackChairRenderer implements SpecialModelRenderer<C
     }
 
     public record Unbaked() implements SpecialModelRenderer.Unbaked<ChairRenderRenderState> {
-        public static final MapCodec<BlockEntityItemStackChairRenderer.Unbaked> MAP_CODEC = MapCodec.unit(BlockEntityItemStackChairRenderer.Unbaked::new);
+        public static final MapCodec<ChairItemRenderer.Unbaked> MAP_CODEC = MapCodec.unit(ChairItemRenderer.Unbaked::new);
 
         @Override
-        public MapCodec<BlockEntityItemStackChairRenderer.Unbaked> type() {
+        public MapCodec<ChairItemRenderer.Unbaked> type() {
             return MAP_CODEC;
         }
 
         @Override
-        public BlockEntityItemStackChairRenderer bake(SpecialModelRenderer.BakingContext context) {
-            return new BlockEntityItemStackChairRenderer();
+        public ChairItemRenderer bake(SpecialModelRenderer.BakingContext context) {
+            return new ChairItemRenderer();
         }
     }
 }

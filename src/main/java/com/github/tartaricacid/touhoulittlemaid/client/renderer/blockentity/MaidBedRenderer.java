@@ -28,7 +28,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.function.Function;
 
-public class BlockEntityMaidBedRenderer implements BlockEntityRenderer<BlockEntityMaidBed, MaidBedRenderState> {
+public class MaidBedRenderer implements BlockEntityRenderer<BlockEntityMaidBed, MaidBedRenderState> {
     private final Function<DyeColor, SimpleBedrockModel<Unit>> cacheModel = Util.memoize(color -> {
         Identifier id = IdentifierUtil.modLoc("bedrock/block/maid_bed/" + color.getName());
         return InternalBedrockModelRegistry.getModel(id);
@@ -36,7 +36,7 @@ public class BlockEntityMaidBedRenderer implements BlockEntityRenderer<BlockEnti
     private final Function<DyeColor, Identifier> cacheTexture = Util.memoize(color ->
             IdentifierUtil.modLoc("textures/bedrock/block/maid_bed/" + color.getName() + ".png"));
 
-    public BlockEntityMaidBedRenderer(BlockEntityRendererProvider.Context context) {
+    public MaidBedRenderer(BlockEntityRendererProvider.Context context) {
     }
 
     @Override

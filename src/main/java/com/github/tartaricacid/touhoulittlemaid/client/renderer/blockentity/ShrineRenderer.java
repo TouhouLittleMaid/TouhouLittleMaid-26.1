@@ -25,12 +25,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-public class BlockEntityShrineRenderer implements BlockEntityRenderer<BlockEntityShrine, ShrineRenderState> {
+public class ShrineRenderer implements BlockEntityRenderer<BlockEntityShrine, ShrineRenderState> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/shrine.png");
     private final SimpleBedrockModel<Unit> model;
     private final ItemModelResolver itemModelResolver;
 
-    public BlockEntityShrineRenderer(BlockEntityRendererProvider.Context context) {
+    public ShrineRenderer(BlockEntityRendererProvider.Context context) {
         model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.SHRINE);
         itemModelResolver = context.itemModelResolver();
     }

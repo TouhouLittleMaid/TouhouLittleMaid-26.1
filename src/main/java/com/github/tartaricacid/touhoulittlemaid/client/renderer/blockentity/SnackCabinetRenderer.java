@@ -24,13 +24,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-public class BlockEntitySnackCabinetRenderer implements BlockEntityRenderer<BlockEntitySnackCabinet, SnackCabinetRenderState> {
+public class SnackCabinetRenderer implements BlockEntityRenderer<BlockEntitySnackCabinet, SnackCabinetRenderState> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/snack_cabinet.png");
     private final SimpleBedrockModel<Unit> model;
     private final BedrockPart full;
     private final BedrockPart half;
 
-    public BlockEntitySnackCabinetRenderer(BlockEntityRendererProvider.Context context) {
+    public SnackCabinetRenderer(BlockEntityRendererProvider.Context context) {
         this.model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.SNACK_CABINET);
         this.full = this.model.getPart("full");
         this.half = this.model.getPart("half");

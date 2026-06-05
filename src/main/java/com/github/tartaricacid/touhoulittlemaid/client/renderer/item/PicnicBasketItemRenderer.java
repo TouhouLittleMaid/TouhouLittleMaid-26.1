@@ -1,4 +1,4 @@
-package com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity;
+package com.github.tartaricacid.touhoulittlemaid.client.renderer.item;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
@@ -21,15 +21,15 @@ import java.util.function.Consumer;
 /**
  * PicnicBasket 物品的特殊模型渲染器，替代旧版 BlockEntityWithoutLevelRenderer
  * <p>
- * 参考 BlockEntityItemStackGarageKitRenderer 的 SpecialModelRenderer 模式实现。
+ * 参考 GarageKitItemRenderer 的 SpecialModelRenderer 模式实现。
  * 使用 submitCustomGeometry 渲染 Bedrock 基岩版模型。
  */
-public class BlockEntityItemStackPicnicBasketRenderer implements SpecialModelRenderer<PicnicBasketRenderState> {
+public class PicnicBasketItemRenderer implements SpecialModelRenderer<PicnicBasketRenderState> {
     public static final Identifier PICNIC_BASKET_ITEM_RENDERER = IdentifierUtil.modLoc("picnic_basket_item");
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/picnic_basket.png");
     private final SimpleBedrockModel<Unit> model;
 
-    public BlockEntityItemStackPicnicBasketRenderer() {
+    public PicnicBasketItemRenderer() {
         this.model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.PICNIC_BASKET);
     }
 
@@ -67,16 +67,16 @@ public class BlockEntityItemStackPicnicBasketRenderer implements SpecialModelRen
     }
 
     public record Unbaked() implements SpecialModelRenderer.Unbaked<PicnicBasketRenderState> {
-        public static final MapCodec<BlockEntityItemStackPicnicBasketRenderer.Unbaked> MAP_CODEC = MapCodec.unit(BlockEntityItemStackPicnicBasketRenderer.Unbaked::new);
+        public static final MapCodec<PicnicBasketItemRenderer.Unbaked> MAP_CODEC = MapCodec.unit(PicnicBasketItemRenderer.Unbaked::new);
 
         @Override
-        public MapCodec<BlockEntityItemStackPicnicBasketRenderer.Unbaked> type() {
+        public MapCodec<PicnicBasketItemRenderer.Unbaked> type() {
             return MAP_CODEC;
         }
 
         @Override
-        public BlockEntityItemStackPicnicBasketRenderer bake(SpecialModelRenderer.BakingContext context) {
-            return new BlockEntityItemStackPicnicBasketRenderer();
+        public PicnicBasketItemRenderer bake(SpecialModelRenderer.BakingContext context) {
+            return new PicnicBasketItemRenderer();
         }
     }
 }

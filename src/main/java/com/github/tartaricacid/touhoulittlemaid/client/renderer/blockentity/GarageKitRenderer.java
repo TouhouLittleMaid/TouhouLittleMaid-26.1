@@ -8,86 +8,83 @@ import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.stat
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemGarageKit;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.special.SpecialModelRenderer;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.TagValueInput;
-import org.joml.Vector3fc;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.STATUE_BASE;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
-/**
- * GarageKit 物品的特殊模型渲染器，替代旧版 BlockEntityWithoutLevelRenderer
- * <p>
- * 参考 BlockEntityGarageKitRenderer 的实体渲染模式实现。
- * 底座模型（STATUE_BASE）通过 submitCustomGeometry 渲染。
- * 实体预览通过 EntityRenderDispatcher.submit() 渲染。
- */
-public class BlockEntityItemStackGarageKitRenderer implements SpecialModelRenderer<GarageKitRenderState> {
-    public static final Identifier GARAGE_KIT_ITEM_RENDERER = IdentifierUtil.modLoc("garage_kit_item");
+public class GarageKitRenderer implements BlockEntityRenderer<BlockEntityGarageKit, GarageKitRenderState> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/statue_base.png");
     private final SimpleBedrockModel<Unit> baseModel;
 
-    public BlockEntityItemStackGarageKitRenderer() {
-        this.baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
+    public GarageKitRenderer(BlockEntityRendererProvider.Context context) {
+        baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
     }
 
     @Override
-    public GarageKitRenderState extractArgument(ItemStack stack) {
-        GarageKitRenderState state = new GarageKitRenderState();
-        CustomData data = ItemGarageKit.getMaidData(stack);
-        state.extraData = data.copyTag();
+    public GarageKitRenderState createRenderState() {
+        return new GarageKitRenderState();
+    }
+
+    @Override
+    public void extractRenderState(BlockEntityGarageKit te, GarageKitRenderState state, float partialTick, Vec3 cameraPos,
+                                   ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(te, state, partialTick, cameraPos, breakProgress);
+        state.facing = te.getFacing();
+        state.extraData = te.getExtraData();
         state.entityRenderState = null;
 
         // 提取实体渲染状态
         if (state.extraData.isEmpty()) {
-            return state;
+            return;
         }
         Level world = Minecraft.getInstance().level;
         if (world == null) {
-            return state;
+            return;
         }
         EntityType.byString(state.extraData.getString("id").orElse("")).ifPresent(type -> {
             try {
-                extractEntityRenderState(state, state.extraData, world, type);
+                extractEntityRenderState(te, state, state.extraData, world, type, partialTick);
             } catch (ExecutionException e) {
-                TouhouLittleMaid.LOGGER.error("Failed to extract garage kit item entity render state", e);
+                TouhouLittleMaid.LOGGER.error("Failed to extract garage kit entity render state", e);
             }
         });
-        return state;
     }
 
     @SuppressWarnings("unchecked,rawtypes")
-    private void extractEntityRenderState(GarageKitRenderState state, CompoundTag data,
-                                          Level world, EntityType<?> type) throws ExecutionException {
+    private void extractEntityRenderState(BlockEntityGarageKit te, GarageKitRenderState state, CompoundTag data,
+                                          Level world, EntityType<?> type, float partialTick) throws ExecutionException {
         Entity entity;
         if (type.equals(InitEntities.MAID.get())) {
-            entity = EntityCacheUtil.getMaid(world, EntitySpawnReason.LOAD);
+            long posId = te.getBlockPos().asLong();
+            entity = EntityCacheUtil.STATUE_CACHE.get(posId, () -> new EntityMaid(world));
         } else {
-            entity = EntityCacheUtil.getEntity((EntityType) type, (l, e) ->
+            entity = EntityCacheUtil.getEntity((EntityType) type, (l, r) ->
                     new EntityMaid(l), world, EntitySpawnReason.LOAD);
         }
 
@@ -95,25 +92,17 @@ public class BlockEntityItemStackGarageKitRenderer implements SpecialModelRender
         if (entity instanceof EntityMaid maid) {
             clearMaidDataResidue(maid, true);
             maid.setModelId(data.getStringOr("model_id","touhou_little_maid:hakurei_reimu"));
-            maid.renderState = MaidRenderState.GARAGE_KIT_ITEM;
+            maid.renderState = MaidRenderState.GARAGE_KIT;
             maid.tickCount = 0;
         }
 
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        state.entityRenderState = dispatcher.extractEntity(entity, 0);
-        state.entityRenderState.lightCoords = LightCoordsUtil.FULL_BRIGHT;
+        state.entityRenderState = dispatcher.extractEntity(entity, partialTick);
+        state.entityRenderState.lightCoords = state.lightCoords;
     }
 
     @Override
-    public void submit(
-            GarageKitRenderState state,
-            PoseStack poseStack,
-            SubmitNodeCollector collector,
-            int lightCoords,
-            int overlayCoords,
-            boolean hasFoil,
-            int outlineColor
-    ) {
+    public void submit(GarageKitRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         // 渲染底座模型
         poseStack.pushPose();
         poseStack.scale(0.5f, 0.5f, 0.5f);
@@ -122,52 +111,41 @@ public class BlockEntityItemStackGarageKitRenderer implements SpecialModelRender
         collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
             poseStack.pushPose();
             poseStack.last().set(pose);
-            baseModel.renderToBuffer(poseStack, buffer, lightCoords, overlayCoords);
+            baseModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
             poseStack.popPose();
         });
         poseStack.popPose();
 
         // 渲染实体预览
         if (state.entityRenderState != null) {
-            renderEntityPart(state, poseStack, collector);
+            renderEntityPart(state, poseStack, collector, camera);
         }
     }
 
-    private void renderEntityPart(GarageKitRenderState state, PoseStack poseStack, SubmitNodeCollector collector) {
+    private void renderEntityPart(GarageKitRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         if (state.entityRenderState == null) {
             return;
         }
         poseStack.pushPose();
         poseStack.scale(0.5f, 0.5f, 0.5f);
         poseStack.translate(1, 0.21328125, 1);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        switch (state.facing) {
+            case EAST:
+                poseStack.mulPose(Axis.YP.rotationDegrees(90));
+                break;
+            case WEST:
+                poseStack.mulPose(Axis.YP.rotationDegrees(270));
+                break;
+            case SOUTH:
+                break;
+            case NORTH:
+            default:
+                poseStack.mulPose(Axis.YP.rotationDegrees(180));
+                break;
+        }
 
         EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        CameraRenderState camera = new CameraRenderState();
         dispatcher.submit(state.entityRenderState, camera, 0, 0, 0, poseStack, collector);
         poseStack.popPose();
-    }
-
-    @Override
-    public void getExtents(Consumer<Vector3fc> output) {
-        // 从底座模型获取 GUI 范围
-        PoseStack poseStack = new PoseStack();
-        poseStack.scale(0.5F, 0.5F, 0.5F);
-        baseModel.root().getExtentsForGui(poseStack, output);
-    }
-
-    public record Unbaked() implements SpecialModelRenderer.Unbaked<GarageKitRenderState> {
-        public static final Identifier ID = IdentifierUtil.modLoc("garage_kit");
-        public static final MapCodec<BlockEntityItemStackGarageKitRenderer.Unbaked> MAP_CODEC = MapCodec.unit(BlockEntityItemStackGarageKitRenderer.Unbaked::new);
-
-        @Override
-        public MapCodec<BlockEntityItemStackGarageKitRenderer.Unbaked> type() {
-            return MAP_CODEC;
-        }
-
-        @Override
-        public BlockEntityItemStackGarageKitRenderer bake(SpecialModelRenderer.BakingContext context) {
-            return new BlockEntityItemStackGarageKitRenderer();
-        }
     }
 }

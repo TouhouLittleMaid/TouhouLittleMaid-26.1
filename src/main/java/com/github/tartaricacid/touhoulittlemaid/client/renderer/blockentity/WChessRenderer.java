@@ -33,7 +33,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-public class BlockEntityWChessRenderer implements BlockEntityRenderer<BlockEntityWChess, WChessRenderState> {
+public class WChessRenderer implements BlockEntityRenderer<BlockEntityWChess, WChessRenderState> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/wchess.png");
     private static final Identifier PIECES_TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/wchess_pieces.png");
     private static final int TIPS_RENDER_DISTANCE = 16;
@@ -43,7 +43,7 @@ public class BlockEntityWChessRenderer implements BlockEntityRenderer<BlockEntit
     private final WChessPiecesModel[] chessPiecesModels;
     private final WChessPiecesModel selectedModels;
 
-    public BlockEntityWChessRenderer(BlockEntityRendererProvider.Context context) {
+    public WChessRenderer(BlockEntityRendererProvider.Context context) {
         chessModel = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.WCHESS);
         chessPiecesModels = WChessPiecesModel.initModel();
         selectedModels = WChessPiecesModel.getSelectedModel();

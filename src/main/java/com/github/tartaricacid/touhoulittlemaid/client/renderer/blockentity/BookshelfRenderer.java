@@ -15,11 +15,11 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 
-public class BlockEntityBookshelfRenderer extends BlockEntityJoyRenderer<BlockEntityBookshelf> {
+public class BookshelfRenderer extends JoyRenderer<BlockEntityBookshelf> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/bookshelf.png");
     private final SimpleBedrockModel<Unit> model;
 
-    public BlockEntityBookshelfRenderer(BlockEntityRendererProvider.Context context) {
+    public BookshelfRenderer(BlockEntityRendererProvider.Context context) {
         model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.BOOKSHELF);
     }
 

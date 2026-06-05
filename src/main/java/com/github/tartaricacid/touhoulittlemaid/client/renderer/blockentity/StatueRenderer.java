@@ -41,11 +41,11 @@ import java.util.concurrent.ExecutionException;
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.STATUE_BASE;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
-public class BlockEntityStatueRenderer implements BlockEntityRenderer<BlockEntityStatue, StatueRenderState> {
+public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, StatueRenderState> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/statue_base.png");
     private final SimpleBedrockModel<Unit> baseModel;
 
-    public BlockEntityStatueRenderer(BlockEntityRendererProvider.Context context) {
+    public StatueRenderer(BlockEntityRendererProvider.Context context) {
         baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
     }
 

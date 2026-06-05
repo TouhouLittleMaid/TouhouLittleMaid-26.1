@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.state.JoyRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
-import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityComputer;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityKeyboard;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -15,12 +15,12 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 
-public class BlockEntityComputerRenderer extends BlockEntityJoyRenderer<BlockEntityComputer> {
-    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/computer.png");
+public class KeyboardRenderer extends JoyRenderer<BlockEntityKeyboard> {
+    private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/keyboard.png");
     private final SimpleBedrockModel<Unit> model;
 
-    public BlockEntityComputerRenderer(BlockEntityRendererProvider.Context context) {
-        model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.COMPUTER);
+    public KeyboardRenderer(BlockEntityRendererProvider.Context context) {
+        model = InternalBedrockModelRegistry.getModel(InternalBedrockModelRegistry.KEYBOARD);
     }
 
     @Override
@@ -30,15 +30,14 @@ public class BlockEntityComputerRenderer extends BlockEntityJoyRenderer<BlockEnt
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         poseStack.mulPose(Axis.YN.rotationDegrees(180 - state.facing.get2DDataValue() * 90));
-        submitNodeCollector.submitCustomGeometry(
-                poseStack, RenderTypes.entityCutout(TEXTURE),
+        submitNodeCollector.submitCustomGeometry(poseStack,
+                RenderTypes.entityCutout(TEXTURE),
                 (pose, buffer) -> {
                     poseStack.pushPose();
                     poseStack.last().set(pose);
                     model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
                     poseStack.popPose();
-                }
-        );
+                });
         poseStack.popPose();
     }
 }
