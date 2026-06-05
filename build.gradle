@@ -198,6 +198,9 @@ neoForge {
 }
 
 sourceSets.main {
+    java {
+        srcDir layout.buildDirectory.dir("generated/sources/annotationProcessor/java/main")
+    }
     resources {
         srcDir 'src/generated/resources'
     }
@@ -217,6 +220,9 @@ configurations {
 }
 
 dependencies {
+    annotationProcessor project(':maid-manager-codegen')
+    annotationProcessor 'com.squareup:javapoet:1.13.0'
+
     // Opus 音频解码库
     mcLib "org.gagravarr:vorbis-java-core:0.8"
     mcLib "io.github.jaredmdobson:concentus:1.0.2"

@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.data.BackpackData;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataAttachment;
 import net.minecraft.resources.Identifier;
 
+@MaidManagerDef(alias = "backpackManager", exposeView = true)
 public class MaidBackpackManager {
     private final EntityMaid maid;
     private IMaidBackpack backpack;
