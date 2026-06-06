@@ -8,19 +8,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -29,10 +23,10 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class BlockEntityModelSwitcher extends BlockEntity {
-    public static final String INFO_LIST = "info_list";
-    public static final String ENTITY_UUID = "entity_uuid";
-    public static final String LIST_INDEX = "list_index";
+public class BlockEntityModelSwitcher extends BlockEntityBase {
+    public static final String INFO_LIST = "InfoList";
+    public static final String ENTITY_UUID = "EntityUuid";
+    public static final String LIST_INDEX = "ListIndex";
 
     private List<ModeInfo> infoList = Lists.newArrayList();
     private boolean isPowered;
@@ -45,12 +39,12 @@ public class BlockEntityModelSwitcher extends BlockEntity {
 
     @Override
     protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         output.store(INFO_LIST, ModeInfo.CODEC.listOf(), infoList);
         if (this.uuid != null) {
             output.store(ENTITY_UUID, UUIDUtil.CODEC, this.uuid);
         }
         output.putInt(LIST_INDEX, this.index);
-        super.saveAdditional(output);
     }
 
     @Override
@@ -62,17 +56,6 @@ public class BlockEntityModelSwitcher extends BlockEntity {
         });
         this.uuid = input.read(ENTITY_UUID, UUIDUtil.CODEC).orElse(null);
         this.index = input.getIntOr(LIST_INDEX, 0);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
-        return this.saveWithoutMetadata(pRegistries);
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
@@ -122,14 +105,6 @@ public class BlockEntityModelSwitcher extends BlockEntity {
         this.refresh();
     }
 
-    public void refresh() {
-        this.setChanged();
-        if (level != null) {
-            BlockState state = level.getBlockState(worldPosition);
-            level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
-        }
-    }
-
     public static final class ModeInfo {
         public static final Codec<ModeInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.xmap(Identifier::parse, Identifier::toString).fieldOf("model_id").forGetter(ModeInfo::getModelId),
@@ -138,12 +113,9 @@ public class BlockEntityModelSwitcher extends BlockEntity {
         ).apply(instance, ModeInfo::new));
 
         public static final StreamCodec<ByteBuf, ModeInfo> MODE_INFO_STREAM_CODEC = StreamCodec.composite(
-                Identifier.STREAM_CODEC,
-                ModeInfo::getModelId,
-                ByteBufCodecs.STRING_UTF8,
-                ModeInfo::getText,
-                Direction.STREAM_CODEC,
-                ModeInfo::getDirection,
+                Identifier.STREAM_CODEC, ModeInfo::getModelId,
+                ByteBufCodecs.STRING_UTF8, ModeInfo::getText,
+                Direction.STREAM_CODEC, ModeInfo::getDirection,
                 ModeInfo::new
         );
 

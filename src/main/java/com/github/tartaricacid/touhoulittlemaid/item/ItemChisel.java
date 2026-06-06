@@ -2,11 +2,11 @@ package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.advancements.maid.TriggerType;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockStatue;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityStatue;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
-import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityStatue;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,6 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -70,33 +71,44 @@ public class ItemChisel extends Item {
 
     private void genStatueBlocks(@Nonnull Player player, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull Direction facing) {
         CustomData compoundData = player.getOffhandItem().get(InitDataComponent.MAID_INFO);
-        if (compoundData != null) {
-            BlockEntityStatue.Size[] sizes = BlockEntityStatue.Size.values();
-            for (int i = sizes.length - 1; i >= 0; i--) {
-                BlockEntityStatue.Size size = sizes[i];
-                Vec3i dimension = size.getDimension();
-                BlockPos[] posList = checkBlocks(worldIn, pos, dimension, facing);
-                if (posList != null) {
-                    boolean isTiny = posList.length == 1;
-                    for (BlockPos posIn : posList) {
-                        worldIn.setBlock(posIn, InitBlocks.STATUE.get().defaultBlockState().setValue(BlockStatue.IS_TINY, isTiny), Block.UPDATE_ALL);
-                        BlockEntity te = worldIn.getBlockEntity(posIn);
-                        if (te instanceof BlockEntityStatue statue) {
-                            if (posIn.equals(pos)) {
-                                statue.setForgeData(size, true, pos, facing,
-                                        Lists.newArrayList(posList), compoundData.copyTag());
-                            } else {
-                                statue.setForgeData(size, false, pos, facing,
-                                        Lists.newArrayList(posList), null);
-                            }
-                        }
-                    }
+        if (compoundData == null) {
+            return;
+        }
 
-                    player.getMainHandItem().hurtAndBreak(size.ordinal() + 1, player, EquipmentSlot.MAINHAND);
-                    player.playSound(SoundEvents.ANVIL_LAND, 0.5f, 1.5f);
-                    return;
+        BlockEntityStatue.Size[] sizes = BlockEntityStatue.Size.values();
+        for (int i = sizes.length - 1; i >= 0; i--) {
+            BlockEntityStatue.Size size = sizes[i];
+            Vec3i dimension = size.getDimension();
+            BlockPos[] posList = checkBlocks(worldIn, pos, dimension, facing);
+            if (posList == null) {
+                continue;
+            }
+
+            boolean isTiny = posList.length == 1;
+            for (BlockPos posIn : posList) {
+                BlockState blockState = InitBlocks.STATUE.get()
+                        .defaultBlockState()
+                        .setValue(BlockStatue.IS_TINY, isTiny)
+                        .setValue(BlockStatue.FACING, facing);
+
+                worldIn.setBlock(posIn, blockState, Block.UPDATE_ALL);
+                BlockEntity te = worldIn.getBlockEntity(posIn);
+
+                if (!(te instanceof BlockEntityStatue statue)) {
+                    continue;
+                }
+                if (posIn.equals(pos)) {
+                    statue.setAllData(size, true, pos,
+                            Lists.newArrayList(posList), compoundData.copyTag());
+                } else {
+                    statue.setAllData(size, false, pos,
+                            Lists.newArrayList(posList), null);
                 }
             }
+
+            player.getMainHandItem().hurtAndBreak(size.ordinal() + 1, player, EquipmentSlot.MAINHAND);
+            player.playSound(SoundEvents.ANVIL_LAND, 0.5f, 1.5f);
+            return;
         }
     }
 

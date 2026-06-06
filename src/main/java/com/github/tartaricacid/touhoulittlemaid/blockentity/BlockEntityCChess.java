@@ -17,6 +17,7 @@ public class BlockEntityCChess extends BlockEntityJoy implements IBoardGameEntit
     private static final String REPEAT = "Repeat";
     private static final String MOVE_NUMBER_LIMIT = "MoveNumberLimit";
 
+    // 棋局数据
     private final Position chessData;
 
     // 回合计数器
@@ -36,20 +37,15 @@ public class BlockEntityCChess extends BlockEntityJoy implements IBoardGameEntit
         this.chessData.fromFen(CChessUtil.INIT);
     }
 
-    public void setEndgame(String endgame) {
-        this.chessData.fromFen(endgame);
-        this.refresh();
-    }
-
     @Override
     protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         output.putString(CHESS_DATA, chessData.toFen());
         output.putInt(CHESS_COUNTER, chessCounter);
         output.putInt(SELECT_CHESS_POINT, selectChessPoint);
         output.putBoolean(CHECKMATE, checkmate);
         output.putBoolean(REPEAT, repeat);
         output.putBoolean(MOVE_NUMBER_LIMIT, moveNumberLimit);
-        super.saveAdditional(output);
     }
 
     @Override

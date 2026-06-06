@@ -5,24 +5,16 @@ import com.github.tartaricacid.touhoulittlemaid.inventory.handler.AltarItemHandl
 import com.github.tartaricacid.touhoulittlemaid.util.PosListData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 
-import javax.annotation.Nullable;
-
-public class BlockEntityAltar extends BlockEntity {
+public class BlockEntityAltar extends BlockEntityBase {
     private static final String STORAGE_ITEM = "StorageItem";
     private static final String IS_RENDER = "IsRender";
     private static final String CAN_PLACE_ITEM = "CanPlaceItem";
@@ -44,8 +36,11 @@ public class BlockEntityAltar extends BlockEntity {
         super(InitBlocks.ALTAR_BE.get(), blockPos, blockState);
     }
 
-    public void setData(BlockState storageState, boolean isRender, boolean canPlaceItem, Direction direction,
-                        PosListData blockPosList, PosListData canPlaceItemPosList) {
+    public void setData(
+            BlockState storageState, boolean isRender,
+            boolean canPlaceItem, Direction direction,
+            PosListData blockPosList, PosListData canPlaceItemPosList
+    ) {
         this.isRender = isRender;
         this.canPlaceItem = canPlaceItem;
         this.storageState = storageState;
@@ -60,7 +55,7 @@ public class BlockEntityAltar extends BlockEntity {
         super.saveAdditional(output);
         output.putBoolean(IS_RENDER, isRender);
         output.putBoolean(CAN_PLACE_ITEM, canPlaceItem);
-        output.putInt(STORAGE_STATE_ID, Block.getId(storageState));
+        output.store(STORAGE_STATE_ID, BlockState.CODEC, storageState);
         output.putChild(STORAGE_ITEM, handler);
         output.store(DIRECTION, Direction.CODEC, direction);
         output.putChild(STORAGE_BLOCK_LIST, blockPosList);
@@ -72,34 +67,11 @@ public class BlockEntityAltar extends BlockEntity {
         super.loadAdditional(input);
         isRender = input.getBooleanOr(IS_RENDER, false);
         canPlaceItem = input.getBooleanOr(CAN_PLACE_ITEM, false);
-        storageState = Block.stateById(input.getIntOr(STORAGE_STATE_ID, Block.getId(Blocks.AIR.defaultBlockState())));
+        storageState = input.read(STORAGE_STATE_ID, BlockState.CODEC).orElse(Blocks.AIR.defaultBlockState());
         input.readChild(STORAGE_ITEM, handler);
         direction = input.read(DIRECTION, Direction.CODEC).orElse(Direction.SOUTH);
         input.readChild(STORAGE_BLOCK_LIST, blockPosList);
         input.readChild(CAN_PLACE_ITEM_POS_LIST, canPlaceItemPosList);
-    }
-
-    public BlockPos getWorldPosition() {
-        return this.worldPosition;
-    }
-
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
-        return this.saveWithoutMetadata(pRegistries);
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    public void refresh() {
-        this.setChanged();
-        if (level != null) {
-            BlockState state = level.getBlockState(worldPosition);
-            level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
-        }
     }
 
     @Override

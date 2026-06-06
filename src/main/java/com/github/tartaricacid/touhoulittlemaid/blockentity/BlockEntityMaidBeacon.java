@@ -8,11 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.item.ItemMaidBeacon;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
@@ -23,21 +19,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
-public class BlockEntityMaidBeacon extends BlockEntity {
+public class BlockEntityMaidBeacon extends BlockEntityBase {
     public static final String POTION_INDEX_TAG = "PotionIndex";
     public static final String STORAGE_POWER_TAG = "StoragePower";
     public static final String OVERFLOW_DELETE_TAG = "OverflowDelete";
+
     private int potionIndex = -1;
-    private float storagePower;
+    private float storagePower = 0f;
     private boolean overflowDelete = false;
 
     public BlockEntityMaidBeacon(BlockPos blockPos, BlockState blockState) {
@@ -45,13 +40,17 @@ public class BlockEntityMaidBeacon extends BlockEntity {
     }
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, BlockEntityMaidBeacon beacon) {
-        if (beacon.level != null && !level.isClientSide() && level.getGameTime() % 80L == 0L) {
-            if (beacon.potionIndex != -1 && beacon.storagePower >= beacon.getEffectCost()) {
-                beacon.storagePower = beacon.storagePower - beacon.getEffectCost();
-                beacon.updateBeaconEffect(level, BeaconEffect.getEffectByIndex(beacon.potionIndex).getEffect());
-            }
-            beacon.updateAbsorbPower(level);
+        // 使用坐标偏移进行负载均衡
+        long offset = level.getGameTime() + pos.hashCode();
+        if (offset % 79 != 0) {
+            return;
         }
+        if (beacon.potionIndex != -1 && beacon.storagePower >= beacon.getEffectCost()) {
+            beacon.storagePower = beacon.storagePower - beacon.getEffectCost();
+            BeaconEffect effectByIndex = BeaconEffect.getEffectByIndex(beacon.potionIndex);
+            beacon.updateBeaconEffect(level, effectByIndex.getEffect());
+        }
+        beacon.updateAbsorbPower(level);
     }
 
     private void updateBeaconEffect(Level world, Holder<MobEffect> potion) {
@@ -72,46 +71,33 @@ public class BlockEntityMaidBeacon extends BlockEntity {
                 this.setStoragePower(addNum);
                 powerPoint.spawnExplosionParticle();
                 powerPoint.discard();
-            } else {
-                if (overflowDelete) {
-                    powerPoint.spawnExplosionParticle();
-                    powerPoint.discard();
-                }
+            } else if (overflowDelete) {
+                powerPoint.spawnExplosionParticle();
+                powerPoint.discard();
             }
         }
     }
 
     @Override
     public void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
         output.putInt(POTION_INDEX_TAG, potionIndex);
         output.store(STORAGE_POWER_TAG, Codec.FLOAT, storagePower);
         output.putBoolean(OVERFLOW_DELETE_TAG, overflowDelete);
-        super.saveAdditional(output);
     }
 
     @Override
     public void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         potionIndex = input.getIntOr(POTION_INDEX_TAG, -1);
-        storagePower = input.read(STORAGE_POWER_TAG, Codec.FLOAT).orElse(0.0f);
+        storagePower = input.read(STORAGE_POWER_TAG, Codec.FLOAT).orElse(0f);
         overflowDelete = input.getBooleanOr(OVERFLOW_DELETE_TAG, false);
     }
 
     public void loadData(CompoundTag data) {
         potionIndex = data.getInt(POTION_INDEX_TAG).orElse(-1);
-        storagePower = data.getFloat(STORAGE_POWER_TAG).orElse(0.0f);
+        storagePower = data.getFloat(STORAGE_POWER_TAG).orElse(0f);
         overflowDelete = data.getBoolean(OVERFLOW_DELETE_TAG).orElse(false);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
-        return this.saveWithoutMetadata(pRegistries);
-    }
-
-    @Nullable
-    @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
@@ -157,16 +143,7 @@ public class BlockEntityMaidBeacon extends BlockEntity {
         return MiscConfig.SHRINE_LAMP_MAX_STORAGE.get().floatValue();
     }
 
-    public void refresh() {
-        this.setChanged();
-        if (level != null) {
-            BlockState state = level.getBlockState(worldPosition);
-            level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
-        }
-    }
-
     public enum BeaconEffect {
-        // Effects
         SPEED(MobEffects.SPEED),
         FIRE_RESISTANCE(MobEffects.FIRE_RESISTANCE),
         STRENGTH(MobEffects.STRENGTH),

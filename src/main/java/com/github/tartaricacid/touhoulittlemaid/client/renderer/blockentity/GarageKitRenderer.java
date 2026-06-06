@@ -1,15 +1,15 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.state.GarageKitRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
-import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -29,6 +29,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -55,7 +56,7 @@ public class GarageKitRenderer implements BlockEntityRenderer<BlockEntityGarageK
     public void extractRenderState(BlockEntityGarageKit te, GarageKitRenderState state, float partialTick, Vec3 cameraPos,
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(te, state, partialTick, cameraPos, breakProgress);
-        state.facing = te.getFacing();
+        state.facing = te.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
         state.extraData = te.getExtraData();
         state.entityRenderState = null;
 

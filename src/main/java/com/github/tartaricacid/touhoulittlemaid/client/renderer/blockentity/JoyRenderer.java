@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity;
 
 import com.github.tartaricacid.touhoulittlemaid.block.BlockGomoku;
-import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.state.JoyRenderState;
 import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityJoy;
+import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.state.JoyRenderState;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
@@ -26,8 +26,8 @@ public abstract class JoyRenderer<T extends BlockEntityJoy> implements BlockEnti
     @Override
     public AABB getRenderBoundingBox(T te) {
         return RenderHelper.getAABB(
-                te.getWorldPosition().offset(-2, 0, -2),
-                te.getWorldPosition().offset(2, 1, 2)
+                te.getBlockPos().offset(-2, 0, -2),
+                te.getBlockPos().offset(2, 1, 2)
         );
     }
 

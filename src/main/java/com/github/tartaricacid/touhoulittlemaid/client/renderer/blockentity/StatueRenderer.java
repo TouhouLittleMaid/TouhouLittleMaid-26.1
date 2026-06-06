@@ -2,12 +2,12 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityStatue;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.state.StatueRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
-import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityStatue;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
@@ -31,6 +31,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -59,7 +60,7 @@ public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, St
                                    ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(te, state, partialTick, cameraPos, breakProgress);
         state.isCoreBlock = te.isCoreBlock();
-        state.facing = te.getFacing();
+        state.facing = te.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
         state.size = te.getSize().getScale();
         state.statueSize = te.getSize();
         state.extraMaidData = te.getExtraMaidData();
