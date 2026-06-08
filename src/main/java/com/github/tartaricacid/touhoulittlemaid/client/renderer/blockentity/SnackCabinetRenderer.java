@@ -2,10 +2,10 @@ package com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity;
 
 import com.github.tartaricacid.simplebedrockmodel.client.bedrock.model.BedrockPart;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockSnackCabinet;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntitySnackCabinet;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.SimpleBedrockModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.blockentity.state.SnackCabinetRenderState;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry;
-import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntitySnackCabinet;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.world.phys.AABB;
@@ -26,6 +25,7 @@ import org.jspecify.annotations.Nullable;
 
 public class SnackCabinetRenderer implements BlockEntityRenderer<BlockEntitySnackCabinet, SnackCabinetRenderState> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/snack_cabinet.png");
+
     private final SimpleBedrockModel<Unit> model;
     private final BedrockPart full;
     private final BedrockPart half;
@@ -56,6 +56,7 @@ public class SnackCabinetRenderer implements BlockEntityRenderer<BlockEntitySnac
         poseStack.translate(0.5, 1.5, 0.5);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
         poseStack.mulPose(Axis.YN.rotationDegrees(180 - state.facing.get2DDataValue() * 90));
+
         submitNodeCollector.submitCustomGeometry(
                 poseStack, RenderTypes.entityCutout(TEXTURE),
                 (pose, buffer) -> {
@@ -68,6 +69,7 @@ public class SnackCabinetRenderer implements BlockEntityRenderer<BlockEntitySnac
                     poseStack.popPose();
                 }
         );
+
         poseStack.popPose();
     }
 
@@ -90,8 +92,10 @@ public class SnackCabinetRenderer implements BlockEntityRenderer<BlockEntitySnac
     }
 
     @Override
-    public AABB getRenderBoundingBox(BlockEntitySnackCabinet blockEntity) {
-        BlockPos pos = blockEntity.getBlockPos();
-        return RenderHelper.getAABB(pos.offset(0, 0, 0), pos.offset(1, 2, 1));
+    public AABB getRenderBoundingBox(BlockEntitySnackCabinet be) {
+        return RenderHelper.getAABB(
+                be.getBlockPos().offset(0, 0, 0),
+                be.getBlockPos().offset(1, 2, 1)
+        );
     }
 }

@@ -13,7 +13,6 @@ import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -23,9 +22,9 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -33,21 +32,28 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.InternalBedrockModelRegistry.STATUE_BASE;
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
+import static net.minecraft.util.ProblemReporter.DISCARDING;
 
 public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, StatueRenderState> {
     private static final Identifier TEXTURE = IdentifierUtil.modLoc("textures/bedrock/block/statue_base.png");
+
+    private final EntityRenderDispatcher dispatcher;
     private final SimpleBedrockModel<Unit> baseModel;
 
     public StatueRenderer(BlockEntityRendererProvider.Context context) {
-        baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
+        this.dispatcher = context.entityRenderer();
+        this.baseModel = InternalBedrockModelRegistry.getModel(STATUE_BASE);
     }
 
     @Override
@@ -70,11 +76,15 @@ public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, St
         if (state.extraMaidData == null) {
             return;
         }
-        Level world = Minecraft.getInstance().level;
+        Level world = te.getLevel();
         if (world == null) {
             return;
         }
-        EntityType.byString(state.extraMaidData.getString("id").orElse("")).ifPresent(type -> {
+        Optional<String> id = state.extraMaidData.getString("id");
+        if (id.isEmpty()) {
+            return;
+        }
+        EntityType.byString(id.get()).ifPresent(type -> {
             try {
                 extractEntityRenderState(te, state, state.extraMaidData, world, type, partialTick);
             } catch (ExecutionException e) {
@@ -83,27 +93,32 @@ public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, St
         });
     }
 
-    @SuppressWarnings("unchecked,rawtypes")
+    @SuppressWarnings("rawtypes")
     private void extractEntityRenderState(BlockEntityStatue te, StatueRenderState state, CompoundTag data,
-                                          Level world, EntityType<?> type, float partialTick) throws ExecutionException {
+                                          Level level, EntityType type, float partialTick) throws ExecutionException {
         Entity entity;
         if (type.equals(InitEntities.MAID.get())) {
-            long posId = te.getBlockPos().asLong();
-            entity = EntityCacheUtil.STATUE_CACHE.get(posId, () -> new EntityMaid(world));
+            long key = te.getBlockPos().asLong();
+            entity = EntityCacheUtil.STATUE_CACHE.get(key, () -> new EntityMaid(level));
         } else {
-            entity = EntityCacheUtil.getEntity((EntityType) type, (l, e) ->
-                    new EntityMaid(l), world, EntitySpawnReason.LOAD);
+            entity = EntityCacheUtil.ENTITY_CACHE.get(type, () -> {
+                Entity e = type.create(level, EntitySpawnReason.COMMAND);
+                return Objects.requireNonNullElseGet(e, () -> new EntityMaid(level));
+            });
         }
 
-        entity.load(TagValueInput.create(ProblemReporter.DISCARDING, entity.registryAccess(), data));
+        RegistryAccess access = entity.registryAccess();
+        ValueInput valueInput = TagValueInput.create(DISCARDING, access, data);
+        entity.load(valueInput);
+
         if (entity instanceof EntityMaid maid) {
             clearMaidDataResidue(maid, true);
             maid.renderState = MaidRenderState.STATUE;
             maid.tickCount = 0;
         }
 
-        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        state.entityRenderState = dispatcher.extractEntity(entity, partialTick);
+        state.entityRenderState = this.dispatcher.extractEntity(entity, partialTick);
+        state.entityRenderState.lightCoords = state.lightCoords;
     }
 
     @Override
@@ -116,12 +131,10 @@ public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, St
         poseStack.pushPose();
         setBaseTranslateAndPose(state, poseStack);
         poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(TEXTURE), (pose, buffer) -> {
-            poseStack.pushPose();
-            poseStack.last().set(pose);
-            baseModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
-            poseStack.popPose();
-        });
+        collector.submitModel(
+                this.baseModel, Unit.INSTANCE, poseStack, RenderTypes.entityCutout(TEXTURE),
+                state.lightCoords, OverlayTexture.NO_OVERLAY, 0, state.breakProgress
+        );
         poseStack.popPose();
 
         // 渲染实体预览
@@ -160,9 +173,7 @@ public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, St
                 poseStack.mulPose(Axis.YP.rotationDegrees(180));
                 break;
         }
-
-        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        dispatcher.submit(state.entityRenderState, camera, offset, 0, -offset, poseStack, collector);
+        this.dispatcher.submit(state.entityRenderState, camera, offset, 0, -offset, poseStack, collector);
         poseStack.popPose();
     }
 
@@ -206,6 +217,9 @@ public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, St
         float scale = blockEntity.getSize().getScale();
         int size = Math.round(2 * scale);
         int height = Math.round(3 * scale);
-        return RenderHelper.getAABB(pos.offset(-size, -1, -size), pos.offset(size, height, size));
+        return RenderHelper.getAABB(
+                pos.offset(-size, -1, -size),
+                pos.offset(size, height, size)
+        );
     }
 }

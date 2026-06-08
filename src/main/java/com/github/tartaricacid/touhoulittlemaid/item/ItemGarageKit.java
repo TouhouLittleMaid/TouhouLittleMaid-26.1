@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.item;
 
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.MaidModelInfo;
+import com.github.tartaricacid.touhoulittlemaid.entity.data.ProfileData;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
@@ -24,7 +25,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import java.util.Objects;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.ENTITY_ID_TAG_NAME;
-import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.MODEL_ID_TAG_NAME;
 
 public class ItemGarageKit extends BlockItem {
     private static final String DEFAULT_ENTITY_ID = "touhou_little_maid:maid";
@@ -44,7 +44,7 @@ public class ItemGarageKit extends BlockItem {
     private static CustomData getDefaultData() {
         CompoundTag data = new CompoundTag();
         data.putString(ENTITY_ID_TAG_NAME, DEFAULT_ENTITY_ID);
-        data.putString(MODEL_ID_TAG_NAME, DEFAULT_MODEL_ID);
+        ProfileData.directSetModelId(data, DEFAULT_MODEL_ID);
         return CustomData.of(data);
     }
 
@@ -65,7 +65,7 @@ public class ItemGarageKit extends BlockItem {
                 return prefix.append(entityType.getDescription());
             }
 
-            String modelId = tag.getStringOr(MODEL_ID_TAG_NAME, DEFAULT_MODEL_ID);
+            String modelId = ProfileData.directGetModelId(tag);
             MaidModelInfo info = CustomPackLoader.MAID_MODELS.getInfo(modelId).orElse(null);
             if (info != null) {
                 return prefix.append(ParseI18n.parse(info.getName()));

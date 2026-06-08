@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPackLoader;
+import com.github.tartaricacid.touhoulittlemaid.entity.data.ProfileData;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
@@ -55,7 +56,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.MODEL_ID_TAG_NAME;
 import static net.minecraft.world.entity.EntitySpawnReason.SPAWN_ITEM_USE;
 
 public class BlockGarageKit extends HorizontalDirectionalBlock implements EntityBlock {
@@ -94,7 +94,7 @@ public class BlockGarageKit extends HorizontalDirectionalBlock implements Entity
 
             Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(InitEntities.MAID.get());
             data.putString(InitDataComponent.ENTITY_ID_TAG_NAME, key.toString());
-            data.putString(MODEL_ID_TAG_NAME, modelId);
+            ProfileData.directSetModelId(data, modelId);
             stack.set(InitDataComponent.MAID_INFO, CustomData.of(data));
 
             items.accept(stack);

@@ -31,7 +31,7 @@ public final class EntityCacheUtil {
     /**
      * 实体缓存，在客户端会大量运用实体渲染，这个缓存可以减少重复创建实体带来的性能问题
      */
-    private static final Cache<EntityType<?>, Entity> ENTITY_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+    public static final Cache<EntityType<?>, Entity> ENTITY_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     /**
      * 女仆实体缓存，用于雕像，因为雕像如果共用一个实体，会导致 GeckoLib 动画渲染错误
@@ -54,8 +54,10 @@ public final class EntityCacheUtil {
     @SuppressWarnings("unchecked")
     public static <E extends Entity> E getEntity(EntityType<E> type, BiFunction<Level, EntitySpawnReason, E> fallback, Level level, EntitySpawnReason reason) {
         try {
-            return (E) ENTITY_CACHE.get(type, () ->
-                    Objects.requireNonNullElseGet(type.create(level, reason), () -> fallback.apply(level, reason)));
+            return (E) ENTITY_CACHE.get(type, () -> {
+                E e = type.create(level, reason);
+                return Objects.requireNonNullElseGet(e, () -> fallback.apply(level, reason));
+            });
         } catch (ExecutionException e) {
             TouhouLittleMaid.LOGGER.error("Failed to create preview entity", e);
             return fallback.apply(level, reason);
@@ -68,14 +70,24 @@ public final class EntityCacheUtil {
             animatable.waitForAsyncUpdate();
         }
 
-        // TODO: 应该修改 extract 之后的 RenderState
         maid.hurtDuration = 0;
         maid.hurtTime = 0;
         maid.deathTime = 0;
+        maid.xRotO = 0;
+        maid.yRotO = 0;
+        maid.yBodyRotO = 0;
+        maid.yHeadRotO = 0;
+
+        maid.setXRot(0);
+        maid.setYRot(0);
+        maid.setYBodyRot(0);
+        maid.setYHeadRot(0);
+
         maid.setOnGround(true);
         maid.setInSittingPose(false);
         maid.setMaidBackpackType(BackpackManager.getEmptyBackpack());
         maid.setCustomName(Component.empty());
+
         if (clearEquipmentData) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 maid.setItemSlot(slot, ItemStack.EMPTY);
