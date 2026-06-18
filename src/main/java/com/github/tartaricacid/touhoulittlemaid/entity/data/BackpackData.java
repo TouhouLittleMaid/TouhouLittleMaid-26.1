@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.data;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.backpack.BackpackManager;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,6 +11,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.attachment.AttachmentType;
 
 public record BackpackData(String type) {
+    public static final String KEY = IdentifierUtil.modLoc("backpack").toString();
+
     private static final MapCodec<BackpackData> CODEC = RecordCodecBuilder.mapCodec(ins -> ins.group(
             Codec.STRING.fieldOf("type").forGetter(BackpackData::type)
     ).apply(ins, BackpackData::new));

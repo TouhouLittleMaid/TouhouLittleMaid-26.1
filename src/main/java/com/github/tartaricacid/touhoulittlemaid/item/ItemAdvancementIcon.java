@@ -12,6 +12,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemAdvancementIcon extends Item {
     public ItemAdvancementIcon(Identifier id) {
         super(new Properties()
@@ -21,7 +22,11 @@ public class ItemAdvancementIcon extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay display, Consumer<Component> components, TooltipFlag pIsAdvanced) {
-        components.accept(Component.translatable("tooltips.touhou_little_maid.advancement_icon.desc").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay display,
+                                Consumer<Component> components, TooltipFlag pIsAdvanced) {
+        components.accept(Component
+                .translatable("tooltips.touhou_little_maid.advancement_icon.desc")
+                .withStyle(ChatFormatting.GRAY)
+        );
     }
 }

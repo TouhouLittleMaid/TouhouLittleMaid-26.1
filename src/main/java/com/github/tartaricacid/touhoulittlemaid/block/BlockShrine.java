@@ -46,7 +46,7 @@ public class BlockShrine extends BaseEntityBlock {
     public static final VoxelShape SHAPE = Shapes.or(
             Block.box(0, 0, 0, 16, 5, 16),
             Block.box(2, 5, 2, 14, 16, 14),
-            Block.box(0, 16, 0, 16, 24, 16)
+            Block.box(0, 16, 0, 16, 22, 16)
     );
 
     private static final MapCodec<BlockShrine> CODEC = simpleCodec(BlockShrine::new);
@@ -87,9 +87,8 @@ public class BlockShrine extends BaseEntityBlock {
                 playerIn.getInventory().placeItemBackInInventory(storageItem);
                 worldIn.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM,
                         SoundSource.PLAYERS, 1, 1);
-                return InteractionResult.SUCCESS;
             }
-            return InteractionResult.PASS;
+            return InteractionResult.SUCCESS;
         }
 
         if (shrine.isEmpty()) {
@@ -104,7 +103,7 @@ public class BlockShrine extends BaseEntityBlock {
                 MutableComponent component = Component.translatable("message.touhou_little_maid.shrine.not_film");
                 playerIn.sendSystemMessage(component);
             }
-            return InteractionResult.PASS;
+            return InteractionResult.SUCCESS;
         }
 
         if (itemStack.isEmpty()) {
@@ -115,19 +114,19 @@ public class BlockShrine extends BaseEntityBlock {
                         MutableComponent component = Component.translatable("message.touhou_little_maid.shrine.health_low");
                         playerIn.sendSystemMessage(component);
                     }
-                    return InteractionResult.FAIL;
+                    return InteractionResult.SUCCESS;
                 }
                 playerIn.setHealth(0.25f);
             }
 
-            ItemStack film = shrine.getStorageItem();
+            ItemStack film = shrine.extractStorageItem();
             ItemFilm.filmToMaid(film, worldIn, pos.above(), playerIn);
             if (playerIn instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.SHRINE_REBORN_MAID);
             }
         }
 
-        return super.useItemOn(itemStack, state, worldIn, pos, playerIn, hand, hit);
+        return InteractionResult.SUCCESS;
     }
 
     @Override

@@ -26,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemBroom extends Item {
     public ItemBroom(Identifier id) {
         super((new Properties()).stacksTo(1)
@@ -34,36 +35,47 @@ public class ItemBroom extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (context.getClickedFace() != Direction.DOWN) {
-            Level world = context.getLevel();
-            BlockPos clickedPos = new BlockPlaceContext(context).getClickedPos();
-            AABB boundingBox = EntityBroom.TYPE.getDimensions().makeBoundingBox(Vec3.atBottomCenterOf(clickedPos));
-            if (world.noCollision(boundingBox) && world.getEntities(null, boundingBox).isEmpty()) {
-                ItemStack stack = context.getItemInHand();
-                if (world instanceof ServerLevel serverWorld) {
-                    EntityBroom broom = EntityBroom.TYPE.create(serverWorld, (e) -> {
-                        if (stack.get(DataComponents.CUSTOM_NAME) != null) {
-                            e.setCustomName(stack.get(DataComponents.CUSTOM_NAME));
-                        }
-                    }, context.getClickedPos(), EntitySpawnReason.SPAWN_ITEM_USE, true, true);
-                    if (broom == null) {
-                        return InteractionResult.FAIL;
-                    }
-                    if (context.getPlayer() != null) {
-                        broom.setOwnerUUID(context.getPlayer().getUUID());
-                    }
-                    world.addFreshEntity(broom);
-                    world.playSound(null, broom.getX(), broom.getY(), broom.getZ(), SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
-                }
-                stack.shrink(1);
-                return InteractionResult.SUCCESS;
-            }
+        if (context.getClickedFace() == Direction.DOWN) {
+            return InteractionResult.FAIL;
         }
-        return InteractionResult.FAIL;
+
+        Level world = context.getLevel();
+        BlockPos clickedPos = new BlockPlaceContext(context).getClickedPos();
+        Vec3 centerOf = Vec3.atBottomCenterOf(clickedPos);
+        AABB boundingBox = EntityBroom.TYPE.getDimensions().makeBoundingBox(centerOf);
+        if (!world.noCollision(boundingBox) || !world.getEntities(null, boundingBox).isEmpty()) {
+            return InteractionResult.FAIL;
+        }
+
+        ItemStack stack = context.getItemInHand();
+        if (world instanceof ServerLevel serverWorld) {
+            EntityBroom broom = EntityBroom.TYPE.create(serverWorld, (e) -> {
+                Component customName = stack.get(DataComponents.CUSTOM_NAME);
+                if (customName != null) {
+                    e.setCustomName(customName);
+                }
+            }, clickedPos, EntitySpawnReason.SPAWN_ITEM_USE, true, true);
+            if (broom == null) {
+                return InteractionResult.FAIL;
+            }
+            if (context.getPlayer() != null) {
+                broom.setOwnerUUID(context.getPlayer().getUUID());
+            }
+            world.addFreshEntity(broom);
+            world.playSound(null, broom.getX(), broom.getY(), broom.getZ(),
+                    SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
+        }
+
+        stack.shrink(1);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
-        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.broom.desc").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
+        tooltip.accept(Component
+                .translatable("tooltips.touhou_little_maid.broom.desc")
+                .withStyle(ChatFormatting.GRAY)
+        );
     }
 }

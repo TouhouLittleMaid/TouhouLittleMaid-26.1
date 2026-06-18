@@ -7,20 +7,22 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.inventory.tooltip.ItemMaidTooltip;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
-import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.apache.commons.lang3.StringUtils;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -28,21 +30,24 @@ import static com.github.tartaricacid.touhoulittlemaid.client.resource.models.Sp
 import static com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil.clearMaidDataResidue;
 
 public class ClientMaidTooltip implements ClientTooltipComponent {
+    private static final Vector3f ZERO = new Vector3f();
+
     private final @Nullable MaidModelInfo info;
+    private final @Nullable Component customName;
     private final MutableComponent name;
-    private final String customName;
 
     public ClientMaidTooltip(ItemMaidTooltip tooltip) {
         this.info = CustomPackLoader.MAID_MODELS.getInfo(tooltip.modelId()).orElse(null);
-        this.name = getName(this.info);
         this.customName = tooltip.customName();
+        this.name = this.getName(this.info);
     }
 
-    public MutableComponent getName(MaidModelInfo info) {
+    private MutableComponent getName(@Nullable MaidModelInfo info) {
         if (info == null) {
             return Component.empty();
         }
-        return Component.translatable(ParseI18n.getI18nKey(info.getName()));
+        String key = ParseI18n.getI18nKey(info.getName());
+        return Component.translatable(key);
     }
 
     @Override
@@ -60,34 +65,36 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
         if (info == null) {
             return;
         }
+
         Level world = Minecraft.getInstance().level;
         if (world == null) {
             return;
         }
 
-
-        Component customNameComponent = null;
-        if (StringUtils.isNotBlank(customName)) {
-            customNameComponent = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, new JsonPrimitive(customName)).getOrThrow();
-            if (customNameComponent instanceof MutableComponent mutableComponent) {
-                guiGraphics.text(font, mutableComponent.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
-            }
+        if (this.customName instanceof MutableComponent mutableComponent) {
+            guiGraphics.text(font, mutableComponent.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFFFF);
         } else {
-            guiGraphics.text(font, name.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFF);
+            guiGraphics.text(font, name.withStyle(ChatFormatting.GRAY), pX, pY + 2, 0xFFFFFFFF);
         }
 
+        float scale = 25 * info.getRenderItemScale();
         int width = this.getWidth(font);
-        int posX = pX + width / 2;
-        int posY = pY + 64;
+
+        int x0 = pX;
+        int x1 = pX + width;
+        int y0 = pY + 16;
+        int y1 = (int) (y0 + 4 * scale);
+
         double rot = ((System.currentTimeMillis() / 25.0) % 360);
-        Quaternionf pose = (new Quaternionf()).rotateZ((float) Math.PI);
+        Quaternionf pose = (new Quaternionf()).rotateZ(Mth.PI);
         Quaternionf rotation = (new Quaternionf()).rotateY((float) Math.toRadians(rot));
         pose.mul(rotation);
+
         EntityMaid maid = EntityCacheUtil.getMaid(world, EntitySpawnReason.EVENT);
         maid.renderState = MaidRenderState.GUI;
         clearMaidDataResidue(maid, false);
-        if (StringUtils.isNotBlank(customName)) {
-            maid.setCustomName(customNameComponent);
+        if (customName != null) {
+            maid.setCustomName(customName);
         }
         if (info.getEasterEgg() != null) {
             maid.setModelId(EASTER_EGG_MODEL);
@@ -95,8 +102,16 @@ public class ClientMaidTooltip implements ClientTooltipComponent {
             maid.setModelId(info.getModelId().toString());
         }
 
-        guiGraphics.enableScissor(pX, posY - 50, pX + width, posY);
-        //InventoryScreen.renderEntityInInventory(guiGraphics, posX, posY, (int) (25 * info.getRenderItemScale()), new Vector3f(), pose, null, maid);
-        guiGraphics.disableScissor();
+        EntityRenderState renderState = extractRenderState(maid);
+        guiGraphics.entity(renderState, scale, ZERO, pose, null, x0, y0, x1, y1);
+    }
+
+    private static EntityRenderState extractRenderState(LivingEntity entity) {
+        EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        EntityRenderer<? super LivingEntity, ?> renderer = entityRenderDispatcher.getRenderer(entity);
+        EntityRenderState renderState = renderer.createRenderState(entity, 1.0F);
+        renderState.shadowPieces.clear();
+        renderState.outlineColor = 0;
+        return renderState;
     }
 }

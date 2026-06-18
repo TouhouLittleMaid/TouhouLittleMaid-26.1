@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public final class MaidRayTraceHelper {
-    private MaidRayTraceHelper() {
-    }
-
     /**
      * 来自于原版的获取实体指向对象的方法，
      * 很好奇为何原版将其设定为仅客户端方法
@@ -23,12 +20,12 @@ public final class MaidRayTraceHelper {
     public static Optional<EntityMaid> rayTraceMaid(Player player, double distance) {
         // 搜索玩家附近驯服的自己的实体
         List<Entity> maidList = player.level.getEntities(player, player.getBoundingBox()
-                .inflate(distance, distance, distance), entity -> entity instanceof EntityMaid && ((EntityMaid) entity).isOwnedBy(player));
+                .inflate(distance, distance, distance), entity -> entity instanceof EntityMaid maid && maid.isOwnedBy(player));
         // 遍历附近实体，查看能否玩家看见
-        for (Entity maid : maidList) {
+        for (Entity entity : maidList) {
             // 二次判定，以防万一
-            if (maid.isAlive() && maid instanceof EntityMaid && isEntityBeLooked(player, maid) && ((EntityMaid) maid).isOwnedBy(player)) {
-                return Optional.of((EntityMaid) maid);
+            if (entity.isAlive() && entity instanceof EntityMaid maid && isEntityBeLooked(player, entity) && maid.isOwnedBy(player)) {
+                return Optional.of(maid);
             }
         }
         return Optional.empty();

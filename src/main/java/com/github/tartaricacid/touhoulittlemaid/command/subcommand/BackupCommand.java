@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.command.subcommand;
 
-import com.github.tartaricacid.touhoulittlemaid.item.ItemCamera;
+import com.github.tartaricacid.touhoulittlemaid.util.MaidItemStorageHelper;
 import com.github.tartaricacid.touhoulittlemaid.world.backups.MaidBackupsManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -153,7 +153,8 @@ public class BackupCommand {
         }
 
         // 生成包含此女仆信息的照片
-        ItemCamera.spawnMaidPhoto(player.level, backupData, player);
+        MaidItemStorageHelper.spawnMaidPhoto(player.level, backupData, player);
+
         // 发送成功信息
         MutableComponent success = Component.translatable("message.touhou_little_maid.maid_backup.file.success", fileName);
         player.sendSystemMessage(success.withStyle(ChatFormatting.GREEN));
