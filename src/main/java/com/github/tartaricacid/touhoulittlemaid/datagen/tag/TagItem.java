@@ -61,6 +61,11 @@ public class TagItem extends ItemTagsProvider {
      */
     public static final TagKey<Item> MAID_EAT_BLOCKLIST_ITEM = createTagKey("maid_eat_blocklist_item");
 
+    /**
+     * 所有颜色的女仆床物品
+     */
+    public static final TagKey<Item> MAID_BED = createTagKey("maid_bed");
+
     public TagItem(PackOutput pOutput, CompletableFuture<HolderLookup.Provider> pLookupProvider,
                    String modId) {
         super(pOutput, pLookupProvider, modId);
@@ -106,6 +111,15 @@ public class TagItem extends ItemTagsProvider {
         tag(MAID_EAT_BLOCKLIST_ITEM)
                 .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:red_chili")))
                 .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:green_chili")));
+
+        this.tag(MAID_BED)
+                .add(InitItems.PINK_MAID_BED.asItem())
+                .add(InitItems.WHITE_MAID_BED.asItem())
+                .add(InitItems.BLACK_MAID_BED.asItem())
+                .add(InitItems.YELLOW_MAID_BED.asItem())
+                .add(InitItems.BLUE_MAID_BED.asItem())
+                .add(InitItems.GREEN_MAID_BED.asItem())
+                .add(InitItems.PURPLE_MAID_BED.asItem());
     }
 
     private void addCakeItems(TagKey<Item> tagKey) {

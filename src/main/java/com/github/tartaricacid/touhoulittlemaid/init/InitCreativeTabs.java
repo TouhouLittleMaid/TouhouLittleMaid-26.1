@@ -72,7 +72,13 @@ public class InitCreativeTabs {
                 output.accept(PHOTO.get());
                 output.accept(FILM.get());
                 output.accept(CHISEL.get());
-                output.accept(MAID_BED.get());
+                output.accept(PINK_MAID_BED.get());
+                output.accept(WHITE_MAID_BED.get());
+                output.accept(BLACK_MAID_BED.get());
+                output.accept(YELLOW_MAID_BED.get());
+                output.accept(BLUE_MAID_BED.get());
+                output.accept(GREEN_MAID_BED.get());
+                output.accept(PURPLE_MAID_BED.get());
                 output.accept(PICNIC_BASKET.get());
                 output.accept(MAID_BEACON.get());
                 output.accept(SNACK_CABINET.get());
@@ -83,9 +89,6 @@ public class InitCreativeTabs {
                 output.accept(SCARECROW.get());
                 output.accept(ENTITY_ID_COPY.get());
                 output.accept(OWNER_CONVERSION_TOOL.get());
-                if (FMLEnvironment.getDist() == Dist.CLIENT) {
-                    //ItemEntityPlaceholder.fillItemCategory(output);
-                }
                 par.holders().lookup(Registries.ENCHANTMENT).ifPresent(reg -> {
                     addEnchantmentBook(reg.get(EnchantmentKeys.IMPEDING), output);
                     addEnchantmentBook(reg.get(EnchantmentKeys.SPEEDY), output);

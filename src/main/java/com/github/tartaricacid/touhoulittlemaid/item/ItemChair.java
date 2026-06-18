@@ -39,6 +39,7 @@ import java.util.function.Consumer;
 
 import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.*;
 
+@SuppressWarnings("deprecation")
 public class ItemChair extends Item {
     private static final String DEFAULT_MODEL_ID = "touhou_little_maid:cushion";
 
@@ -49,14 +50,14 @@ public class ItemChair extends Item {
     }
 
     public static Data getData(ItemStack stack) {
-        if (stack.getItem() == InitItems.CHAIR.get()) {
+        if (stack.is(InitItems.CHAIR)) {
             return Data.deserialization(stack);
         }
         return new Data(DEFAULT_MODEL_ID, 0f, true, false);
     }
 
     public static ItemStack setData(ItemStack stack, Data data) {
-        if (stack.getItem() == InitItems.CHAIR.get()) {
+        if (stack.is(InitItems.CHAIR)) {
             Data.serialization(stack, data);
         }
         return stack;
@@ -67,38 +68,53 @@ public class ItemChair extends Item {
             float height = CustomPackLoader.CHAIR_MODELS.getModelMountedYOffset(key);
             boolean canRide = CustomPackLoader.CHAIR_MODELS.getModelTameableCanRide(key);
             boolean isNoGravity = CustomPackLoader.CHAIR_MODELS.getModelNoGravity(key);
-            items.accept(setData(new ItemStack(InitItems.CHAIR.get()), new Data(key, height, canRide, isNoGravity)));
+
+            ItemStack stack = InitItems.CHAIR.get().getDefaultInstance();
+            Data data = new Data(key, height, canRide, isNoGravity);
+            items.accept(setData(stack, data));
         }
     }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (context.getClickedFace() != Direction.DOWN) {
-            Level world = context.getLevel();
-            BlockPos clickedPos = new BlockPlaceContext(context).getClickedPos();
-            AABB boundingBox = EntityChair.TYPE.getDimensions().makeBoundingBox(Vec3.atBottomCenterOf(clickedPos));
-            if (world.noCollision(boundingBox) && world.getEntities(null, boundingBox).isEmpty()) {
-                ItemStack stack = context.getItemInHand();
-                if (world instanceof ServerLevel serverWorld) {
-                    EntityChair chair = getSpawnChair(serverWorld, context.getPlayer(), stack, context.getClickedPos(), context.getRotation());
-                    if (chair == null) {
-                        return InteractionResult.FAIL;
-                    }
-                    world.addFreshEntity(chair);
-                    world.playSound(null, chair.getX(), chair.getY(), chair.getZ(), SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
-                }
-                stack.shrink(1);
-                return InteractionResult.SUCCESS;
-            }
+        if (context.getClickedFace() == Direction.DOWN) {
+            return InteractionResult.FAIL;
         }
-        return InteractionResult.FAIL;
+
+        Level world = context.getLevel();
+        BlockPos clickedPos = new BlockPlaceContext(context).getClickedPos();
+        Vec3 centerOf = Vec3.atBottomCenterOf(clickedPos);
+        AABB boundingBox = EntityChair.TYPE.getDimensions().makeBoundingBox(centerOf);
+
+        if (!world.noCollision(boundingBox) || !world.getEntities(null, boundingBox).isEmpty()) {
+            return InteractionResult.FAIL;
+        }
+
+        ItemStack stack = context.getItemInHand();
+        if (world instanceof ServerLevel serverWorld) {
+            EntityChair chair = getSpawnChair(
+                    serverWorld, context.getPlayer(), stack,
+                    context.getClickedPos(), context.getRotation()
+            );
+            if (chair == null) {
+                return InteractionResult.FAIL;
+            }
+            world.addFreshEntity(chair);
+            world.playSound(null, chair.getX(), chair.getY(), chair.getZ(),
+                    SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
+        }
+
+        stack.shrink(1);
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
-    public static EntityChair getSpawnChair(ServerLevel serverWorld, @Nullable Player player, ItemStack stack, BlockPos pos, float rotation) {
-        EntityChair chair = EntityChair.TYPE.create(serverWorld, (e) -> {
-            if (stack.get(DataComponents.CUSTOM_NAME) != null) {
-                e.setCustomName(stack.get(DataComponents.CUSTOM_NAME));
+    public static EntityChair getSpawnChair(ServerLevel serverWorld, @Nullable Player player,
+                                            ItemStack stack, BlockPos pos, float rotation) {
+        EntityChair chair = EntityChair.TYPE.create(serverWorld, e -> {
+            Component customName = stack.get(DataComponents.CUSTOM_NAME);
+            if (customName != null) {
+                e.setCustomName(customName);
             }
         }, pos, EntitySpawnReason.SPAWN_ITEM_USE, true, true);
         if (chair != null) {
@@ -109,13 +125,17 @@ public class ItemChair extends Item {
 
     private static void addExtraData(@Nullable Player player, ItemStack stack, EntityChair chair, float rotation) {
         Data data = Data.deserialization(stack);
+
         chair.setModelId(data.modelId());
         chair.setMountedHeight(data.height());
         chair.setTameableCanRide(data.canRide());
         chair.setNoGravity(data.isNoGravity());
         chair.setOwner(player);
-        float yaw = (float) Mth.floor((Mth.wrapDegrees(rotation - 180) + 22.5F) / 45.0F) * 45.0F;
+
+        float wrapped = Mth.wrapDegrees(rotation - 180.0F);
+        float yaw = Mth.floor(wrapped / 45.0F + 0.5) * 45.0F;
         chair.snapTo(chair.getX(), chair.getY(), chair.getZ(), yaw, 0.0F);
+
         chair.setYBodyRot(yaw);
         chair.setYHeadRot(yaw);
     }
@@ -126,8 +146,9 @@ public class ItemChair extends Item {
             // 添加坐垫前缀，方便搜索
             MutableComponent prefix = Component.translatable("item.touhou_little_maid.chair.prefix");
             ItemChair.Data data = getData(stack);
-            if (CustomPackLoader.CHAIR_MODELS.getInfo(data.modelId()).isPresent()) {
-                String name = CustomPackLoader.CHAIR_MODELS.getInfo(data.modelId()).get().getName();
+            String modelId = data.modelId();
+            if (CustomPackLoader.CHAIR_MODELS.getInfo(modelId).isPresent()) {
+                String name = CustomPackLoader.CHAIR_MODELS.getInfo(modelId).get().getName();
                 return prefix.append(ParseI18n.parse(name));
             }
         }
@@ -139,6 +160,7 @@ public class ItemChair extends Item {
         tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.place.desc").withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.destroy.desc").withStyle(ChatFormatting.GRAY));
         tooltip.accept(Component.translatable("tooltips.touhou_little_maid.chair.gui.desc").withStyle(ChatFormatting.GRAY));
+
         // 调试模式，不加国际化
         if (flagIn.isAdvanced() && flagIn.hasShiftDown()) {
             Data data = Data.deserialization(stack);

@@ -1,49 +1,26 @@
 package com.github.tartaricacid.touhoulittlemaid.item;
 
-import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
-import com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class ItemMaidBed extends BlockItem {
-    private static final String COLOR_TAG = "BedColor";
-
-    public ItemMaidBed(Identifier id) {
-        super(InitBlocks.MAID_BED.get(), (new Item.Properties())
+    public ItemMaidBed(Identifier id, Supplier<? extends Block> blockSupplier) {
+        super(blockSupplier.get(), (new Item.Properties())
                 .setId(ResourceKey.create(Registries.ITEM, id))
-                .overrideDescription("block.touhou_little_maid.maid_bed")
                 .stacksTo(1));
-    }
-
-    public static void setColor(DyeColor color, ItemStack bed) {
-        bed.set(InitDataComponent.BED_COLOR_TAG, color);
-    }
-
-    public static DyeColor getColor(ItemStack bed) {
-        return bed.getOrDefault(InitDataComponent.BED_COLOR_TAG, DyeColor.PINK);
     }
 
     @Override
     protected boolean placeBlock(BlockPlaceContext context, BlockState state) {
-        return context.getLevel().setBlock(context.getClickedPos(), state, Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_IMMEDIATE | Block.UPDATE_CLIENTS);
-    }
-
-    @Override
-    public void appendHoverText(ItemStack pStack, @Nullable TooltipContext context, TooltipDisplay display, Consumer<Component> pTooltip, TooltipFlag pFlag) {
-        DyeColor color = getColor(pStack);
-        Component colorText = Component.translatable("color.minecraft." + color.getName());
-        Component all = Component.translatable("item.color", colorText).withStyle(ChatFormatting.GRAY);
-        pTooltip.accept(all);
+        int flag = Block.UPDATE_KNOWN_SHAPE | Block.UPDATE_IMMEDIATE | Block.UPDATE_CLIENTS;
+        return context.getLevel().setBlock(context.getClickedPos(), state, flag);
     }
 }

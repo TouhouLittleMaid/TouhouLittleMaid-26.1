@@ -9,7 +9,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -138,13 +137,6 @@ public class InitDataComponent {
             DATA_COMPONENTS.register(SAKUYA_BELL_SHOW_TAG_NAME, () -> DataComponentType.<TrackInfo>builder()
                     .persistent(TrackInfo.CODEC)
                     .networkSynchronized(TrackInfo.STREAM_CODEC)
-                    .build());
-
-    private static final String BED_COLOR_TAG_NAME = "bed_color";
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<DyeColor>> BED_COLOR_TAG =
-            DATA_COMPONENTS.register(BED_COLOR_TAG_NAME, () -> DataComponentType.<DyeColor>builder()
-                    .persistent(DyeColor.CODEC)
-                    .networkSynchronized(DyeColor.STREAM_CODEC)
                     .build());
 
     /**

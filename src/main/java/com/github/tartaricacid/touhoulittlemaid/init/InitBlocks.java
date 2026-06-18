@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.block.*;
 import com.github.tartaricacid.touhoulittlemaid.blockentity.*;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -15,7 +16,14 @@ public final class InitBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(TouhouLittleMaid.MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, TouhouLittleMaid.MOD_ID);
 
-    public static DeferredBlock<Block> MAID_BED = BLOCKS.register("maid_bed", BlockMaidBed::new);
+    public static DeferredBlock<Block> PINK_MAID_BED = BLOCKS.register("pink_maid_bed", id -> new BlockMaidBed(id, DyeColor.PINK));
+    public static DeferredBlock<Block> WHITE_MAID_BED = BLOCKS.register("white_maid_bed", id -> new BlockMaidBed(id, DyeColor.WHITE));
+    public static DeferredBlock<Block> BLACK_MAID_BED = BLOCKS.register("black_maid_bed", id -> new BlockMaidBed(id, DyeColor.BLACK));
+    public static DeferredBlock<Block> YELLOW_MAID_BED = BLOCKS.register("yellow_maid_bed", id -> new BlockMaidBed(id, DyeColor.YELLOW));
+    public static DeferredBlock<Block> BLUE_MAID_BED = BLOCKS.register("blue_maid_bed", id -> new BlockMaidBed(id, DyeColor.BLUE));
+    public static DeferredBlock<Block> GREEN_MAID_BED = BLOCKS.register("green_maid_bed", id -> new BlockMaidBed(id, DyeColor.GREEN));
+    public static DeferredBlock<Block> PURPLE_MAID_BED = BLOCKS.register("purple_maid_bed", id -> new BlockMaidBed(id, DyeColor.PURPLE));
+
     public static DeferredBlock<Block> ALTAR = BLOCKS.register("altar", BlockAltar::new);
     public static DeferredBlock<Block> STATUE = BLOCKS.register("statue", BlockStatue::new);
     public static DeferredBlock<Block> GARAGE_KIT = BLOCKS.register("garage_kit", BlockGarageKit::new);
@@ -71,9 +79,14 @@ public final class InitBlocks {
     public static Supplier<BlockEntityType<BlockEntityPicnicMat>> PICNIC_MAT_BE = BLOCK_ENTITY_TYPES.register("picnic_mat",
             () -> new BlockEntityType<>(BlockEntityPicnicMat::new, PICNIC_MAT.get()));
 
-    public static Supplier<BlockEntityType<BlockEntityMaidBed>> MAID_BED_BE = BLOCK_ENTITY_TYPES.register("maid_bed",
-            () -> new BlockEntityType<>(BlockEntityMaidBed::new, MAID_BED.get()));
-
     public static Supplier<BlockEntityType<BlockEntitySnackCabinet>> SNACK_CABINET_BE = BLOCK_ENTITY_TYPES.register("snack_cabinet",
             () -> new BlockEntityType<>(BlockEntitySnackCabinet::new, SNACK_CABINET.get()));
+
+    public static Supplier<BlockEntityType<BlockEntityMaidBed>> MAID_BED_BE = BLOCK_ENTITY_TYPES.register("maid_bed",
+            () -> new BlockEntityType<>(BlockEntityMaidBed::new,
+                    PINK_MAID_BED.get(), WHITE_MAID_BED.get(), BLACK_MAID_BED.get(),
+                    YELLOW_MAID_BED.get(), BLUE_MAID_BED.get(), GREEN_MAID_BED.get(),
+                    PURPLE_MAID_BED.get()
+            )
+    );
 }

@@ -29,7 +29,8 @@ import java.util.function.Consumer;
 @SuppressWarnings("deprecation")
 public class ItemBroom extends Item {
     public ItemBroom(Identifier id) {
-        super((new Properties()).stacksTo(1)
+        super((new Properties())
+                .stacksTo(1)
                 .setId(ResourceKey.create(Registries.ITEM, id)));
     }
 
@@ -49,7 +50,7 @@ public class ItemBroom extends Item {
 
         ItemStack stack = context.getItemInHand();
         if (world instanceof ServerLevel serverWorld) {
-            EntityBroom broom = EntityBroom.TYPE.create(serverWorld, (e) -> {
+            EntityBroom broom = EntityBroom.TYPE.create(serverWorld, e -> {
                 Component customName = stack.get(DataComponents.CUSTOM_NAME);
                 if (customName != null) {
                     e.setCustomName(customName);

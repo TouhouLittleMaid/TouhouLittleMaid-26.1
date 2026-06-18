@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task;
 
 import com.github.tartaricacid.touhoulittlemaid.block.BlockMaidBed;
+import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
 import com.github.tartaricacid.touhoulittlemaid.init.InitPoi;
 import com.google.common.collect.ImmutableMap;
@@ -56,7 +56,7 @@ public class MaidBedTask extends MaidCheckRateTask {
         maid.getBrain().getMemory(InitBrains.TARGET_POS.get()).ifPresent(targetPos -> {
             BlockPos pos = targetPos.currentBlockPosition();
             BlockState blockState = worldIn.getBlockState(pos);
-            if (blockState.is(InitBlocks.MAID_BED.get()) && blockState.getValue(BlockMaidBed.PART) == BedPart.HEAD && !blockState.getValue(BedBlock.OCCUPIED)) {
+            if (blockState.is(TagBlock.MAID_BED) && blockState.getValue(BlockMaidBed.PART) == BedPart.HEAD && !blockState.getValue(BedBlock.OCCUPIED)) {
                 maid.startSleeping(pos);
                 maid.setPos(pos.getX() + 0.5, pos.getY() + 0.8, pos.getZ() + 0.5);
             }

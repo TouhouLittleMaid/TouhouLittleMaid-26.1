@@ -61,6 +61,11 @@ public class TagBlock extends BlockTagsProvider {
     public static final TagKey<Block> SNACK_CABINET_HALF = createTagKey("snack_cabinet_half");
 
     /**
+     * 所有颜色的女仆床方块
+     */
+    public static final TagKey<Block> MAID_BED = createTagKey("maid_bed");
+
+    /**
      * CarryOn 黑名单标签，被此标签包含的方块将无法被 CarryOn 抱起
      */
     public static final TagKey<Block> CARRYON_BLOCK_BLACKLIST = createTagKey(Identifier.parse("carryon:block_blacklist"));
@@ -80,6 +85,15 @@ public class TagBlock extends BlockTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
+        tag(MAID_BED)
+                .add(InitBlocks.PINK_MAID_BED.get())
+                .add(InitBlocks.WHITE_MAID_BED.get())
+                .add(InitBlocks.BLACK_MAID_BED.get())
+                .add(InitBlocks.YELLOW_MAID_BED.get())
+                .add(InitBlocks.BLUE_MAID_BED.get())
+                .add(InitBlocks.GREEN_MAID_BED.get())
+                .add(InitBlocks.PURPLE_MAID_BED.get());
+
         tag(MAID_JUMP_FORBIDDEN_BLOCK)
                 .addTag(BlockTags.DOORS)
                 .addTag(BlockTags.FENCES)

@@ -2,12 +2,12 @@
   "type": "touhou_little_maid:altar",
   "entity": "minecraft:item",
   "ingredients": [
-    "minecraft:pink_wool",
+    "minecraft:black_wool",
     "#minecraft:planks"
   ],
   "lang": "jei.touhou_little_maid.altar_craft.item_craft.result",
   "power": 0.2,
   "result": {
-    "id": "touhou_little_maid:maid_bed"
+    "id": "touhou_little_maid:black_maid_bed"
   }
 }

@@ -1,19 +1,18 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockMaidBed;
 import com.github.tartaricacid.touhoulittlemaid.block.BlockScarecrow;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.loot.SetInitMaidOwnerFunction;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Sets;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.EntityLootSubProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.flag.FeatureFlags;
@@ -220,7 +219,14 @@ public class LootTableGenerator {
 
         @Override
         public void generate() {
-            add(InitBlocks.MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+            add(InitBlocks.PINK_MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+            add(InitBlocks.WHITE_MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+            add(InitBlocks.BLACK_MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+            add(InitBlocks.YELLOW_MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+            add(InitBlocks.BLUE_MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+            add(InitBlocks.GREEN_MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+            add(InitBlocks.PURPLE_MAID_BED.get(), block -> createSinglePropConditionTable(block, BlockMaidBed.PART, BedPart.HEAD));
+
             add(InitBlocks.SCARECROW.get(), block -> createSinglePropConditionTable(block, BlockScarecrow.HALF, DoubleBlockHalf.LOWER));
 
             dropSelf(InitBlocks.MODEL_SWITCHER.get());

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemFavorabilityTool extends Item {
     private final String type;
 
@@ -31,7 +32,9 @@ public class ItemFavorabilityTool extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Item.TooltipContext pLevel, TooltipDisplay display, Consumer<Component> components, TooltipFlag pIsAdvanced) {
-        components.accept(Component.translatable("tooltips.touhou_little_maid.favorability_tool." + this.type).withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack pStack, @Nullable Item.TooltipContext pLevel, TooltipDisplay display,
+                                Consumer<Component> components, TooltipFlag pIsAdvanced) {
+        String key = "tooltips.touhou_little_maid.favorability_tool.%s".formatted(this.type);
+        components.accept(Component.translatable(key).withStyle(ChatFormatting.GRAY));
     }
 }

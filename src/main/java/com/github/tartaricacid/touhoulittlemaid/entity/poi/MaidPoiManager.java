@@ -14,19 +14,26 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import java.util.Set;
 
 public final class MaidPoiManager {
-    private static final Set<BlockState> JOYS = ImmutableList.of(InitBlocks.COMPUTER.get(), InitBlocks.BOOKSHELF.get(), InitBlocks.KEYBOARD.get(),
+    private static final Set<BlockState> JOYS = ImmutableList.of(
+                    InitBlocks.COMPUTER.get(), InitBlocks.BOOKSHELF.get(), InitBlocks.KEYBOARD.get(),
                     InitBlocks.GOMOKU.get(), InitBlocks.CCHESS.get(), InitBlocks.WCHESS.get())
             .stream().flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
             .collect(ImmutableSet.toImmutableSet());
-    private static final Set<BlockState> BEDS = ImmutableList.of(InitBlocks.MAID_BED.get())
+
+    private static final Set<BlockState> BEDS = ImmutableList.of(
+                    InitBlocks.PINK_MAID_BED.get(), InitBlocks.WHITE_MAID_BED.get(), InitBlocks.BLACK_MAID_BED.get(),
+                    InitBlocks.YELLOW_MAID_BED.get(), InitBlocks.BLUE_MAID_BED.get(), InitBlocks.GREEN_MAID_BED.get(),
+                    InitBlocks.PURPLE_MAID_BED.get())
             .stream().flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
             .filter(blockState -> blockState.getValue(BedBlock.PART) == BedPart.HEAD)
             .filter(blockState -> !blockState.getValue(BedBlock.OCCUPIED))
             .collect(ImmutableSet.toImmutableSet());
+
     private static final Set<BlockState> HOME_MEAL = ImmutableList.of(InitBlocks.PICNIC_MAT.get())
             .stream().flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
             .filter(blockState -> blockState.getValue(BlockPicnicMat.PART).isCenter())
             .collect(ImmutableSet.toImmutableSet());
+
     private static final Set<BlockState> SCARECROW = ImmutableList.of(InitBlocks.SCARECROW.get())
             .stream().flatMap(block -> block.getStateDefinition().getPossibleStates().stream())
             .filter(blockState -> blockState.getValue(BlockScarecrow.HALF) == DoubleBlockHalf.LOWER)

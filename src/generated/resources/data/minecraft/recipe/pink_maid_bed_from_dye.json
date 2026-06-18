@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#touhou_little_maid:maid_bed",
+    "#c:dyes/pink"
+  ],
+  "result": {
+    "id": "touhou_little_maid:pink_maid_bed"
+  }
+}

@@ -45,7 +45,7 @@ public class FavorabilityAdvancement {
                 .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.WIN_WCHESS))
                 .save(saver, id("favorability/win_wchess").toString());
 
-        make(InitItems.MAID_BED.get(), "maid_sleep").parent(joy)
+        make(InitItems.PINK_MAID_BED.get(), "maid_sleep").parent(joy)
                 .addCriterion("maid_event", MaidEventTrigger.create(TriggerType.MAID_SLEEP))
                 .save(saver, id("favorability/maid_sleep").toString());
     }

@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +31,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ItemChisel extends Item {
@@ -47,29 +47,35 @@ public class ItemChisel extends Item {
         BlockPos pos = context.getClickedPos();
         Player player = context.getPlayer();
 
-        if (context.getHand() == InteractionHand.MAIN_HAND && player != null) {
-            if (worldIn.getBlockState(pos).getBlock() != Blocks.CLAY) {
-                if (!worldIn.isClientSide()) {
-                    player.sendSystemMessage(Component.translatable("message.touhou_little_maid.chisel.hit_block_error"));
-                }
-                return InteractionResult.PASS;
-            }
-            if (player.getOffhandItem().getItem() != InitItems.PHOTO.get()) {
-                if (!worldIn.isClientSide()) {
-                    player.sendSystemMessage(Component.translatable("message.touhou_little_maid.chisel.offhand_not_photo"));
-                }
-                return InteractionResult.PASS;
-            }
-            genStatueBlocks(player, worldIn, pos, context.getClickedFace());
-            if (player instanceof ServerPlayer serverPlayer) {
-                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.CHISEL_STATUE);
-            }
-            return InteractionResult.SUCCESS;
+        if (context.getHand() != InteractionHand.MAIN_HAND || player == null) {
+            return super.useOn(context);
         }
-        return super.useOn(context);
+
+        if (worldIn.getBlockState(pos).getBlock() != Blocks.CLAY) {
+            if (!worldIn.isClientSide()) {
+                MutableComponent msg = Component.translatable("message.touhou_little_maid.chisel.hit_block_error");
+                player.sendSystemMessage(msg);
+            }
+            return InteractionResult.PASS;
+        }
+
+        if (player.getOffhandItem().getItem() != InitItems.PHOTO.get()) {
+            if (!worldIn.isClientSide()) {
+                MutableComponent msg = Component.translatable("message.touhou_little_maid.chisel.offhand_not_photo");
+                player.sendSystemMessage(msg);
+            }
+            return InteractionResult.PASS;
+        }
+
+        this.genStatueBlocks(player, worldIn, pos, context.getClickedFace());
+        if (player instanceof ServerPlayer serverPlayer) {
+            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.CHISEL_STATUE);
+        }
+
+        return InteractionResult.SUCCESS;
     }
 
-    private void genStatueBlocks(@Nonnull Player player, @Nonnull Level worldIn, @Nonnull BlockPos pos, @Nonnull Direction facing) {
+    private void genStatueBlocks(Player player, Level worldIn, BlockPos pos, Direction facing) {
         CustomData compoundData = player.getOffhandItem().get(InitDataComponent.MAID_INFO);
         if (compoundData == null) {
             return;
@@ -114,8 +120,9 @@ public class ItemChisel extends Item {
 
 
     @Nullable
-    private BlockPos[] checkBlocks(@Nonnull Level worldIn, BlockPos origin, Vec3i dimension, Direction facing) {
+    private BlockPos[] checkBlocks(Level worldIn, BlockPos origin, Vec3i dimension, Direction facing) {
         BlockPos[] posList = new BlockPos[dimension.getX() * dimension.getY() * dimension.getZ()];
+
         int index = 0;
         for (int x = 0; x < dimension.getX(); x++) {
             for (int y = 0; y < dimension.getY(); y++) {
@@ -128,12 +135,13 @@ public class ItemChisel extends Item {
                     };
                     posList[index] = pos;
                     index++;
-                    if (worldIn.getBlockState(pos).getBlock() != Blocks.CLAY) {
+                    if (!worldIn.getBlockState(pos).is(Blocks.CLAY)) {
                         return null;
                     }
                 }
             }
         }
+
         return posList;
     }
 }

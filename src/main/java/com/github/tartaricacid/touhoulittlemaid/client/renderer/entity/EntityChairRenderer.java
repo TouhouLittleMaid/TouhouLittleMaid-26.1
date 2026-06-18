@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.client.renderer.entity;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.entity.GeckoChairEntity;
 import com.github.tartaricacid.touhoulittlemaid.client.model.bedrock.EntityChairModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.GeckoEntityChairRenderer;
@@ -11,10 +10,10 @@ import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.core.event.GeckoUpdateTask;
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeckoRenderData;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -93,7 +92,6 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
 
     @Override
     public void submit(EntityChairRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        LocalPlayer player = Minecraft.getInstance().player;
         if (state.hitbox != null) {
             submitHitBox(state.hitbox, poseStack, submitNodeCollector);
         } else {
@@ -146,7 +144,7 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
 
     @Override
     protected void setupRotations(EntityChairRenderState state, PoseStack poseStack, float bodyRot, float entityScale) {
-        poseStack.mulPose(Axis.YP.rotationDegrees(180 - state.yRot));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - bodyRot));
     }
 
     @Override

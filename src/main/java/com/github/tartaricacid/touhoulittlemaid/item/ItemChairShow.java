@@ -13,6 +13,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemChairShow extends Item {
     public ItemChairShow(Identifier id) {
         super((new Properties())
@@ -22,7 +23,11 @@ public class ItemChairShow extends Item {
 
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable Item.TooltipContext pLevel, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag pIsAdvanced) {
-        tooltip.accept((Component.translatable("tooltips.touhou_little_maid.chair_show.desc")).withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack pStack, @Nullable Item.TooltipContext pLevel, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag pIsAdvanced) {
+        tooltip.accept(Component
+                .translatable("tooltips.touhou_little_maid.chair_show.desc")
+                .withStyle(ChatFormatting.GRAY)
+        );
     }
 }

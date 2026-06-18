@@ -12,6 +12,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemEntityIdCopy extends Item {
     public ItemEntityIdCopy(Identifier id) {
         super(new Item.Properties()
@@ -20,7 +21,11 @@ public class ItemEntityIdCopy extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay display, Consumer<Component> components, TooltipFlag pIsAdvanced) {
-        components.accept(Component.translatable("tooltips.touhou_little_maid.entity_id_copy.desc").withStyle(ChatFormatting.GRAY));
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay display,
+                                Consumer<Component> components, TooltipFlag pIsAdvanced) {
+        components.accept(Component
+                .translatable("tooltips.touhou_little_maid.entity_id_copy.desc")
+                .withStyle(ChatFormatting.GRAY)
+        );
     }
 }

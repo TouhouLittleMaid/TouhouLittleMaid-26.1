@@ -13,18 +13,18 @@
           "type": "minecraft:item",
           "conditions": [
             {
-              "block": "touhou_little_maid:maid_bed",
+              "block": "touhou_little_maid:black_maid_bed",
               "condition": "minecraft:block_state_property",
               "properties": {
                 "part": "head"
               }
             }
           ],
-          "name": "touhou_little_maid:maid_bed"
+          "name": "touhou_little_maid:black_maid_bed"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "touhou_little_maid:blocks/maid_bed"
+  "random_sequence": "touhou_little_maid:blocks/black_maid_bed"
 }

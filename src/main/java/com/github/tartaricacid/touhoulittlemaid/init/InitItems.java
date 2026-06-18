@@ -65,9 +65,17 @@ public interface InitItems {
     DeferredItem<Item> SERVANT_BELL = ITEMS.register("servant_bell", ItemServantBell::new);
     DeferredItem<Item> TRUMPET = ITEMS.register("trumpet", ItemTrumpet::new);
 
+    // 女仆床
+    DeferredItem<Item> PINK_MAID_BED = ITEMS.register("pink_maid_bed", id -> new ItemMaidBed(id, InitBlocks.PINK_MAID_BED));
+    DeferredItem<Item> WHITE_MAID_BED = ITEMS.register("white_maid_bed", id -> new ItemMaidBed(id, InitBlocks.WHITE_MAID_BED));
+    DeferredItem<Item> BLACK_MAID_BED = ITEMS.register("black_maid_bed", id -> new ItemMaidBed(id, InitBlocks.BLACK_MAID_BED));
+    DeferredItem<Item> YELLOW_MAID_BED = ITEMS.register("yellow_maid_bed", id -> new ItemMaidBed(id, InitBlocks.YELLOW_MAID_BED));
+    DeferredItem<Item> BLUE_MAID_BED = ITEMS.register("blue_maid_bed", id -> new ItemMaidBed(id, InitBlocks.BLUE_MAID_BED));
+    DeferredItem<Item> GREEN_MAID_BED = ITEMS.register("green_maid_bed", id -> new ItemMaidBed(id, InitBlocks.GREEN_MAID_BED));
+    DeferredItem<Item> PURPLE_MAID_BED = ITEMS.register("purple_maid_bed", id -> new ItemMaidBed(id, InitBlocks.PURPLE_MAID_BED));
+
     // 家具
     DeferredItem<Item> CHAIR = ITEMS.register("chair", ItemChair::new);
-    DeferredItem<Item> MAID_BED = ITEMS.register("maid_bed", ItemMaidBed::new);
     DeferredItem<Item> PICNIC_BASKET = ITEMS.register("picnic_basket", ItemPicnicBasket::new);
     DeferredItem<Item> SNACK_CABINET = ITEMS.register("snack_cabinet", ItemSnackCabinet::new);
     DeferredItem<Item> SCARECROW = ITEMS.register("scarecrow", ItemScarecrow::new);
