@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class ItemNormalBauble extends Item {
     public ItemNormalBauble(Identifier id) {
-        super((new Properties())
+        super(new Properties()
                 .setId(ResourceKey.create(Registries.ITEM, id))
                 .stacksTo(1));
     }

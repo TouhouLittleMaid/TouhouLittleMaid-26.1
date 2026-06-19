@@ -1,13 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.block;
 
 import com.github.tartaricacid.touhoulittlemaid.block.properties.PicnicMatPart;
+import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityPicnicMat;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.Type;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntitySit;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemPicnicBasket;
-import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityPicnicMat;
+import com.github.tartaricacid.touhoulittlemaid.inventory.handler.PicnicBasketItemHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -40,6 +40,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
@@ -240,7 +241,8 @@ public class BlockPicnicMat extends Block implements EntityBlock {
         // 给中心方块存入物品
         BlockEntity blockEntity = worldIn.getBlockEntity(pos);
         if (blockEntity instanceof BlockEntityPicnicMat picnicMat && stack.is(InitItems.PICNIC_BASKET.get())) {
-            picnicMat.setHandler(ItemPicnicBasket.getContainer(stack));
+            PicnicBasketItemHandler itemHandler = PicnicBasketItemHandler.fromStack(stack.copy());
+            picnicMat.setHandler(itemHandler);
         }
     }
 
@@ -292,7 +294,11 @@ public class BlockPicnicMat extends Block implements EntityBlock {
         BlockPos centerPos = picnicMat.getCenterPos();
         if (world.getBlockEntity(centerPos) instanceof BlockEntityPicnicMat picnicMatCenter) {
             ItemStack stack = InitItems.PICNIC_BASKET.get().getDefaultInstance();
-            ItemPicnicBasket.setContainer(stack, picnicMatCenter.getHandler());
+            PicnicBasketItemHandler itemHandler = PicnicBasketItemHandler.fromStack(stack);
+            ResourceHandlerUtil.move(
+                    picnicMatCenter.getHandler(), itemHandler, _ -> true,
+                    Integer.MAX_VALUE, null
+            );
 
             if (player == null || !player.isCreative()) {
                 popResource(world, centerPos, stack);

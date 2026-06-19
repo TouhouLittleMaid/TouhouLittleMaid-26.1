@@ -19,6 +19,7 @@ public final class RenderHelper {
     }
 
     public static void renderFloatingText(PoseStack poseStack, String text, double x, double y, double z, int color, float scale, boolean center, float yOffset, boolean seeThrough) {
+        color |= 0xff000000;
         Minecraft minecraft = Minecraft.getInstance();
         MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
         Camera camera = minecraft.gameRenderer.getMainCamera();
@@ -75,7 +76,11 @@ public final class RenderHelper {
 
     public static void addVertex(VertexConsumer consumer, Matrix4f matrix4f, float x, float y, float z, float red, float green, float blue, float alpha, Matrix3f matrix3f, float normalX, float normalY, float normalZ) {
         Vector3f vector3f = matrix3f.transform(new Vector3f(normalX, normalY, normalZ));
-        consumer.addVertex(matrix4f, x, y, z).setColor(red, green, blue, alpha).setNormal(vector3f.x(), vector3f.y(), vector3f.z());
+        float width = Minecraft.getInstance().gameRenderer.getGameRenderState().windowRenderState.appropriateLineWidth;
+        consumer.addVertex(matrix4f, x, y, z)
+                .setColor(red, green, blue, alpha)
+                .setNormal(vector3f.x(), vector3f.y(), vector3f.z())
+                .setLineWidth(width);
     }
 
     public static AABB getAABB(BlockPos pStart, BlockPos pEnd) {

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemFoxScroll extends Item {
     public ItemFoxScroll(Identifier id) {
         super((new Properties())
@@ -55,53 +56,71 @@ public class ItemFoxScroll extends Item {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        if (!level.isClientSide() && hand == InteractionHand.MAIN_HAND) {
-            ItemStack item = player.getMainHandItem();
-            MaidWorldData maidWorldData = MaidWorldData.get(level);
-            if (maidWorldData == null) {
-                return super.use(level, player, hand);
-            }
-            Map<String, List<FoxScrollPackage.FoxScrollData>> data = Maps.newHashMap();
-            List<MaidInfo> maidInfos = null;
-            if (item.getItem() == InitItems.RED_FOX_SCROLL.get()) {
-                maidInfos = maidWorldData.getPlayerMaidInfos(player);
-            } else if (item.getItem() == InitItems.WHITE_FOX_SCROLL.get()) {
-                maidInfos = maidWorldData.getPlayerMaidTombstones(player);
-            }
-            if (maidInfos == null) {
-                maidInfos = Collections.emptyList();
-            }
-            maidInfos.forEach(info -> {
-                List<FoxScrollPackage.FoxScrollData> scrollData = data.computeIfAbsent(info.dimension(), dim -> Lists.newArrayList());
-                scrollData.add(new FoxScrollPackage.FoxScrollData(info.chunkPos(), info.name(), info.timestamp()));
-            });
-            PacketDistributor.sendToPlayer((ServerPlayer) player, new FoxScrollPackage(data));
-            if (player instanceof ServerPlayer serverPlayer) {
-                if (item.getItem() == InitItems.RED_FOX_SCROLL.get()) {
-                    InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_RED_FOX_SCROLL);
-                } else if (item.getItem() == InitItems.WHITE_FOX_SCROLL.get()) {
-                    InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_WHITE_FOX_SCROLL);
-                }
-            }
-            return InteractionResult.SUCCESS;
+        if (!(player instanceof ServerPlayer serverPlayer) || hand != InteractionHand.MAIN_HAND) {
+            return super.use(level, player, hand);
         }
-        return super.use(level, player, hand);
+
+        ItemStack item = player.getMainHandItem();
+        MaidWorldData maidWorldData = MaidWorldData.get(level);
+        if (maidWorldData == null) {
+            return super.use(level, player, hand);
+        }
+
+        Map<String, List<FoxScrollPackage.FoxScrollData>> data = Maps.newHashMap();
+        List<MaidInfo> maidInfos = null;
+        if (item.getItem() == InitItems.RED_FOX_SCROLL.get()) {
+            maidInfos = maidWorldData.getPlayerMaidInfos(player);
+        } else if (item.getItem() == InitItems.WHITE_FOX_SCROLL.get()) {
+            maidInfos = maidWorldData.getPlayerMaidTombstones(player);
+        }
+
+        if (maidInfos == null) {
+            maidInfos = Collections.emptyList();
+        }
+        maidInfos.forEach(info -> {
+            var scrollData = data.computeIfAbsent(info.dimension(), _ -> Lists.newArrayList());
+            scrollData.add(new FoxScrollPackage.FoxScrollData(info.chunkPos(), info.name(), info.timestamp()));
+        });
+        PacketDistributor.sendToPlayer(serverPlayer, new FoxScrollPackage(data));
+
+        if (item.getItem() == InitItems.RED_FOX_SCROLL.get()) {
+            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_RED_FOX_SCROLL);
+        } else if (item.getItem() == InitItems.WHITE_FOX_SCROLL.get()) {
+            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_WHITE_FOX_SCROLL);
+        }
+
+        return InteractionResult.SUCCESS;
     }
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> components, TooltipFlag flagIn) {
         TrackInfo info = getTrackInfo(stack);
         if (info != null) {
-            components.accept(Component.translatable("tooltips.touhou_little_maid.fox_scroll.dimension", info.dimension).withStyle(ChatFormatting.GOLD));
-            components.accept(Component.translatable("tooltips.touhou_little_maid.fox_scroll.position", info.position.toShortString()).withStyle(ChatFormatting.RED));
+            components.accept(Component
+                    .translatable("tooltips.touhou_little_maid.fox_scroll.dimension", info.dimension)
+                    .withStyle(ChatFormatting.GOLD)
+            );
+
+            String posText = info.position.toShortString();
+            components.accept(Component
+                    .translatable("tooltips.touhou_little_maid.fox_scroll.position", posText)
+                    .withStyle(ChatFormatting.RED)
+            );
+
             components.accept(Component.empty());
         }
+
         if (stack.getItem() == InitItems.RED_FOX_SCROLL.get()) {
-            components.accept(Component.translatable("tooltips.touhou_little_maid.fox_scroll.red").withStyle(ChatFormatting.GRAY));
+            components.accept(Component
+                    .translatable("tooltips.touhou_little_maid.fox_scroll.red")
+                    .withStyle(ChatFormatting.GRAY)
+            );
         } else if (stack.getItem() == InitItems.WHITE_FOX_SCROLL.get()) {
-            components.accept(Component.translatable("tooltips.touhou_little_maid.fox_scroll.white").withStyle(ChatFormatting.GRAY));
+            components.accept(Component
+                    .translatable("tooltips.touhou_little_maid.fox_scroll.white")
+                    .withStyle(ChatFormatting.GRAY)
+            );
         }
-        super.appendHoverText(stack, worldIn, display, components, flagIn);
     }
 
     public record TrackInfo(String dimension, BlockPos position) {

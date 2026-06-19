@@ -198,7 +198,7 @@ public class CuriosContainer extends MaidMainContainer {
             IDynamicStackHandler stacks = handler.getStacks();
             int maxIndex = stacks.getSlots();
 
-            // 跳过完全在当前页之前的 handler
+            // 跳过完全在当前页之前的 contents
             if (total + maxIndex <= start) {
                 total += maxIndex;
                 continue;
@@ -209,7 +209,7 @@ public class CuriosContainer extends MaidMainContainer {
                 return;
             }
 
-            // 添加当前 handler 中属于本页的槽位
+            // 添加当前 contents 中属于本页的槽位
             String identifier = entry.getKey();
             for (int i = 0; i < maxIndex && total < end; i++, total++) {
                 if (total >= start) {

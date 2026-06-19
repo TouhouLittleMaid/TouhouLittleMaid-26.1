@@ -3,7 +3,6 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.item;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.network.message.FoxScrollPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetScrollPackage;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -117,15 +116,15 @@ public class FoxScrollScreen extends Screen {
                     }
                     Component posText = Component.translatable("gui.touhou_little_maid.fox_scroll.position", pos.toShortString());
                     graphics.fill(leftPos + 152, offsetIn, leftPos + 400 - 22, offsetIn + 40, 0xef58626b);
-                    graphics.text(font, info.name(), leftPos + 160, offsetIn + 4, ChatFormatting.GOLD.getColor());
-                    graphics.text(font, posText, leftPos + 160, offsetIn + 16, ChatFormatting.GRAY.getColor(), false);
-                    graphics.text(font, distanceText, leftPos + 160, offsetIn + 28, ChatFormatting.GRAY.getColor(), false);
+                    graphics.text(font, info.name(), leftPos + 160, offsetIn + 4, 0xFFffaa00);
+                    graphics.text(font, posText, leftPos + 160, offsetIn + 16, 0xFFaaaaaa, false);
+                    graphics.text(font, distanceText, leftPos + 160, offsetIn + 28, 0xFFaaaaaa, false);
                     offsetIn = offsetIn + 42;
                 }
             }
             if (scrollData.size() > PER_PAGE_COUNT) {
                 String pageText = String.format("%d/%d", this.page + 1, (scrollData.size() - 1) / PER_PAGE_COUNT + 1);
-                graphics.centeredText(font, pageText, leftPos + 400 - 8, topPos + 104 - 5, ChatFormatting.GRAY.getColor());
+                graphics.centeredText(font, pageText, leftPos + 400 - 8, topPos + 104 - 5, 0xFFaaaaaa);
             }
         }
     }
