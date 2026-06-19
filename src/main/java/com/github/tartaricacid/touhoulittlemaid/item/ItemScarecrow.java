@@ -15,6 +15,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemScarecrow extends BlockItem {
     public ItemScarecrow(Identifier id) {
         super(InitBlocks.SCARECROW.get(), new Item.Properties()
@@ -24,9 +25,12 @@ public class ItemScarecrow extends BlockItem {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flag) {
         int range = MiscConfig.SCARECROW_RANGE.get();
-        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.scarecrow.desc", range, range).withStyle(ChatFormatting.GRAY));
+        tooltip.accept(Component
+                .translatable("tooltips.touhou_little_maid.scarecrow.desc", range, range)
+                .withStyle(ChatFormatting.GRAY)
+        );
     }
 }

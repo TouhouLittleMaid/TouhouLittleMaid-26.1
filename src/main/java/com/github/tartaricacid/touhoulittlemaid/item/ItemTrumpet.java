@@ -28,37 +28,44 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class ItemTrumpet extends Item {
     private static final int MIN_USE_DURATION = 20;
 
     public ItemTrumpet(Identifier id) {
-        super((new Properties())
+        super(new Properties()
                 .setId(ResourceKey.create(Registries.ITEM, id))
                 .stacksTo(1));
     }
 
     @Override
     public boolean releaseUsing(ItemStack stack, Level worldIn, LivingEntity entityLiving, int timeLeft) {
-        if (entityLiving instanceof Player player && timeLeft >= MIN_USE_DURATION) {
-            if (worldIn instanceof ServerLevel serverLevel) {
-                serverLevel.getEntities(EntityMaid.TYPE, Entity::isAlive).stream()
-                        .filter(maid -> maid.isOwnedBy(player))
-                        .forEach(maid -> teleportToOwner(maid, player));
-                MaidWorldData data = MaidWorldData.get(worldIn);
-                if (data != null) {
-                    List<MaidInfo> infos = data.getPlayerMaidInfos(player);
-                    if (infos != null && !infos.isEmpty()) {
-                        player.sendSystemMessage(Component.translatable("message.touhou_little_maid.trumpet.unloaded_maid", infos.size()).withStyle(ChatFormatting.DARK_RED));
-                    }
+        if (!(entityLiving instanceof Player player) || timeLeft < MIN_USE_DURATION) {
+            return false;
+        }
+
+        if (worldIn instanceof ServerLevel serverLevel) {
+            serverLevel.getEntities(EntityMaid.TYPE, Entity::isAlive).stream()
+                    .filter(maid -> maid.isOwnedBy(player))
+                    .forEach(maid -> teleportToOwner(maid, player));
+
+            MaidWorldData data = MaidWorldData.get(worldIn);
+            if (data != null) {
+                List<MaidInfo> infos = data.getPlayerMaidInfos(player);
+                if (infos != null && !infos.isEmpty()) {
+                    player.sendSystemMessage(Component
+                            .translatable("message.touhou_little_maid.trumpet.unloaded_maid", infos.size())
+                            .withStyle(ChatFormatting.DARK_RED)
+                    );
                 }
             }
-            if (player instanceof ServerPlayer serverPlayer) {
-                InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_TRUMPET);
-            }
-            player.getCooldowns().addCooldown(stack, 200);
-            return true;
         }
-        return false;
+
+        if (player instanceof ServerPlayer serverPlayer) {
+            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_TRUMPET);
+        }
+        player.getCooldowns().addCooldown(stack, 200);
+        return true;
     }
 
     private void teleportToOwner(EntityMaid maid, Player player) {
@@ -67,7 +74,9 @@ public class ItemTrumpet extends Item {
         if (maid.isPassenger()) {
             maid.stopRiding();
         }
-        maid.teleportTo(player.getX() + player.getRandom().nextInt(3) - 1, player.getY(), player.getZ() + player.getRandom().nextInt(3) - 1);
+        double x = player.getX() + player.getRandom().nextInt(3) - 1;
+        double z = player.getZ() + player.getRandom().nextInt(3) - 1;
+        maid.teleportTo(x, player.getY(), z);
     }
 
     @Override
@@ -82,14 +91,21 @@ public class ItemTrumpet extends Item {
 
     @Override
     public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
-        ItemStack stack = playerIn.getItemInHand(handIn);
         playerIn.startUsingItem(handIn);
         return InteractionResult.CONSUME;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flagIn) {
-        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.usage").withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("tooltips.touhou_little_maid.trumpet.desc.note").withStyle(ChatFormatting.DARK_RED));
+    public void appendHoverText(ItemStack stack, @Nullable Item.TooltipContext worldIn, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flagIn) {
+        tooltip.accept(Component
+                .translatable("tooltips.touhou_little_maid.trumpet.desc.usage")
+                .withStyle(ChatFormatting.GRAY)
+        );
+
+        tooltip.accept(Component
+                .translatable("tooltips.touhou_little_maid.trumpet.desc.note")
+                .withStyle(ChatFormatting.DARK_RED)
+        );
     }
 }

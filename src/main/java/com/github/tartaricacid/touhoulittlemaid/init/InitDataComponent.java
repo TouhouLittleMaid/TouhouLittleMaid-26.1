@@ -9,7 +9,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -88,13 +87,6 @@ public class InitDataComponent {
             DATA_COMPONENTS.register(IO_MODE_NAME, () -> DataComponentType.<Boolean>builder()
                     .persistent(Codec.BOOL)
                     .networkSynchronized(ByteBufCodecs.BOOL)
-                    .build());
-
-    public static final String FILTER_LIST_TAG_NAME = "item_filter_list";
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ItemStack>>> FILTER_LIST_TAG =
-            DATA_COMPONENTS.register(FILTER_LIST_TAG_NAME, () -> DataComponentType.<List<ItemStack>>builder()
-                    .persistent(ItemStack.OPTIONAL_CODEC.listOf())
-                    .networkSynchronized(ByteBufCodecs.collection(ArrayList::new, ItemStack.OPTIONAL_STREAM_CODEC))
                     .build());
 
     public static final String BINDING_POS_NAME = "binding_pos";

@@ -1,8 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.inventory.container.other;
 
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.MaidItemManager;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
-import com.github.tartaricacid.touhoulittlemaid.item.ItemWirelessIO;
+import com.github.tartaricacid.touhoulittlemaid.inventory.handler.WirelessIOItemHandler;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -11,29 +11,32 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
-import net.neoforged.neoforge.transfer.IndexModifier;
-import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class WirelessIOContainer extends AbstractContainerMenu {
-    public static final MenuType<WirelessIOContainer> TYPE = IMenuTypeExtension.create((windowId, inv, data) -> new WirelessIOContainer(windowId, inv, ItemStack.STREAM_CODEC.decode(data)));
-    private final ItemStack wirelessIO;
-    private final ItemStacksResourceHandler filterListInv;
+    public static final MenuType<WirelessIOContainer> TYPE = IMenuTypeExtension.create(WirelessIOContainer::new);
 
-    public WirelessIOContainer(int id, Inventory inventory, ItemStack wirelessIO) {
+    private static final int PLAYER_SLOT_COUNT = 36;
+    private static final int FILTER_SLOT_COUNT = 9;
+
+    private final ItemStack stack;
+    private final WirelessIOItemHandler handler;
+
+    public WirelessIOContainer(int id, Inventory inventory, @Nullable RegistryFriendlyByteBuf extraData) {
         super(TYPE, id);
-        this.wirelessIO = wirelessIO;
-        this.filterListInv = ItemWirelessIO.getFilterList(inventory.player.registryAccess(), wirelessIO);
+
+        this.stack = inventory.player.getMainHandItem();
+        this.handler = WirelessIOItemHandler.fromPlayer(inventory.player);
+
         this.addPlayerSlots(inventory);
         this.addWirelessIOSlots();
     }
 
     @Override
     public boolean stillValid(Player playerIn) {
-        return playerIn.getMainHandItem().getItem() == InitItems.WIRELESS_IO.get();
+        return playerIn.getMainHandItem().is(InitItems.WIRELESS_IO);
     }
 
     @Override
@@ -45,14 +48,19 @@ public class WirelessIOContainer extends AbstractContainerMenu {
         if (containerInput == ContainerInput.SWAP) {
             return;
         }
+        // 虚拟放入和放出，不消耗产生物品
+        if (isFilterSlot(slotId)) {
+            setFilterSlot(slotId - PLAYER_SLOT_COUNT, this.getCarried());
+            return;
+        }
         super.clicked(slotId, button, containerInput, player);
-        ItemWirelessIO.setFilterList(player.registryAccess(), wirelessIO, filterListInv);
     }
 
     private void addWirelessIOSlots() {
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
-                this.addSlot(new WirelessIOSlotResourceHandler(filterListInv, filterListInv::set, col + row * 3, 62 + col * 18, 17 + row * 18));
+                int index = col + row * 3;
+                this.addSlot(new WirelessIOFilterSlot(handler, index, 62 + col * 18, 17 + row * 18));
             }
         }
     }
@@ -60,7 +68,8 @@ public class WirelessIOContainer extends AbstractContainerMenu {
     private void addPlayerSlots(Inventory inventory) {
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
-                this.addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                this.addSlot(new Slot(inventory, col + row * 9 + 9,
+                        8 + col * 18, 84 + row * 18));
             }
         }
 
@@ -70,45 +79,74 @@ public class WirelessIOContainer extends AbstractContainerMenu {
     }
 
     @Override
+    @SuppressWarnings("all")
     public ItemStack quickMoveStack(Player playerIn, int index) {
-        ItemStack stack1 = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
         if (slot != null && slot.hasItem()) {
             ItemStack stack2 = slot.getItem();
-            stack1 = stack2.copy();
-            if (index < 27) {
-                if (!this.moveItemStackTo(stack2, 27, 36, true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.moveItemStackTo(stack2, 0, 27, false)) {
+            if (isFilterSlot(index)) {
+                setFilterSlot(index - PLAYER_SLOT_COUNT, ItemStack.EMPTY);
                 return ItemStack.EMPTY;
             }
-            if (stack2.isEmpty()) {
-                slot.set(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
+            if (index < PLAYER_SLOT_COUNT) {
+                addFilterMarker(stack2);
             }
         }
-        return stack1;
+        return ItemStack.EMPTY;
     }
 
-    public ItemStack getWirelessIO() {
-        return wirelessIO;
+    public ItemStack getStack() {
+        return stack;
     }
 
-    private class WirelessIOSlotResourceHandler extends ResourceHandlerSlot {
-        private WirelessIOSlotResourceHandler(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
-            super(handler, slotModifier, index, xPosition, yPosition);
+    private boolean isFilterSlot(int slotId) {
+        return slotId >= PLAYER_SLOT_COUNT && slotId < PLAYER_SLOT_COUNT + FILTER_SLOT_COUNT;
+    }
+
+    private void addFilterMarker(ItemStack stack) {
+        for (int i = 0; i < FILTER_SLOT_COUNT; i++) {
+            if (handler.getResource(i).isEmpty() && setFilterSlot(i, stack)) {
+                return;
+            }
+        }
+    }
+
+    private boolean setFilterSlot(int index, ItemStack stack) {
+        ItemResource resource = stack.isEmpty() ? ItemResource.EMPTY : ItemResource.of(stack);
+        if (!resource.isEmpty() && !handler.isValid(index, resource)) {
+            return false;
+        }
+        handler.setFilter(index, stack);
+        this.slots.get(PLAYER_SLOT_COUNT + index).setChanged();
+        return true;
+    }
+
+    private class WirelessIOFilterSlot extends ResourceHandlerSlot {
+        private WirelessIOFilterSlot(WirelessIOItemHandler handler, int index, int xPosition, int yPosition) {
+            super(handler, handler::set, index, xPosition, yPosition);
         }
 
         @Override
-        public int getMaxStackSize() {
-            return 1;
+        public boolean mayPlace(ItemStack stack) {
+            return handler.isValid(this.getSlotIndex(), ItemResource.of(stack));
         }
 
         @Override
-        public boolean mayPlace(@NotNull ItemStack stack) {
-            return MaidItemManager.canInsertItem(stack) && super.mayPlace(stack);
+        public boolean mayPickup(Player player) {
+            return false;
+        }
+
+        @Override
+        public void setByPlayer(ItemStack stack) {
+            handler.setFilter(this.getSlotIndex(), stack);
+            this.setChanged();
+        }
+
+        @Override
+        public ItemStack remove(int amount) {
+            handler.setFilter(this.getSlotIndex(), ItemStack.EMPTY);
+            this.setChanged();
+            return ItemStack.EMPTY;
         }
     }
 }

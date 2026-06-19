@@ -24,8 +24,8 @@ public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOCo
 
     public WirelessIOContainerGui(WirelessIOContainer container, Inventory inv, Component titleIn) {
         super(container, inv, titleIn);
-        this.isMaidToChest = ItemWirelessIO.isMaidToChest(container.getWirelessIO());
-        this.isBlacklist = ItemWirelessIO.isBlacklist(container.getWirelessIO());
+        this.isMaidToChest = ItemWirelessIO.isMaidToChest(container.getStack());
+        this.isBlacklist = ItemWirelessIO.isBlacklist(container.getStack());
     }
 
     @Override
@@ -47,7 +47,7 @@ public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOCo
         filterModeToggle.initTextureValues(176, 0, 16, 16, MAIN);
 
         TouhouImageButton configButton = new TouhouImageButton(leftPos + 136, topPos + 44, 16, 16, 208, 0, 16,
-                MAIN, 256, 256, buttons -> getMinecraft().setScreen(new WirelessIOConfigSlotGui(menu.getWirelessIO())));
+                MAIN, 256, 256, buttons -> getMinecraft().setScreen(new WirelessIOConfigSlotGui(menu.getStack())));
         configButton.setTooltip(Tooltip.create(Component.translatable("gui.touhou_little_maid.wireless_io.config_slot")));
 
         addRenderableWidget(filterModeToggle);
