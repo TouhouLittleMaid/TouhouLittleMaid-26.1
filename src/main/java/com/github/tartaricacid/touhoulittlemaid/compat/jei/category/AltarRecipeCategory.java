@@ -1,4 +1,4 @@
-package com.github.tartaricacid.touhoulittlemaid.compat.jei.altar;
+package com.github.tartaricacid.touhoulittlemaid.compat.jei.category;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;

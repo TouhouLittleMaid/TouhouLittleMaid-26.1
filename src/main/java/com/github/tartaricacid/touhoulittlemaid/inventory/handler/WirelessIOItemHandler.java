@@ -10,7 +10,7 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 public class WirelessIOItemHandler extends ItemAccessItemHandler {
-    private static final int FILTER_LIST_SIZE = 9;
+    public static final int FILTER_LIST_SIZE = 9;
 
     public WirelessIOItemHandler(ItemAccess itemAccess) {
         super(itemAccess, DataComponents.CONTAINER, FILTER_LIST_SIZE);

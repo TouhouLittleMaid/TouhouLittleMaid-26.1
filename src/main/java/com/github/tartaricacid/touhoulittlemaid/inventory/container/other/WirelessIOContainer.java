@@ -111,7 +111,10 @@ public class WirelessIOContainer extends AbstractContainerMenu {
         }
     }
 
-    private boolean setFilterSlot(int index, ItemStack stack) {
+    public boolean setFilterSlot(int index, ItemStack stack) {
+        if (index < 0 || index >= FILTER_SLOT_COUNT) {
+            return false;
+        }
         ItemResource resource = stack.isEmpty() ? ItemResource.EMPTY : ItemResource.of(stack);
         if (!resource.isEmpty() && !handler.isValid(index, resource)) {
             return false;

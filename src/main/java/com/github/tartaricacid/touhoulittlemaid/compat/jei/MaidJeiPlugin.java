@@ -1,23 +1,22 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.jei;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.event.ClientRecipeEvent;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
-import com.github.tartaricacid.touhoulittlemaid.compat.jei.altar.AltarRecipeCategory;
+import com.github.tartaricacid.touhoulittlemaid.client.gui.item.WirelessIOContainerGui;
+import com.github.tartaricacid.touhoulittlemaid.compat.jei.category.AltarRecipeCategory;
+import com.github.tartaricacid.touhoulittlemaid.compat.jei.handler.MaidContainerHandler;
+import com.github.tartaricacid.touhoulittlemaid.compat.jei.handler.WirelessIOGhostHandler;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-
-import java.util.List;
 
 @JeiPlugin
 public class MaidJeiPlugin implements IModPlugin {
@@ -47,12 +46,8 @@ public class MaidJeiPlugin implements IModPlugin {
 
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
-        registration.addGenericGuiContainerHandler(AbstractMaidContainerGui.class, new IGuiContainerHandler<AbstractMaidContainerGui<?>>() {
-            @Override
-            public List<Rect2i> getGuiExtraAreas(AbstractMaidContainerGui<?> containerScreen) {
-                return containerScreen.getExclusionArea();
-            }
-        });
+        registration.addGenericGuiContainerHandler(AbstractMaidContainerGui.class, new MaidContainerHandler());
+        registration.addGhostIngredientHandler(WirelessIOContainerGui.class, new WirelessIOGhostHandler());
     }
 
     @Override
