@@ -34,18 +34,20 @@ public class ItemGarageKitProxy {
         CustomData data = ItemGarageKit.getMaidData(stack);
         CompoundTag tag = data.copyTag();
 
+        MutableComponent prefix = PREFIX.copy();
+
         String entityId = tag.getStringOr(Entity.TAG_ID, EntityMaid.ENTITY_ID.toString());
         // 如果是其他实体，那么不需要显示 model id
         if (!entityId.equals(EntityMaid.ENTITY_ID.toString())) {
             Identifier parseId = Identifier.parse(entityId);
             EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.getValue(parseId);
-            return PREFIX.append(entityType.getDescription());
+            return prefix.append(entityType.getDescription());
         }
 
         String modelId = ProfileData.directGetModelId(tag);
         MaidModelInfo info = CustomPackLoader.MAID_MODELS.getInfo(modelId).orElse(null);
         if (info != null) {
-            return PREFIX.append(ParseI18n.parse(info.getName()));
+            return prefix.append(ParseI18n.parse(info.getName()));
         }
         return null;
     }
