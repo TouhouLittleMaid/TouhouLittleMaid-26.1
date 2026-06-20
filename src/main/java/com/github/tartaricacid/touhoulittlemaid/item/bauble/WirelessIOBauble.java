@@ -184,6 +184,7 @@ public class WirelessIOBauble implements IMaidBauble {
             ResourceHandler<ItemResource> maidInv, ResourceHandler<ItemResource> chestInv,
             ResourceHandler<ItemResource> filterList, List<Boolean> slotConfig
     ) {
+        int delayTicks = 0;
         for (int i = 0; i < maidInv.size(); i++) {
             // 槽位配置检查
             if (i < slotConfig.size() && slotConfig.get(i)) {
@@ -206,8 +207,9 @@ public class WirelessIOBauble implements IMaidBauble {
                 ItemsUtil.extractItem(maidInv, i, beforeCount - afterCount, false, null);
                 // 发射粒子和音效
                 NetworkHandler.sendToNearby(maid, new TeleportItemParticlePackage(
-                        maid.getId(), chestPos, maidInvItem, false, i
+                        maid.getId(), chestPos, maidInvItem, false, delayTicks
                 ));
+                delayTicks++;
             }
         }
     }
@@ -217,6 +219,7 @@ public class WirelessIOBauble implements IMaidBauble {
             ResourceHandler<ItemResource> chestInv, ResourceHandler<ItemResource> maidInv,
             ResourceHandler<ItemResource> filterList, List<Boolean> slotConfig
     ) {
+        int delayTicks = 0;
         for (int i = 0; i < chestInv.size(); i++) {
             // 女仆的槽位配置检查在后面的 insertItemStacked 里
             ItemStack chestInvItem = ItemUtil.getStack(chestInv, i);
@@ -234,8 +237,9 @@ public class WirelessIOBauble implements IMaidBauble {
                 ItemsUtil.extractItem(chestInv, i, beforeCount - afterCount, false, null);
                 // 发射粒子和音效
                 NetworkHandler.sendToNearby(maid, new TeleportItemParticlePackage(
-                        maid.getId(), chestPos, chestInvItem, true, i
+                        maid.getId(), chestPos, chestInvItem, true, delayTicks
                 ));
+                delayTicks++;
             }
         }
     }
