@@ -1,9 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.implement.ImageChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 
@@ -23,8 +23,10 @@ public class ImageChatBubbleData implements IChatBubbleData {
 
     private IChatBubbleRenderer renderer;
 
-    private ImageChatBubbleData(int existTick, Identifier bg, Identifier image, int width, int height,
-                                int uOffset, int vOffset, int textureWidth, int textureHeight, int priority) {
+    private ImageChatBubbleData(
+            int existTick, Identifier bg, Identifier image, int width, int height,
+            int uOffset, int vOffset, int textureWidth, int textureHeight, int priority
+    ) {
         this.existTick = existTick;
         this.bg = bg;
         this.image = image;
@@ -38,20 +40,34 @@ public class ImageChatBubbleData implements IChatBubbleData {
     }
 
     public static ImageChatBubbleData create(Identifier image, int width, int height) {
-        return new ImageChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, image, width, height, 0, 0, 256, 256, DEFAULT_PRIORITY);
+        return new ImageChatBubbleData(
+                DEFAULT_EXIST_TICK, TYPE_2, image, width, height,
+                0, 0, 256, 256, DEFAULT_PRIORITY
+        );
     }
 
     public static ImageChatBubbleData create(Identifier image, int width, int height, int uOffset, int vOffset) {
-        return new ImageChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, image, width, height, uOffset, vOffset, 256, 256, DEFAULT_PRIORITY);
+        return new ImageChatBubbleData(
+                DEFAULT_EXIST_TICK, TYPE_2, image, width, height,
+                uOffset, vOffset, 256, 256, DEFAULT_PRIORITY
+        );
     }
 
     public static ImageChatBubbleData singleImage(Identifier image, int width, int height) {
-        return new ImageChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, image, width, height, 0, 0, width, height, DEFAULT_PRIORITY);
+        return new ImageChatBubbleData(
+                DEFAULT_EXIST_TICK, TYPE_2, image, width, height,
+                0, 0, width, height, DEFAULT_PRIORITY
+        );
     }
 
-    public static ImageChatBubbleData create(int existTick, Identifier bg, Identifier image, int width, int height,
-                                             int uOffset, int vOffset, int textureWidth, int textureHeight, int priority) {
-        return new ImageChatBubbleData(existTick, bg, image, width, height, uOffset, vOffset, textureWidth, textureHeight, priority);
+    public static ImageChatBubbleData create(
+            int existTick, Identifier bg, Identifier image, int width, int height,
+            int uOffset, int vOffset, int textureWidth, int textureHeight, int priority
+    ) {
+        return new ImageChatBubbleData(
+                existTick, bg, image, width, height,
+                uOffset, vOffset, textureWidth, textureHeight, priority
+        );
     }
 
     @Override
@@ -72,8 +88,10 @@ public class ImageChatBubbleData implements IChatBubbleData {
     @Override
     public IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position) {
         if (this.renderer == null) {
-            this.renderer = new ImageChatBubbleRenderer(this.width, this.height, this.uOffset, this.vOffset,
-                    this.textureWidth, this.textureHeight, this.bg, this.image);
+            this.renderer = new ImageChatBubbleRenderer(
+                    this.width, this.height, this.uOffset, this.vOffset,
+                    this.textureWidth, this.textureHeight, this.bg, this.image
+            );
         }
         return this.renderer;
     }
@@ -89,8 +107,10 @@ public class ImageChatBubbleData implements IChatBubbleData {
             int textureHeight = buf.readVarInt();
             Identifier bg = buf.readIdentifier();
             Identifier image = buf.readIdentifier();
-            return new ImageChatBubbleData(DEFAULT_EXIST_TICK, bg, image, width, height,
-                    uOffset, vOffset, textureWidth, textureHeight, DEFAULT_PRIORITY);
+            return new ImageChatBubbleData(
+                    DEFAULT_EXIST_TICK, bg, image, width, height,
+                    uOffset, vOffset, textureWidth, textureHeight, DEFAULT_PRIORITY
+            );
         }
 
         @Override

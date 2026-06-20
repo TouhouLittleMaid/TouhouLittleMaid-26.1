@@ -8,7 +8,6 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import org.apache.commons.lang3.StringUtils;
 
 @EventBusSubscriber
 public final class RandomEmoji {

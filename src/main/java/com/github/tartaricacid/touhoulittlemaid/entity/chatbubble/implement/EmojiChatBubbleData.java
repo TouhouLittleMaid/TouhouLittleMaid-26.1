@@ -1,14 +1,15 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.implement.EmojiChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.Identifier;
 
 public class EmojiChatBubbleData implements IChatBubbleData {
     public static final Identifier ID = IdentifierUtil.modLoc("emoji");
+
     private final Identifier bg;
     private IChatBubbleRenderer renderer;
 

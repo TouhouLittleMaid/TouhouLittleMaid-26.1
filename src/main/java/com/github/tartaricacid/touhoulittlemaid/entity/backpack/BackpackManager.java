@@ -19,33 +19,42 @@ import java.util.function.Function;
 import static com.github.tartaricacid.touhoulittlemaid.api.backpack.MaidBackpackRenderData.EMPTY;
 
 public class BackpackManager {
-    // 渲染数据，客户端才能用
+    /**
+     * 渲染数据，客户端才能用
+     */
     public static final Function<Identifier, MaidBackpackRenderData> RENDER_DATA_CACHE = Util.memoize(id ->
             BackpackManager.findBackpack(id).map(IMaidBackpack::getRenderData).orElse(EMPTY)
     );
 
+    private static final IMaidBackpack EMPTY_BACKPACK = new EmptyBackpack();
+
     private static Map<Identifier, IMaidBackpack> BACKPACK_ID_MAP = Maps.newHashMap();
     private static Map<Item, IMaidBackpack> BACKPACK_ITEM_MAP = Maps.newHashMap();
-    private static IMaidBackpack EMPTY_BACKPACK = new EmptyBackpack();
 
     private BackpackManager() {
-        EMPTY_BACKPACK = new EmptyBackpack();
         BACKPACK_ID_MAP = Maps.newHashMap();
         BACKPACK_ITEM_MAP = Maps.newHashMap();
     }
 
     public static void init() {
         BackpackManager manager = new BackpackManager();
+
         manager.add(EMPTY_BACKPACK);
         manager.add(new SmallBackpack());
         manager.add(new MiddleBackpack());
         manager.add(new BigBackpack());
+
         for (ILittleMaid littleMaid : TouhouLittleMaid.EXTENSIONS) {
             littleMaid.addMaidBackpack(manager);
         }
+
         BACKPACK_ID_MAP = ImmutableMap.copyOf(BACKPACK_ID_MAP);
-        // 将物品和背包绑定
-        BACKPACK_ID_MAP.forEach((id, backpack) -> BACKPACK_ITEM_MAP.put(backpack.getItem(), backpack));
+
+        // 将物品和背包绑定，方便查询
+        BACKPACK_ID_MAP.forEach((id, backpack) -> {
+            Item item = backpack.getItem();
+            BACKPACK_ITEM_MAP.put(item, backpack);
+        });
         BACKPACK_ITEM_MAP = ImmutableMap.copyOf(BACKPACK_ITEM_MAP);
     }
 
@@ -58,12 +67,14 @@ public class BackpackManager {
     }
 
     public static Optional<IMaidBackpack> findBackpack(ItemStack stack) {
-        return Optional.ofNullable(BACKPACK_ITEM_MAP.get(stack.getItem()));
+        Item item = stack.getItem();
+        return Optional.ofNullable(BACKPACK_ITEM_MAP.get(item));
     }
 
     public static void addBackpackCooldown(Player player) {
         for (Item backpack : BACKPACK_ITEM_MAP.keySet()) {
-            player.getCooldowns().addCooldown(backpack.getDefaultInstance(), 20);
+            ItemStack stack = backpack.getDefaultInstance();
+            player.getCooldowns().addCooldown(stack, 20);
         }
     }
 

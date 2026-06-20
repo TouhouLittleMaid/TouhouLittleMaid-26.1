@@ -9,8 +9,9 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerBroomControl implements IBroomControl {
+    private static final float FCMP_THRE = 1e-4f;
+
     private final EntityBroom broom;
-    private float FCMP_THRE = 1e-4f;
 
     public PlayerBroomControl(EntityBroom broom) {
         this.broom = broom;

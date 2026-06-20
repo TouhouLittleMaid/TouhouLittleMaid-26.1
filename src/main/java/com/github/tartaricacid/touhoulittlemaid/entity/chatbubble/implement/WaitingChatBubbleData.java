@@ -1,9 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.implement.WaitingChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -23,8 +23,10 @@ public class WaitingChatBubbleData implements IChatBubbleData {
 
     private IChatBubbleRenderer renderer;
 
-    private WaitingChatBubbleData(int existTick, Identifier bg, int priority, Component text,
-                                  @Nullable Component secondaryText, Identifier icon) {
+    private WaitingChatBubbleData(
+            int existTick, Identifier bg, int priority, Component text,
+            @Nullable Component secondaryText, Identifier icon
+    ) {
         this.existTick = existTick;
         this.bg = bg;
         this.priority = priority;
@@ -33,21 +35,33 @@ public class WaitingChatBubbleData implements IChatBubbleData {
         this.icon = icon;
     }
 
-    public static WaitingChatBubbleData create(int existTick, Identifier bg, int priority, Component text, Identifier icon) {
-        return new WaitingChatBubbleData(existTick, bg, priority, text, null, icon);
+    public static WaitingChatBubbleData create(
+            int existTick, Identifier bg, int priority, Component text, Identifier icon
+    ) {
+        return new WaitingChatBubbleData(
+                existTick, bg, priority, text, null, icon
+        );
     }
 
-    public static WaitingChatBubbleData create(int existTick, Identifier bg, int priority, Component text,
-                                               @Nullable Component secondaryText, Identifier icon) {
+    public static WaitingChatBubbleData create(
+            int existTick, Identifier bg, int priority, Component text,
+            @Nullable Component secondaryText, Identifier icon
+    ) {
         return new WaitingChatBubbleData(existTick, bg, priority, text, secondaryText, icon);
     }
 
     public static WaitingChatBubbleData create(Component text, Identifier icon) {
-        return new WaitingChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY, text, null, icon);
+        return new WaitingChatBubbleData(
+                DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY, text, null, icon
+        );
     }
 
-    public static WaitingChatBubbleData create(Component text, @Nullable Component secondaryText, Identifier icon) {
-        return new WaitingChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY, text, secondaryText, icon);
+    public static WaitingChatBubbleData create(
+            Component text, @Nullable Component secondaryText, Identifier icon
+    ) {
+        return new WaitingChatBubbleData(
+                DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY, text, secondaryText, icon
+        );
     }
 
     @Override
@@ -68,7 +82,9 @@ public class WaitingChatBubbleData implements IChatBubbleData {
     @Override
     public IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position) {
         if (renderer == null) {
-            renderer = new WaitingChatBubbleRenderer(this.bg, this.text, this.secondaryText, this.icon);
+            renderer = new WaitingChatBubbleRenderer(
+                    this.bg, this.text, this.secondaryText, this.icon
+            );
         }
         return renderer;
     }
@@ -88,7 +104,10 @@ public class WaitingChatBubbleData implements IChatBubbleData {
             if (buf.readBoolean()) {
                 secondaryText = buf.readLenientJsonWithCodec(ComponentSerialization.CODEC);
             }
-            return new WaitingChatBubbleData(DEFAULT_EXIST_TICK, bg, DEFAULT_PRIORITY, text, secondaryText, buf.readIdentifier());
+            return new WaitingChatBubbleData(
+                    DEFAULT_EXIST_TICK, bg, DEFAULT_PRIORITY,
+                    text, secondaryText, buf.readIdentifier()
+            );
         }
 
         @Override

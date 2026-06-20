@@ -1,9 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.implement;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.IChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.chatbubble.implement.ProgressChatBubbleRenderer;
 import com.github.tartaricacid.touhoulittlemaid.entity.chatbubble.IChatBubbleData;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -23,8 +23,11 @@ public class ProgressChatBubbleData implements IChatBubbleData {
 
     private IChatBubbleRenderer renderer;
 
-    private ProgressChatBubbleData(int existTick, Identifier bg, int priority, Component text, int barBackgroundColor,
-                                   int barForegroundColor, double progress, boolean alignCenter) {
+    private ProgressChatBubbleData(
+            int existTick, Identifier bg, int priority, Component text,
+            int barBackgroundColor, int barForegroundColor,
+            double progress, boolean alignCenter
+    ) {
         this.existTick = existTick;
         this.bg = bg;
         this.priority = priority;
@@ -35,16 +38,27 @@ public class ProgressChatBubbleData implements IChatBubbleData {
         this.alignCenter = alignCenter;
     }
 
-    public static ProgressChatBubbleData create(int existTick, Identifier bg, int priority, Component text,
-                                                int barBackgroundColor, int barForegroundColor, double progress,
-                                                boolean alignCenter) {
-        return new ProgressChatBubbleData(existTick, bg, priority, text, barBackgroundColor, barForegroundColor,
-                progress, alignCenter);
+    public static ProgressChatBubbleData create(
+            int existTick, Identifier bg, int priority, Component text,
+            int barBackgroundColor, int barForegroundColor, double progress,
+            boolean alignCenter
+    ) {
+        return new ProgressChatBubbleData(
+                existTick, bg, priority, text,
+                barBackgroundColor, barForegroundColor,
+                progress, alignCenter
+        );
     }
 
-    public static ProgressChatBubbleData create(Component text, int barBackgroundColor, int barForegroundColor, double progress, boolean alignCenter) {
-        return new ProgressChatBubbleData(DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY, text, barBackgroundColor,
-                barForegroundColor, progress, alignCenter);
+    public static ProgressChatBubbleData create(
+            Component text, int barBackgroundColor,
+            int barForegroundColor, double progress, boolean alignCenter
+    ) {
+        return new ProgressChatBubbleData(
+                DEFAULT_EXIST_TICK, TYPE_2, DEFAULT_PRIORITY,
+                text, barBackgroundColor,
+                barForegroundColor, progress, alignCenter
+        );
     }
 
     @Override
@@ -65,7 +79,10 @@ public class ProgressChatBubbleData implements IChatBubbleData {
     @Override
     public IChatBubbleRenderer getRenderer(IChatBubbleRenderer.Position position) {
         if (renderer == null) {
-            renderer = new ProgressChatBubbleRenderer(this.bg, this.text, this.barBackgroundColor, this.barForegroundColor, this.progress, this.alignCenter);
+            renderer = new ProgressChatBubbleRenderer(
+                    this.bg, this.text, this.barBackgroundColor,
+                    this.barForegroundColor, this.progress, this.alignCenter
+            );
         }
         return renderer;
     }
@@ -74,8 +91,11 @@ public class ProgressChatBubbleData implements IChatBubbleData {
         @Override
         public IChatBubbleData readFromBuff(FriendlyByteBuf buf) {
             // 往客户端同步的数据里，不需要同步 existTick 和 priority，这两个数据仅在服务端有效
-            return new ProgressChatBubbleData(DEFAULT_EXIST_TICK, buf.readIdentifier(), DEFAULT_PRIORITY, buf.readLenientJsonWithCodec(ComponentSerialization.CODEC),
-                    buf.readInt(), buf.readInt(), buf.readDouble(), buf.readBoolean());
+            return new ProgressChatBubbleData(
+                    DEFAULT_EXIST_TICK, buf.readIdentifier(), DEFAULT_PRIORITY,
+                    buf.readLenientJsonWithCodec(ComponentSerialization.CODEC),
+                    buf.readInt(), buf.readInt(), buf.readDouble(), buf.readBoolean()
+            );
         }
 
         @Override
