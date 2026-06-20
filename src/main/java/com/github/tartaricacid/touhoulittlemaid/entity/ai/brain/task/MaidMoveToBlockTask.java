@@ -115,7 +115,7 @@ public abstract class MaidMoveToBlockTask extends MaidCheckRateTask {
      *
      * @param worldIn  当前实体所处的 world
      * @param entityIn 当前需要移动的实体
-     * @param pos      当前检索的 pos
+     * @param pos      当前检索的 chestPos
      * @return 是否符合判定条件
      */
     protected abstract boolean shouldMoveTo(ServerLevel worldIn, EntityMaid entityIn, BlockPos pos);

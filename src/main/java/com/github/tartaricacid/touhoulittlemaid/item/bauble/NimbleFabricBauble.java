@@ -28,21 +28,26 @@ public class NimbleFabricBauble implements IMaidBauble {
     public void onLivingDamage(MaidAttackEvent event) {
         EntityMaid maid = event.getMaid();
         DamageSource source = event.getSource();
-        if (source.is(DamageTypeTags.IS_PROJECTILE)) {
-            int slot = ItemsUtil.getBaubleSlotInMaid(maid, this);
-            if (slot >= 0) {
-                event.setCanceled(true);
-                ItemStack stack = ItemUtil.getStack(maid.getMaidBauble(), slot);
-                maid.hurtAndBreak(stack, 1);
-                maid.getMaidBauble().set(slot, ItemResource.of(stack), 1);
-                for (int i = 0; i < MAX_RETRY; ++i) {
-                    if (TeleportHelper.teleport(maid)) {
-                        if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
-                            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_NIMBLE_FABRIC);
-                        }
-                        return;
-                    }
+        if (!source.is(DamageTypeTags.IS_PROJECTILE)) {
+            return;
+        }
+
+        int slot = ItemsUtil.getBaubleSlotInMaid(maid, this);
+        if (slot < 0) {
+            return;
+        }
+        event.setCanceled(true);
+
+        ItemStack stack = ItemUtil.getStack(maid.getMaidBauble(), slot);
+        maid.hurtAndBreak(stack, 1);
+        maid.getMaidBauble().set(slot, ItemResource.of(stack), 1);
+
+        for (int i = 0; i < MAX_RETRY; i++) {
+            if (TeleportHelper.teleport(maid)) {
+                if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
+                    InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_NIMBLE_FABRIC);
                 }
+                return;
             }
         }
     }

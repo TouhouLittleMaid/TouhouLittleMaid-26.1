@@ -12,13 +12,15 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 
+import static com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage.Type.HEART;
+
 public class ExtraLifeBauble implements IMaidBauble {
     @Override
     public boolean onDeath(EntityMaid maid, ItemStack baubleItem, DamageSource source) {
         if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             maid.hurtAndBreak(baubleItem, 1);
             maid.setHealth(maid.getMaxHealth());
-            NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.HEART));
+            NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), HEART));
             maid.playSound(SoundEvents.GLASS_BREAK, 1.0f, 1.0f);
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_UNDEAD_BAUBLE);

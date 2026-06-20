@@ -12,6 +12,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
+import static com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage.Type.BUBBLE;
+
 public class DrownProtectBauble implements IMaidBauble {
     @Override
     public boolean onInjured(EntityMaid maid, ItemStack baubleItem, DamageSource source, MutableFloat damage) {
@@ -19,7 +21,7 @@ public class DrownProtectBauble implements IMaidBauble {
             maid.hurtAndBreak(baubleItem, 1);
             // 增加了游泳功能，故此饰品可以增加到最大空气值
             maid.setAirSupply(maid.getMaxAirSupply());
-            NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), SpawnParticlePackage.Type.BUBBLE));
+            NetworkHandler.sendToNearby(maid, new SpawnParticlePackage(maid.getId(), BUBBLE));
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_PROTECT_BAUBLE);
             }

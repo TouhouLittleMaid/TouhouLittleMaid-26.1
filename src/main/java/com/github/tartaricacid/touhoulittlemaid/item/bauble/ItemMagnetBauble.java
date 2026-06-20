@@ -12,6 +12,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
@@ -28,31 +29,36 @@ public class ItemMagnetBauble implements IMaidBauble {
 
     private void handlePickup(EntityMaid maid) {
         Level world = maid.level();
-        if (maid.isPickup() && maid.isTame()) {
-            List<Entity> entities = world.getEntities(maid, maid.getBoundingBox().inflate(RANGE), maid::canPickup);
-            if (!entities.isEmpty() && maid.isAlive()) {
-                for (Entity entityPickup : entities) {
-                    // 如果是物品
-                    if (entityPickup instanceof ItemEntity) {
-                        maid.pickupItem((ItemEntity) entityPickup, false);
-                    }
-                    // 如果是经验
-                    if (entityPickup instanceof ExperienceOrb) {
-                        maid.pickupXPOrb((ExperienceOrb) entityPickup);
-                    }
-                    // 如果是 P 点
-                    if (entityPickup instanceof EntityPowerPoint) {
-                        maid.pickupPowerPoint((EntityPowerPoint) entityPickup);
-                    }
-                    // 如果是箭
-                    if (entityPickup instanceof AbstractArrow) {
-                        maid.pickupArrow((AbstractArrow) entityPickup, false);
-                    }
-                }
-                if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
-                    InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_ITEM_MAGNET_BAUBLE);
-                }
+        if (!maid.isPickup() || !maid.isTame() || !maid.isAlive()) {
+            return;
+        }
+
+        AABB aabb = maid.getBoundingBox().inflate(RANGE);
+        List<Entity> entities = world.getEntities(maid, aabb, maid::canPickup);
+        if (entities.isEmpty()) {
+            return;
+        }
+
+        for (Entity entityPickup : entities) {
+            // 如果是物品
+            if (entityPickup instanceof ItemEntity) {
+                maid.pickupItem((ItemEntity) entityPickup, false);
             }
+            // 如果是经验
+            if (entityPickup instanceof ExperienceOrb) {
+                maid.pickupXPOrb((ExperienceOrb) entityPickup);
+            }
+            // 如果是 P 点
+            if (entityPickup instanceof EntityPowerPoint) {
+                maid.pickupPowerPoint((EntityPowerPoint) entityPickup);
+            }
+            // 如果是箭
+            if (entityPickup instanceof AbstractArrow) {
+                maid.pickupArrow((AbstractArrow) entityPickup, false);
+            }
+        }
+        if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
+            InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_ITEM_MAGNET_BAUBLE);
         }
     }
 }

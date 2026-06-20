@@ -370,7 +370,7 @@ public class Evaluate {
                 pos.vlBlackPiecePos[PIECE_BISHOP][sq + 16] -= 10;
             }
         }
-        // 7. Update "vlWhite" and "vlBlack" in "pos"
+        // 7. Update "vlWhite" and "vlBlack" in "chestPos"
         pos.vlWhite = pos.vlBlack = 0;
         for (int sq = 0; sq < 128; sq++) {
             int pc = pos.squares[sq];

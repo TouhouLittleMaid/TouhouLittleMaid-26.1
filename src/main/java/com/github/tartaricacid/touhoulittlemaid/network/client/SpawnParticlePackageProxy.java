@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.network.client;
 
+import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SpawnParticlePackage;
 import net.minecraft.client.Minecraft;
@@ -22,7 +23,7 @@ public final class SpawnParticlePackageProxy {
             Thread.sleep(delayTicks * 50L);
             Minecraft.getInstance().submitAsync(() -> handleSpawnParticle(message));
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            TouhouLittleMaid.LOGGER.error(e.getMessage());
         }
     }
 

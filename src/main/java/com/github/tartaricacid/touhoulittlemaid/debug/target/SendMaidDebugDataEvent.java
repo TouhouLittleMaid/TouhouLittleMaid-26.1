@@ -47,7 +47,7 @@ public class SendMaidDebugDataEvent {
 //
 //        DebugMaidManager.getDebugTargets(maid).forEach(target -> {
 //            GameTestAddMarkerDebugPayload payload = new GameTestAddMarkerDebugPayload(
-//                    target.pos(), target.color(), target.text(), target.lifeTime());
+//                    target.chestPos(), target.color(), target.text(), target.lifeTime());
 //            player.connection.send(new ClientboundCustomPayloadPacket(payload));
 //        });
     }

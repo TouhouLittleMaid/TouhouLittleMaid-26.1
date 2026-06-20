@@ -13,7 +13,6 @@ import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -166,7 +165,8 @@ public class BaubleItemHandler extends ItemStacksResourceHandler {
             int slot = entry.getIntKey();
 
             IMaidBauble bauble = entry.getValue();
-            ItemStack stack = ItemUtil.getStack(this, slot);
+            // 特殊，因为存在直接修改库存物品的情况，需要直接获取
+            ItemStack stack = stacks.get(slot);
 
             if (stack.isEmpty()) {
                 // 删除不存在物品的映射

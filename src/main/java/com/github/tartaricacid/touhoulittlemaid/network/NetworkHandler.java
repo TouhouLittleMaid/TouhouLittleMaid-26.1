@@ -72,6 +72,7 @@ public class NetworkHandler {
         registrar.playToClient(MaidAnimationPackage.TYPE, MaidAnimationPackage.STREAM_CODEC, MaidAnimationPackage::handle);
         registrar.playToClient(SyncBaublePackage.TYPE, SyncBaublePackage.STREAM_CODEC, SyncBaublePackage::handle);
         registrar.playToClient(CuriosS2CUpdatePacket.TYPE, CuriosS2CUpdatePacket.STREAM_CODEC, CuriosS2CUpdatePacket::handle);
+        registrar.playToClient(TeleportItemParticlePackage.TYPE, TeleportItemParticlePackage.STREAM_CODEC, TeleportItemParticlePackage::handle);
 
         registrar.playToServer(OpenMaidAIChatPacket.TYPE, OpenMaidAIChatPacket.STREAM_CODEC, OpenMaidAIChatPacket::handle);
         registrar.playToClient(SyncMaidAIDataPacket.TYPE, SyncMaidAIDataPacket.STREAM_CODEC, SyncMaidAIDataPacket::handle);

@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.api.bauble.IMaidBauble;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityExtinguishingAgent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -19,8 +20,8 @@ public class FireProtectBauble implements IMaidBauble {
         if (source.is(DamageTypeTags.IS_FIRE)) {
             maid.hurtAndBreak(baubleItem, 1);
             maid.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 300));
-            if (!maid.level.isClientSide()) {
-                maid.level.addFreshEntity(new EntityExtinguishingAgent(maid.level, maid.position()));
+            if (maid.level instanceof ServerLevel serverLevel) {
+                serverLevel.addFreshEntity(new EntityExtinguishingAgent(serverLevel, maid.position()));
             }
             if (maid.getOwner() instanceof ServerPlayer serverPlayer) {
                 InitTrigger.MAID_EVENT.get().trigger(serverPlayer, TriggerType.USE_PROTECT_BAUBLE);
