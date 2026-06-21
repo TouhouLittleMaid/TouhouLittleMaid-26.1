@@ -25,6 +25,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -150,5 +151,15 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
     @Override
     protected boolean shouldShowName(EntityChair entity, double distanceToCameraSq) {
         return entity.shouldShowName();
+    }
+
+    @Override
+    protected AABB getBoundingBoxForCulling(EntityChair chair) {
+        AABB aabb = super.getBoundingBoxForCulling(chair);
+        String modelId = chair.getModelId();
+        return CustomPackLoader.CHAIR_MODELS.getModel(modelId).map(model -> {
+            Vec3 position = chair.position();
+            return model.getRenderBoundingBox().move(position);
+        }).orElse(aabb);
     }
 }

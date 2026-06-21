@@ -1,13 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.favorability.FavorabilityManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -19,23 +18,31 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.StringUtils;
+
+import static net.minecraft.network.syncher.EntityDataSerializers.STRING;
 
 public class EntitySit extends Entity {
-    public static final EntityType<EntitySit> TYPE = EntityType.Builder.<EntitySit>of(EntitySit::new, MobCategory.MISC)
+    public static final Identifier ENTITY_ID = IdentifierUtil.modLoc("sit");
+    public static final ResourceKey<EntityType<?>> ENTITY_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ENTITY_ID);
+    public static final EntityType<EntitySit> TYPE = EntityType
+            .Builder.<EntitySit>of(EntitySit::new, MobCategory.MISC)
             .sized(0.5f, 0.1f)
             .clientTrackingRange(10)
             .ridingOffset(-0.25F)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("sit")));
-    private static final EntityDataAccessor<String> SIT_TYPE = SynchedEntityData.defineId(EntitySit.class, EntityDataSerializers.STRING);
+            .build(ENTITY_KEY);
+
+    private static final EntityDataAccessor<String> SIT_TYPE = SynchedEntityData.defineId(EntitySit.class, STRING);
+
     private int passengerTick = 0;
     private BlockPos associatedBlockPos = BlockPos.ZERO;
 
-    public EntitySit(EntityType<?> entityTypeIn, Level worldIn) {
-        super(entityTypeIn, worldIn);
+    public EntitySit(EntityType<?> entityTypeIn, Level level) {
+        super(entityTypeIn, level);
     }
 
-    public EntitySit(Level worldIn, Vec3 pos, String joyType, BlockPos associatedBlockPos) {
-        this(TYPE, worldIn);
+    public EntitySit(Level level, Vec3 pos, String joyType, BlockPos associatedBlockPos) {
+        this(TYPE, level);
         this.setPos(pos);
         this.setJoyType(joyType);
         this.associatedBlockPos = associatedBlockPos;
@@ -43,13 +50,14 @@ public class EntitySit extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(SIT_TYPE, "");
+        builder.define(SIT_TYPE, StringUtils.EMPTY);
     }
 
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         input.getString("SitJoyType").ifPresent(this::setJoyType);
-        input.read("AssociatedBlockPos", BlockPos.CODEC).ifPresent(blockPos -> this.associatedBlockPos = blockPos);
+        input.read("AssociatedBlockPos", BlockPos.CODEC)
+                .ifPresent(blockPos -> this.associatedBlockPos = blockPos);
     }
 
     @Override
@@ -72,6 +80,7 @@ public class EntitySit extends Entity {
     private void tickMaid(EntityMaid maid) {
         maid.setYRot(this.getYRot());
         maid.setYHeadRot(this.getYRot());
+
         if (tickCount % 20 == 0) {
             FavorabilityManager manager = maid.getFavorabilityManager();
             String joyType = this.getJoyType();

@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.network.message;
 
+import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.network.client.OpenChairGuiPackageProxy;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -16,6 +17,10 @@ public record OpenChairGuiPackage(int id) implements CustomPacketPayload {
             OpenChairGuiPackage::id,
             OpenChairGuiPackage::new
     );
+
+    public OpenChairGuiPackage(EntityChair chair) {
+        this(chair.getId());
+    }
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

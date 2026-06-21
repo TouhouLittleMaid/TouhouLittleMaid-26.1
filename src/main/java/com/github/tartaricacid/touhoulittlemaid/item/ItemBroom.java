@@ -60,7 +60,7 @@ public class ItemBroom extends Item {
                 return InteractionResult.FAIL;
             }
             if (context.getPlayer() != null) {
-                broom.setOwnerUUID(context.getPlayer().getUUID());
+                broom.setOwner(context.getPlayer());
             }
             world.addFreshEntity(broom);
             world.playSound(null, broom.getX(), broom.getY(), broom.getZ(),

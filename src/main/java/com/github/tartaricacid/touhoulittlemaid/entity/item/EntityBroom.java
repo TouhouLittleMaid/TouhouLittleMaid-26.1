@@ -1,16 +1,14 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.entity.IBroomControl;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.control.BroomControlManager;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenPlayerInventoryPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -32,35 +30,48 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.github.tartaricacid.touhoulittlemaid.init.InitDataComponent.OWNER_UUID_TAG_NAME;
+import static com.github.tartaricacid.touhoulittlemaid.network.message.OpenPlayerInventoryPackage.OPEN_PLAYER_INVENTORY;
+import static net.minecraft.network.syncher.EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE;
 
 public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity, HasCustomInventoryScreen {
-    public static final EntityType<EntityBroom> TYPE = EntityType.Builder.<EntityBroom>of(EntityBroom::new, MobCategory.MISC)
+    public static final Identifier ENTITY_ID = IdentifierUtil.modLoc("broom");
+    public static final ResourceKey<EntityType<?>> ENTITY_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ENTITY_ID);
+    public static final EntityType<EntityBroom> TYPE = EntityType
+            .Builder.<EntityBroom>of(EntityBroom::new, MobCategory.MISC)
             .sized(1.375F, 0.5625F)
             .clientTrackingRange(10)
             .ridingOffset(0)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("broom")));
+            .build(ENTITY_KEY);
 
-    private static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> OWNER = SynchedEntityData.defineId(EntityBroom.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
+    // 扫帚会把放置出来的那个人标记为 OWNER
+    private static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> OWNER = SynchedEntityData.defineId(
+            EntityBroom.class, OPTIONAL_LIVING_ENTITY_REFERENCE
+    );
 
+    // NBT key
+    private static final String OWNER_TAG = "Owner";
+
+    // 扫帚控制器，供拓展修改扫帚的操纵方式
     private final List<IBroomControl> broomControls;
+
+    // 动态修改实体的碰撞体积，用来避免玩家卡进方块里
     public boolean inPhysicalCheck = false;
     private AABB physicalBoundingBox = new AABB(Vec3.ZERO, Vec3.ZERO);
 
-    public EntityBroom(EntityType<EntityBroom> entityType, Level worldIn) {
-        super(entityType, worldIn);
+    public EntityBroom(EntityType<EntityBroom> entityType, Level level) {
+        super(entityType, level);
         this.setNoGravity(true);
         this.broomControls = BroomControlManager.onBroomInit(this);
     }
 
-    public EntityBroom(Level worldIn) {
-        this(TYPE, worldIn);
+    public EntityBroom(Level level) {
+        this(TYPE, level);
     }
 
     @Override
@@ -72,13 +83,13 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
     @Override
     public void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        input.read(OWNER_UUID_TAG_NAME, UUIDUtil.CODEC).ifPresent(this::setOwnerUUID);
+        this.setOwnerReference(EntityReference.read(input, OWNER_TAG));
     }
 
     @Override
     public void addAdditionalSaveData(ValueOutput output) {
         super.addAdditionalSaveData(output);
-        this.entityData.get(OWNER).ifPresent(er -> output.store(OWNER_UUID_TAG_NAME, UUIDUtil.CODEC, er.getUUID()));
+        EntityReference.store(this.getOwnerReference(), output, OWNER_TAG);
     }
 
     @Override
@@ -86,8 +97,10 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
         AABB aabb = super.makeBoundingBox(position);
         if (this.getPassengers().size() > 1) {
             // 如果有乘客，扫帚的碰撞盒就变大一点
-            this.physicalBoundingBox = new AABB(aabb.minX, aabb.minY, aabb.minZ,
-                    aabb.maxX, aabb.maxY + 1, aabb.maxZ);
+            this.physicalBoundingBox = new AABB(
+                    aabb.minX, aabb.minY, aabb.minZ,
+                    aabb.maxX, aabb.maxY + 1, aabb.maxZ
+            );
         } else {
             this.physicalBoundingBox = aabb;
         }
@@ -98,6 +111,8 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
     public void travel(Vec3 vec3) {
         Entity entity = this.getControllingPassenger();
         Entity secondPassenger = this.getPassengers().size() >= 2 ? this.getPassengers().get(1) : null;
+
+        // 只有玩家和女仆都骑乘时，才能操纵扫帚
         if (entity instanceof Player player && secondPassenger instanceof EntityMaid maid) {
             for (IBroomControl broomControl : this.broomControls) {
                 if (broomControl.inControl(player, maid)) {
@@ -108,8 +123,9 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
             this.move(MoverType.SELF, this.getDeltaMovement());
             return;
         }
+
+        // 玩家没有坐在扫帚上，那就让它掉下来
         if (!this.onGround()) {
-            // 玩家没有坐在扫帚上，那就让它掉下来
             super.travel(new Vec3(0, -0.3f, 0));
             return;
         }
@@ -131,21 +147,22 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
         if (!this.getPassengers().isEmpty() && !(this.getControllingPassenger() instanceof Player)) {
             return;
         }
+        // 执行，此时周围的女仆会尝试坐上去
         if (!level.isClientSide()) {
-            List<EntityMaid> list = level.getEntitiesOfClass(EntityMaid.class, getBoundingBox().expandTowards(0.5, 0.1, 0.5), this::canMaidRide);
+            AABB aabb = getBoundingBox().expandTowards(0.5, 0.1, 0.5);
+            List<EntityMaid> list = level.getEntitiesOfClass(EntityMaid.class, aabb, this::canMaidRide);
             list.stream().findFirst().ifPresent(entity -> entity.startRiding(this));
         }
     }
 
     private boolean canMaidRide(EntityMaid maid) {
-        //FIXME 等女仆的逻辑完成
         if (maid.canBrainMoving() && !maid.isVehicle() && EntitySelector.pushableBy(this).test(maid)) {
             var maidOwner = maid.getOwnerReference();
-            UUID broomOwnerUUID = this.getOwnerUUID();
-            if (maidOwner == null || broomOwnerUUID == null) {
+            if (maidOwner == null) {
                 return false;
             }
-            return maidOwner.getUUID().equals(broomOwnerUUID);
+            // 扫帚和女仆的所属者都是同一个人，才可以坐上去
+            return Objects.equals(maidOwner, this.getOwnerReference());
         }
         return false;
     }
@@ -157,7 +174,8 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
 
         // 施加上下晃动
         if (!this.onGround()) {
-            this.addDeltaMovement(new Vec3(0, 0.003 * Math.sin(this.tickCount * Math.PI / 18), 0));
+            double yOffset = 0.003 * Math.sin(this.tickCount * Math.PI / 18);
+            this.addDeltaMovement(new Vec3(0, yOffset, 0));
         }
 
         // 与旋转有关系的一堆东西，用来控制扫帚朝向
@@ -173,6 +191,7 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
             this.yRotO = this.yBodyRot = this.yHeadRot = this.getYRot();
             this.setRot(player.getYRot(), player.getXRot());
         }
+
         super.tickRidden(player, travelVector);
     }
 
@@ -197,21 +216,22 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand, Vec3 position) {
-        if (!player.isDiscrete() && !this.isPassenger() && !(this.getControllingPassenger() instanceof Player)) {
-            if (this.getPassengers().size() > 1) {
-                return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
-            }
-            if (!level.isClientSide()) {
-                player.startRiding(this);
-            }
-            return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
+        if (player.isDiscrete() || this.isPassenger() || this.getControllingPassenger() instanceof Player) {
+            return super.interact(player, hand, position);
         }
-        return super.interact(player, hand, position);
+        if (this.getPassengers().size() > 1) {
+            return InteractionResult.SUCCESS;
+        }
+        if (!level.isClientSide()) {
+            player.startRiding(this);
+        }
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
     @Override
     public LivingEntity getControllingPassenger() {
+        // 操控实体只能是玩家
         Entity entity = this.getFirstPassenger();
         if (entity instanceof Player player) {
             return player;
@@ -224,9 +244,12 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
         if (!(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
-        List<Entity> passengers = this.getPassengers();
+
         boolean hasPlayer = false;
         EntityMaid maidOpen = null;
+
+        // 先检查是否有自己和女仆骑乘在上面
+        List<Entity> passengers = this.getPassengers();
         for (int i = 0; i < Math.min(passengers.size(), 2); i++) {
             Entity entity = passengers.get(i);
             if (entity.equals(player)) {
@@ -236,17 +259,23 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
                 maidOpen = maid;
             }
         }
-        if (hasPlayer) {
-            if (maidOpen == null) {
-                PacketDistributor.sendToPlayer(serverPlayer, new OpenPlayerInventoryPackage(OpenPlayerInventoryPackage.OPEN_PLAYER_INVENTORY));
-            } else {
-                maidOpen.openMaidGui(serverPlayer);
-            }
+
+        // 玩家不对不能打开物品栏
+        if (!hasPlayer) {
+            return;
+        }
+
+        if (maidOpen == null) {
+            // 玩家物品栏打开很特殊，需要从客户端触发
+            OpenPlayerInventoryPackage msg = new OpenPlayerInventoryPackage(OPEN_PLAYER_INVENTORY);
+            PacketDistributor.sendToPlayer(serverPlayer, msg);
+        } else {
+            maidOpen.openMaidGui(serverPlayer);
         }
     }
 
     @Override
-    public boolean canBeCollidedWith(Entity entity) {
+    public boolean canBeCollidedWith(@Nullable Entity entity) {
         return this.isAlive();
     }
 
@@ -282,7 +311,7 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
 
     @Override
     protected ItemStack getKilledStack() {
-        return new ItemStack(this.getWithItem());
+        return this.getWithItem().getDefaultInstance();
     }
 
     @Override
@@ -295,21 +324,21 @@ public class EntityBroom extends AbstractEntityFromItem implements OwnableEntity
         this.resetFallDistance();
     }
 
-    @Nullable
-    public UUID getOwnerUUID() {
-        return this.entityData.get(OWNER).map(EntityReference::getUUID).orElse(null);
-    }
-
-    public void setOwnerUUID(@Nullable UUID uuid) {
-        this.entityData.set(OWNER, Optional.ofNullable(uuid).map(EntityReference::of));
-    }
-
     public AABB getPhysicalBoundingBox() {
         return physicalBoundingBox;
     }
 
     @Override
-    public @Nullable EntityReference<LivingEntity> getOwnerReference() {
-        return null;
+    @Nullable
+    public EntityReference<LivingEntity> getOwnerReference() {
+        return this.entityData.get(OWNER).orElse(null);
+    }
+
+    public void setOwnerReference(@Nullable EntityReference<LivingEntity> owner) {
+        this.entityData.set(OWNER, Optional.ofNullable(owner));
+    }
+
+    public void setOwner(@Nullable LivingEntity owner) {
+        this.setOwnerReference(EntityReference.of(owner));
     }
 }

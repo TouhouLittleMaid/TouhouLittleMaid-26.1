@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
 import net.minecraft.core.UUIDUtil;
@@ -9,7 +9,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -31,25 +30,35 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 import static com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil.canItemInsert;
+import static net.minecraft.network.syncher.EntityDataSerializers.COMPONENT;
 
 public class EntityTombstone extends Entity {
-    public static final EntityType<EntityTombstone> TYPE = EntityType.Builder.<EntityTombstone>of(EntityTombstone::new, MobCategory.MISC)
-            .sized(0.8f, 1.2f).clientTrackingRange(10)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("tombstone")));
+    public static final Identifier ENTITY_ID = IdentifierUtil.modLoc("tombstone");
+    public static final ResourceKey<EntityType<?>> ENTITY_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ENTITY_ID);
+    public static final EntityType<EntityTombstone> TYPE = EntityType
+            .Builder.<EntityTombstone>of(EntityTombstone::new, MobCategory.MISC)
+            .sized(0.8f, 1.2f)
+            .clientTrackingRange(10)
+            .build(ENTITY_KEY);
+
     private static final String OWNER_ID_TAG = "OwnerId";
     private static final String TOMBSTONE_ITEMS_TAG = "TombstoneItems";
     private static final String MAID_NAME_TAG = "MaidName";
-    private static final EntityDataAccessor<Component> MAID_NAME = SynchedEntityData.defineId(EntityTombstone.class, EntityDataSerializers.COMPONENT);
+
+    private static final EntityDataAccessor<Component> MAID_NAME = SynchedEntityData.defineId(EntityTombstone.class, COMPONENT);
+
     // 考虑其他模组会添加额外的存储内容，加之饰品模组拓展了数量，故将墓碑存储上限修改为 256 组
     private final ItemStacksResourceHandler items = new ItemStacksResourceHandler(256);
+
+    // 墓碑标记所有者，避免其他玩家窃取物品
     private UUID ownerId = Util.NIL_UUID;
 
-    public EntityTombstone(EntityType<?> entityTypeIn, Level worldIn) {
-        super(entityTypeIn, worldIn);
+    public EntityTombstone(EntityType<?> entityTypeIn, Level level) {
+        super(entityTypeIn, level);
     }
 
-    public EntityTombstone(Level worldIn, UUID ownerId, Vec3 pos) {
-        this(TYPE, worldIn);
+    public EntityTombstone(Level level, UUID ownerId, Vec3 pos) {
+        this(TYPE, level);
         this.ownerId = ownerId;
         this.setPos(pos);
     }
@@ -67,7 +76,7 @@ public class EntityTombstone extends Entity {
             return InteractionResult.PASS;
         }
 
-        // NTR 工具可以收回墓碑
+        // 主人转换工具可以收回墓碑
         if (player.getUUID().equals(this.ownerId) || itemInHand.is(InitItems.OWNER_CONVERSION_TOOL.get())) {
             var stacks = this.items.copyToList();
             // 第一步：预检查所有物品是否能被玩家容纳（不实际提取物品）
@@ -97,7 +106,7 @@ public class EntityTombstone extends Entity {
 
             // 所有物品处理完毕后，再销毁实体
             this.discard();
-            return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;
+            return InteractionResult.SUCCESS;
         }
 
         // 其他逻辑...
