@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemUtil;
@@ -149,14 +150,15 @@ public class BaubleItemHandler extends ItemStacksResourceHandler {
         }
     }
 
-//    /**
-//     * 处理反序列化时的饰品加载
-//     */
-//    @Override
-//    protected void onLoad() {
-//        IntStream.range(0, size()).forEach(this::updateBaubles);
-//        this.updateBaublesCache();
-//    }
+    /**
+     * 处理反序列化时的饰品加载
+     */
+    @Override
+    public void deserialize(ValueInput input) {
+        super.deserialize(input);
+        IntStream.range(0, size()).forEach(this::updateBaubles);
+        this.updateBaublesCache();
+    }
 
     public boolean fireEvent(BiPredicate<IMaidBauble, ItemStack> function) {
         var iterator = baubles.int2ObjectEntrySet().iterator();
