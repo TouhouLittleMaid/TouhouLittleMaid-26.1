@@ -14,6 +14,9 @@ plugins {
 
     // 发布到 maven 仓库的插件
     id 'maven-publish'
+
+    // OpenRewrite 插件，用于自动化处理 Minecraft 或者 NeoForge 更新时的代码修改
+    id "org.openrewrite.rewrite" version "7.35.0"
 }
 
 // ALL 为下载 gradle 源码，方便查看调试
@@ -372,4 +375,8 @@ publishing {
     repositories {
         mavenLocal()  // JitPack 需要发布到本地仓库
     }
+}
+
+rewrite {
+    activeRecipe("com.github.tartaricacid.Upgrade")
 }

@@ -188,7 +188,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         String minecraftVersion = SharedConstants.getCurrentVersion().name();
         String modVersion = ModList.get().getModFileById(TouhouLittleMaid.MOD_ID).versionString();
         String debugInfo = String.format("%s-%s", minecraftVersion, modVersion);
-        graphics.centeredText(font, debugInfo, leftPos + 80 / 2, topPos - 4, ChatFormatting.GRAY.getColor());
+        graphics.centeredText(font, debugInfo, leftPos + 80 / 2, topPos - 4, 0xFFAAAAAA);
     }
 
     @SuppressWarnings("all")
@@ -222,11 +222,11 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     private int getPotionColor(int category) {
         switch (category) {
             case 0:
-                return ChatFormatting.GREEN.getColor();
+                return 0xFF55FF55;
             case 1:
-                return ChatFormatting.RED.getColor();
+                return 0xFFFF5555;
             default:
-                return ChatFormatting.BLUE.getColor();
+                return 0xFF5555FF;
         }
     }
 
@@ -610,7 +610,7 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
         graphics.pose().pushMatrix();
         graphics.pose().scale(0.5f, 0.5f);
         graphics.text(font, text, posX * 2, posY * 2 + font.lineHeight / 2,
-                0xFF_000000 | ChatFormatting.DARK_GRAY.getColor(), false);
+                0xFF555555, false);
         graphics.pose().popMatrix();
     }
 

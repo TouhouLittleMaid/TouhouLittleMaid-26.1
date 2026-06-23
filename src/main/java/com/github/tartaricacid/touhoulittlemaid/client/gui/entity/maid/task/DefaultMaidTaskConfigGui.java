@@ -1,9 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.task;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.task.TaskConfigContainer;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
-import net.minecraft.ChatFormatting;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -33,6 +32,6 @@ public class DefaultMaidTaskConfigGui extends MaidTaskConfigGui<TaskConfigContai
 
     @Override
     protected void renderAddition(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        graphics.textWithWordWrap(font, Component.translatable("gui.touhou_little_maid.default_task_config.title"), leftPos + 88, topPos + 38, 160, ChatFormatting.DARK_GRAY.getColor() | 0xFF000000);
+        graphics.textWithWordWrap(font, Component.translatable("gui.touhou_little_maid.default_task_config.title"), leftPos + 88, topPos + 38, 160, 0xFF555555);
     }
 }

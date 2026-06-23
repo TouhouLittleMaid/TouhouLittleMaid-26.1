@@ -68,24 +68,24 @@ public class SoundPackButton extends FlatColorButton {
         List<String> author = info.getAuthor();
         String date = info.getDate();
 
-        graphics.text(font, packName, startX, startY, 0xFF000000 | ChatFormatting.WHITE.getColor());
+        graphics.text(font, packName, startX, startY, 0xFFFFFFFF);
 
         if (StringUtils.isNotBlank(version)) {
             int titleWidth = font.width(packName);
-            graphics.text(font, "§nv" + version, startX + titleWidth + 5, startY, 0xFF000000 | ChatFormatting.AQUA.getColor());
+            graphics.text(font, "§nv" + version, startX + titleWidth + 5, startY, 0xFF55FFFF);
         }
 
         if (!author.isEmpty()) {
             startY += 10;
             String authorListText = StringUtils.joinWith(I18n.get("gui.touhou_little_maid.resources_download.author.delimiter"), author);
             String authorText = I18n.get("gui.touhou_little_maid.resources_download.author", authorListText);
-            graphics.text(font, authorText, startX, startY, 0xFF000000 | ChatFormatting.GOLD.getColor());
+            graphics.text(font, authorText, startX, startY, 0xFFFFAA00);
         }
 
         if (StringUtils.isNotBlank(date)) {
             startY += 10;
             MutableComponent dateText = Component.translatable("gui.touhou_little_maid.skin.text.date", date);
-            graphics.text(font, dateText, startX, startY, 0xFF000000 | ChatFormatting.GREEN.getColor());
+            graphics.text(font, dateText, startX, startY, 0xFF55FF55);
         }
     }
 

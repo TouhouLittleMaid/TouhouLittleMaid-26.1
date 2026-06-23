@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.download.InfoGetManager;
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadInfo;
 import com.github.tartaricacid.touhoulittlemaid.client.download.pojo.DownloadStatus;
@@ -12,6 +11,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.loader.CustomPac
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -203,7 +203,7 @@ public class ModelDownloadGui extends Screen {
         List<FormattedCharSequence> split = font.split(Component.translatable("gui.touhou_little_maid.resources_download.fail"), 200);
         int yOffset = y + 100;
         for (FormattedCharSequence sequence : split) {
-            graphics.centeredText(font, sequence, x + 134, yOffset, ChatFormatting.RED.getColor() | 0xFF000000);
+            graphics.centeredText(font, sequence, x + 134, yOffset, 0xFFFF5555);
             yOffset += 12;
         }
     }
@@ -229,7 +229,8 @@ public class ModelDownloadGui extends Screen {
 
     private void renderSearchBox(GuiGraphicsExtractor graphics, int pMouseX, int pMouseY, float pPartialTick) {
         graphics.text(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search"), x + 274, y + 102, 0xFFFFFFFF);
-        graphics.textWithWordWrap(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search_key"), x + 274, y + 115, 146, ChatFormatting.GRAY.getColor() | 0xFF000000);
+        graphics.textWithWordWrap(font, Component.translatable("gui.touhou_little_maid.resources_download.hot_search_key"),
+                x + 274, y + 115, 146, 0xFFAAAAAA);
         textField.extractRenderState(graphics, pMouseX, pMouseY, pPartialTick);
         if (textField.getValue().isEmpty() && !textField.isFocused()) {
             graphics.text(font, Component.translatable("gui.touhou_little_maid.resources_download.search").withStyle(ChatFormatting.ITALIC), x + 277, y + 83, 0xFF777777);

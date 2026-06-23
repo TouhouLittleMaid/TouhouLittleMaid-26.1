@@ -41,7 +41,7 @@ public class MaidConfigButton extends Button {
             GuiTools.guiBlit(graphics, ICON, this.getX(), this.getY(), 63, 128, this.width, this.height);
         }
         graphics.text(mc.font, this.getMessage(), this.getX() + 5, this.getY() + 3, 0xFF444444, false);
-        drawCenteredStringWithoutShadow(graphics, mc.font, this.value, this.getX() + 142, this.getY() + 3, ChatFormatting.GREEN.getColor() | 0xFF000000);
+        drawCenteredStringWithoutShadow(graphics, mc.font, this.value, this.getX() + 142, this.getY() + 3, 0xFF55FF55);
     }
 
     public void setValue(Component value) {
