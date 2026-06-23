@@ -1,0 +1,73 @@
+name: Gradle Package 26.1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+    paths:
+      - 'src/main/**'
+      - 'build.gradle'
+      - "gradle.properties"
+      - '.github/workflows/gradle-publish-26.1.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      release-tag: snapshot-${{ steps.create_timestamp.outputs.timestamp }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: 'gradle'
+
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          # 同时运行 build 和 runGameTestServer 任务，检查服务端运行情况并打包
+          ./gradlew build runGameTestServer -x test --build-cache --parallel
+
+      - name: Rename Build Artifacts
+        run: |
+          cd ./build/libs/
+          # 找到以 -all.jar 结尾的文件，将其更名为包含 snapshot 的名称
+          for f in *-all.jar; do
+            mv "$f" "${f%-all.jar}-snapshot.jar"
+          done
+          # 查看一下结果，方便在日志里调试
+          ls -R
+
+      - name: Create timestamp
+        id: create_timestamp
+        run: echo "timestamp=$(date '+%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Send file to Release
+        uses: softprops/action-gh-release@v2
+        if: success()
+        with:
+          tag_name: snapshot-${{ steps.create_timestamp.outputs.timestamp }}
+          generate_release_notes: true
+          body: |
+            > ### 📢 Notice / 提示
+            > - **EN:** Files ending in `-sources` are source code. Please download the version ending in `-snapshot`.
+            > - **CN:** 结尾为 `-sources` 的是源码文件；**请下载结尾为 `-snapshot` 的版本**。
+            
+            ${{ github.event.head_commit.message }}
+
+          draft: false
+          prerelease: true
+          files: |
+            build/libs/*-snapshot.jar
+            build/libs/*-sources.jar
