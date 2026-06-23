@@ -17,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.gizmos.GizmoStyle;
 import net.minecraft.gizmos.Gizmos;
@@ -94,7 +93,8 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
     @Override
     public void submit(EntityChairRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         if (state.hitbox != null) {
-            submitHitBox(state.hitbox, poseStack, submitNodeCollector);
+            AABB aabb = state.hitbox.move(state.x, state.y, state.z);
+            Gizmos.cuboid(aabb, GizmoStyle.fill(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
         } else {
             submitChair(state, poseStack, submitNodeCollector, camera);
         }
@@ -105,12 +105,6 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
             return player.getMainHandItem().getItem() == InitItems.CHAIR_SHOW.get();
         }
         return false;
-    }
-
-    private void submitHitBox(AABB hitbox, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
-        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lines(), (pose, buffer) -> {
-            Gizmos.cuboid(hitbox, GizmoStyle.fill(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
-        });
     }
 
     private void submitChair(EntityChairRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {

@@ -10,7 +10,6 @@ import net.minecraft.gizmos.Gizmos;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -32,8 +31,6 @@ public final class WirelessIORenderEvent {
         if (pos == null) {
             return;
         }
-        Vec3 position = event.getLevelRenderState().cameraRenderState.pos.reverse();
-        AABB aabb = new AABB(pos).move(position);
-        Gizmos.cuboid(aabb, GizmoStyle.fill(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
+        Gizmos.cuboid(new AABB(pos), GizmoStyle.stroke(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
     }
 }

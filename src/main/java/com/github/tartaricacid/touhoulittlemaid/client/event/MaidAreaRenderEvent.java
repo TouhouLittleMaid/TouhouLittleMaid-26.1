@@ -4,17 +4,14 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.SchedulePos;
-import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gizmos.GizmoStyle;
 import net.minecraft.gizmos.Gizmos;
+import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
@@ -27,6 +24,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 
 import javax.annotation.Nullable;
+import java.util.OptionalDouble;
 import java.util.concurrent.TimeUnit;
 
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
@@ -39,8 +37,6 @@ public class MaidAreaRenderEvent {
         if (mc.player == null || mc.level == null) {
             return;
         }
-        Vec3 camera = event.getLevelRenderState().cameraRenderState.pos.reverse();
-        PoseStack poseStack = event.getPoseStack();
         for (int id : CACHE.asMap().keySet()) {
             SchedulePos pos = CACHE.getIfPresent(id);
             if (pos == null) {
@@ -52,75 +48,70 @@ public class MaidAreaRenderEvent {
             }
             Identifier dimension = pos.getDimension();
             if (mc.player.level.dimension().identifier().equals(dimension)) {
-                renderPos(pos.getWorkPos(), pos.getIdlePos(), pos.getSleepPos(), camera, poseStack, mc, maid, mc.player);
+                renderPos(pos.getWorkPos(), pos.getIdlePos(), pos.getSleepPos(), maid, mc.player);
             }
         }
     }
 
-    private static void renderPos(@Nullable BlockPos workPos, @Nullable BlockPos idlePos, @Nullable BlockPos resetPos, Vec3 camera,
-                                  PoseStack poseStack, Minecraft mc, EntityMaid maid, Player player) {
-        poseStack.pushPose();
-        poseStack.translate(0, 1, 0);
-
+    private static void renderPos(@Nullable BlockPos workPos, @Nullable BlockPos idlePos, @Nullable BlockPos resetPos, EntityMaid maid, Player player) {
         BlockPos restrictCenter = maid.getHomePosition();
-        Vec3 restrictPos = camera.add(restrictCenter.getX() + 0.5, restrictCenter.getY() + 0.5, restrictCenter.getZ() + 0.5);
+        Vec3 restrictPos = Vec3.atCenterOf(restrictCenter);
         if (!maid.isHomeModeEnable()) {
-            restrictPos = camera.add(player.position());
+            restrictPos = player.position();
         }
-        Vec3 maidPos = camera.add(maid.position());
-        RenderHelper.renderLine(poseStack, mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES), restrictPos, maidPos, 1.0f, 0.2f, 0.2f);
-        AABB aabb = maid.getBoundingBox().move(0, -1, 0).move(camera);
+        AABB aabb = maid.getBoundingBox().move(0, -1, 0);
         Gizmos.cuboid(aabb, GizmoStyle.fill(ARGB.colorFromFloat(0.8F, 0.2F, 0.75F, 0.8F)));
 
         if (workPos != null) {
-            Vec3 centerPos = camera.add(workPos.getX() + 0.5, workPos.getY() + 0.5, workPos.getZ() + 0.5);
             double radius = MaidConfig.MAID_WORK_RANGE.get() + 0.1;
-            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
-            RenderHelper.renderCylinder(poseStack, buffer, centerPos, radius, 16, 1.0F, 0, 0);
+            renderArea(workPos, radius, 0xffff0000);
 
             Vec3 textPos = new Vec3(workPos.getX() + 0.5, workPos.getY() + 2, workPos.getZ() + 0.5);
             String text = I18n.get("message.touhou_little_maid.kappa_compass.work_area");
-            RenderHelper.renderFloatingText(poseStack, text, textPos.x, textPos.y, textPos.z, 0xff1111, 0.15f, true, -5, false);
-            RenderHelper.renderFloatingText(poseStack, "▼", textPos.x, textPos.y, textPos.z, 0xff1111, 0.15f, true, 5, false);
+            renderText(text, textPos.add(0, -0.75, 0), 0xffff1111);
+            renderText("▼", textPos.add(0, 0.75, 0), 0xffff1111);
         }
 
         if (idlePos != null) {
-            Vec3 centerPos = camera.add(idlePos.getX() + 0.5, idlePos.getY() + 0.5, idlePos.getZ() + 0.5);
             double radius = MaidConfig.MAID_IDLE_RANGE.get();
-            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
-            RenderHelper.renderCylinder(poseStack, buffer, centerPos, radius, 16, 0, 1.0F, 0);
+            renderArea(idlePos, radius, 0xff00ff00);
             Vec3 textPos = new Vec3(idlePos.getX() + 0.5, idlePos.getY() + 2, idlePos.getZ() + 0.5);
             if (idlePos.equals(workPos)) {
                 textPos = textPos.add(0, 1, 0);
             } else if (workPos != null) {
-                Vec3 prePos = camera.add(workPos.getX() + 0.5, workPos.getY() + 0.5, workPos.getZ() + 0.5);
-                RenderHelper.renderLine(poseStack, buffer, centerPos, prePos, 1.0f, 1.0f, 1.0f);
+                Gizmos.line(centerPos(idlePos), centerPos(workPos), 0xffffffff);
             }
             String text = I18n.get("message.touhou_little_maid.kappa_compass.idle_area");
-            RenderHelper.renderFloatingText(poseStack, text, textPos.x, textPos.y, textPos.z, 0x11ff11, 0.15f, true, -5, false);
-            RenderHelper.renderFloatingText(poseStack, "▼", textPos.x, textPos.y, textPos.z, 0x11ff11, 0.15f, true, 5, false);
+            renderText(text, textPos.add(0, -0.75, 0), 0xff11ff11);
+            renderText("▼", textPos.add(0, 0.75, 0), 0xff11ff11);
         }
 
         if (resetPos != null) {
-            Vec3 centerPos = camera.add(resetPos.getX() + 0.5, resetPos.getY() + 0.5, resetPos.getZ() + 0.5);
             double radius = MaidConfig.MAID_SLEEP_RANGE.get() - 0.1;
-            VertexConsumer buffer = mc.renderBuffers().bufferSource().getBuffer(RenderTypes.LINES);
-            RenderHelper.renderCylinder(poseStack, buffer, centerPos, radius, 16, 0, 0, 1.0F);
+            renderArea(resetPos, radius, 0xff0000ff);
             Vec3 textPos = new Vec3(resetPos.getX() + 0.5, resetPos.getY() + 2, resetPos.getZ() + 0.5);
             if (resetPos.equals(idlePos)) {
                 textPos = textPos.add(0, 2, 0);
             } else if (idlePos != null && workPos != null) {
-                Vec3 prePos = camera.add(idlePos.getX() + 0.5, idlePos.getY() + 0.5, idlePos.getZ() + 0.5);
-                RenderHelper.renderLine(poseStack, buffer, centerPos, prePos, 1.0f, 1.0f, 1.0f);
-                prePos = camera.add(workPos.getX() + 0.5, workPos.getY() + 0.5, workPos.getZ() + 0.5);
-                RenderHelper.renderLine(poseStack, buffer, centerPos, prePos, 1.0f, 1.0f, 1.0f);
+                Gizmos.line(centerPos(resetPos), centerPos(idlePos), 0xffffffff);
+                Gizmos.line(centerPos(resetPos), centerPos(workPos), 0xffffffff);
             }
             String text = I18n.get("message.touhou_little_maid.kappa_compass.sleep_area");
-            RenderHelper.renderFloatingText(poseStack, text, textPos.x, textPos.y, textPos.z, 0x1111ff, 0.15f, true, -5, false);
-            RenderHelper.renderFloatingText(poseStack, "▼", textPos.x, textPos.y, textPos.z, 0x1111ff, 0.15f, true, 5, false);
+            renderText(text, textPos.add(0, -0.75, 0), 0xff1111ff);
+            renderText("▼", textPos.add(0, 0.75, 0), 0xff1111ff);
         }
+    }
 
-        poseStack.popPose();
+    private static void renderArea(BlockPos pos, double radius, int color) {
+        Gizmos.circle(centerPos(pos), (float) radius, GizmoStyle.stroke(color));
+    }
+
+    private static Vec3 centerPos(BlockPos pos) {
+        return Vec3.atCenterOf(pos).add(0, 1, 0);
+    }
+
+    private static void renderText(String text, Vec3 pos, int color) {
+        Gizmos.billboardText(text, pos, new TextGizmo.Style(color, 1.5f, OptionalDouble.empty())).setAlwaysOnTop();
     }
 
     public static void addSchedulePos(int id, SchedulePos pos) {
