@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.ride.MaidRideBeg
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.*;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitBrains;
-import com.github.tartaricacid.touhoulittlemaid.util.EntityTypeUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.EntityTypeUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;

@@ -6,7 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.editor
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsHubScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsLLMSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SyncAISitesPacket;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.client.Minecraft;
 
 public final class SyncAISitesPacketProxy {

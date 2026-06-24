@@ -9,7 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.MaidModelPackage
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;

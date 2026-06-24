@@ -2,7 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.mixin.client;
 
 import com.github.tartaricacid.touhoulittlemaid.client.input.DismountBroomKey;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;

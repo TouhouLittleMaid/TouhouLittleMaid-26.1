@@ -1,6 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.sensor;
 
-import com.github.tartaricacid.touhoulittlemaid.util.EntityTypeUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.EntityTypeUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.server.level.ServerLevel;

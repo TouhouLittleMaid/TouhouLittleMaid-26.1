@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.curios.menu;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.I18nUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.I18nUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.builder;
 
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
-import com.github.tartaricacid.touhoulittlemaid.util.EntityTypeUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.EntityTypeUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.advancements.Criterion;

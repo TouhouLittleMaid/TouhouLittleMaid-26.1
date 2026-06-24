@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.editor.TTSSiteEditorScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai.TTSSiteButton;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;

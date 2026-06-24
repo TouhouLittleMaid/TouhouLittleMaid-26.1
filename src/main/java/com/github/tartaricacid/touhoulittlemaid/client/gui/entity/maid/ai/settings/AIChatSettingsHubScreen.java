@@ -12,7 +12,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatCol
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.OpenMaidAIChatPacket;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import com.google.common.collect.Maps;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;

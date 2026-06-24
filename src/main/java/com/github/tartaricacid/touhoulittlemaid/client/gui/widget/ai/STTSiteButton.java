@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai;
 import com.github.tartaricacid.touhoulittlemaid.ai.service.stt.STTSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsSTTSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
-import com.github.tartaricacid.touhoulittlemaid.util.I18nUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.I18nUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

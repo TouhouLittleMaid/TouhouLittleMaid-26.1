@@ -1,8 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.cloth;
 
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import net.minecraft.client.Minecraft;
 
 public final class ClothConfigCompat {
     public static void openConfigScreen() {

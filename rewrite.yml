@@ -52,8 +52,153 @@ recipeList:
       newMethodName: gameRenderState
 
   - org.openrewrite.text.FindAndReplace:
+      find: Blocks.WHITE_WOOL
+      replace: Blocks.WOOL.white()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.ORANGE_WOOL
+      replace: Blocks.WOOL.orange()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.MAGENTA_WOOL
+      replace: Blocks.WOOL.magenta()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.LIGHT_BLUE_WOOL
+      replace: Blocks.WOOL.lightBlue()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.YELLOW_WOOL
+      replace: Blocks.WOOL.yellow()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.LIME_WOOL
+      replace: Blocks.WOOL.lime()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.PINK_WOOL
+      replace: Blocks.WOOL.pink()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.GRAY_WOOL
+      replace: Blocks.WOOL.gray()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.LIGHT_GRAY_WOOL
+      replace: Blocks.WOOL.lightGray()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.CYAN_WOOL
+      replace: Blocks.WOOL.cyan()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.PURPLE_WOOL
+      replace: Blocks.WOOL.purple()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.BLUE_WOOL
+      replace: Blocks.WOOL.blue()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.BROWN_WOOL
+      replace: Blocks.WOOL.brown()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.GREEN_WOOL
+      replace: Blocks.WOOL.green()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
       find: Blocks.RED_WOOL
       replace: Blocks.WOOL.red()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.BLACK_WOOL
+      replace: Blocks.WOOL.black()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.WHITE_CONCRETE
+      replace: Blocks.CONCRETE.white()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.ORANGE_CONCRETE
+      replace: Blocks.CONCRETE.orange()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.MAGENTA_CONCRETE
+      replace: Blocks.CONCRETE.magenta()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.LIGHT_BLUE_CONCRETE
+      replace: Blocks.CONCRETE.lightBlue()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.YELLOW_CONCRETE
+      replace: Blocks.CONCRETE.yellow()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.LIME_CONCRETE
+      replace: Blocks.CONCRETE.lime()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.PINK_CONCRETE
+      replace: Blocks.CONCRETE.pink()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.GRAY_CONCRETE
+      replace: Blocks.CONCRETE.gray()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.LIGHT_GRAY_CONCRETE
+      replace: Blocks.CONCRETE.lightGray()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.CYAN_CONCRETE
+      replace: Blocks.CONCRETE.cyan()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.PURPLE_CONCRETE
+      replace: Blocks.CONCRETE.purple()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.BLUE_CONCRETE
+      replace: Blocks.CONCRETE.blue()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.BROWN_CONCRETE
+      replace: Blocks.CONCRETE.brown()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Blocks.GREEN_CONCRETE
+      replace: Blocks.CONCRETE.green()
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
@@ -62,18 +207,8 @@ recipeList:
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
-      find: Items.GRAY_WOOL
-      replace: Items.WOOL.gray()
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: Items.PINK_WOOL
-      replace: Items.WOOL.pink()
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: Items.RED_WOOL
-      replace: Items.WOOL.red()
+      find: Blocks.BLACK_CONCRETE
+      replace: Blocks.CONCRETE.black()
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
@@ -82,8 +217,18 @@ recipeList:
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
-      find: Items.BLACK_WOOL
-      replace: Items.WOOL.black()
+      find: Items.ORANGE_WOOL
+      replace: Items.WOOL.orange()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.MAGENTA_WOOL
+      replace: Items.WOOL.magenta()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.LIGHT_BLUE_WOOL
+      replace: Items.WOOL.lightBlue()
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
@@ -92,8 +237,43 @@ recipeList:
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
+      find: Items.LIME_WOOL
+      replace: Items.WOOL.lime()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.PINK_WOOL
+      replace: Items.WOOL.pink()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.GRAY_WOOL
+      replace: Items.WOOL.gray()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.LIGHT_GRAY_WOOL
+      replace: Items.WOOL.lightGray()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.CYAN_WOOL
+      replace: Items.WOOL.cyan()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.PURPLE_WOOL
+      replace: Items.WOOL.purple()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
       find: Items.BLUE_WOOL
       replace: Items.WOOL.blue()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.BROWN_WOOL
+      replace: Items.WOOL.brown()
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
@@ -102,6 +282,11 @@ recipeList:
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
-      find: Items.PURPLE_WOOL
-      replace: Items.WOOL.purple()
+      find: Items.RED_WOOL
+      replace: Items.WOOL.red()
+      filePattern: "**/*.java"
+
+  - org.openrewrite.text.FindAndReplace:
+      find: Items.BLACK_WOOL
+      replace: Items.WOOL.black()
       filePattern: "**/*.java"

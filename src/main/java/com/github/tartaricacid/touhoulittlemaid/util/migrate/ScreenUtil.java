@@ -1,8 +1,12 @@
-package com.github.tartaricacid.touhoulittlemaid.util;
+package com.github.tartaricacid.touhoulittlemaid.util.migrate;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.effect.MobEffect;
 
 import javax.annotation.Nullable;
 
@@ -36,5 +40,9 @@ public final class ScreenUtil {
 
     public static void setOverlayMessage(Component message, boolean animate) {
         Minecraft.getInstance().gui.setOverlayMessage(message, animate);
+    }
+
+    public static Identifier getMobEffectSprite(Holder<MobEffect> effectHolder) {
+        return Gui.getMobEffectSprite(effectHolder);
     }
 }

@@ -1,4 +1,4 @@
-package com.github.tartaricacid.touhoulittlemaid.util;
+package com.github.tartaricacid.touhoulittlemaid.util.migrate;
 
 import net.minecraft.client.resources.language.I18n;
 

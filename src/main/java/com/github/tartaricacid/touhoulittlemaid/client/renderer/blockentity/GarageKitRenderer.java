@@ -9,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.bedrock.Internal
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.EntityTypeUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -79,7 +80,7 @@ public class GarageKitRenderer implements BlockEntityRenderer<BlockEntityGarageK
         if (id.isEmpty()) {
             return;
         }
-        EntityType.byString(id.get()).ifPresent(type -> {
+        EntityTypeUtil.byString(id.get()).ifPresent(type -> {
             try {
                 this.extractEntityRenderState(kit, state, state.extraData, world, type, partialTick);
             } catch (ExecutionException e) {

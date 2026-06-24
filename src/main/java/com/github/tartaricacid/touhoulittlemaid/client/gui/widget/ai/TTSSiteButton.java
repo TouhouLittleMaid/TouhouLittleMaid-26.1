@@ -4,7 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsTTSSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveTTSSitePacket;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
-import com.github.tartaricacid.touhoulittlemaid.util.I18nUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.I18nUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

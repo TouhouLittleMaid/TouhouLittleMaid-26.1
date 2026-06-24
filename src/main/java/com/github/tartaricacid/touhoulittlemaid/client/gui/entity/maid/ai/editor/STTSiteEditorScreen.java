@@ -6,8 +6,8 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.layout.STTSiteFormLayout;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsSTTSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
-import com.github.tartaricacid.touhoulittlemaid.util.I18nUtil;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.I18nUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;

@@ -4,8 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.curios.client.CuriosConta
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.menu.CuriosContainer;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
-import net.minecraft.client.Minecraft;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.world.MenuProvider;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.NeoForge;

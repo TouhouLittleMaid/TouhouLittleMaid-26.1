@@ -9,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemGarageKit;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.EntityTypeUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.TagValueInput;
 import org.joml.Vector3fc;
 
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -70,7 +72,11 @@ public class GarageKitItemRenderer implements SpecialModelRenderer<GarageKitRend
         if (world == null) {
             return state;
         }
-        EntityType.byString(state.extraData.getString("id").orElse("")).ifPresent(type -> {
+        Optional<String> id = state.extraData.getString("id");
+        if (id.isEmpty()) {
+            return state;
+        }
+        EntityTypeUtil.byString(id.get()).ifPresent(type -> {
             try {
                 extractEntityRenderState(state, state.extraData, world, type);
             } catch (ExecutionException e) {

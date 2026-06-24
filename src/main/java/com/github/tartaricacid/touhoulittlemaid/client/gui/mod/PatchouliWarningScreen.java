@@ -1,7 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.mod;
 
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
-import net.minecraft.client.Minecraft;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.TextAlignment;

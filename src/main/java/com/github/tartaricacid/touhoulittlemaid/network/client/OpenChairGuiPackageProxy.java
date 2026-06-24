@@ -3,7 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.network.client;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.model.ChairModelGui;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenChairGuiPackage;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 

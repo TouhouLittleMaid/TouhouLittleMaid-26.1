@@ -1,9 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.network.message.SetBeaconPotionPackage;
 import com.github.tartaricacid.touhoulittlemaid.blockentity.BlockEntityMaidBeacon;
-import net.minecraft.client.gui.Gui;
+import com.github.tartaricacid.touhoulittlemaid.network.message.SetBeaconPotionPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -33,7 +33,7 @@ public class BeaconEffectButton extends TouhouStateSwitchButton {
         this.potionIndex = effect.ordinal();
         this.pos = beacon.getBlockPos();
         this.onClick = onClick;
-        this.sprite = Gui.getMobEffectSprite(effectHolder);
+        this.sprite = ScreenUtil.getMobEffectSprite(effectHolder);
     }
 
     @Override

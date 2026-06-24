@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.input;
 
 import com.github.tartaricacid.touhoulittlemaid.network.message.DismountPackage;
-import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
