@@ -1,7 +1,8 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.builder;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.crafting.AltarRecipe;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityTypeUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.core.HolderGetter;
@@ -12,7 +13,6 @@ import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -41,7 +41,7 @@ public class AltarRecipeBuilder implements RecipeBuilder {
         this.items = items;
         this.power = 0;
         this.result = result;
-        this.entityType = BuiltInRegistries.ENTITY_TYPE.getKey(EntityType.ITEM);
+        this.entityType = BuiltInRegistries.ENTITY_TYPE.getKey(EntityTypeUtil.item());
         this.ingredients = Lists.newArrayList();
         this.langKey = "jei.touhou_little_maid.altar_craft.item_craft.result";
     }

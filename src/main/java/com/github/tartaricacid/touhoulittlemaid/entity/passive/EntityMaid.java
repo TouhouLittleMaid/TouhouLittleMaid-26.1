@@ -22,6 +22,7 @@ import com.github.tartaricacid.touhoulittlemaid.init.InitTrigger;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackage;
 import com.github.tartaricacid.touhoulittlemaid.world.backups.MaidBackupsManager;
 import com.github.tartaricacid.touhoulittlemaid.world.data.MaidWorldData;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityTypeUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -381,7 +382,7 @@ public class EntityMaid extends MaidManagerHost implements CrossbowAttackMob {
     @Override
     public boolean wantsToAttack(LivingEntity target, @Nullable LivingEntity owner) {
         // 避免女仆攻击盔甲
-        return target.getType() != EntityType.ARMOR_STAND;
+        return target.getType() != EntityTypeUtil.armorStand();
     }
 
     @Override

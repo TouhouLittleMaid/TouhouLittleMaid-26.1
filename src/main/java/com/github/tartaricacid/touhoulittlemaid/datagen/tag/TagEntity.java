@@ -1,8 +1,9 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.tag;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityTypeUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -57,7 +58,7 @@ public class TagEntity extends EntityTypeTagsProvider {
         tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(InitEntities.FAIRY.get());
         tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(InitEntities.FAIRY.get());
 
-        tag(MAID_FAIRY_ATTACK_GOAL).add(EntityType.IRON_GOLEM)
+        tag(MAID_FAIRY_ATTACK_GOAL).add(EntityTypeUtil.ironGolem())
                 .add(TagEntry.optionalElement(id("guardvillagers:guard")))
                 .add(TagEntry.optionalElement(id("earthtojavamobs:furnace_golem")))
                 .add(TagEntry.optionalElement(id("earthmobsmod:furnace_golem")))

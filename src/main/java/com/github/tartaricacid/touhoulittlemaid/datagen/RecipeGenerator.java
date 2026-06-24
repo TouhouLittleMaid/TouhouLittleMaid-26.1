@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagItem;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
+import com.github.tartaricacid.touhoulittlemaid.util.EntityTypeUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
@@ -338,7 +339,7 @@ public class RecipeGenerator extends RecipeProvider {
                 .power(0.2F)
                 .requires(3, Tags.Items.GUNPOWDERS)
                 .requires(3, Items.BLAZE_POWDER)
-                .entity(EntityType.getKey(EntityType.LIGHTNING_BOLT))
+                .entity(EntityType.getKey(EntityTypeUtil.lightningBolt()))
                 .langKey("jei.touhou_little_maid.altar_craft.spawn_lightning_bolt.result")
                 .save(recipeOutput, "spawn_lightning_bolt");
 
