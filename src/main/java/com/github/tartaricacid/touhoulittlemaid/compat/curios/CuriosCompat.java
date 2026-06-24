@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.curios.client.CuriosConta
 import com.github.tartaricacid.touhoulittlemaid.compat.curios.menu.CuriosContainer;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.MenuProvider;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -39,8 +40,7 @@ public class CuriosCompat {
 
     public static void clientUpdatePage(int page) {
         if (isLoadedOrEnable()) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.screen instanceof CuriosContainerScreen screen) {
+            if (ScreenUtil.getScreen() instanceof CuriosContainerScreen screen) {
                 screen.updatePage(page);
             }
         }
@@ -48,8 +48,7 @@ public class CuriosCompat {
 
     public static void clientResetPage() {
         if (isLoadedOrEnable()) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.screen instanceof CuriosContainerScreen screen) {
+            if (ScreenUtil.getScreen() instanceof CuriosContainerScreen screen) {
                 screen.updatePage(screen.getPage());
             }
         }

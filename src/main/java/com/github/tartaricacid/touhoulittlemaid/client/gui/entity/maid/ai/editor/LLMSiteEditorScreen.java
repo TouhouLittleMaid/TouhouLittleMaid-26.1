@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settin
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveLLMSitePacket;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -269,7 +270,7 @@ public class LLMSiteEditorScreen extends Screen {
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(this.parent);
+        ScreenUtil.setScreen(this.parent);
     }
 
     private void saveSite() {

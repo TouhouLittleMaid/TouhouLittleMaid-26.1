@@ -8,6 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.compat.cloth.ClothConfigCompat;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.SideTab;
 import com.github.tartaricacid.touhoulittlemaid.init.registry.CompatRegistry;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.github.tartaricacid.touhoulittlemaid.inventory.container.AbstractMaidContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -52,9 +53,9 @@ public class MaidSideTabs<T extends AbstractMaidContainer> {
                 ClothConfigCompat.openConfigScreen();
             } else {
                 ModList.get().getModContainerById(TouhouLittleMaid.MOD_ID).ifPresent(modContainer -> {
-                    Screen parent = Minecraft.getInstance().screen;
+                    Screen parent = ScreenUtil.getScreen();
                     if (parent != null) {
-                        Minecraft.getInstance().setScreen(new ConfigurationScreen(modContainer, parent));
+                        ScreenUtil.setScreen(new ConfigurationScreen(modContainer, parent));
                     }
                 });
             }

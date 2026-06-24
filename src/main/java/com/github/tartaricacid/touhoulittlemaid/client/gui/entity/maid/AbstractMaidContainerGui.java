@@ -22,6 +22,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.SendEffectPackag
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
@@ -272,14 +273,14 @@ public abstract class AbstractMaidContainerGui<T extends AbstractMaidContainer> 
     }
 
     private void addStateButton() {
-        skin = new TouhouImageButton(leftPos + 62, topPos + 14, 9, 9, 72, 43, 10, BUTTON, (b) -> getMinecraft().setScreen(new MaidModelGui(maid)));
+        skin = new TouhouImageButton(leftPos + 62, topPos + 14, 9, 9, 72, 43, 10, BUTTON, (b) -> ScreenUtil.setScreen(new MaidModelGui(maid)));
         info = new TouhouImageButton(leftPos + 8, topPos + 14, 9, 9, 72, 65, 10, BUTTON, NO_ACTION);
         this.addRenderableWidget(skin);
         this.addRenderableWidget(info);
 
         this.sound = new TouhouImageButton(leftPos + 52, topPos + 14, 9, 9,
                 144, 43, 10, BUTTON,
-                (b) -> getMinecraft().setScreen(new MaidSoundPackGui(maid)));
+                (b) -> ScreenUtil.setScreen(new MaidSoundPackGui(maid)));
         this.addRenderableWidget(sound);
     }
 

@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.mod;
 
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -24,7 +25,7 @@ public class PatchouliWarningScreen extends Screen {
     }
 
     public static void open() {
-        Minecraft.getInstance().setScreen(new PatchouliWarningScreen(Minecraft.getInstance().screen));
+        ScreenUtil.setScreen(new PatchouliWarningScreen(ScreenUtil.getScreen()));
     }
 
     @Override
@@ -33,7 +34,7 @@ public class PatchouliWarningScreen extends Screen {
         int posY = this.height / 2;
         this.message = MultiLineLabel.create(this.font, Component.translatable("gui.touhou_little_maid.patchouli_warning.tips"), 300);
         this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.patchouli_warning.download"), b -> openUrl(patchouliUrl)).bounds(posX, posY - 15, 200, 20).build());
-        this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, (pressed) -> Minecraft.getInstance().setScreen(this.lastScreen)).bounds(posX, posY + 50, 200, 20).build());
+        this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, (pressed) -> ScreenUtil.setScreen(this.lastScreen)).bounds(posX, posY + 50, 200, 20).build());
     }
 
     @Override
@@ -45,11 +46,11 @@ public class PatchouliWarningScreen extends Screen {
 
     private void openUrl(String url) {
         if (StringUtils.isNotBlank(url) && minecraft != null) {
-            minecraft.setScreen(new ConfirmLinkScreen(yes -> {
+            ScreenUtil.setScreen(new ConfirmLinkScreen(yes -> {
                 if (yes) {
                     Util.getPlatform().openUri(url);
                 }
-                minecraft.setScreen(this);
+                ScreenUtil.setScreen(this);
             }, url, true));
         }
     }

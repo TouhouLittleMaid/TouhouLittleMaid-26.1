@@ -43,8 +43,13 @@ recipeList:
       methodPattern: com.mojang.blaze3d.systems.RenderSystem getModelViewMatrix()
       newMethodName: getModelViewMatrixCopy
 
-  - org.openrewrite.java.AddImport:
-      type: net.minecraft.world.entity.EntityTypes
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.minecraft.client.renderer.GameRenderer getMainCamera()
+      newMethodName: mainCamera
+
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: net.minecraft.client.renderer.GameRenderer getGameRenderState()
+      newMethodName: gameRenderState
 
   - org.openrewrite.text.FindAndReplace:
       find: EntityType.WOLF
@@ -102,36 +107,6 @@ recipeList:
       filePattern: "**/*.java"
 
   - org.openrewrite.text.FindAndReplace:
-      find: Minecraft.getInstance().setScreen(
-      replace: Minecraft.getInstance().gui.setScreen(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: this.minecraft.setScreen(
-      replace: this.minecraft.gui.setScreen(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: this.getMinecraft().setScreen(
-      replace: this.getMinecraft().gui.setScreen(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: getMinecraft().setScreen(
-      replace: getMinecraft().gui.setScreen(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: minecraft.setScreen(
-      replace: minecraft.gui.setScreen(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: mc.setScreen(
-      replace: mc.gui.setScreen(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
       find: Blocks.RED_WOOL
       replace: Blocks.WOOL.red()
       filePattern: "**/*.java"
@@ -185,88 +160,3 @@ recipeList:
       find: Items.PURPLE_WOOL
       replace: Items.WOOL.purple()
       filePattern: "**/*.java"
-
-  - org.openrewrite.java.ChangeMethodName:
-      methodPattern: net.minecraft.client.renderer.GameRenderer getMainCamera()
-      newMethodName: mainCamera
-
-  - org.openrewrite.java.ChangeMethodName:
-      methodPattern: net.minecraft.client.renderer.GameRenderer getGameRenderState()
-      newMethodName: gameRenderState
-
-  - org.openrewrite.text.FindAndReplace:
-      find: mc.getOverlay()
-      replace: mc.gui.overlay()
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: gui.setTitle(
-      replace: gui.hud.setTitle(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: gui.setSubtitle(
-      replace: gui.hud.setSubtitle(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: gui.setOverlayMessage(
-      replace: gui.hud.setOverlayMessage(
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: mc.screen
-      replace: mc.gui.screen()
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: this.minecraft.screen
-      replace: this.minecraft.gui.screen()
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: Minecraft.getInstance().screen
-      replace: Minecraft.getInstance().gui.screen()
-      filePattern: "**/*.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: import net.minecraft.client.model.Model;
-      replace: |-
-        import com.mojang.blaze3d.vertex.PoseStack;
-        import com.mojang.blaze3d.vertex.VertexConsumer;
-        import net.minecraft.client.model.Model;
-      filePattern: "**/AbstractBedrockModel.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: import net.minecraft.client.model.EntityModel;
-      replace: |-
-        import com.mojang.blaze3d.vertex.PoseStack;
-        import com.mojang.blaze3d.vertex.VertexConsumer;
-        import net.minecraft.client.model.EntityModel;
-      filePattern: "**/AbstractBedrockEntityModel.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: |-
-        return modelMap;
-        }
-      replace: |-
-        return modelMap;
-        }
-        
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int lightCoords, int overlayCoords) {
-            super.renderToBuffer(poseStack, buffer, lightCoords, overlayCoords, -1);
-        }
-      filePattern: "**/AbstractBedrockModel.java"
-
-  - org.openrewrite.text.FindAndReplace:
-      find: |-
-        return modelMap;
-        }
-      replace: |-
-        return modelMap;
-        }
-        
-        public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int lightCoords, int overlayCoords) {
-            super.renderToBuffer(poseStack, buffer, lightCoords, overlayCoords, -1);
-        }
-      filePattern: "**/AbstractBedrockEntityModel.java"

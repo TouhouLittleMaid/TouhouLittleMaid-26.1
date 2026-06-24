@@ -1,5 +1,6 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.mod;
 
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
@@ -43,7 +44,7 @@ public class OptifineScreen extends Screen {
         super.init();
         this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.optifine_warning.embeddium"), b -> openUrl(embeddiumUrl)).bounds(this.width / 2 - 155, this.height * 3 / 4 - 15, 150, 20).build());
         this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.optifine_warning.oculus"), b -> openUrl(oculusUrl)).bounds(this.width / 2 + 5, this.height * 3 / 4 - 15, 150, 20).build());
-        this.exitButton = this.addRenderableWidget(Button.builder(CommonComponents.GUI_PROCEED, (pressed) -> Minecraft.getInstance().setScreen(this.lastScreen)).bounds(this.width / 2 - 75, this.height * 3 / 4 + 25, 150, 20).build());
+        this.exitButton = this.addRenderableWidget(Button.builder(CommonComponents.GUI_PROCEED, (pressed) -> ScreenUtil.setScreen(this.lastScreen)).bounds(this.width / 2 - 75, this.height * 3 / 4 + 25, 150, 20).build());
         this.exitButton.active = false;
         this.message = MultiLineLabel.create(this.font, text, this.width - 50);
     }
@@ -71,16 +72,16 @@ public class OptifineScreen extends Screen {
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().setScreen(this.lastScreen);
+        ScreenUtil.setScreen(this.lastScreen);
     }
 
     private void openUrl(String url) {
         if (StringUtils.isNotBlank(url) && minecraft != null) {
-            minecraft.setScreen(new ConfirmLinkScreen(yes -> {
+            ScreenUtil.setScreen(new ConfirmLinkScreen(yes -> {
                 if (yes) {
                     Util.getPlatform().openUri(url);
                 }
-                minecraft.setScreen(this);
+                ScreenUtil.setScreen(this);
             }, url, true));
         }
     }

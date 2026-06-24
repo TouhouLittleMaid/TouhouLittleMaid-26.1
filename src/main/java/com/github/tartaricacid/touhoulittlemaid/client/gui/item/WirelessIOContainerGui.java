@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.item.ItemWirelessIO;
 import com.github.tartaricacid.touhoulittlemaid.network.message.WirelessIOGuiPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -47,7 +48,7 @@ public class WirelessIOContainerGui extends AbstractContainerScreen<WirelessIOCo
         filterModeToggle.initTextureValues(176, 0, 16, 16, MAIN);
 
         TouhouImageButton configButton = new TouhouImageButton(leftPos + 136, topPos + 44, 16, 16, 208, 0, 16,
-                MAIN, 256, 256, buttons -> getMinecraft().setScreen(new WirelessIOConfigSlotGui(menu.getStack())));
+                MAIN, 256, 256, buttons -> ScreenUtil.setScreen(new WirelessIOConfigSlotGui(menu.getStack())));
         configButton.setTooltip(Tooltip.create(Component.translatable("gui.touhou_little_maid.wireless_io.config_slot")));
 
         addRenderableWidget(filterModeToggle);

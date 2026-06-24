@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.event;
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.mod.OptifineScreen;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.neoforged.api.distmarker.Dist;
@@ -21,7 +22,7 @@ public final class ShowOptifineScreen {
             return;
         }
         if (!MiscConfig.CLOSE_OPTIFINE_WARNING.get() && optifinePresent) {
-            Minecraft.getInstance().setScreen(new OptifineScreen(event.getScreen()));
+            ScreenUtil.setScreen(new OptifineScreen(event.getScreen()));
         }
         firstTitleScreenShown = true;
     }

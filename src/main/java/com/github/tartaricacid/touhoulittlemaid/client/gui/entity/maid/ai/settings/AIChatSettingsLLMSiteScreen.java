@@ -9,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.editor
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai.LLMSiteButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -101,7 +102,7 @@ public class AIChatSettingsLLMSiteScreen extends AIChatSettingsHubScreen {
             return;
         }
         boolean supportsReasoning = "openai".equals(site.id());
-        this.minecraft.setScreen(new LLMSiteEditorScreen(this, site, false, supportsReasoning));
+        ScreenUtil.setScreen(new LLMSiteEditorScreen(this, site, false, supportsReasoning));
     }
 
     public void openNewLLMSiteEditor(LLMApiType apiType) {
@@ -109,7 +110,7 @@ public class AIChatSettingsLLMSiteScreen extends AIChatSettingsHubScreen {
         if (!(site instanceof LLMOpenAISite)) {
             return;
         }
-        this.minecraft.setScreen(new LLMSiteEditorScreen(this, site, true));
+        ScreenUtil.setScreen(new LLMSiteEditorScreen(this, site, true));
     }
 
     public boolean hasLLMSite(String siteId) {

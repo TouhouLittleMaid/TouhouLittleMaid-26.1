@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.block;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.DirectButton;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.ImageButtonWithId;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.TouhouImageButton;
@@ -78,7 +79,7 @@ public class ModelSwitcherGui extends Screen {
         BlockEntityModelSwitcher.ModeInfo info = this.infoList.get(selectedIndex);
         maid.setModelId(info.getModelId().toString());
 
-        this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.button.skin"), b -> Minecraft.getInstance().setScreen(new ModelSwitcherModelGui(maid, info, this)))
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.touhou_little_maid.button.skin"), b -> ScreenUtil.setScreen(new ModelSwitcherModelGui(maid, info, this)))
                 .pos(leftPos + 55, topPos + 15).size(76, 20).build());
 
         this.addRenderableWidget(new DirectButton(leftPos + 55, topPos + 38, 76, 20, info.getDirection(),

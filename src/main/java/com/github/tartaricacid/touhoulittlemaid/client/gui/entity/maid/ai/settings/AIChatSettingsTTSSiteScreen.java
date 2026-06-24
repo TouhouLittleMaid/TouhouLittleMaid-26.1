@@ -4,6 +4,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.tts.TTSSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.editor.TTSSiteEditorScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai.TTSSiteButton;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +66,7 @@ public class AIChatSettingsTTSSiteScreen extends AIChatSettingsHubScreen {
         if (site == null) {
             return;
         }
-        this.minecraft.setScreen(new TTSSiteEditorScreen(this, site));
+        ScreenUtil.setScreen(new TTSSiteEditorScreen(this, site));
     }
 
     @Override

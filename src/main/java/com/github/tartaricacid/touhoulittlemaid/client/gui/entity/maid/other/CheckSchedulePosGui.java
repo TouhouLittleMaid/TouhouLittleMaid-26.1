@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.other;
 
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.AbstractMaidContainerGui;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
@@ -26,7 +27,7 @@ public class CheckSchedulePosGui extends Screen {
     protected void init() {
         this.middleX = this.width / 2;
         this.middleY = this.height / 2;
-        Button returnButton = Button.builder(Component.translatable("button.touhou_little_maid.maid.return"), (b) -> getMinecraft().setScreen(this.parent))
+        Button returnButton = Button.builder(Component.translatable("button.touhou_little_maid.maid.return"), (b) -> ScreenUtil.setScreen(this.parent))
                 .pos(middleX - 100, middleY + 10).size(200, 20).build();
         this.addRenderableWidget(returnButton);
     }

@@ -5,6 +5,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.stt.STTSite;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.editor.STTSiteEditorScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.ai.STTSiteButton;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -65,7 +66,7 @@ public class AIChatSettingsSTTSiteScreen extends AIChatSettingsHubScreen {
             return;
         }
         this.state.selectedSttSiteId = siteId;
-        this.minecraft.setScreen(new STTSiteEditorScreen(this, site));
+        ScreenUtil.setScreen(new STTSiteEditorScreen(this, site));
     }
 
     public void toggleSTTSite(String siteId) {

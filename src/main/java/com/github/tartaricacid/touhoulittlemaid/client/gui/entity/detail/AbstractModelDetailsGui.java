@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.model.DebugFloorModel;
 import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.IModelInfo;
 import com.github.tartaricacid.touhoulittlemaid.util.ParseI18n;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -89,7 +90,7 @@ public abstract class AbstractModelDetailsGui<T extends LivingEntity, E extends 
         TOP_STATUS_BAR_SIZE = new Rectangle(0, 0, width, 15);
 
         TouhouImageButton closeButton = new TouhouImageButton(width - 15, 0, 15, 15,
-                0, 24, 15, BUTTON_TEXTURE, b -> Minecraft.getInstance().setScreen(null));
+                0, 24, 15, BUTTON_TEXTURE, b -> ScreenUtil.setScreen(null));
         TouhouImageButton floorButton = new TouhouImageButton(width - 30, 0, 15, 15,
                 30, 24, 15, BUTTON_TEXTURE, b -> showFloor = !showFloor);
         TouhouImageButton returnButton = new TouhouImageButton(width - 45, 0, 15, 15,

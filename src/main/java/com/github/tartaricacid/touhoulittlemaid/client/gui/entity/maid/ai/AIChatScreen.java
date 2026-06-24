@@ -14,6 +14,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SendUserChatPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.OpenAIConfigPacket;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveMaidAIDataPackage;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.google.common.collect.Lists;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -119,13 +120,13 @@ public class AIChatScreen extends Screen {
     private void addLeftButtons(int leftX, int y, int size, int gap) {
         this.historyButton = this.addRenderableWidget(new FlatColorButton(leftX, y, size, size, Component.literal("🕑"), b -> {
             HistoryAIChatScreen screen = new HistoryAIChatScreen(this, this.maid);
-            this.getMinecraft().setScreen(screen);
+            ScreenUtil.setScreen(screen);
         }).setTooltips("ai.touhou_little_maid.chat.button.history.tip"));
 
         leftX = leftX + size + gap;
         this.settingButton = this.addRenderableWidget(new FlatColorButton(leftX, y, size, size, Component.literal("✎"), b -> {
             SettingEditScreen editScreen = new SettingEditScreen(this, this.maid);
-            this.getMinecraft().setScreen(editScreen);
+            ScreenUtil.setScreen(editScreen);
         }).setTooltips("ai.touhou_little_maid.chat.button.setting.tip"));
 
         leftX = leftX + size + gap;

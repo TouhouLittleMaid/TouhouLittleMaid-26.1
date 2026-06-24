@@ -9,6 +9,7 @@ import com.github.tartaricacid.touhoulittlemaid.network.message.MaidModelPackage
 import com.github.tartaricacid.touhoulittlemaid.network.message.OpenMaidGuiPackage;
 import com.github.tartaricacid.touhoulittlemaid.network.message.SetMaidSoundIdPackage;
 import com.github.tartaricacid.touhoulittlemaid.util.EntityCacheUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -59,7 +60,7 @@ public class MaidModelGui extends AbstractModelGui<EntityMaid, MaidModelInfo> {
     @Override
     protected void openDetailsGui(EntityMaid maid, MaidModelInfo modelInfo) {
         if (minecraft != null && modelInfo.getEasterEgg() == null) {
-            minecraft.setScreen(new MaidModelDetailsGui(maid, modelInfo));
+            ScreenUtil.setScreen(new MaidModelDetailsGui(maid, modelInfo));
         }
     }
 

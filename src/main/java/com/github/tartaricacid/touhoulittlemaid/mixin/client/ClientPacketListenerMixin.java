@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.mixin.client;
 
 import com.github.tartaricacid.touhoulittlemaid.client.input.DismountBroomKey;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -45,7 +46,7 @@ public class ClientPacketListenerMixin {
                 continue;
             }
             Component mountMessage = Component.translatable("mount.onboard", DismountBroomKey.DISMOUNT_KEY.getTranslatedKeyMessage());
-            minecraft.gui.setOverlayMessage(mountMessage, false);
+            ScreenUtil.setOverlayMessage(mountMessage, false);
             minecraft.getNarrator().saySystemNow(mountMessage);
         }
         ci.cancel();

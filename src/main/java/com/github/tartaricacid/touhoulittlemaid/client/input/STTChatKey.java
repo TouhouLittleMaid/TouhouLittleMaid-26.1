@@ -7,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.ai.service.stt.STTSite;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.AIConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -91,11 +92,11 @@ public class STTChatKey {
     private static boolean isInGame() {
         Minecraft mc = Minecraft.getInstance();
         // 不能是加载界面
-        if (mc.getOverlay() != null) {
+        if (ScreenUtil.hasOverlay()) {
             return false;
         }
         // 不能打开任何 GUI
-        if (mc.screen != null) {
+        if (ScreenUtil.getScreen() != null) {
             return false;
         }
         // 当前窗口捕获鼠标操作

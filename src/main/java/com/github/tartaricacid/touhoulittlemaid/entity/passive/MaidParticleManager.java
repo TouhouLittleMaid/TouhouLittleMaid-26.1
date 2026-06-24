@@ -1,6 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.passive;
 
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MiscConfig;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -124,8 +125,8 @@ public class MaidParticleManager {
             level.playLocalSound(maid.getX(), maid.getY(), maid.getZ(),
                     SoundEvents.BELL_BLOCK, maid.getSoundSource(),
                     1.0F, 1.0F, false);
-            minecraft.gui.setTitle(Component.translatable("message.touhou_little_maid.gomoku.rank_up.title"));
-            minecraft.gui.setSubtitle(Component.translatable("message.touhou_little_maid.gomoku.rank_up.subtitle"));
+            ScreenUtil.setTitle(Component.translatable("message.touhou_little_maid.gomoku.rank_up.title"));
+            ScreenUtil.setSubtitle(Component.translatable("message.touhou_little_maid.gomoku.rank_up.subtitle"));
         }
     }
 

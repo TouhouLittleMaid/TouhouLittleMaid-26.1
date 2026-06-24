@@ -6,6 +6,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.resource.pojo.ChairModelI
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityChair;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
@@ -33,7 +34,7 @@ public class ChairModelDetailsGui extends AbstractModelDetailsGui<EntityChair, C
 
     @Override
     protected void applyReturnButtonLogic() {
-        Minecraft.getInstance().setScreen(new ChairModelGui(sourceEntity));
+        ScreenUtil.setScreen(new ChairModelGui(sourceEntity));
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button;
 import com.github.tartaricacid.touhoulittlemaid.client.download.InfoGetManager;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.ModelDownloadGui;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.TipsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -14,7 +15,7 @@ public class MaidDownloadButton extends TouhouImageButton {
     public MaidDownloadButton(int pX, int pY, Identifier texture, EntityMaid maid) {
         super(pX, pY, 41, 20, 0, 86, 20, texture, (b) -> {
             InfoGetManager.STATUE = InfoGetManager.Statue.NOT_UPDATE;
-            Minecraft.getInstance().setScreen(new ModelDownloadGui(maid));
+            ScreenUtil.setScreen(new ModelDownloadGui(maid));
         });
     }
 
