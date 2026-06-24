@@ -1,7 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.compat.curios.menu;
 
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.client.resources.language.I18n;
+import com.github.tartaricacid.touhoulittlemaid.util.I18nUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -71,11 +71,11 @@ public class MaidCurioSlot extends SlotItemHandler {
         StringBuilder builder = new StringBuilder();
 
         if (this.isCosmetic) {
-            builder.append(I18n.get("curios.cosmetic")).append(" ");
+            builder.append(I18nUtil.get("curios.cosmetic")).append(" ");
         }
         String key = "curios.identifier." + this.identifier;
-        if (I18n.exists(key)) {
-            builder.append(I18n.get(key));
+        if (I18nUtil.exists(key)) {
+            builder.append(I18nUtil.get(key));
             return builder.toString();
         }
         builder.append(Character.toUpperCase(this.identifier.charAt(0)))

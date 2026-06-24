@@ -8,6 +8,7 @@ import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settin
 import com.github.tartaricacid.touhoulittlemaid.client.gui.entity.maid.ai.settings.AIChatSettingsTTSSiteScreen;
 import com.github.tartaricacid.touhoulittlemaid.client.gui.widget.button.FlatColorButton;
 import com.github.tartaricacid.touhoulittlemaid.network.message.ai.SaveTTSSitePacket;
+import com.github.tartaricacid.touhoulittlemaid.util.I18nUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.Rectangle;
 import com.github.tartaricacid.touhoulittlemaid.util.ScreenUtil;
 import com.google.common.collect.Lists;
@@ -18,7 +19,6 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
@@ -76,7 +76,7 @@ public class TTSSiteEditorScreen extends Screen {
         this.layout = sourceSite.formLayout();
 
         String nameKey = sourceSite.getNameKey();
-        this.siteDisplayName = I18n.exists(nameKey) ? I18n.get(nameKey) : sourceSite.id();
+        this.siteDisplayName = I18nUtil.getOrDefault(nameKey, sourceSite.id());
 
         this.initStateFromLayout();
     }
