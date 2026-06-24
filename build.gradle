@@ -385,7 +385,7 @@ tasks.register('applyDiffPatches', Exec as Class<Task>) {
     group = 'rewrite'
     workingDir = projectDir
     // 使用 git apply 来应用补丁
-    commandLine 'git', 'apply', '--ignore-space-change', '--ignore-whitespace', '--3way', 'patches/migrate.patch'
+    commandLine 'git', 'apply', '--ignore-space-change', '--ignore-whitespace', 'patches/migrate.patch'
 }
 
 tasks.named("rewriteRun") {

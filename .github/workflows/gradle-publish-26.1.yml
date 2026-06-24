@@ -53,21 +53,84 @@ jobs:
         run: echo "timestamp=$(date '+%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Upload 26.1 Artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-26-1
+          path: |
+            build/libs/*-snapshot.jar
+            build/libs/*-sources.jar
+
+  build-26-2:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: 'gradle'
+
+      - name: Rewrite and refresh Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew rewriteRun --refresh-dependencies --build-cache --parallel
+
+      - name: Build with Gradle
+        run: ./gradlew build -x test --build-cache --parallel
+
+      - name: Rename Build Artifacts
+        run: |
+          cd ./build/libs/
+          # 找到以 -all.jar 结尾的文件，将其更名为包含 snapshot 的名称
+          for f in *-all.jar; do
+            mv "$f" "${f%-all.jar}-snapshot.jar"
+          done
+          # 查看一下结果，方便在日志里调试
+          ls -R
+
+      - name: Upload 26.2 Artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-26-2
+          path: |
+            build/libs/*-snapshot.jar
+            build/libs/*-sources.jar
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - build-26-2
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: release-files
+
+      - name: List Release Files
+        run: ls -R release-files
+
       - name: Send file to Release
         uses: softprops/action-gh-release@v2
         if: success()
         with:
-          tag_name: snapshot-${{ steps.create_timestamp.outputs.timestamp }}
+          tag_name: ${{ needs.build.outputs.release-tag }}
           generate_release_notes: true
           body: |
             > ### 📢 Notice / 提示
             > - **EN:** Files ending in `-sources` are source code. Please download the version ending in `-snapshot`.
             > - **CN:** 结尾为 `-sources` 的是源码文件；**请下载结尾为 `-snapshot` 的版本**。
-            
+
             ${{ github.event.head_commit.message }}
 
           draft: false
           prerelease: true
           files: |
-            build/libs/*-snapshot.jar
-            build/libs/*-sources.jar
+            release-files/**/*.jar

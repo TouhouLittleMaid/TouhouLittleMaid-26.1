@@ -346,3 +346,35 @@ index e2d419e3..f06e4dbd 100644
    ],
    "injectors": {
      "defaultRequire": 1
+
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/geckolib3/geo/IGeoRenderer.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/geckolib3/geo/IGeoRenderer.java
+index 0989769f..551f16c5 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/geckolib3/geo/IGeoRenderer.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/geckolib3/geo/IGeoRenderer.java
+@@ -7,8 +7,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.util.IRenderCycle;
+ import com.mojang.blaze3d.systems.RenderSystem;
+ import com.mojang.blaze3d.vertex.PoseStack;
+ import com.mojang.blaze3d.vertex.VertexConsumer;
+-import com.mojang.blaze3d.vertex.VertexMultiConsumer;
+-import net.minecraft.client.Minecraft;
+ import net.minecraft.client.renderer.SubmitNodeCollector;
+ import net.minecraft.client.renderer.entity.state.EntityRenderState;
+ import net.minecraft.client.renderer.rendertype.RenderType;
+@@ -50,17 +48,6 @@ public interface IGeoRenderer<TState extends EntityRenderState, TData extends Ge
+             if (data.isClosed()) {
+                 return;
+             }
+-            if (ctx.level() && !ctx.irisShadow()
+-                    && state.outlineColor != 0 && (type.outline().isPresent() || type.isOutline())) {
+-                var outlineBufferSource = Minecraft.getInstance().renderBuffers().outlineBufferSource();
+-                outlineBufferSource.setColor(state.outlineColor);
+-                var outlineBuffer = outlineBufferSource.getBuffer(type);
+-                if (type.isOutline()) {
+-                    vertexConsumer = outlineBuffer;
+-                } else {
+-                    vertexConsumer = VertexMultiConsumer.create(vertexConsumer, outlineBuffer);
+-                }
+-            }
+             VertexConsumer finalVertexConsumer = vertexConsumer;
+             data.modelState.visitRenderBones(pose, (bone, poseState) -> {
+                 renderCubesOfBone(bone, poseState, finalVertexConsumer, state, data);

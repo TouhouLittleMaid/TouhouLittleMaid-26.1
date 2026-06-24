@@ -53,6 +53,7 @@ public class ModelSwitcherGui extends Screen {
         this.bindUuid = switcher.getUuid();
         if (Minecraft.getInstance().level != null) {
             this.maid = new EntityMaid(Minecraft.getInstance().level);
+            this.maid.setId(-1);
         }
     }
 
