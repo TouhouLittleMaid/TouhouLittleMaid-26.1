@@ -86,7 +86,7 @@ public class PicnicMatRender implements BlockEntityRenderer<BlockEntityPicnicMat
             // 渲染底座模型
             poseStack.pushPose();
             poseStack.last().set(pose);
-            model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+            model.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
             poseStack.popPose();
         });
 

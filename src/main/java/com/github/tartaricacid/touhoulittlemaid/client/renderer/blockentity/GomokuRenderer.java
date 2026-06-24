@@ -189,7 +189,7 @@ public class GomokuRenderer implements BlockEntityRenderer<BlockEntityGomoku, Go
             for (int j = 0; j < chessData[0].length; j++) {
                 poseStack.translate(0, 0, 0.1316);
                 if (row[j] == pieceType) {
-                    this.pieceModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY);
+                    this.pieceModel.renderToBuffer(poseStack, buffer, state.lightCoords, OverlayTexture.NO_OVERLAY, -1);
                 }
             }
             poseStack.translate(-0.1316, 0, -1.974);
