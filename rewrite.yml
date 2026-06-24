@@ -18,17 +18,17 @@ recipeList:
       propertyKey: mod_version
       newValue: 2.0.0-neoforge+mc26.2
 
-  - org.openrewrite.gradle.ChangeDependencyVersion:
+  - org.openrewrite.gradle.UpgradeDependencyVersion:
       groupId: maven.modrinth
       artifactId: jei
       newVersion: 30.2.0.15-neoforge
 
-  - org.openrewrite.gradle.ChangeDependencyVersion:
+  - org.openrewrite.gradle.UpgradeDependencyVersion:
       groupId: maven.modrinth
       artifactId: cloth-config
       newVersion: 26.2.155+neoforge
 
-  - org.openrewrite.gradle.ChangeDependencyVersion:
+  - org.openrewrite.gradle.UpgradeDependencyVersion:
       groupId: maven.modrinth
       artifactId: jade
       newVersion: 26.2.3+neoforge
@@ -38,17 +38,17 @@ recipeList:
       artifactId: curios
       newConfiguration: compileOnly
 
-  - org.openrewrite.gradle.ChangeDependencyVersion:
+  - org.openrewrite.gradle.UpgradeDependencyVersion:
       groupId: maven.modrinth
       artifactId: sodium
       newVersion: mc26.2-0.9.1-beta.2-neoforge
 
-  - org.openrewrite.gradle.ChangeDependencyVersion:
+  - org.openrewrite.gradle.UpgradeDependencyVersion:
       groupId: maven.modrinth
       artifactId: sophisticated-core
       newVersion: 26.2-1.4.70.2038
 
-  - org.openrewrite.gradle.ChangeDependencyVersion:
+  - org.openrewrite.gradle.UpgradeDependencyVersion:
       groupId: maven.modrinth
       artifactId: sophisticated-backpacks
       newVersion: 26.2-3.25.74.1922
