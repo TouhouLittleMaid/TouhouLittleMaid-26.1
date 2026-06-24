@@ -1,18 +1,17 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.tag;
 
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.ItemTagsProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
+
 import java.util.concurrent.CompletableFuture;
 
 public class TagItem extends ItemTagsProvider {
@@ -81,59 +80,71 @@ public class TagItem extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(GOHEI_ENCHANTABLE).add(InitItems.HAKUREI_GOHEI.asItem());
-        this.tag(GOHEI_ENCHANTABLE).add(InitItems.SANAE_GOHEI.asItem());
+        this.tag(GOHEI_ENCHANTABLE).add(element("touhou_little_maid:hakurei_gohei"));
+        this.tag(GOHEI_ENCHANTABLE).add(element("touhou_little_maid:sanae_gohei"));
 
-        this.tag(ItemTags.DURABILITY_ENCHANTABLE).add(InitItems.HAKUREI_GOHEI.asItem())
-                .add(InitItems.SANAE_GOHEI.asItem())
-                .add(InitItems.ULTRAMARINE_ORB_ELIXIR.asItem())
-                .add(InitItems.EXPLOSION_PROTECT_BAUBLE.asItem())
-                .add(InitItems.FIRE_PROTECT_BAUBLE.asItem())
-                .add(InitItems.PROJECTILE_PROTECT_BAUBLE.asItem())
-                .add(InitItems.MAGIC_PROTECT_BAUBLE.asItem())
-                .add(InitItems.FALL_PROTECT_BAUBLE.asItem())
-                .add(InitItems.DROWN_PROTECT_BAUBLE.asItem())
-                .add(InitItems.NIMBLE_FABRIC.asItem());
+        this.tag(ItemTags.DURABILITY_ENCHANTABLE).add(element("touhou_little_maid:hakurei_gohei"))
+                .add(element("touhou_little_maid:sanae_gohei"))
+                .add(element("touhou_little_maid:ultramarine_orb_elixir"))
+                .add(element("touhou_little_maid:explosion_protect_bauble"))
+                .add(element("touhou_little_maid:fire_protect_bauble"))
+                .add(element("touhou_little_maid:projectile_protect_bauble"))
+                .add(element("touhou_little_maid:magic_protect_bauble"))
+                .add(element("touhou_little_maid:fall_protect_bauble"))
+                .add(element("touhou_little_maid:drown_protect_bauble"))
+                .add(element("touhou_little_maid:nimble_fabric"));
 
         this.tag(MAID_PLANTABLE_SEEDS)
                 .addTag(ItemTags.VILLAGER_PLANTABLE_SEEDS)
                 .addTag(Tags.Items.SEEDS)
-                .add(TagEntry.optionalTag(Identifier.parse("kaleidoscope_cookery:cookery_mod_seeds")));
-        this.tag(MAID_PLANTABLE_SEEDS).add(Items.NETHER_WART);
+                .add(optionalTag("kaleidoscope_cookery:cookery_mod_seeds"));
+        this.tag(MAID_PLANTABLE_SEEDS).add(element("minecraft:nether_wart"));
 
         this.addCakeItems(MAID_TAMED_ITEM);
         this.addCakeItems(MAID_TEMPTATION_ITEM);
 
-        tag(MAID_MENDING_BLOCKLIST_ITEM).add(InitItems.ULTRAMARINE_ORB_ELIXIR.get());
-        tag(MAID_VANISHING_BLOCKLIST_ITEM).add(InitItems.ULTRAMARINE_ORB_ELIXIR.get());
+        tag(MAID_MENDING_BLOCKLIST_ITEM).add(element("touhou_little_maid:ultramarine_orb_elixir"));
+        tag(MAID_VANISHING_BLOCKLIST_ITEM).add(element("touhou_little_maid:ultramarine_orb_elixir"));
 
         // 森罗物语辣椒
         tag(MAID_EAT_BLOCKLIST_ITEM)
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:red_chili")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:green_chili")));
+                .add(optionalElement("kaleidoscope_cookery:red_chili"))
+                .add(optionalElement("kaleidoscope_cookery:green_chili"));
 
         this.tag(MAID_BED)
-                .add(InitItems.PINK_MAID_BED.asItem())
-                .add(InitItems.WHITE_MAID_BED.asItem())
-                .add(InitItems.BLACK_MAID_BED.asItem())
-                .add(InitItems.YELLOW_MAID_BED.asItem())
-                .add(InitItems.BLUE_MAID_BED.asItem())
-                .add(InitItems.GREEN_MAID_BED.asItem())
-                .add(InitItems.PURPLE_MAID_BED.asItem());
+                .add(element("touhou_little_maid:pink_maid_bed"))
+                .add(element("touhou_little_maid:white_maid_bed"))
+                .add(element("touhou_little_maid:black_maid_bed"))
+                .add(element("touhou_little_maid:yellow_maid_bed"))
+                .add(element("touhou_little_maid:blue_maid_bed"))
+                .add(element("touhou_little_maid:green_maid_bed"))
+                .add(element("touhou_little_maid:purple_maid_bed"));
     }
 
     private void addCakeItems(TagKey<Item> tagKey) {
         this.tag(tagKey)
-                .add(Items.CAKE)
-                .add(TagEntry.optionalTag(Identifier.parse("forge:cakes")))
-                .add(TagEntry.optionalTag(Identifier.parse("c:cakes")))
-                .add(TagEntry.optionalTag(Identifier.parse("jmc:cakes")))
-                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:cheese_cake")))
-                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:honey_cheese_cake")))
-                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:chocolate_cheese_cake")))
-                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_cake")))
-                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_cheesecake")))
-                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_chocolate_cheesecake")))
-                .add(TagEntry.optionalElement(Identifier.parse("kawaiidishes:piece_of_honey_cheesecake")));
+                .add(element("minecraft:cake"))
+                .add(optionalTag("forge:cakes"))
+                .add(optionalTag("c:cakes"))
+                .add(optionalTag("jmc:cakes"))
+                .add(optionalElement("kawaiidishes:cheese_cake"))
+                .add(optionalElement("kawaiidishes:honey_cheese_cake"))
+                .add(optionalElement("kawaiidishes:chocolate_cheese_cake"))
+                .add(optionalElement("kawaiidishes:piece_of_cake"))
+                .add(optionalElement("kawaiidishes:piece_of_cheesecake"))
+                .add(optionalElement("kawaiidishes:piece_of_chocolate_cheesecake"))
+                .add(optionalElement("kawaiidishes:piece_of_honey_cheesecake"));
+    }
+
+    private TagEntry element(String id) {
+        return TagEntry.element(Identifier.parse(id));
+    }
+
+    private TagEntry optionalElement(String id) {
+        return TagEntry.optionalElement(Identifier.parse(id));
+    }
+
+    private TagEntry optionalTag(String id) {
+        return TagEntry.optionalTag(Identifier.parse(id));
     }
 }

@@ -2,7 +2,6 @@ package com.github.tartaricacid.touhoulittlemaid.datagen.tag;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.init.InitBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -12,7 +11,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 
 import java.util.concurrent.CompletableFuture;
@@ -86,13 +84,13 @@ public class TagBlock extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         tag(MAID_BED)
-                .add(InitBlocks.PINK_MAID_BED.get())
-                .add(InitBlocks.WHITE_MAID_BED.get())
-                .add(InitBlocks.BLACK_MAID_BED.get())
-                .add(InitBlocks.YELLOW_MAID_BED.get())
-                .add(InitBlocks.BLUE_MAID_BED.get())
-                .add(InitBlocks.GREEN_MAID_BED.get())
-                .add(InitBlocks.PURPLE_MAID_BED.get());
+                .add(element("touhou_little_maid:pink_maid_bed"))
+                .add(element("touhou_little_maid:white_maid_bed"))
+                .add(element("touhou_little_maid:black_maid_bed"))
+                .add(element("touhou_little_maid:yellow_maid_bed"))
+                .add(element("touhou_little_maid:blue_maid_bed"))
+                .add(element("touhou_little_maid:green_maid_bed"))
+                .add(element("touhou_little_maid:purple_maid_bed"));
 
         tag(MAID_JUMP_FORBIDDEN_BLOCK)
                 .addTag(BlockTags.DOORS)
@@ -100,110 +98,123 @@ public class TagBlock extends BlockTagsProvider {
                 .addTag(BlockTags.CLIMBABLE);
 
         tag(ALTAR_TORII)
-                .add(Blocks.RED_WOOL, Blocks.RED_CONCRETE)
-                .add(TagEntry.optionalElement(Identifier.parse("biomesoplenty:redwood_planks")));
+                .add(element("minecraft:red_wool"))
+                .add(element("minecraft:red_concrete"))
+                .add(optionalElement("biomesoplenty:redwood_planks"));
         tag(ALTAR_PILLAR).addTag(BlockTags.LOGS);
 
         var blacklist = tag(CARRYON_BLOCK_BLACKLIST);
         BuiltInRegistries.BLOCK.keySet().stream().filter(id -> id.getNamespace().equals(TouhouLittleMaid.MOD_ID))
-                .forEach(id -> blacklist.add(BuiltInRegistries.BLOCK.getValue(id)));
+                .forEach(id -> blacklist.add(element(id.toString())));
 
         tag(MAID_SNACK_STAND_BLOCK)
-                .add(InitBlocks.SNACK_CABINET.get())
-                .add(TagEntry.optionalTag(Identifier.parse("kaleidoscope_cookery:table")));
+                .add(element("touhou_little_maid:snack_cabinet"))
+                .add(optionalTag("kaleidoscope_cookery:table"));
 
         tag(SNACK_CABINET_FULL)
                 // 蛋糕全部是完整玻璃橱窗
-                .add(Blocks.CAKE)
-                .add(TagEntry.optionalTag(Identifier.parse("forge:cakes")))
-                .add(TagEntry.optionalTag(Identifier.parse("c:cakes")))
-                .add(TagEntry.optionalTag(Identifier.parse("jmc:cakes")))
+                .add(element("minecraft:cake"))
+                .add(optionalTag("forge:cakes"))
+                .add(optionalTag("c:cakes"))
+                .add(optionalTag("jmc:cakes"))
                 // 农夫乐事的盛宴
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:roast_chicken_block")))
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:stuffed_pumpkin_block")))
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:honey_glazed_ham_block")))
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:shepherds_pie_block")))
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:rice_roll_medley_block")));
+                .add(optionalElement("farmersdelight:roast_chicken_block"))
+                .add(optionalElement("farmersdelight:stuffed_pumpkin_block"))
+                .add(optionalElement("farmersdelight:honey_glazed_ham_block"))
+                .add(optionalElement("farmersdelight:shepherds_pie_block"))
+                .add(optionalElement("farmersdelight:rice_roll_medley_block"));
 
         tag(SNACK_CABINET_HALF)
                 // 农夫乐事的糕点
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:apple_pie")))
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:sweet_berry_cheesecake")))
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:chocolate_pie")))
+                .add(optionalElement("farmersdelight:apple_pie"))
+                .add(optionalElement("farmersdelight:sweet_berry_cheesecake"))
+                .add(optionalElement("farmersdelight:chocolate_pie"))
                 // 森罗物语的方块菜，后续应该让森罗物语添加专门的 tag
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:dark_cuisine")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:suspicious_stir_fry")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:slime_ball_meal")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:fondant_pie")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:dongpo_pork")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:fondant_spider_eye")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:chorus_fried_egg")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:braised_fish")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:golden_salad")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:spicy_chicken")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:yakitori")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:pan_seared_knight_steak")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:stargazy_pie")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:sweet_and_sour_ender_pearls")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:crystal_lamb_chop")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:blaze_lamb_chop")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:frost_lamb_chop")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:nether_style_sashimi")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:end_style_sashimi")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:desert_style_sashimi")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:tundra_style_sashimi")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:cold_style_sashimi")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:shengjian_mantou")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:candied_potato")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:dough_drop_soup")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:stuffed_tiger_skin_pepper")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:spicy_rabbit_head")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:four_joy_meatball_soup")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:numbing_spicy_chicken")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:fried_caterpillar")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:fried_spring_roll")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:spicy_blood_stew")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:fruit_platter")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:braised_pork_ribs")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:cold_roasted_meat")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:oil_splashed_fish")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:brown_mushroom_pot_soup")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:red_mushroom_pot_soup")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:warped_fungus_pot_soup")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:crimson_fungus_pot_soup")))
-                .add(TagEntry.optionalElement(Identifier.parse("kaleidoscope_cookery:buddha_jumps_over_the_wall")));
+                .add(optionalElement("kaleidoscope_cookery:dark_cuisine"))
+                .add(optionalElement("kaleidoscope_cookery:suspicious_stir_fry"))
+                .add(optionalElement("kaleidoscope_cookery:slime_ball_meal"))
+                .add(optionalElement("kaleidoscope_cookery:fondant_pie"))
+                .add(optionalElement("kaleidoscope_cookery:dongpo_pork"))
+                .add(optionalElement("kaleidoscope_cookery:fondant_spider_eye"))
+                .add(optionalElement("kaleidoscope_cookery:chorus_fried_egg"))
+                .add(optionalElement("kaleidoscope_cookery:braised_fish"))
+                .add(optionalElement("kaleidoscope_cookery:golden_salad"))
+                .add(optionalElement("kaleidoscope_cookery:spicy_chicken"))
+                .add(optionalElement("kaleidoscope_cookery:yakitori"))
+                .add(optionalElement("kaleidoscope_cookery:pan_seared_knight_steak"))
+                .add(optionalElement("kaleidoscope_cookery:stargazy_pie"))
+                .add(optionalElement("kaleidoscope_cookery:sweet_and_sour_ender_pearls"))
+                .add(optionalElement("kaleidoscope_cookery:crystal_lamb_chop"))
+                .add(optionalElement("kaleidoscope_cookery:blaze_lamb_chop"))
+                .add(optionalElement("kaleidoscope_cookery:frost_lamb_chop"))
+                .add(optionalElement("kaleidoscope_cookery:nether_style_sashimi"))
+                .add(optionalElement("kaleidoscope_cookery:end_style_sashimi"))
+                .add(optionalElement("kaleidoscope_cookery:desert_style_sashimi"))
+                .add(optionalElement("kaleidoscope_cookery:tundra_style_sashimi"))
+                .add(optionalElement("kaleidoscope_cookery:cold_style_sashimi"))
+                .add(optionalElement("kaleidoscope_cookery:shengjian_mantou"))
+                .add(optionalElement("kaleidoscope_cookery:candied_potato"))
+                .add(optionalElement("kaleidoscope_cookery:dough_drop_soup"))
+                .add(optionalElement("kaleidoscope_cookery:stuffed_tiger_skin_pepper"))
+                .add(optionalElement("kaleidoscope_cookery:spicy_rabbit_head"))
+                .add(optionalElement("kaleidoscope_cookery:four_joy_meatball_soup"))
+                .add(optionalElement("kaleidoscope_cookery:numbing_spicy_chicken"))
+                .add(optionalElement("kaleidoscope_cookery:fried_caterpillar"))
+                .add(optionalElement("kaleidoscope_cookery:fried_spring_roll"))
+                .add(optionalElement("kaleidoscope_cookery:spicy_blood_stew"))
+                .add(optionalElement("kaleidoscope_cookery:fruit_platter"))
+                .add(optionalElement("kaleidoscope_cookery:braised_pork_ribs"))
+                .add(optionalElement("kaleidoscope_cookery:cold_roasted_meat"))
+                .add(optionalElement("kaleidoscope_cookery:oil_splashed_fish"))
+                .add(optionalElement("kaleidoscope_cookery:brown_mushroom_pot_soup"))
+                .add(optionalElement("kaleidoscope_cookery:red_mushroom_pot_soup"))
+                .add(optionalElement("kaleidoscope_cookery:warped_fungus_pot_soup"))
+                .add(optionalElement("kaleidoscope_cookery:crimson_fungus_pot_soup"))
+                .add(optionalElement("kaleidoscope_cookery:buddha_jumps_over_the_wall"));
 
         tag(MAID_AVOID_BLOCK)
                 // 怎么能在吃饭的桌子上跳来跳去呢
                 .addTag(MAID_SNACK_STAND_BLOCK)
                 // 机械动力
-                .add(TagEntry.optionalElement(Identifier.parse("create:mechanical_saw")))
-                .add(TagEntry.optionalElement(Identifier.parse("create:crushing_wheel")))
-                .add(TagEntry.optionalElement(Identifier.parse("create:crushing_wheel_controller")))
+                .add(optionalElement("create:mechanical_saw"))
+                .add(optionalElement("create:crushing_wheel"))
+                .add(optionalElement("create:crushing_wheel_controller"))
                 // 黄蜂领域
-                .add(TagEntry.optionalElement(Identifier.parse("the_bumblezone:heavy_air")))
-                .add(TagEntry.optionalElement(Identifier.parse("the_bumblezone:windy_air")))
+                .add(optionalElement("the_bumblezone:heavy_air"))
+                .add(optionalElement("the_bumblezone:windy_air"))
                 // 农夫乐事
-                .add(TagEntry.optionalElement(Identifier.parse("farmersdelight:stove")))
+                .add(optionalElement("farmersdelight:stove"))
                 // 暮色森林
-                .add(TagEntry.optionalElement(Identifier.parse("twilightforest:hedge")))
-                .add(TagEntry.optionalElement(Identifier.parse("twilightforest:fiery_block")))
-                .add(TagEntry.optionalElement(Identifier.parse("twilightforest:knightmetal_block")))
+                .add(optionalElement("twilightforest:hedge"))
+                .add(optionalElement("twilightforest:fiery_block"))
+                .add(optionalElement("twilightforest:knightmetal_block"))
                 // Alex 的洞穴
-                .add(TagEntry.optionalElement(Identifier.parse("alexscaves:primal_magma")))
-                .add(TagEntry.optionalElement(Identifier.parse("alexscaves:primal_magma")))
+                .add(optionalElement("alexscaves:primal_magma"))
+                .add(optionalElement("alexscaves:primal_magma"))
                 // MEK 反应堆的聚变堆和超临界移相器
-                .add(TagEntry.optionalElement(Identifier.parse("mekanismgenerators:fusion_reactor_frame")))
-                .add(TagEntry.optionalElement(Identifier.parse("mekanism:sps_casing")))
+                .add(optionalElement("mekanismgenerators:fusion_reactor_frame"))
+                .add(optionalElement("mekanism:sps_casing"))
                 // 机械动力附属的铁丝网
-                .add(TagEntry.optionalElement(Identifier.parse("createaddition:barbed_wire")))
+                .add(optionalElement("createaddition:barbed_wire"))
                 // 沉浸工程的铁丝网
-                .add(TagEntry.optionalElement(Identifier.parse("immersiveengineering:razor_wire")))
+                .add(optionalElement("immersiveengineering:razor_wire"))
                 // 铁魔法的两个火堆
-                .add(TagEntry.optionalElement(Identifier.parse("irons_spellbooks:brazier")))
-                .add(TagEntry.optionalElement(Identifier.parse("irons_spellbooks:brazier_soul")))
+                .add(optionalElement("irons_spellbooks:brazier"))
+                .add(optionalElement("irons_spellbooks:brazier_soul"))
                 // 刷怪塔实用设备的锥刺和研磨机
-                .add(TagEntry.optionalElement(Identifier.parse("mob_grinding_utils:spikes")))
-                .add(TagEntry.optionalElement(Identifier.parse("mob_grinding_utils:saw")));
+                .add(optionalElement("mob_grinding_utils:spikes"))
+                .add(optionalElement("mob_grinding_utils:saw"));
+    }
+
+    private TagEntry element(String id) {
+        return TagEntry.element(Identifier.parse(id));
+    }
+
+    private TagEntry optionalElement(String id) {
+        return TagEntry.optionalElement(Identifier.parse(id));
+    }
+
+    private TagEntry optionalTag(String id) {
+        return TagEntry.optionalTag(Identifier.parse(id));
     }
 }

@@ -1,9 +1,7 @@
 package com.github.tartaricacid.touhoulittlemaid.datagen.tag;
 
 import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
-import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
-import com.github.tartaricacid.touhoulittlemaid.util.migrate.EntityTypeUtil;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -53,33 +51,37 @@ public class TagEntity extends EntityTypeTagsProvider {
 
     @Override
     public void addTags(HolderLookup.Provider lookupProvider) {
-        tag(EntityTypeTags.IMPACT_PROJECTILES).add(InitEntities.DANMAKU.get());
-        tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(InitEntities.FAIRY.get());
-        tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(InitEntities.FAIRY.get());
-        tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(InitEntities.FAIRY.get());
+        tag(EntityTypeTags.IMPACT_PROJECTILES).add(element("touhou_little_maid:danmaku"));
+        tag(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(element("touhou_little_maid:fairy"));
+        tag(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(element("touhou_little_maid:fairy"));
+        tag(EntityTypeTags.FALL_DAMAGE_IMMUNE).add(element("touhou_little_maid:fairy"));
 
-        tag(MAID_FAIRY_ATTACK_GOAL).add(EntityTypeUtil.ironGolem())
-                .add(TagEntry.optionalElement(id("guardvillagers:guard")))
-                .add(TagEntry.optionalElement(id("earthtojavamobs:furnace_golem")))
-                .add(TagEntry.optionalElement(id("earthmobsmod:furnace_golem")))
-                .add(TagEntry.optionalElement(id("mutantmonsters:mutant_snow_golem")))
-                .add(TagEntry.optionalElement(id("alexscaves:gingerbread_man")))
-                .add(TagEntry.optionalElement(id("alexsmobs:bunfungus")));
+        tag(MAID_FAIRY_ATTACK_GOAL).add(element("minecraft:iron_golem"))
+                .add(optionalElement("guardvillagers:guard"))
+                .add(optionalElement("earthtojavamobs:furnace_golem"))
+                .add(optionalElement("earthmobsmod:furnace_golem"))
+                .add(optionalElement("mutantmonsters:mutant_snow_golem"))
+                .add(optionalElement("alexscaves:gingerbread_man"))
+                .add(optionalElement("alexsmobs:bunfungus"));
 
         tag(MAID_VEHICLE_ROTATE_BLOCKLIST)
-                .add(TagEntry.optionalElement(id("create:carriage_contraption")))
-                .add(TagEntry.optionalElement(id("create:seat")));
+                .add(optionalElement("create:carriage_contraption"))
+                .add(optionalElement("create:seat"));
 
-        tag(CARRYON_ENTITY_BLACKLIST).add(
-                InitEntities.TOMBSTONE.get(),
-                InitEntities.SIT.get(),
-                InitEntities.BROOM.get());
+        tag(CARRYON_ENTITY_BLACKLIST)
+                .add(element("touhou_little_maid:tombstone"))
+                .add(element("touhou_little_maid:sit"))
+                .add(element("touhou_little_maid:broom"));
 
         // 让女仆免疫冰与火的石化效果，避免石化带来的各种问题
-        tag(IMMUNE_TO_GORGON_STONE).add(InitEntities.MAID.get());
+        tag(IMMUNE_TO_GORGON_STONE).add(element("touhou_little_maid:maid"));
     }
 
-    private Identifier id(String name) {
-        return Identifier.parse(name);
+    private TagEntry element(String id) {
+        return TagEntry.element(Identifier.parse(id));
+    }
+
+    private TagEntry optionalElement(String id) {
+        return TagEntry.optionalElement(Identifier.parse(id));
     }
 }

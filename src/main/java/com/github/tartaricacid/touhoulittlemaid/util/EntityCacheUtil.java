@@ -24,10 +24,12 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
 @EventBusSubscriber(modid = TouhouLittleMaid.MOD_ID, value = Dist.CLIENT)
 public final class EntityCacheUtil {
+    private static final AtomicInteger PREVIEW_ENTITY_ID = new AtomicInteger(-10000);
     /**
      * 实体缓存，在客户端会大量运用实体渲染，这个缓存可以减少重复创建实体带来的性能问题
      */
@@ -56,11 +58,15 @@ public final class EntityCacheUtil {
         try {
             return (E) ENTITY_CACHE.get(type, () -> {
                 E e = type.create(level, reason);
-                return Objects.requireNonNullElseGet(e, () -> fallback.apply(level, reason));
+                E entity = Objects.requireNonNullElseGet(e, () -> fallback.apply(level, reason));
+                entity.setId(PREVIEW_ENTITY_ID.getAndDecrement());
+                return entity;
             });
         } catch (ExecutionException e) {
             TouhouLittleMaid.LOGGER.error("Failed to create preview entity", e);
-            return fallback.apply(level, reason);
+            E entity = fallback.apply(level, reason);
+            entity.setId(PREVIEW_ENTITY_ID.getAndDecrement());
+            return entity;
         }
     }
 

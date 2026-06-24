@@ -8,6 +8,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
@@ -42,7 +43,8 @@ public class MaidMoveControl extends MoveControl {
             float speedLerp = Mth.lerp(1, this.maid.getSpeed(), speed);
 
             if (maid.getSwimManager().getSwimTarget() != null) {
-                maid.getLookControl().setLookAt(maid.getSwimManager().getSwimTarget().getCenter());
+                Vec3 centerOf = Vec3.atCenterOf(maid.getSwimManager().getSwimTarget());
+                maid.getLookControl().setLookAt(centerOf);
             }
 
             // 太慢了，3 倍基础速度

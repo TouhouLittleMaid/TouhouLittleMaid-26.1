@@ -51,6 +51,10 @@ recipeList:
       methodPattern: net.minecraft.client.renderer.GameRenderer getGameRenderState()
       newMethodName: gameRenderState
 
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid isBaby()
+      newMethodName: canBeABaby
+
   - org.openrewrite.text.FindAndReplace:
       find: Blocks.WHITE_WOOL
       replace: Blocks.WOOL.white()

@@ -1,0 +1,348 @@
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/block/BlockMaidBed.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/block/BlockMaidBed.java
+index 4ce7c0a0..d7801676 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/block/BlockMaidBed.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/block/BlockMaidBed.java
+@@ -56,6 +56,7 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
+                 .setId(ResourceKey.create(Registries.BLOCK, id))
+                 .sound(SoundType.WOOD)
+                 .strength(0.2F)
++                .bounceRestitution(0.75F)
+                 .noOcclusion());
+         this.registerDefaultState(this.stateDefinition.any()
+                 .setValue(PART, BedPart.FOOT)
+@@ -153,19 +154,6 @@ public class BlockMaidBed extends HorizontalDirectionalBlock implements EntityBl
+         super.fallOn(worldIn, blockState, pos, entityIn, fallDistance * 0.5f);
+     }
+
+-    @Override
+-    public void updateEntityMovementAfterFallOn(BlockGetter worldIn, Entity entity) {
+-        if (entity.isSuppressingBounce()) {
+-            super.updateEntityMovementAfterFallOn(worldIn, entity);
+-        } else {
+-            Vec3 movement = entity.getDeltaMovement();
+-            if (movement.y < 0) {
+-                double modulus = entity instanceof LivingEntity ? 1.0 : 0.8;
+-                entity.setDeltaMovement(movement.x, -movement.y * 0.66 * modulus, movement.z);
+-            }
+-        }
+-    }
+-
+     @Override
+     public PushReaction getPistonPushReaction(BlockState state) {
+         return PushReaction.DESTROY;
+
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/item/AbstractEntityFromItem.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/item/AbstractEntityFromItem.java
+index 7ed34646..08353b56 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/item/AbstractEntityFromItem.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/item/AbstractEntityFromItem.java
+@@ -133,7 +133,12 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
+     }
+ 
+     @Override
+-    public void knockback(double strength, double ratioX, double ratioZ) {
++    public void knockback(double power, double xd, double zd, DamageSource source, float damage) {
++        // 不允许被击退效果影响
++    }
++
++    @Override
++    public void knockback(double power, double xd, double zd, DamageSource source, float damage, boolean comesFromEffect) {
+         // 不允许被击退效果影响
+     }
+ 
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/monster/EntityFairy.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/monster/EntityFairy.java
+index a8416684..c6468113 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/monster/EntityFairy.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/monster/EntityFairy.java
+@@ -33,7 +33,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+ import net.minecraft.world.entity.ai.navigation.PathNavigation;
+ import net.minecraft.world.entity.ai.village.poi.PoiManager;
+-import net.minecraft.world.entity.animal.FlyingAnimal;
+ import net.minecraft.world.entity.monster.Monster;
+ import net.minecraft.world.entity.monster.RangedAttackMob;
+ import net.minecraft.world.entity.player.Player;
+@@ -46,7 +45,7 @@ import javax.annotation.Nullable;
+ 
+ import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
+ 
+-public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnimal, IHasPowerPoint {
++public class EntityFairy extends Monster implements RangedAttackMob, IHasPowerPoint {
+     public static final EntityType<EntityFairy> TYPE = EntityType.Builder.<EntityFairy>of(EntityFairy::new, MobCategory.MONSTER)
+             .sized(0.6f, 1.5f).clientTrackingRange(10).build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("fairy")));
+ 
+@@ -201,8 +200,8 @@ public class EntityFairy extends Monster implements RangedAttackMob, FlyingAnima
+     }
+ 
+     @Override
+-    public boolean isFlying() {
+-        return !this.onGround();
++    protected boolean omnidirectionalAirMover() {
++        return true;
+     }
+ 
+     @Override
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/passive/MaidCombatManager.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/passive/MaidCombatManager.java
+index 3e093149..c0ae19ee 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/passive/MaidCombatManager.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/entity/passive/MaidCombatManager.java
+@@ -286,8 +286,9 @@ public class MaidCombatManager {
+                 if (entity != maid && entity != target && !maid.isAlliedTo(entity) && maid.canAttack(entity) && maid.wantsToAttack(entity, maid.getOwner())) {
+                     float posX = Mth.sin(maid.getYRot() * ((float) Math.PI / 180F));
+                     float posY = -Mth.cos(maid.getYRot() * ((float) Math.PI / 180F));
+-                    entity.knockback(0.4, posX, posY);
+-                    entity.hurt(maid.damageSources().mobAttack(maid), sweepDamage);
++                    DamageSource damageSource = maid.damageSources().mobAttack(maid);
++                    entity.knockback(0.4, posX, posY,damageSource,sweepDamage);
++                    entity.hurt(damageSource, sweepDamage);
+                 }
+             }
+             maid.level.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, maid.getSoundSource(), 1, 1);
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/mixin/client/LevelExtractorMixin.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/mixin/client/LevelExtractorMixin.java
+new file mode 100644
+index 00000000..ab59b290
+--- /dev/null
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/mixin/client/LevelExtractorMixin.java
+@@ -0,0 +1,25 @@
++package com.github.tartaricacid.touhoulittlemaid.mixin.client;
++
++import com.github.tartaricacid.touhoulittlemaid.client.animation.gecko.GeckoUpdateManager;
++import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.RenderContextManager;
++import net.minecraft.client.Camera;
++import net.minecraft.client.DeltaTracker;
++import net.minecraft.client.renderer.extract.LevelExtractor;
++import org.spongepowered.asm.mixin.Mixin;
++import org.spongepowered.asm.mixin.injection.At;
++import org.spongepowered.asm.mixin.injection.Inject;
++import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
++
++@Mixin(LevelExtractor.class)
++public class LevelExtractorMixin {
++    @Inject(at = @At(value = "HEAD"), method = "extract(Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/client/Camera;F)V")
++    private void beforeExtractLevel(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci) {
++        RenderContextManager.setRenderingLevel(true);
++    }
++
++    @Inject(at = @At(value = "RETURN"), method = "extract(Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/client/Camera;F)V")
++    private void afterExtractLevel(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci) {
++        GeckoUpdateManager.updateRemaining(deltaTracker.getGameTimeDeltaPartialTick(true));
++        RenderContextManager.setRenderingLevel(false);
++    }
++}
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/mixin/client/LevelRendererMixin.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/mixin/client/LevelRendererMixin.java
+index 417100f0..c2a2f10c 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/mixin/client/LevelRendererMixin.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/mixin/client/LevelRendererMixin.java
+@@ -8,6 +8,7 @@ import net.minecraft.client.Camera;
+ import net.minecraft.client.DeltaTracker;
+ import net.minecraft.client.renderer.LevelRenderer;
+ import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
++import net.minecraft.client.renderer.extract.LevelExtractor;
+ import net.minecraft.client.renderer.state.level.CameraRenderState;
+ import org.joml.Matrix4fc;
+ import org.joml.Vector4f;
+@@ -18,19 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+ 
+ @Mixin(LevelRenderer.class)
+ public class LevelRendererMixin {
+-    @Inject(at = @At(value = "HEAD"), method = "extractLevel(Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/client/Camera;F)V")
+-    private void beforeExtractLevel(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci) {
+-        RenderContextManager.setRenderingLevel(true);
+-    }
+-
+-    @Inject(at = @At(value = "RETURN"), method = "extractLevel(Lnet/minecraft/client/DeltaTracker;Lnet/minecraft/client/Camera;F)V")
+-    private void afterExtractLevel(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci) {
+-        GeckoUpdateManager.updateRemaining(deltaTracker.getGameTimeDeltaPartialTick(true));
+-        RenderContextManager.setRenderingLevel(false);
+-    }
+-
+-    @Inject(at = @At(value = "RETURN"), method = "renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V")
+-    private void afterRenderLevel(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci) {
++    @Inject(at = @At(value = "RETURN"), method = "render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V")
++    private void afterRenderLevel(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker, boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix, GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky, CallbackInfo ci) {
+         GeckoUpdateManager.finalizeFrame();
+     }
+ }
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/MaidItemStorageHelper.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/MaidItemStorageHelper.java
+index df907cb9..dd9ea011 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/MaidItemStorageHelper.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/MaidItemStorageHelper.java
+@@ -61,7 +61,7 @@ public final class MaidItemStorageHelper {
+     public static void spawnMaidPhoto(Level worldIn, CompoundTag data, Player playerIn) {
+         ItemStack photo = InitItems.PHOTO.get().getDefaultInstance();
+         ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, worldIn.registryAccess(), data);
+-        Optional<Entity> optional = EntityType.create(input, worldIn, EntitySpawnReason.SPAWN_ITEM_USE);
++        Optional<Entity> optional = EntityType.create(input, worldIn, new EntitySpawnRequest(EntitySpawnReason.SPAWN_ITEM_USE, false));
+         if (optional.isEmpty() || !(optional.get() instanceof EntityMaid maid)) {
+             return;
+         }
+@@ -109,7 +109,7 @@ public final class MaidItemStorageHelper {
+         tag.remove(LivingEntity.TAG_HEALTH);
+         tag.remove(LivingEntity.TAG_HURT_TIME);
+         tag.remove(LivingEntity.TAG_DEATH_TIME);
+-        tag.remove(LivingEntity.TAG_HURT_BY_TIMESTAMP);
++        //tag.remove(LivingEntity.TAG_HURT_BY_TIMESTAMP);
+ 
+         tag.remove(Leashable.LEASH_TAG);
+ 
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/EntityTypeUtil.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/EntityTypeUtil.java
+index 7b893010..b83509d1 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/EntityTypeUtil.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/EntityTypeUtil.java
+@@ -3,6 +3,7 @@ package com.github.tartaricacid.touhoulittlemaid.util.migrate;
+ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.resources.Identifier;
+ import net.minecraft.world.entity.EntityType;
++import net.minecraft.world.entity.EntityTypes;
+ 
+ import java.util.Optional;
+ 
+@@ -19,46 +20,46 @@ public final class EntityTypeUtil {
+     }
+ 
+     public static EntityType<?> wolf() {
+-        return EntityType.WOLF;
++        return EntityTypes.WOLF;
+     }
+ 
+     public static EntityType<?> cat() {
+-        return EntityType.CAT;
++        return EntityTypes.CAT;
+     }
+ 
+     public static EntityType<?> parrot() {
+-        return EntityType.PARROT;
++        return EntityTypes.PARROT;
+     }
+ 
+     public static EntityType<?> player() {
+-        return EntityType.PLAYER;
++        return EntityTypes.PLAYER;
+     }
+ 
+     public static EntityType<?> armorStand() {
+-        return EntityType.ARMOR_STAND;
++        return EntityTypes.ARMOR_STAND;
+     }
+ 
+     public static EntityType<?> item() {
+-        return EntityType.ITEM;
++        return EntityTypes.ITEM;
+     }
+ 
+     public static EntityType<?> lightningBolt() {
+-        return EntityType.LIGHTNING_BOLT;
++        return EntityTypes.LIGHTNING_BOLT;
+     }
+ 
+     public static EntityType<?> ironGolem() {
+-        return EntityType.IRON_GOLEM;
++        return EntityTypes.IRON_GOLEM;
+     }
+ 
+     public static EntityType<?> creeper() {
+-        return EntityType.CREEPER;
++        return EntityTypes.CREEPER;
+     }
+ 
+     public static EntityType<?> zombie() {
+-        return EntityType.ZOMBIE;
++        return EntityTypes.ZOMBIE;
+     }
+ 
+     public static EntityType<?> allay() {
+-        return EntityType.ALLAY;
++        return EntityTypes.ALLAY;
+     }
+ }
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/I18nUtil.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/I18nUtil.java
+index 6dd9f484..fbb98819 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/I18nUtil.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/I18nUtil.java
+@@ -1,6 +1,7 @@
+ package com.github.tartaricacid.touhoulittlemaid.util.migrate;
+ 
+ import net.minecraft.client.resources.language.I18n;
++import net.minecraft.locale.Language;
+ 
+ /**
+  * 方便 26.1 -> 26.2 迁移的类
+@@ -10,7 +11,7 @@ public final class I18nUtil {
+     }
+ 
+     public static boolean exists(String key) {
+-        return I18n.exists(key);
++        return Language.getInstance().has(key);
+     }
+ 
+     public static String get(String key, Object... args) {
+diff --git a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/ScreenUtil.java b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/ScreenUtil.java
+index b2ecc4ff..b891432a 100644
+--- a/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/ScreenUtil.java
++++ b/src/main/java/com/github/tartaricacid/touhoulittlemaid/util/migrate/ScreenUtil.java
+@@ -1,7 +1,7 @@
+ package com.github.tartaricacid.touhoulittlemaid.util.migrate;
+ 
+ import net.minecraft.client.Minecraft;
+-import net.minecraft.client.gui.Gui;
++import net.minecraft.client.gui.Hud;
+ import net.minecraft.client.gui.screens.Screen;
+ import net.minecraft.core.Holder;
+ import net.minecraft.network.chat.Component;
+@@ -18,35 +18,35 @@ public final class ScreenUtil {
+     }
+ 
+     public static void setScreen(@Nullable Screen screen) {
+-        Minecraft.getInstance().setScreen(screen);
++        Minecraft.getInstance().gui.setScreen(screen);
+     }
+ 
+     @Nullable
+     public static Screen getScreen() {
+-        return Minecraft.getInstance().screen;
++        return Minecraft.getInstance().gui.screen();
+     }
+ 
+     public static boolean hasOverlay() {
+-        return Minecraft.getInstance().getOverlay() != null;
++        return Minecraft.getInstance().gui.overlay() != null;
+     }
+ 
+     public static void setTitle(Component title) {
+-        Minecraft.getInstance().gui.setTitle(title);
++        Minecraft.getInstance().gui.hud.setTitle(title);
+     }
+ 
+     public static void setSubtitle(Component subtitle) {
+-        Minecraft.getInstance().gui.setSubtitle(subtitle);
++        Minecraft.getInstance().gui.hud.setSubtitle(subtitle);
+     }
+ 
+     public static void setOverlayMessage(Component message, boolean animate) {
+-        Minecraft.getInstance().gui.setOverlayMessage(message, animate);
++        Minecraft.getInstance().gui.hud.setOverlayMessage(message, animate);
+     }
+ 
+     public static Identifier getMobEffectSprite(Holder<MobEffect> effectHolder) {
+-        return Gui.getMobEffectSprite(effectHolder);
++        return Hud.getMobEffectSprite(effectHolder);
+     }
+ 
+     public static boolean isHideGui() {
+-        return Minecraft.getInstance().options.hideGui;
++        return Minecraft.getInstance().gui.hud.isHidden();
+     }
+ }
+diff --git a/src/main/resources/touhou_little_maid.mixins.json b/src/main/resources/touhou_little_maid.mixins.json
+index e2d419e3..f06e4dbd 100644
+--- a/src/main/resources/touhou_little_maid.mixins.json
++++ b/src/main/resources/touhou_little_maid.mixins.json
+@@ -32,7 +32,8 @@
+     "client.LanguageMixin",
+     "client.LivingEntityRendererMixin",
+     "client.InventoryScreenMixin",
+-    "client.LevelRendererMixin"
++    "client.LevelRendererMixin",
++    "client.LevelExtractorMixin"
+   ],
+   "injectors": {
+     "defaultRequire": 1

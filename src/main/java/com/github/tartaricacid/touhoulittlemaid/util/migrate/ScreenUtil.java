@@ -45,4 +45,8 @@ public final class ScreenUtil {
     public static Identifier getMobEffectSprite(Holder<MobEffect> effectHolder) {
         return Gui.getMobEffectSprite(effectHolder);
     }
+
+    public static boolean isHideGui() {
+        return Minecraft.getInstance().options.hideGui;
+    }
 }

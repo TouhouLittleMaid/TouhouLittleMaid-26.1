@@ -1,12 +1,12 @@
 package com.github.tartaricacid.touhoulittlemaid.client.overlay;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.entity.item.EntityBroom;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.util.GuiTools;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
+import com.github.tartaricacid.touhoulittlemaid.util.migrate.ScreenUtil;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -24,9 +24,8 @@ public class BroomTipsOverlay implements GuiLayer {
     @Override
     public void render(@NotNull GuiGraphicsExtractor guiGraphics, @NotNull DeltaTracker deltaTracker) {
         Minecraft minecraft = Minecraft.getInstance();
-        Options options = minecraft.options;
         Player player = minecraft.player;
-        if (options.hideGui) {
+        if (ScreenUtil.isHideGui()) {
             return;
         }
         if (player == null) {
