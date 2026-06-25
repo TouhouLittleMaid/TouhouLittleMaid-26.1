@@ -59,7 +59,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
     /**
      * 自定义女仆模型，额外模型相关信息
      */
-    public MaidModelInfo modelInfo;
+    public @Nullable MaidModelInfo modelInfo;
     /**
      * Simple Bedrock Model 模型，仅在 SIMPLE_BEDROCK 模式下渲染
      */
@@ -353,7 +353,7 @@ public class EntityMaidRenderState extends HumanoidRenderState {
 
     private static void extractChatBubbleState(EntityMaid maid, EntityMaidRenderState state, float partialTicks) {
         // 暂定只能女仆显示
-        if (!MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() || !maid.getConfigManager().isChatBubbleShow()) {
+        if (state.modelInfo == null || !MaidConfig.GLOBAL_MAID_SHOW_CHAT_BUBBLE.get() || !maid.getConfigManager().isChatBubbleShow()) {
             return;
         }
 

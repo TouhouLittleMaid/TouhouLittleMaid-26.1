@@ -18,10 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class CustomPackReloadListener extends SimplePreparableReloadListener<Void> {
     public static void asyncReload() {
-        CompletableFuture.supplyAsync(() -> {
-            reloadCustomPacks();
-            return null;
-        }, Util.backgroundExecutor());
+        Minecraft.getInstance().execute(CustomPackReloadListener::reloadCustomPacks);
     }
 
     private static void reloadCustomPacks() {

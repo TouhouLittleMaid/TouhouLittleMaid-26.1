@@ -23,11 +23,13 @@ public class ChairModelDetailsGui extends AbstractModelDetailsGui<EntityChair, C
 
     public ChairModelDetailsGui(EntityChair sourceEntity, ChairModelInfo modelInfo) {
         super(sourceEntity, InitEntities.CHAIR.get().create(sourceEntity.level(), EntitySpawnReason.COMMAND), modelInfo);
-        guiEntity.setModelId(modelInfo.getModelId().toString());
+        this.guiEntity.setModelId(modelInfo.getModelId().toString());
+        this.guiEntity.setId(-1);
         if (Minecraft.getInstance().level != null) {
             this.maid = InitEntities.MAID.get().create(Minecraft.getInstance().level, EntitySpawnReason.COMMAND);
             if (this.maid != null) {
                 this.maid.setModelId("authors_and_credits:wine_fox_maid");
+                this.maid.setId(-1);
             }
         }
     }

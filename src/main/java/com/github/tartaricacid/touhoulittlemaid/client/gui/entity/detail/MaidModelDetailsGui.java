@@ -30,6 +30,7 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
     public MaidModelDetailsGui(EntityMaid sourceEntity, MaidModelInfo modelInfo) {
         super(sourceEntity, InitEntities.MAID.get().create(sourceEntity.level(), EntitySpawnReason.COMMAND), modelInfo);
         this.guiEntity.setModelId(modelInfo.getModelId().toString());
+        this.guiEntity.setId(-1);
         this.guiEntity.setOnGround(true);
         this.guiEntity.yHeadRot = 0;
         this.guiEntity.yHeadRotO = 0;
@@ -41,6 +42,7 @@ public class MaidModelDetailsGui extends AbstractModelDetailsGui<EntityMaid, Mai
             this.chair = InitEntities.CHAIR.get().create(Minecraft.getInstance().level, EntitySpawnReason.COMMAND);
             if (this.chair != null) {
                 this.chair.setModelId("touhou_little_maid:low_stool");
+                this.chair.setId(-1);
             }
         }
     }

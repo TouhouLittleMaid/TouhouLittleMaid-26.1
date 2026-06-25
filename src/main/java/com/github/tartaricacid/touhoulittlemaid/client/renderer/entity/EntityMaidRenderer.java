@@ -125,6 +125,9 @@ public class EntityMaidRenderer extends MobRenderer<EntityMaid, EntityMaidRender
 
     @Override
     protected void scale(EntityMaidRenderState state, PoseStack poseStack) {
+        if (state.modelInfo == null) {
+            return;
+        }
         var scale = state.modelInfo.getRenderEntityScale();
         poseStack.scale(scale, scale, scale);
     }

@@ -19,7 +19,7 @@ public class EntityChairRenderState extends LivingEntityRenderState {
     public ModelType modelType = ModelType.NONE;
 
     public ChairModelInfo chairInfo;
-    public EntityChairModel bedrockModel;
+    public @Nullable EntityChairModel bedrockModel;
     public List<IAnimation<EntityChairRenderState>> chairAnimations = Collections.emptyList();
 
     @Nullable

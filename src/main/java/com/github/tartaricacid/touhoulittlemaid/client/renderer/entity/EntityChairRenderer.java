@@ -115,6 +115,9 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
         }
 
         if (state.modelType == ModelType.SIMPLE_BEDROCK) {
+            if (state.bedrockModel == null) {
+                return;
+            }
             this.model = state.bedrockModel;
             // 模型动画设置
             this.model.setAnimations(state.chairAnimations);
