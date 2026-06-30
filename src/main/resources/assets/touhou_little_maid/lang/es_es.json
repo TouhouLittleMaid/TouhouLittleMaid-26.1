@@ -310,7 +310,7 @@
   "overlay.touhou_little_maid.ntr_item.tips": "Cambia la maid de otra persona a la tuya",
   "overlay.touhou_little_maid.remove_backpack.tips": "Quitar la mochila de la Maid",
   "overlay.touhou_little_maid.saddle.tips": "Clic derecho para llevar a la Maid en tus brazos",
-  "key.category.touhou_little_maid": "Touhou Little Maid",
+  "key.category.touhou_little_maid.main": "Touhou Little Maid",
   "key.touhou_little_maid.stt_chat.desc": "Chat IA STT",
   "key.touhou_little_maid.dismount.desc": "Desmontar de Escoba",
   "gui.touhou_little_maid.schedule.day": "Turno de dia",

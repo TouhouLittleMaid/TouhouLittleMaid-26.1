@@ -401,7 +401,7 @@
   "overlay.touhou_little_maid.ntr_item.tips": "Change someone else's maid into your own",
   "overlay.touhou_little_maid.remove_backpack.tips": "Remove the backpack from the maid",
   "overlay.touhou_little_maid.saddle.tips": "Right click to carry maid in yours arms",
-  "key.category.touhou_little_maid": "Touhou Little Maid",
+  "key.category.touhou_little_maid.main": "Touhou Little Maid",
   "key.touhou_little_maid.stt_chat.desc": "STT AI Chat",
   "key.touhou_little_maid.dismount.desc": "Broom Dismount",
   "gui.touhou_little_maid.schedule.day": "Day Shift",

@@ -283,7 +283,7 @@
   "overlay.touhou_little_maid.ntr_item.tips": "다른 사람의 메이드를 내 메이드로 변경합니다.",
   "overlay.touhou_little_maid.remove_backpack.tips": "메이드로부터 배낭을 제거합니다.",
   "overlay.touhou_little_maid.saddle.tips": "마우스 오른쪽 클릭으로 메이드를 안을 수 있습니다",
-  "key.category.touhou_little_maid": "동방 리틀 메이드",
+  "key.category.touhou_little_maid.main": "동방 리틀 메이드",
   "key.touhou_little_maid.stt_chat.desc": "STT AI 챗",
   "gui.touhou_little_maid.schedule.day": "낮 근무",
   "gui.touhou_little_maid.schedule.night": "밤 근무",

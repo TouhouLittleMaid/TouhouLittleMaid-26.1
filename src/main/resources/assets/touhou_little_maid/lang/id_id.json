@@ -303,7 +303,7 @@
   "overlay.touhou_little_maid.ntr_item.tips": "Mengubah Maid orang lain menjadi milik Anda",
   "overlay.touhou_little_maid.remove_backpack.tips": "Melepaskan tas dari Maid",
   "overlay.touhou_little_maid.saddle.tips": "Klik kanan untuk membawa Maid Anda pada lengan Anda",
-  "key.category.touhou_little_maid": "Touhou Little Maid",
+  "key.category.touhou_little_maid.main": "Touhou Little Maid",
   "key.touhou_little_maid.stt_chat.desc": "STT Obrolan AI",
   "gui.touhou_little_maid.schedule.day": "Shift Siang",
   "gui.touhou_little_maid.schedule.night": "Shift Malam",

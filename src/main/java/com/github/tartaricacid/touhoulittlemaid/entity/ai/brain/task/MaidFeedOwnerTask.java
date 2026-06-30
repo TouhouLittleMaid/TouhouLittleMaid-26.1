@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.CombinedResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
 
 public class MaidFeedOwnerTask extends MaidCheckRateTask {
     private static final int MAX_DELAY_TIME = 20;
@@ -89,10 +90,11 @@ public class MaidFeedOwnerTask extends MaidCheckRateTask {
 
             IntList map = !highFoods.isEmpty() ? highFoods : !lowFoods.isEmpty() ? lowFoods : lowestFoods;
             map.intStream().skip(maid.getRandom().nextInt(map.size())).findFirst().ifPresent(slot -> {
-                ItemStack stack = inv.getResource(slot).toStack(inv.getAmountAsInt(slot));
+                ItemStack stack = ItemUtil.getStack(inv, slot);
+                int beforeCount = stack.getCount();
                 ItemStack feedResult = task.feed(stack, player);
                 //Fixme 替换可变的ItemStack
-                ItemsUtil.extractItem(inv, slot, stack.getCount() - feedResult.getCount(), false, null);
+                ItemsUtil.extractItem(inv, slot, beforeCount - feedResult.getCount(), false, null);
                 maid.swing(InteractionHand.MAIN_HAND);
                 this.setNextCheckTickCount(5);
                 if (maid.getOwner() instanceof ServerPlayer serverPlayer) {

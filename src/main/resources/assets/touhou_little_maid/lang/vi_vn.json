@@ -393,7 +393,7 @@
   "overlay.touhou_little_maid.ntr_item.tips": "Chuyển đổi maid của người khác thành maid của bạn",
   "overlay.touhou_little_maid.remove_backpack.tips": "Loại bỏ balo khỏi maid",
   "overlay.touhou_little_maid.saddle.tips": "Nhấn chuột phải để bế maid trên tay",
-  "key.category.touhou_little_maid": "Touhou Little Maid",
+  "key.category.touhou_little_maid.main": "Touhou Little Maid",
   "key.touhou_little_maid.stt_chat.desc": "Trò Chuyện AI STT",
   "key.touhou_little_maid.dismount.desc": "Rời Khỏi Chổi",
   "gui.touhou_little_maid.schedule.day": "Ca Ngày",

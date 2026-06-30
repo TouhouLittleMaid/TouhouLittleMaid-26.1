@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.List;
 import java.util.Objects;
@@ -131,20 +130,17 @@ public class MaidBreathAirTask extends Behavior<EntityMaid> {
         var backpackInv = maid.getAvailableBackpackInv();
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
-        try (Transaction transaction = Transaction.openRoot()) {
-            int stackSlot = ItemsUtil.findStackSlot(backpackInv, stack -> this.isBreatheFood(maid, ItemResource.of(stack)));
-            if (stackSlot >= 0) {
-                ItemStack canExtract = ItemsUtil.extractItem(backpackInv, stackSlot, 99, true, transaction);
-                if (!canExtract.isEmpty()) {
-                    ItemStack foodStack = ItemsUtil.extractItem(backpackInv, stackSlot, canExtract.getCount(), false, transaction);
-                    ItemStack handStack = itemInHand.copy();
-                    maid.setItemInHand(eanHand, foodStack);
-                    maid.memoryHandItemStack(handStack);
-                    itemInHand = maid.getItemInHand(eanHand);
-                    this.startEatBreatheItem(maid, itemInHand, eanHand);
-                    transaction.commit();
-                    return true;
-                }
+        int stackSlot = ItemsUtil.findStackSlot(backpackInv, stack -> this.isBreatheFood(maid, ItemResource.of(stack)));
+        if (stackSlot >= 0) {
+            ItemStack canExtract = ItemsUtil.extractItem(backpackInv, stackSlot, 99, true, null);
+            if (!canExtract.isEmpty()) {
+                ItemStack foodStack = ItemsUtil.extractItem(backpackInv, stackSlot, canExtract.getCount(), false, null);
+                ItemStack handStack = itemInHand.copy();
+                maid.setItemInHand(eanHand, foodStack);
+                maid.memoryHandItemStack(handStack);
+                itemInHand = maid.getItemInHand(eanHand);
+                this.startEatBreatheItem(maid, itemInHand, eanHand);
+                return true;
             }
         }
         return false;

@@ -393,7 +393,7 @@
   "overlay.touhou_little_maid.ntr_item.tips": "Сменить чужую горничную на свою",
   "overlay.touhou_little_maid.remove_backpack.tips": "Убрать рюкзак с горничной",
   "overlay.touhou_little_maid.saddle.tips": "ПКМ, чтобы взять горничную в ваши руки",
-  "key.category.touhou_little_maid": "Touhou Little Maid",
+  "key.category.touhou_little_maid.main": "Touhou Little Maid",
   "key.touhou_little_maid.stt_chat.desc": "STT AI чат",
   "key.touhou_little_maid.dismount.desc": "Спешивание с метлы",
   "gui.touhou_little_maid.schedule.day": "Дневная смена",

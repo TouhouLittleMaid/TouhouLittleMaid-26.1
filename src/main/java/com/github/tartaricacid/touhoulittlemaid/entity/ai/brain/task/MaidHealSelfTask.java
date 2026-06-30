@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.transfer.item.ItemResource;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.List;
 
@@ -71,23 +70,21 @@ public class MaidHealSelfTask extends MaidCheckRateTask {
 
         // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
         int stackSlot = ItemsUtil.findStackSlot(backpackInv, DefaultMaidHealSelfMeal::isHealMeal);
-        if (stackSlot != -1)
-            try (Transaction transaction = Transaction.openRoot()) {
-                ItemResource resource = backpackInv.getResource(stackSlot);
-                int foodStack = backpackInv.extract(stackSlot, resource, resource.getMaxStackSize(), transaction);
-                if (foodStack == -1) return;
-                ItemStack handStack = itemInHand.copy();
-                maid.setItemInHand(eanHand, resource.toStack(foodStack));
-                itemInHand = maid.getItemInHand(eanHand);
-                maid.memoryHandItemStack(handStack);
-                transaction.commit();
+        if (stackSlot != -1) {
+            ItemResource resource = backpackInv.getResource(stackSlot);
+            ItemStack foodStack = ItemsUtil.extractItem(backpackInv, stackSlot, resource.getMaxStackSize(), false, null);
+            if (foodStack.isEmpty()) return;
+            ItemStack handStack = itemInHand.copy();
+            maid.setItemInHand(eanHand, foodStack);
+            itemInHand = maid.getItemInHand(eanHand);
+            maid.memoryHandItemStack(handStack);
 
-                for (IMaidMeal maidMeal : maidMeals) {
-                    if (maidMeal.canMaidEat(maid, itemInHand, eanHand)) {
-                        maidMeal.onMaidEat(maid, itemInHand, eanHand);
-                        return;
-                    }
+            for (IMaidMeal maidMeal : maidMeals) {
+                if (maidMeal.canMaidEat(maid, itemInHand, eanHand)) {
+                    maidMeal.onMaidEat(maid, itemInHand, eanHand);
+                    return;
                 }
             }
+        }
     }
 }

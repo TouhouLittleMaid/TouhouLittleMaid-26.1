@@ -336,7 +336,7 @@
   "overlay.touhou_little_maid.ntr_item.tips": "將其他人的女僕轉換成你自己的",
   "overlay.touhou_little_maid.remove_backpack.tips": "移除女僕的背包",
   "overlay.touhou_little_maid.saddle.tips": "右鍵將女僕抱在懷裡",
-  "key.category.touhou_little_maid": "車萬女僕",
+  "key.category.touhou_little_maid.main": "車萬女僕",
   "key.touhou_little_maid.stt_chat.desc": "女僕 AI 語音對話",
   "key.touhou_little_maid.dismount.desc": "脫離掃帚",
   "gui.touhou_little_maid.schedule.day": "白班",
