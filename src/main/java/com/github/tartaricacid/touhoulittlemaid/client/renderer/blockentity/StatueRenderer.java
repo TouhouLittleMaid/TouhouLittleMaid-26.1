@@ -38,7 +38,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -94,18 +93,16 @@ public class StatueRenderer implements BlockEntityRenderer<BlockEntityStatue, St
         });
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("unchecked,rawtypes")
     private void extractEntityRenderState(BlockEntityStatue te, StatueRenderState state, CompoundTag data,
                                           Level level, EntityType type, float partialTick) throws ExecutionException {
         Entity entity;
         if (type.equals(InitEntities.MAID.get())) {
             long key = te.getBlockPos().asLong();
-            entity = EntityCacheUtil.STATUE_CACHE.get(key, () -> new EntityMaid(level));
+            entity = EntityCacheUtil.getMaidInStatue(key, level);
         } else {
-            entity = EntityCacheUtil.ENTITY_CACHE.get(type, () -> {
-                Entity e = type.create(level, EntitySpawnReason.COMMAND);
-                return Objects.requireNonNullElseGet(e, () -> new EntityMaid(level));
-            });
+            entity = EntityCacheUtil.getEntity(type, (l, _) ->
+                    new EntityMaid(l), level, EntitySpawnReason.COMMAND);
         }
 
         RegistryAccess access = entity.registryAccess();

@@ -89,18 +89,16 @@ public class GarageKitRenderer implements BlockEntityRenderer<BlockEntityGarageK
         });
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings("unchecked,rawtypes")
     private void extractEntityRenderState(BlockEntityGarageKit kit, GarageKitRenderState state, CompoundTag data,
                                           Level level, EntityType type, float partialTick) throws ExecutionException {
         Entity entity;
         if (type.equals(InitEntities.MAID.get())) {
             long key = kit.getBlockPos().asLong();
-            entity = EntityCacheUtil.STATUE_CACHE.get(key, () -> new EntityMaid(level));
+            entity = EntityCacheUtil.getMaidInStatue(key, level);
         } else {
-            entity = EntityCacheUtil.ENTITY_CACHE.get(type, () -> {
-                Entity e = type.create(level, EntitySpawnReason.COMMAND);
-                return Objects.requireNonNullElseGet(e, () -> new EntityMaid(level));
-            });
+            entity = EntityCacheUtil.getEntity(type, (l, _) ->
+                    new EntityMaid(l), level, EntitySpawnReason.COMMAND);
         }
 
         RegistryAccess access = entity.registryAccess();
