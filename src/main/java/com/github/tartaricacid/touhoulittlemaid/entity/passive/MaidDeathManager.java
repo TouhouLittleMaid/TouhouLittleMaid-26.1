@@ -52,7 +52,7 @@ public class MaidDeathManager {
             // 掉出世界的判断
             Vec3 position = Vec3.atBottomCenterOf(maid.blockPosition());
             // 防止卡在基岩里？
-            if (maid.getY() < maid.level.getMaxY() + 5) {
+            if (maid.getY() < maid.level.getMinY() + 5) {
                 position = new Vec3(position.x, maid.level.getMinY() + 5, position.z);
             }
             if (maid.getY() > maid.level.getMaxY()) {

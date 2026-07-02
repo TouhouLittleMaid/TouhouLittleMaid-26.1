@@ -118,6 +118,7 @@ public class MaidFishingHookRenderer<T extends MaidFishingHook, S extends MaidFi
             }
             if (OculusCompat.isOculusInstalled()) {
                 buffer.addVertex(pose, 0.0f, 0.0f, 0.0f)
+                        .setLineWidth(width)
                         .setColor(0, 0, 0, 255)
                         .setNormal(pose, 0.0F, 0.0F, 0.0F);
             }
