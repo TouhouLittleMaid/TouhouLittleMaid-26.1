@@ -240,21 +240,24 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 
     // JEI
-    implementation "maven.modrinth:jei:29.6.2.31-neoforge"
+    implementation "maven.modrinth:jei:29.29.0.76-neoforge"
 
     // Cloth Config
     implementation "maven.modrinth:cloth-config:26.1.154+neoforge"
 
     // Jade
-    implementation "maven.modrinth:jade:26.1.1+neoforge"
+    implementation "maven.modrinth:jade:26.1.10+neoforge"
 
     // Curios
-    implementation "maven.modrinth:curios:15.0.0-beta.2+26.1.2-neoforge"
+    implementation "maven.modrinth:curios:15.0.0+26.1.2-neoforge"
+
+    // Patchouli
+    implementation "maven.modrinth:patchouli:26.1-94-beta-neoforge"
 
     // IPN
     // runtimeOnly "maven.modrinth:kotlin-for-forge:6.2.0"
     // runtimeOnly "maven.modrinth:libipn:neoforge-26.1.2-6.7.2"
-    compileOnly "maven.modrinth:inventory-profiles-next:neoforge-26.1-2.3.2"
+    compileOnly "maven.modrinth:inventory-profiles-next:neoforge-26.1-2.3.6"
 
     compileOnly "maven.modrinth:sodium:mc26.1.2-0.8.12-neoforge"
     compileOnly "maven.modrinth:iris:1.10.9+26.1-neoforge"

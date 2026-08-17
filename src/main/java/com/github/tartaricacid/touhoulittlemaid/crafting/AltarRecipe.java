@@ -64,6 +64,10 @@ public class AltarRecipe implements Recipe<CraftingInput> {
         return this.result.create();
     }
 
+    public boolean isItemCraft() {
+        return entityType.equals(BuiltInRegistries.ENTITY_TYPE.getKey(EntityTypeUtil.item()));
+    }
+
     public void spawnOutputEntity(ServerLevel world, BlockPos pos, @Nullable List<ItemStack> list) {
         EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(entityType);
 

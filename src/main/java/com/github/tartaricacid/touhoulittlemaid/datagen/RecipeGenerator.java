@@ -322,7 +322,7 @@ public class RecipeGenerator extends RecipeProvider {
                 .requires(Items.COAL)
                 .entity(EntityMaid.ENTITY_ID)
                 .langKey("jei.touhou_little_maid.altar_craft.reborn_maid.result")
-                .save(recipeOutput, "reborn_maid");
+                .save(recipeOutput, "altar_recipe/reborn_maid");
 
         AltarRecipeBuilder.shapeless(items, InitItems.MAID_SPAWN_EGG)
                 .power(0.5F)
@@ -334,7 +334,7 @@ public class RecipeGenerator extends RecipeProvider {
                 .requires(Items.COAL)
                 .entity(EntityType.getKey(InitEntities.BOX.get()))
                 .langKey("jei.touhou_little_maid.altar_craft.spawn_box.result")
-                .save(recipeOutput, "spawn_box");
+                .save(recipeOutput, "altar_recipe/spawn_box");
 
         AltarRecipeBuilder.shapeless(items, Items.LIGHT)
                 .power(0.2F)

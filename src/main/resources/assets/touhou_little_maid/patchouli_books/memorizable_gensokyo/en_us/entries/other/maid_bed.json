@@ -1,12 +1,12 @@
 {
   "sortnum": 5,
   "name": "patchouli.touhou_little_maid.book.entries.other.maid_bed.name",
-  "icon": "touhou_little_maid:maid_bed",
+  "icon": "touhou_little_maid:pink_maid_bed",
   "category": "touhou_little_maid:other",
   "pages": [
     {
       "type": "spotlight",
-      "item": "touhou_little_maid:maid_bed",
+      "item": "touhou_little_maid:pink_maid_bed",
       "text": "patchouli.touhou_little_maid.book.entries.other.maid_bed.pages.0.text"
     },
     {
@@ -18,7 +18,7 @@
     },
     {
       "type": "altar_recipe",
-      "recipe_id": "touhou_little_maid:altar_recipe/maid_bed"
+      "recipe_id": "touhou_little_maid:altar_recipe/pink_maid_bed"
     }
   ]
 }

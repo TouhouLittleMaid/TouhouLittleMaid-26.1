@@ -4,45 +4,38 @@ import com.mojang.serialization.Codec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 
-import java.util.Locale;
+import java.util.function.IntFunction;
 
 public enum MonsterType implements StringRepresentable {
-    FRIENDLY,
-    NEUTRAL,
-    HOSTILE;
+    FRIENDLY(0, "friendly"),
+    NEUTRAL(1, "neutral"),
+    HOSTILE(2, "hostile");
 
+    public static final IntFunction<MonsterType> BY_ID = ByIdMap.continuous(s -> s.id, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
     public static final Codec<MonsterType> CODEC = StringRepresentable.fromEnum(MonsterType::values);
-    public static final StreamCodec<ByteBuf, MonsterType> STREAM_CODEC = StreamCodec.of(
-            (byteBuf, type) -> byteBuf.writeInt(type.ordinal()),
-            byteBuf -> getTypeByIndex(byteBuf.readInt())
-    );
+    public static final StreamCodec<ByteBuf, MonsterType> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, s -> s.id);
 
+    private final int id;
+    private final String typeName;
     private final MutableComponent component;
 
-    MonsterType() {
-        this.component = Component.translatable("gui.touhou_little_maid.monster_type." + this.name().toLowerCase(Locale.ENGLISH));
-    }
-
-    public static MonsterType getTypeByIndex(int index) {
-        int length = MonsterType.values().length;
-        return MonsterType.values()[Math.min(index, length - 1)];
+    MonsterType(int id, String typeName) {
+        this.id = id;
+        this.typeName = typeName;
+        this.component = Component.translatable("gui.touhou_little_maid.monster_type.%s".formatted(typeName));
     }
 
     public MonsterType getPrevious() {
-        int index = this.ordinal() - 1;
-        if (index < 0) {
-            index = values().length - 1;
-        }
-        return values()[index % values().length];
+        return BY_ID.apply(this.id - 1);
     }
 
     public MonsterType getNext() {
-        int ordinal = this.ordinal();
-        int length = MonsterType.values().length;
-        return MonsterType.values()[(ordinal + 1) % length];
+        return BY_ID.apply(this.id + 1);
     }
 
     public MutableComponent getComponent() {
@@ -51,6 +44,6 @@ public enum MonsterType implements StringRepresentable {
 
     @Override
     public String getSerializedName() {
-        return this.name().toLowerCase(Locale.ENGLISH);
+        return this.typeName;
     }
 }
