@@ -94,7 +94,7 @@ public class EntityChairRenderer extends LivingEntityRenderer<EntityChair, Entit
     public void submit(EntityChairRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         if (state.hitbox != null) {
             AABB aabb = state.hitbox.move(state.x, state.y, state.z);
-            Gizmos.cuboid(aabb, GizmoStyle.fill(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
+            Gizmos.cuboid(aabb, GizmoStyle.stroke(ARGB.colorFromFloat(1.0F, 1.0F, 0, 0)));
         } else {
             submitChair(state, poseStack, submitNodeCollector, camera);
         }

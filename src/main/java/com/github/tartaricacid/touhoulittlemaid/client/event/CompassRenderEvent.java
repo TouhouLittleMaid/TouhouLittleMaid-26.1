@@ -5,7 +5,9 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemKappaCompass;
+import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gizmos.GizmoStyle;
@@ -95,6 +97,6 @@ public class CompassRenderEvent {
     }
 
     private static void renderText(String text, Vec3 pos, int color) {
-        Gizmos.billboardText(text, pos, new TextGizmo.Style(color, 1.5f, OptionalDouble.empty())).setAlwaysOnTop();
+        RenderHelper.billboardText(text, pos, new TextGizmo.Style(color, 1.5f, OptionalDouble.empty()), Font.DisplayMode.SEE_THROUGH).setAlwaysOnTop();
     }
 }

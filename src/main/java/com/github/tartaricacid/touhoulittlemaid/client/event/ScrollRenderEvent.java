@@ -4,8 +4,9 @@ import com.github.tartaricacid.touhoulittlemaid.TouhouLittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitItems;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemFoxScroll;
 import com.github.tartaricacid.touhoulittlemaid.item.ItemServantBell;
+import com.github.tartaricacid.touhoulittlemaid.util.RenderHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.gizmos.Gizmos;
+import net.minecraft.client.gui.Font;
 import net.minecraft.gizmos.TextGizmo;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -53,14 +54,16 @@ public class ScrollRenderEvent {
         }
         float scale = 0.2f * (((float) viewDistance + 4.0f) / 3.0f);
 
-        Gizmos.billboardText(
+        RenderHelper.billboardText(
                 Math.round(actualDistance) + " m", trackVec.add(0, 0.75 * scale, 0),
-                new TextGizmo.Style(0xffff8800, scale, OptionalDouble.empty())
+                new TextGizmo.Style(0xffff8800, scale, OptionalDouble.empty()),
+                Font.DisplayMode.SEE_THROUGH
         ).setAlwaysOnTop();
 
-        Gizmos.billboardText(
+        RenderHelper.billboardText(
                 "▼", trackVec,
-                new TextGizmo.Style(0xffff0000, scale * 1.2f, OptionalDouble.empty())
+                new TextGizmo.Style(0xffff0000, scale * 1.2f, OptionalDouble.empty()),
+                Font.DisplayMode.SEE_THROUGH
         ).setAlwaysOnTop();
     }
 
