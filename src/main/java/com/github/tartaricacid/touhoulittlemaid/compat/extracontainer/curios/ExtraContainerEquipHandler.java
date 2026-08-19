@@ -5,19 +5,21 @@ import com.github.tartaricacid.touhoulittlemaid.compat.extracontainer.MaidContai
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
+import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.event.CurioChangeEvent;
 
 public class ExtraContainerEquipHandler {
     @SubscribeEvent
-    public void onCurioChange(CurioChangeEvent event) {
+    public void onCurioChange(CurioChangeEvent.Item event) {
         if (!(event.getEntity() instanceof EntityMaid maid)) {
             return;
         }
 
         ItemStack from = event.getFrom();
         ItemStack to = event.getTo();
-        String slotType = event.getIdentifier();
-        int slotIndex = event.getSlotIndex();
+        SlotContext slotContext = event.getSlotContext();
+        String slotType = slotContext.identifier();
+        int slotIndex = slotContext.index();
 
         boolean wasBackpack = ExtraContainerManager.isAnyBackpack(from);
         boolean isBackpack = ExtraContainerManager.isAnyBackpack(to);

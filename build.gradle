@@ -259,13 +259,13 @@ dependencies {
     // runtimeOnly "maven.modrinth:libipn:neoforge-26.1.2-6.7.2"
     compileOnly "maven.modrinth:inventory-profiles-next:neoforge-26.1-2.3.6"
 
-    compileOnly "maven.modrinth:sodium:mc26.1.2-0.8.12-neoforge"
-    compileOnly "maven.modrinth:iris:1.10.9+26.1-neoforge"
+    compileOnly "maven.modrinth:sodium:mc26.1.2-0.9.2-alpha.4-neoforge"
+    compileOnly "maven.modrinth:iris:1.11.3+26.1-neoforge"
 
-    compileOnly "maven.modrinth:aquaculture:2.9.1-neoforge"
+    implementation "maven.modrinth:aquaculture:2.9.2-neoforge"
 
-    compileOnly "maven.modrinth:sophisticated-core:26.1.2-1.4.45.1849"
-    compileOnly "maven.modrinth:sophisticated-backpacks:26.1.2-3.25.55.1739"
+    implementation "maven.modrinth:sophisticated-core:26.1.2-1.4.101.2279"
+    implementation "maven.modrinth:sophisticated-backpacks:26.1.2-3.25.89.2092"
 }
 
 shadowJar {

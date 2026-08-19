@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAttackStrafingTask;
@@ -8,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidRangedW
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidShootTargetTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
@@ -31,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.phys.AABB;
+
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
@@ -58,8 +59,13 @@ public class TaskBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create((level, e) -> hasBow(e) && hasArrow(e), (level, e) -> IRangedAttackTask.findFirstValidAttackTarget(e));
-        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((level, target) -> !hasBow(maid) || !hasArrow(maid) || farAway(target, maid));
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(
+                (_, e) -> hasBow(e) && hasArrow(e),
+                (_, e) -> IRangedAttackTask.findFirstValidAttackTarget(e)
+        );
+        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create(
+                (_, target) -> !hasBow(maid) || !hasArrow(maid) || farAway(target, maid)
+        );
         BehaviorControl<EntityMaid> moveToTargetTask = MaidRangedWalkToTarget.create(0.6f);
         BehaviorControl<EntityMaid> maidAttackStrafingTask = new MaidAttackStrafingTask();
         BehaviorControl<EntityMaid> shootTargetTask = new MaidShootTargetTask();
@@ -75,8 +81,13 @@ public class TaskBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createRideBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create((level, e) -> hasBow(e) && hasArrow(e), (level, e) -> IRangedAttackTask.findFirstValidAttackTarget(e));
-        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((level, target) -> !hasBow(maid) || !hasArrow(maid) || farAway(target, maid));
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(
+                (_, e) -> hasBow(e) && hasArrow(e),
+                (_, e) -> IRangedAttackTask.findFirstValidAttackTarget(e)
+        );
+        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create(
+                (_, target) -> !hasBow(maid) || !hasArrow(maid) || farAway(target, maid)
+        );
         BehaviorControl<EntityMaid> shootTargetTask = new MaidShootTargetTask();
 
         return Lists.newArrayList(

@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAttackStrafingTask;
@@ -8,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidCrossbo
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidRangedWalkToTarget;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.ItemsUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
@@ -49,8 +49,13 @@ public class TaskCrossBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create((level, entityMaid) -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid), (level, entityMaid) -> IRangedAttackTask.findFirstValidAttackTarget(entityMaid));
-        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((level, target) -> !hasCrossBow(maid) || !hasAmmunition(maid) || farAway(target, maid));
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(
+                (_, entityMaid) -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid),
+                (_, entityMaid) -> IRangedAttackTask.findFirstValidAttackTarget(entityMaid)
+        );
+        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create(
+                (_, target) -> !hasCrossBow(maid) || !hasAmmunition(maid) || farAway(target, maid)
+        );
         BehaviorControl<EntityMaid> moveToTargetTask = MaidRangedWalkToTarget.create(0.6f);
         BehaviorControl<EntityMaid> maidAttackStrafingTask = new MaidAttackStrafingTask();
         BehaviorControl<EntityMaid> shootTargetTask = new MaidCrossbowAttack();
@@ -66,8 +71,13 @@ public class TaskCrossBowAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createRideBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create((level, entityMaid) -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid), (level, entityMaid) -> IRangedAttackTask.findFirstValidAttackTarget(entityMaid));
-        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((level, target) -> !hasCrossBow(maid) || !hasAmmunition(maid) || farAway(target, maid));
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(
+                (_, entityMaid) -> hasCrossBow(entityMaid) && hasAmmunition(entityMaid),
+                (_, entityMaid) -> IRangedAttackTask.findFirstValidAttackTarget(entityMaid)
+        );
+        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create(
+                (_, target) -> !hasCrossBow(maid) || !hasAmmunition(maid) || farAway(target, maid)
+        );
         BehaviorControl<EntityMaid> shootTargetTask = new MaidCrossbowAttack();
 
         return Lists.newArrayList(
@@ -129,9 +139,9 @@ public class TaskCrossBowAttack implements IRangedAttackTask {
 
     private int findArrow(EntityMaid maid) {
         ItemStack mainHandItem = maid.getMainHandItem();
-        if (mainHandItem.getItem() instanceof CrossbowItem) {
+        if (mainHandItem.getItem() instanceof CrossbowItem crossbowItem) {
             var handler = maid.getAvailableInv(true);
-            return ItemsUtil.findStackSlot(handler, ((CrossbowItem) mainHandItem.getItem()).getAllSupportedProjectiles());
+            return ItemsUtil.findStackSlot(handler, crossbowItem.getAllSupportedProjectiles());
         }
         return -1;
     }

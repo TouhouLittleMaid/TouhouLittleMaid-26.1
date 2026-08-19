@@ -16,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerEntity;
@@ -52,15 +53,24 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class MaidFishingHook extends Projectile {
-    public static final EntityType<MaidFishingHook> TYPE = EntityType.Builder.<MaidFishingHook>of(MaidFishingHook::new, MobCategory.MISC)
-            .noSave().noSummon().sized(0.25F, 0.25F)
-            .clientTrackingRange(4).updateInterval(5)
-            .build(ResourceKey.create(Registries.ENTITY_TYPE, IdentifierUtil.modLoc("fishing_hook")));
-    protected static final EntityDataAccessor<Boolean> DATA_BITING = SynchedEntityData.defineId(MaidFishingHook.class, EntityDataSerializers.BOOLEAN);
+    public static final Identifier ENTITY_ID = IdentifierUtil.modLoc("fishing_hook");
+    public static final ResourceKey<EntityType<?>> ENTITY_KEY = ResourceKey.create(Registries.ENTITY_TYPE, ENTITY_ID);
+    public static final EntityType<MaidFishingHook> TYPE = EntityType.Builder
+            .<MaidFishingHook>of(MaidFishingHook::new, MobCategory.MISC)
+            .noSave()
+            .noSummon()
+            .sized(0.25F, 0.25F)
+            .clientTrackingRange(4)
+            .updateInterval(5)
+            .build(ENTITY_KEY);
+
     protected static final int MAX_OUT_OF_WATER_TIME = 10;
+    protected static final EntityDataAccessor<Boolean> DATA_BITING = SynchedEntityData.defineId(MaidFishingHook.class, EntityDataSerializers.BOOLEAN);
+
     protected final RandomSource syncronizedRandom = RandomSource.create();
     protected final int luck;
     protected final int lureSpeed;
+
     protected boolean biting;
     protected int nibble;
     protected int timeUntilLured;
@@ -97,7 +107,11 @@ public class MaidFishingHook extends Projectile {
         if (DATA_BITING.equals(key)) {
             this.biting = this.getEntityData().get(DATA_BITING);
             if (this.biting) {
-                this.setDeltaMovement(this.getDeltaMovement().x, -0.4 * Mth.nextFloat(this.syncronizedRandom, 0.6F, 1.0F), this.getDeltaMovement().z);
+                this.setDeltaMovement(
+                        this.getDeltaMovement().x,
+                        -0.4 * Mth.nextFloat(this.syncronizedRandom, 0.6F, 1.0F),
+                        this.getDeltaMovement().z
+                );
             }
         }
         super.onSyncedDataUpdated(key);
@@ -194,7 +208,8 @@ public class MaidFishingHook extends Projectile {
     protected void bitingTick(BlockPos blockPos) {
         this.outOfWaterTime = Math.max(0, this.outOfWaterTime - 1);
         if (this.biting) {
-            this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.1D * (double) this.syncronizedRandom.nextFloat() * (double) this.syncronizedRandom.nextFloat(), 0.0D));
+            double yAdd = -0.1D * (double) this.syncronizedRandom.nextFloat() * (double) this.syncronizedRandom.nextFloat();
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0D, yAdd, 0.0D));
         }
         // 咬钩！
         if (!this.level.isClientSide()) {
@@ -340,7 +355,11 @@ public class MaidFishingHook extends Projectile {
             int rodDamage = this.retrieve(rodItem);
             this.hurtRod(maid, rodItem, rodDamage);
             maid.swing(InteractionHand.MAIN_HAND);
-            level.playSound(null, maid.getX(), maid.getY(), maid.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL, 1.0F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+            level.playSound(
+                    null, maid.getX(), maid.getY(), maid.getZ(),
+                    SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.NEUTRAL,
+                    1.0F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F)
+            );
         }
     }
 
