@@ -140,11 +140,14 @@ public class TaskFeedAnimal implements IAttackTask {
     }
 
     private NearestVisibleLivingEntities getEntities(EntityMaid maid) {
-        return maid.getBrain().getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES).orElse(NearestVisibleLivingEntities.empty());
+        return maid.getBrain()
+                .getMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES)
+                .orElse(NearestVisibleLivingEntities.empty());
     }
 
     private boolean hasAssaultWeapon(EntityMaid maid) {
-        return maid.getMainHandItem().getAttributeModifiers().modifiers()
+        return maid.getMainHandItem().getAttributeModifiers()
+                .modifiers()
                 .stream()
                 .anyMatch(modifier -> modifier.attribute().is(Attributes.ATTACK_DAMAGE));
     }

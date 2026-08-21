@@ -64,7 +64,6 @@ public class MaidFeedOwnerTask extends MaidCheckRateTask {
             // 若没有食物则借助此调用触发 MaidRequestItemEvent 来尝试获取食物
             ItemsUtil.findStackSlot(inv, stack -> task.isFood(stack, player));
 
-
             for (int i = 0; i < inv.size(); ++i) {
                 ItemStack stack = inv.getResource(i).toStack();
                 if (task.isFood(stack, player)) {
@@ -91,10 +90,16 @@ public class MaidFeedOwnerTask extends MaidCheckRateTask {
             IntList map = !highFoods.isEmpty() ? highFoods : !lowFoods.isEmpty() ? lowFoods : lowestFoods;
             map.intStream().skip(maid.getRandom().nextInt(map.size())).findFirst().ifPresent(slot -> {
                 ItemStack stack = ItemUtil.getStack(inv, slot);
-                int beforeCount = stack.getCount();
+                ItemStack copy = stack.copy();
+
                 ItemStack feedResult = task.feed(stack, player);
-                //Fixme 替换可变的ItemStack
-                ItemsUtil.extractItem(inv, slot, beforeCount - feedResult.getCount(), false, null);
+                if (feedResult.isEmpty() || ItemStack.isSameItem(feedResult, copy)) {
+                    ItemsUtil.extractItem(inv, slot, copy.count() - feedResult.getCount(), false, null);
+                } else {
+                    ItemsUtil.extractItem(inv, slot, 1, false, null);
+                    ItemsUtil.insertItemStacked(inv, feedResult, false, null);
+                }
+
                 maid.swing(InteractionHand.MAIN_HAND);
                 this.setNextCheckTickCount(5);
                 if (maid.getOwner() instanceof ServerPlayer serverPlayer) {

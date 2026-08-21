@@ -16,16 +16,12 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class TaskManager {
-    private static Map<Identifier, IMaidTask> TASK_MAP;
-    private static List<IMaidTask> TASK_INDEX;
-    private static IMaidTask IDLE_TASK;
+    private static final IMaidTask IDLE_TASK = new TaskIdle();
+
+    private static Map<Identifier, IMaidTask> TASK_MAP = Maps.newHashMap();
+    private static List<IMaidTask> TASK_INDEX = Lists.newArrayList();
 
     private TaskManager() {
-        if (IDLE_TASK == null) {
-            IDLE_TASK = new TaskIdle();
-        }
-        TASK_MAP = Maps.newHashMap();
-        TASK_INDEX = Lists.newArrayList();
     }
 
     public static void init() {

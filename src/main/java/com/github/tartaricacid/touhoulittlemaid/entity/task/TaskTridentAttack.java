@@ -1,6 +1,5 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IRangedAttackTask;
 import com.github.tartaricacid.touhoulittlemaid.config.subconfig.MaidConfig;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidAttackTridentTask;
@@ -8,6 +7,7 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidRangedW
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidTridentTargetTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
@@ -58,8 +58,13 @@ public class TaskTridentAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create((level, e) -> hasTrident(e), (level, e) -> IRangedAttackTask.findFirstValidAttackTarget(e));
-        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((level, target) -> !hasTrident(maid) || farAway(target, maid));
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(
+                (_, e) -> hasTrident(e),
+                (_, e) -> IRangedAttackTask.findFirstValidAttackTarget(e)
+        );
+        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create(
+                (_, target) -> !hasTrident(maid) || farAway(target, maid)
+        );
         BehaviorControl<EntityMaid> moveToTargetTask = MaidRangedWalkToTarget.create(0.6f);
         BehaviorControl<EntityMaid> maidAttackStrafingTask = new MaidAttackTridentTask();
         BehaviorControl<EntityMaid> shootTargetTask = new MaidTridentTargetTask();
@@ -75,8 +80,13 @@ public class TaskTridentAttack implements IRangedAttackTask {
 
     @Override
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createRideBrainTasks(EntityMaid maid) {
-        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create((level, e) -> hasTrident(e), (level, e) -> IRangedAttackTask.findFirstValidAttackTarget(e));
-        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create((level, target) -> !hasTrident(maid) || farAway(target, maid));
+        BehaviorControl<EntityMaid> supplementedTask = StartAttacking.create(
+                (_, e) -> hasTrident(e),
+                (_, e) -> IRangedAttackTask.findFirstValidAttackTarget(e)
+        );
+        BehaviorControl<EntityMaid> findTargetTask = StopAttackingIfTargetInvalid.create(
+                (_, target) -> !hasTrident(maid) || farAway(target, maid)
+        );
         BehaviorControl<EntityMaid> shootTargetTask = new MaidTridentTargetTask();
 
         return Lists.newArrayList(

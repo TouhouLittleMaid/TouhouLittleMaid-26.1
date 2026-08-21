@@ -11,6 +11,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 
 import java.util.concurrent.CompletableFuture;
@@ -64,6 +65,11 @@ public class TagBlock extends BlockTagsProvider {
     public static final TagKey<Block> MAID_BED = createTagKey("maid_bed");
 
     /**
+     * 女仆在除草模式下，能够破坏的方块
+     */
+    public static final TagKey<Block> TASK_GRASS_HARVEST = createTagKey("task_grass_harvest");
+
+    /**
      * CarryOn 黑名单标签，被此标签包含的方块将无法被 CarryOn 抱起
      */
     public static final TagKey<Block> CARRYON_BLOCK_BLACKLIST = createTagKey(Identifier.parse("carryon:block_blacklist"));
@@ -91,6 +97,32 @@ public class TagBlock extends BlockTagsProvider {
                 .add(element("touhou_little_maid:blue_maid_bed"))
                 .add(element("touhou_little_maid:green_maid_bed"))
                 .add(element("touhou_little_maid:purple_maid_bed"));
+
+        tag(TASK_GRASS_HARVEST)
+                .addTag(BlockTags.SMALL_FLOWERS)
+                .add(
+                        Blocks.SHORT_GRASS,
+                        Blocks.FERN,
+                        Blocks.BUSH,
+                        Blocks.DEAD_BUSH,
+                        Blocks.GLOW_LICHEN,
+                        Blocks.SUNFLOWER,
+                        Blocks.LILAC,
+                        Blocks.ROSE_BUSH,
+                        Blocks.PEONY,
+                        Blocks.TALL_GRASS,
+                        Blocks.LARGE_FERN,
+                        Blocks.HANGING_ROOTS,
+                        Blocks.PITCHER_PLANT,
+                        Blocks.PALE_MOSS_CARPET,
+                        Blocks.FIREFLY_BUSH,
+                        Blocks.WARPED_ROOTS,
+                        Blocks.NETHER_SPROUTS,
+                        Blocks.CRIMSON_ROOTS,
+                        Blocks.LEAF_LITTER,
+                        Blocks.SHORT_DRY_GRASS,
+                        Blocks.TALL_DRY_GRASS
+                );
 
         tag(MAID_JUMP_FORBIDDEN_BLOCK)
                 .addTag(BlockTags.DOORS)

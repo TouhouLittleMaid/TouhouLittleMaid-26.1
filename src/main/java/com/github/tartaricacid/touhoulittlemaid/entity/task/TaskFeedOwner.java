@@ -1,10 +1,10 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IFeedTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidFeedOwnerTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.util.SoundUtil;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
@@ -29,8 +29,6 @@ import net.minecraft.world.item.consume_effects.RemoveStatusEffectsConsumeEffect
 import javax.annotation.Nullable;
 import java.util.List;
 
-//FIXME EffectCures API removed, need to find replacement for milk cure check
-
 public class TaskFeedOwner implements IFeedTask {
     public static final Identifier UID = IdentifierUtil.modLoc("feed");
 
@@ -50,7 +48,7 @@ public class TaskFeedOwner implements IFeedTask {
                 if (effects.contains(effect.getEffect())) {
                     return true;
                 }
-            } else if (consumeEffect instanceof ClearAllStatusEffectsConsumeEffect c) {
+            } else if (consumeEffect instanceof ClearAllStatusEffectsConsumeEffect) {
                 return true;
             }
         }
@@ -64,20 +62,20 @@ public class TaskFeedOwner implements IFeedTask {
             return false;
         }
 
-        List<ConsumeEffect> el = consumable.onConsumeEffects();
+        List<ConsumeEffect> consumeEffects = consumable.onConsumeEffects();
         if (stack.getItem() == Items.MILK_BUCKET) {
             for (MobEffectInstance effect : owner.getActiveEffects()) {
-                if (isHarmfulEffect(effect) && effect.getDuration() > 60 && canRemoveEffect(el, effect)) {
+                if (isHarmfulEffect(effect) && !effect.endsWithin(60) && canRemoveEffect(consumeEffects, effect)) {
                     return true;
                 }
             }
             return false;
         }
         if (stack.has(DataComponents.FOOD)) {
-            return el.stream()
-                    .noneMatch(t ->
-                            t instanceof ApplyStatusEffectsConsumeEffect a &&
-                            a.effects().stream().anyMatch(this::isHarmfulEffect)
+            return consumeEffects.stream()
+                    .noneMatch(e ->
+                            e instanceof ApplyStatusEffectsConsumeEffect consume &&
+                            consume.effects().stream().anyMatch(this::isHarmfulEffect)
                     );
         }
         return false;
@@ -102,13 +100,12 @@ public class TaskFeedOwner implements IFeedTask {
             }
         }
 
-        //FIXME getFoodProperties API changed
-        if (stack.has(net.minecraft.core.component.DataComponents.FOOD)) {
+        if (stack.has(DataComponents.FOOD)) {
             FoodData foodData = owner.getFoodData();
             if (!foodData.needsFood()) {
                 return Priority.LOWEST;
             }
-            FoodProperties food = stack.get(net.minecraft.core.component.DataComponents.FOOD);
+            FoodProperties food = stack.get(DataComponents.FOOD);
             int heal = 0;
             if (food != null) {
                 heal = food.nutrition();
@@ -126,12 +123,7 @@ public class TaskFeedOwner implements IFeedTask {
 
     @Override
     public ItemStack feed(ItemStack stack, Player owner) {
-        //FIXME getUseAnimation and getDrinkingSound API changed
-        //if (stack.getUseAnimation() == ItemUseAnimation.DRINK) {
-        //    owner.level.playSound(null, owner, stack.getDrinkingSound(), SoundSource.NEUTRAL,
-        //            0.5f, owner.level.getRandom().nextFloat() * 0.1f + 0.9f);
-        //}
-        return stack.getItem().finishUsingItem(stack, owner.level, owner);
+        return stack.finishUsingItem(owner.level, owner);
     }
 
     @Nullable

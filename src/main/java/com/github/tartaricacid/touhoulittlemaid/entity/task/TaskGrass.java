@@ -1,16 +1,13 @@
 package com.github.tartaricacid.touhoulittlemaid.entity.task;
 
-import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IFarmTask;
+import com.github.tartaricacid.touhoulittlemaid.datagen.tag.TagBlock;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
+import com.github.tartaricacid.touhoulittlemaid.util.IdentifierUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DoublePlantBlock;
-import net.minecraft.world.level.block.FlowerBlock;
-import net.minecraft.world.level.block.TallGrassBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class TaskGrass implements IFarmTask {
@@ -33,8 +30,7 @@ public class TaskGrass implements IFarmTask {
 
     @Override
     public boolean canHarvest(EntityMaid maid, BlockPos cropPos, BlockState cropState) {
-        Block block = cropState.getBlock();
-        return block instanceof TallGrassBlock || block instanceof FlowerBlock || block instanceof DoublePlantBlock;
+        return cropState.is(TagBlock.TASK_GRASS_HARVEST);
     }
 
     @Override
