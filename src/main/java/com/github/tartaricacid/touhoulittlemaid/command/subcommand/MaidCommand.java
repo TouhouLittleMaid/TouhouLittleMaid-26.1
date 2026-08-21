@@ -15,6 +15,8 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 
+import java.util.Collection;
+
 public class MaidCommand {
     private static final String MAID_NAME = "maid";
     private static final String TARGETS_NAME = "targets";
@@ -26,7 +28,7 @@ public class MaidCommand {
 
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
         LiteralArgumentBuilder<CommandSourceStack> pack = Commands.literal(MAID_NAME);
-        RequiredArgumentBuilder<CommandSourceStack, EntitySelector> targets = Commands.argument(TARGETS_NAME, EntityArgument.entity());
+        RequiredArgumentBuilder<CommandSourceStack, EntitySelector> targets = Commands.argument(TARGETS_NAME, EntityArgument.entities());
 
         LiteralArgumentBuilder<CommandSourceStack> noAi = Commands.literal(NO_AI_NAME);
         LiteralArgumentBuilder<CommandSourceStack> xp = Commands.literal(XP);
@@ -41,26 +43,36 @@ public class MaidCommand {
     }
 
     private static int handleMaidNoAi(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        Entity entity = EntityArgument.getEntity(context, TARGETS_NAME);
+        Collection<? extends Entity> entities = EntityArgument.getEntities(context, TARGETS_NAME);
         boolean noAi = BoolArgumentType.getBool(context, RESULT_NAME);
-        if (entity instanceof EntityMaid maid) {
-            maid.setNoAi(noAi);
-            context.getSource().sendSuccess(() -> Component.translatable("commands.touhou_little_maid.maid.no_ai.success", String.valueOf(noAi)), true);
-        } else {
-            context.getSource().sendFailure(Component.translatable("commands.touhou_little_maid.maid.not_maid"));
+        int[] count = {0};
+        for (Entity entity : entities) {
+            if (entity instanceof EntityMaid maid) {
+                maid.setNoAi(noAi);
+                count[0]++;
+            }
         }
+        context.getSource().sendSuccess(() -> Component.translatable(
+                "commands.touhou_little_maid.maid.no_ai.success",
+                count[0], String.valueOf(noAi)), true
+        );
         return Command.SINGLE_SUCCESS;
     }
 
     private static int handleMaidXp(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        Entity entity = EntityArgument.getEntity(context, TARGETS_NAME);
+        Collection<? extends Entity> entities = EntityArgument.getEntities(context, TARGETS_NAME);
         int xpCount = IntegerArgumentType.getInteger(context, RESULT_NAME);
-        if (entity instanceof EntityMaid maid) {
-            maid.setExperience(xpCount);
-            context.getSource().sendSuccess(() -> Component.translatable("commands.touhou_little_maid.maid.xp.success", String.valueOf(xpCount)), true);
-        } else {
-            context.getSource().sendFailure(Component.translatable("commands.touhou_little_maid.maid.not_maid"));
+        int[] count = {0};
+        for (Entity entity : entities) {
+            if (entity instanceof EntityMaid maid) {
+                maid.setExperience(xpCount);
+                count[0]++;
+            }
         }
+        context.getSource().sendSuccess(() -> Component.translatable(
+                "commands.touhou_little_maid.maid.xp.success",
+                count[0], String.valueOf(xpCount)), true
+        );
         return Command.SINGLE_SUCCESS;
     }
 }
