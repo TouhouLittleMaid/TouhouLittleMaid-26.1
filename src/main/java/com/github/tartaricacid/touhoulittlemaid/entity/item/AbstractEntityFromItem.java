@@ -2,6 +2,7 @@ package com.github.tartaricacid.touhoulittlemaid.entity.item;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -53,8 +54,16 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
     protected void dropExtraItems() {
     }
 
+    protected boolean isBlockPlacingRestricted(ServerPlayer player) {
+        return player.gameMode.getGameModeForPlayer().isBlockPlacingRestricted();
+    }
+
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        // 冒险模式不能伤害破坏实体
+        if (source.getEntity() instanceof ServerPlayer player && isBlockPlacingRestricted(player)) {
+            return false;
+        }
         if (!this.level.isClientSide() && this.isAlive()) {
             // 如果实体是无敌的
             if (this.isInvulnerableTo(level, source)) {
@@ -115,6 +124,10 @@ public abstract class AbstractEntityFromItem extends LivingEntity {
 
     @Override
     public boolean skipAttackInteraction(Entity entity) {
+        // 冒险模式不能伤害破坏实体
+        if (entity instanceof ServerPlayer player && isBlockPlacingRestricted(player)) {
+            return true;
+        }
         return entity instanceof Player && !this.level.mayInteract(entity, this.blockPosition());
     }
 

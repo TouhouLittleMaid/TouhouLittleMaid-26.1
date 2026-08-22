@@ -43,7 +43,8 @@ public record ChairModelPackage(int id, Identifier modelId, float mountedHeight,
             context.enqueueWork(() -> {
                 ServerPlayer sender = (ServerPlayer) context.player();
                 Entity entity = sender.level.getEntity(message.id);
-                boolean canChangeModel = ChairConfig.CHAIR_CHANGE_MODEL.get() || sender.isCreative();
+                boolean isBlockPlacingRestricted = sender.gameMode.getGameModeForPlayer().isBlockPlacingRestricted();
+                boolean canChangeModel = !isBlockPlacingRestricted && (ChairConfig.CHAIR_CHANGE_MODEL.get() || sender.isCreative());
 
                 if (entity instanceof EntityChair) {
                     if (canChangeModel) {

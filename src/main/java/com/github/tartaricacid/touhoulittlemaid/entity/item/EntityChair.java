@@ -108,7 +108,7 @@ public class EntityChair extends AbstractEntityFromItem implements OwnableEntity
             if (player.getItemInHand(hand).interactLivingEntity(player, this, hand).consumesAction()) {
                 return InteractionResult.SUCCESS;
             }
-            if (player instanceof ServerPlayer serverPlayer) {
+            if (player instanceof ServerPlayer serverPlayer && !isBlockPlacingRestricted(serverPlayer)) {
                 PacketDistributor.sendToPlayer(serverPlayer, new OpenChairGuiPackage(this));
             }
         } else {
