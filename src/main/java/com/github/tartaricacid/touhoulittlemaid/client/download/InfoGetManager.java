@@ -245,7 +245,7 @@ public class InfoGetManager {
         StopWatch stopWatch = StopWatch.createStarted();
         // 异步下载
         CompletableFuture downloader = HttpUtil.downloadTo(fileInCache, url, getDownloadHeaders(), PACK_MAX_FILE_SIZE, info, proxy);
-        downloader.thenRun(() -> {
+        downloader.thenRunAsync(() -> {
             // 如果正常下载完成，停止计时，发送提示，并进行加载
             stopWatch.stop();
             sendDownloadMessage(Component.translatable("gui.touhou_little_maid.resources_download.state.downloaded", info.getFileName(), stopWatch.getTime(TimeUnit.MILLISECONDS) / 1000.0));
@@ -254,7 +254,7 @@ public class InfoGetManager {
             } catch (IOException e) {
                 e.fillInStackTrace();
             }
-        }).exceptionally(error -> {
+        }, Minecraft.getInstance()).exceptionally(error -> {
             // 异常？那么清理相关内容，并打印提示
             stopWatch.stop();
             info.setStatus(DownloadStatus.NOT_DOWNLOAD);

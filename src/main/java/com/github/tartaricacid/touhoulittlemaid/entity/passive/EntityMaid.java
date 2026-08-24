@@ -129,7 +129,7 @@ public class EntityMaid extends MaidManagerHost implements CrossbowAttackMob {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
-        builder.define(DATA_SYNC_INVULNERABLE, this.isInvulnerable());
+        builder.define(DATA_SYNC_INVULNERABLE, false);
         builder.define(BACKPACK_ITEM_SHOW, ItemStack.EMPTY);
         builder.define(CHAT_BUBBLE, ChatBubbleDataCollection.getEmptyCollection());
     }
